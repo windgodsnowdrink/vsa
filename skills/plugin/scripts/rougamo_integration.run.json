@@ -1,0 +1,154 @@
+{
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "sdk": "10.0.0",
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "environment": {
+    "development": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "ENABLE_AOP": "true",
+      "ENABLE_PERFORMANCE_MONITORING": "true",
+      "ENABLE_CACHING": "true",
+      "ENABLE_TRANSACTIONS": "true",
+      "CACHE_EXPIRATION_SECONDS": "300",
+      "METRICS_COLLECTION_INTERVAL_MS": "10000"
+    },
+    "production": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOG_LEVEL": "Warning",
+      "ENABLE_AOP": "true",
+      "ENABLE_PERFORMANCE_MONITORING": "true",
+      "ENABLE_CACHING": "true",
+      "ENABLE_TRANSACTIONS": "true",
+      "CACHE_EXPIRATION_SECONDS": "600",
+      "METRICS_COLLECTION_INTERVAL_MS": "30000"
+    }
+  },
+  "deployment": {
+    "aot": {
+      "enabled": true,
+      "publishProfiles": {
+        "win-x64": {
+          "command": "dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/win-x64/publish"
+        },
+        "linux-x64": {
+          "command": "dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/linux-x64/publish"
+        },
+        "osx-x64": {
+          "command": "dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/osx-x64/publish"
+        }
+      }
+    },
+    "container": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "buildArgs": {
+        "SDK_VERSION": "10.0",
+        "RUNTIME_VERSION": "10.0"
+      },
+      "tags": [
+        "rougamo-integration:latest",
+        "rougamo-integration:{version}"
+      ]
+    }
+  },
+  "performance": {
+    "optimizations": {
+      "cacheEnabled": true,
+      "metricsEnabled": true,
+      "parallelExecution": true
+    },
+    "limits": {
+      "maxCacheSize": "1000",
+      "maxMetricsAge": "1h",
+      "maxConcurrentOperations": 100
+    }
+  },
+  "aop": {
+    "rougamo": {
+      "options": {
+        "interceptors": {
+          "plugin": true,
+          "performance": true,
+          "transaction": true,
+          "cache": true
+        },
+        "logging": {
+          "enabled": true,
+          "level": "Information"
+        },
+        "metrics": {
+          "enabled": true,
+          "exporters": [
+            "Console",
+            "Prometheus"
+          ]
+        }
+      }
+    }
+  },
+  "logging": {
+    "providers": [
+      "Console",
+      "Debug",
+      "EventLog"
+    ],
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Plugin.AOP": "Debug"
+    },
+    "fileLogging": {
+      "enabled": true,
+      "path": "logs/rougamo-integration.log",
+      "maxFileSize": "10MB",
+      "maxRetainedFiles": 5
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "enabled": true,
+      "endpoint": "/health",
+      "interval": "30s"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "collectionInterval": "10s",
+      "counters": [
+        "aop.intercept.count",
+        "aop.error.count",
+        "cache.hit.count",
+        "cache.miss.count"
+      ],
+      "histograms": [
+        "aop.intercept.time.ms",
+        "cache.lookup.time.ms"
+      ]
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        "Jaeger",
+        "Zipkin"
+      ]
+    }
+  }
+}

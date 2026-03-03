@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "mqtt_quantum_security",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\mqtt\scripts\mqtt_quantum_security.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\mqtt\scripts\mqtt_quantum_security.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

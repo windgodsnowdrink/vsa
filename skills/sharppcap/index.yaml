@@ -1,0 +1,140 @@
+name: sharppcap
+version: 1.0.0
+author: VSA Architecture Team
+description: 基于 .NET 10 的 sharppcap 技能实现，提供网络数据包捕获和分析功能
+skillType: System Function
+
+# 依赖项
+dependencies:
+  - name: SharpPcap
+    version: 6.3.0
+    source: nuget
+  - name: PacketDotNet
+    version: 1.4.7
+    source: nuget
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+    source: nuget
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+    source: nuget
+  - name: System.CommandLine
+    version: 2.0.0
+    source: nuget
+  - name: System.Text.Json
+    version: 10.0.0
+    source: nuget
+
+# 功能特性
+features:
+  - name: packet-capture
+    description: 网络数据包捕获功能
+  - name: packet-analysis
+    description: 网络数据包分析功能
+  - name: packet-filtering
+    description: 网络数据包过滤功能
+  - name: statistics
+    description: 网络统计信息功能
+  - name: code-generation
+    description: 代码生成功能
+
+# AOT 编译选项
+aot:
+  enabled: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  runtimeIdentifier: win-x64
+  targetFramework: net10.0
+
+# CLI 命令
+cli:
+  commands:
+    - name: capture
+      description: 网络数据包捕获
+      parameters:
+        - name: interface
+          description: 网络接口名称
+        - name: filter
+          description: 数据包过滤器表达式
+        - name: output
+          description: 输出文件路径
+        - name: duration
+          description: 捕获持续时间（秒）
+    - name: analyze
+      description: 网络数据包分析
+      parameters:
+        - name: input
+          description: 输入文件路径
+        - name: protocol
+          description: 协议类型
+    - name: filter
+      description: 网络数据包过滤
+      parameters:
+        - name: input
+          description: 输入文件路径
+        - name: expression
+          description: 过滤表达式
+        - name: output
+          description: 输出文件路径
+    - name: stats
+      description: 网络统计信息
+      parameters:
+        - name: interface
+          description: 网络接口名称
+        - name: interval
+          description: 统计间隔（秒）
+    - name: generate
+      description: 代码生成
+      parameters:
+        - name: type
+          description: 生成类型（parser/analyzer）
+        - name: protocol
+          description: 协议类型
+        - name: output
+          description: 输出文件路径
+
+# 文件路径
+filePaths:
+  - path: scripts/sharppcap_core.cs
+    description: sharppcap 核心功能实现
+  - path: scripts/sharppcap_generator.cs
+    description: sharppcap 代码生成功能实现
+  - path: scripts/sharppcap_core.setting.json
+    description: sharppcap_core.cs 编译配置
+  - path: scripts/sharppcap_core.run.json
+    description: sharppcap_core.cs 运行配置
+  - path: scripts/sharppcap_generator.setting.json
+    description: sharppcap_generator.cs 编译配置
+  - path: scripts/sharppcap_generator.run.json
+    description: sharppcap_generator.cs 运行配置
+  - path: reference/README.md
+    description: 技术参考文档
+  - path: reference/examples.md
+    description: 使用示例文档
+
+# 应用场景
+applicationScenarios:
+  - 网络监控和分析
+  - 网络安全审计
+  - 网络性能优化
+  - 网络协议开发和调试
+
+# 激活条件
+activationConditions:
+  - 当需要网络数据包捕获和分析功能时激活
+
+# 性能特性
+performanceFeatures:
+  - 高性能设计
+  - 内存优化
+  - 并发支持
+  - 实时数据包处理
+
+# 技术特性
+technicalFeatures:
+  - 模块化设计
+  - 依赖注入
+  - 异步编程
+  - 高性能算法
+  - AOT 编译优化

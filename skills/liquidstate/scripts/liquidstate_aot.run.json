@@ -1,0 +1,153 @@
+{
+  "name": "liquidstate_aot",
+  "description": "LiquidState AOT 运行环境配置",
+  "version": "1.0.0",
+  "runtime": {
+    "command": "dotnet",
+    "arguments": ["run", "--project", "scripts/liquidstate_aot.cs"],
+    "working_directory": "d:\\Trae\\vsa",
+    "timeout_seconds": 30,
+    "retry_attempts": 3,
+    "retry_delay_seconds": 2,
+    "success_codes": [0],
+    "failure_codes": [1, 2, 3, 4, 5]
+  },
+  "environment": {
+    "variables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+      "DOTNET_RUNNING_IN_CONTAINER": "false",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "NUGET_XMLDOC_MODE": "skip"
+    },
+    "path": "%PATH%;%ProgramFiles%\\dotnet"
+  },
+  "resources": {
+    "cpu_limit": 1,
+    "memory_limit_mb": 1024,
+    "disk_limit_mb": 512
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "file": "logs\\liquidstate_aot.log",
+    "max_file_size_mb": 10,
+    "max_retained_files": 5
+  },
+  "monitoring": {
+    "enabled": true,
+    "health_check_interval_seconds": 30,
+    "metrics_enabled": true,
+    "tracing_enabled": false
+  },
+  "deployment": {
+    "type": "self_contained",
+    "runtime_identifier": "win-x64",
+    "publish_profile": "Release",
+    "output_directory": "publish\\liquidstate_aot",
+    "single_file": true,
+    "trimmed": true,
+    "publish_aot": true,
+    "include_native_libraries_for_self_extract": true,
+    "enable_cpp_code_gen": true,
+    "ready_to_run": false
+  },
+  "configuration_files": {
+    "setting_file": "scripts\\liquidstate_aot.setting.json",
+    "appsettings": "appsettings.json"
+  },
+  "commands": {
+    "create": {
+      "arguments": ["create", "{name}"],
+      "description": "创建状态机"
+    },
+    "start": {
+      "arguments": ["start", "{name}", "{initialState}"],
+      "description": "启动状态机"
+    },
+    "fire": {
+      "arguments": ["fire", "{name}", "{event}"],
+      "description": "触发状态机事件"
+    },
+    "stop": {
+      "arguments": ["stop", "{name}"],
+      "description": "停止状态机"
+    },
+    "list": {
+      "arguments": ["list"],
+      "description": "列出所有状态机"
+    },
+    "remove": {
+      "arguments": ["remove", "{name}"],
+      "description": "移除状态机"
+    },
+    "help": {
+      "arguments": ["help"],
+      "description": "显示帮助信息"
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "validate_arguments": true,
+    "validate_environment": true,
+    "validate_configuration": true
+  },
+  "profiles": {
+    "development": {
+      "runtime": {
+        "arguments": ["run", "--project", "scripts/liquidstate_aot.cs", "--configuration", "Debug"]
+      },
+      "environment": {
+        "variables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "DOTNET_LOG_LEVEL": "Debug"
+        }
+      },
+      "logging": {
+        "level": "Debug"
+      }
+    },
+    "production": {
+      "runtime": {
+        "arguments": ["run", "--project", "scripts/liquidstate_aot.cs", "--configuration", "Release"]
+      },
+      "environment": {
+        "variables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "DOTNET_LOG_LEVEL": "Information"
+        }
+      },
+      "logging": {
+        "level": "Information"
+      }
+    },
+    "test": {
+      "runtime": {
+        "arguments": ["run", "--project", "scripts/liquidstate_aot.cs", "--configuration", "Test"]
+      },
+      "environment": {
+        "variables": {
+          "DOTNET_ENVIRONMENT": "Test",
+          "DOTNET_LOG_LEVEL": "Information"
+        }
+      },
+      "logging": {
+        "level": "Information"
+      }
+    }
+  },
+  "compatibility": {
+    "os": ["Windows", "Linux", "macOS"],
+    "dotnet_versions": ["10.0.0"]
+  },
+  "security": {
+    "enabled": true,
+    "sandbox_enabled": false,
+    "network_access_enabled": true,
+    "file_system_access": {
+      "enabled": true,
+      "allowed_paths": ["d:\\Trae\\vsa", "%TEMP%"],
+      "denied_paths": ["%SYSTEMROOT%", "%PROGRAMFILES%"]
+    }
+  }
+}

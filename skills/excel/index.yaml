@@ -1,0 +1,62 @@
+# Excel Agent Skill - Excel 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 实现的 Excel 技能，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.IO.Pipelines@8.0.0
+# Application Scenarios:
+# - 数据导入导出
+# - 报表生成
+# - 数据分析
+# - 格式转换
+# - 批量处理
+# - 自动化办公
+# - 数据迁移
+# - 模板生成
+# - 数据验证
+# - 批量打印
+# Activation Conditions: 当需要 Excel 功能时激活
+# Main Features:
+# - Excel 文件读取
+# - Excel 文件写入
+# - 格式转换
+# - 文件合并
+# - 文件拆分
+# - AOT 编译支持
+# - 命令行工具
+# - 多环境配置
+# - 详细日志记录
+# - 简单易用的 API
+# Performance Features:
+# - AOT 编译：提前编译为本地代码，减少启动时间和内存占用
+# - 内存优化：高效的内存管理策略，适合处理大文件
+# - 异步设计：全异步 API，提高并发处理能力
+# - 性能监控：内置性能监控功能
+# - 文件流处理：支持流式处理，减少内存占用
+# - 并行处理：支持并行处理，提高处理速度
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 配置管理
+# - 安全设计
+# - 可扩展架构
+# - 命令行界面
+# - AOT 支持
+# - 跨平台兼容
+# - 文件流处理
+# - 资源管理
+# Runtime Features:
+# - .NET 10 AOT 编译
+# - 单文件执行
+# - 低内存占用
+# - 快速启动
+# - 高性能执行
+# - 跨平台支持
+# - 大文件处理能力

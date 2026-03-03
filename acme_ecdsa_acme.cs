@@ -1,0 +1,60 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package ACME.NET@3.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+using System.Security.Cryptography;
+using System.Threading.Channels;
+
+[SkipLocalsInit]
+public sealed class EcdsaCertificateService
+{
+    private readonly Channel<CertificateRequest> _requestChannel;
+    private readonly ObjectPool<ECDsa> _ecdsaPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public EcdsaCertificateService()
+    {
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _requestChannel = Channel.CreateBounded<CertificateRequest>(1000);
+        
+        _ecdsaPool = new DefaultObjectPool<ECDsa>(
+            new EcdsaPooledPolicy(ECCurve.NamedCurves.nistP256), 
+            Environment.ProcessorCount * 2);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessRequestAsync(CertificateRequest request)
+    {
+        using var latencyToken = _latencyOptimizer.BeginOperation();
+        var ecdsa = _ecdsaPool.Get();
+        try
+        {
+            var cert = await GenerateEcdsaCertificateAsync(ecdsa, request.Domain);
+            await SaveCertificateAsync(cert);
+        }
+        finally
+        {
+            _ecdsaPool.Return(ecdsa);
+        }
+    }
+}
+
+[SkipLocalsInit]
+internal sealed class EcdsaPooledPolicy : PooledObjectPolicy<ECDsa>
+{
+    private readonly ECCurve _curve;
+
+    public EcdsaPooledPolicy(ECCurve curve) => _curve = curve;
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override ECDsa Create() => ECDsa.Create(_curve);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override bool Return(ECDsa obj)
+    {
+        return obj.KeySize == 256 && obj.SignatureAlgorithm == "ECDsa";
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "profiles": {
+    "Create Service Project": {
+      "commandName": "Project",
+      "commandLineArgs": "create --type service --name UserService --output ./services",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Create Gateway Project": {
+      "commandName": "Project",
+      "commandLineArgs": "create --type gateway --name ApiGateway --output ./gateway",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Create Module Project": {
+      "commandName": "Project",
+      "commandLineArgs": "create --type module --name OrderModule --output ./modules",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Start Service": {
+      "commandName": "Project",
+      "commandLineArgs": "start --project ./services/UserService --environment Development",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Build Project": {
+      "commandName": "Project",
+      "commandLineArgs": "build --project ./services/UserService --configuration Release",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "List Services": {
+      "commandName": "Project",
+      "commandLineArgs": "registry --list",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Check Service Health": {
+      "commandName": "Project",
+      "commandLineArgs": "registry --health UserService",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    }
+  }
+}

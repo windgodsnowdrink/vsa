@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "command": "dotnet",
+  "args": ["run", "--project", "publicapi_integration.cs"],
+  "options": {
+    "cwd": "d:\\Trae\\vsa\\skills\\resilient\\scripts",
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_RUNNING_IN_CONTAINER": "false"
+    },
+    "shell": true,
+    "timeout": 300000
+  },
+  "settings": {
+    "apiIntegration": {
+      "baseUrl": "https://jsonplaceholder.typicode.com",
+      "timeout": "00:00:30",
+      "retryCount": 3,
+      "retryBackoff": "00:00:01",
+      "circuitBreakThreshold": 5,
+      "circuitBreakDuration": "00:00:30",
+      "circuitBreakSamplingDuration": "00:01:00",
+      "rateLimitPermits": 100,
+      "rateLimitWindow": "00:00:01",
+      "healthCheckInterval": "00:01:00",
+      "enableHealthCheck": true,
+      "enableTelemetry": true,
+      "enableDetailedLogging": true
+    },
+    "logging": {
+      "level": "Information",
+      "file": "logs\\publicapi_integration.log",
+      "console": true
+    }
+  }
+}

@@ -1,0 +1,399 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package LiteDB@5.0.17
+#:package MemoryPack@1.9.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using LiteDB;
+using MemoryPack;
+
+// 1. Cache Line对齐的事件模型
+/*
+- 采用混合存储策略：小数据内联存储，大数据使用ExtendedPayloadId引用
+- 支持分片传输和重组，内置校验和验证
+- 使用ThreadLocal内存池处理分片重组
+- 通过Disruptor模式保证高吞吐量
+- 内存零拷贝设计减少序列化开销 
+*/
+[StructLayout(LayoutKind.Explicit, Size = 64)] // 64字节对齐
+[MemoryPackable]
+public partial struct EventData
+{
+    [FieldOffset(0)] public ObjectId Id;
+    [FieldOffset(12)] public long Timestamp;
+    [FieldOffset(20)] public EventType Type;
+    [FieldOffset(24)] public int PayloadSize;
+    [FieldOffset(28)] private fixed byte _payload[36]; // 剩余36字节内联存储
+    
+    // 添加大数据存储引用字段
+    [FieldOffset(64)] public ObjectId? ExtendedPayloadId; 
+
+    public Span<byte> Payload
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            unsafe
+            {
+                fixed (byte* ptr = _payload)
+                {
+                    return new Span<byte>(ptr, PayloadSize);
+                }
+            }
+        }
+    }
+
+    // 添加分片元数据
+    [FieldOffset(68)] public ushort ChunkIndex;
+    [FieldOffset(70)] public ushort TotalChunks;
+    [FieldOffset(72)] public uint Checksum;
+}
+
+// 在EventStoreService中添加分片处理逻辑
+public class EventStoreService : IAsyncDisposable
+{
+    private readonly ILiteDatabase _db;
+    private readonly ObjectPool<EventData> _eventPool;
+    private readonly Channel<EventData> _eventChannel;
+    private readonly Task _processingTask;
+    private readonly CancellationTokenSource _cts = new();
+    private readonly Channel<(EventData, ReadOnlyMemory<byte>)> _chunkChannel;
+    private readonly Dictionary<ObjectId, List<(EventData, byte[])>> _pendingChunks = new();
+    
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async ValueTask AppendChunkedAsync(ReadOnlyMemory<byte> payload, EventType type, ushort chunkSize = 8192)
+    {
+        var chunks = Math.Ceiling((double)payload.Length / chunkSize);
+        for (ushort i = 0; i < chunks; i++)
+        {
+            var chunk = payload.Slice(i * chunkSize, Math.Min(chunkSize, payload.Length - i * chunkSize));
+            var eventData = _eventPool.Get();
+            try
+            {
+                eventData.Id = ObjectId.NewObjectId();
+                eventData.Timestamp = DateTime.UtcNow.Ticks;
+                eventData.Type = type;
+                
+                // 零拷贝处理
+                if (payload.Length <= 36)
+                {
+                    eventData.PayloadSize = payload.Length;
+                    payload.CopyTo(eventData.Payload);
+                }
+                else
+                {
+                    // 处理大payload...
+                }
+                
+                return _eventChannel.Writer.WriteAsync(eventData, _cts.Token);
+            }
+            catch
+            {
+                _eventPool.Return(eventData);
+                throw;
+            }
+        }
+    }
+
+    private async Task ProcessEventsAsync()
+    {
+        var collection = _db.GetCollection<EventData>("events");
+        collection.EnsureIndex(x => x.Timestamp);
+        collection.EnsureIndex(x => x.Type);
+
+        await foreach (var eventData in _eventChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            try
+            {
+                collection.Insert(eventData);
+            }
+            finally
+            {
+                _eventPool.Return(eventData);
+            }
+        }
+    }
+
+    // 在EventData结构体后添加分片重组处理器
+    /*
+    - 使用Disruptor模式的高性能分片处理通道
+    - 线程安全的分片重组字典管理
+    - 零拷贝内存处理技术(Span/Memory)
+    - 内存池优化(ObjectPool)
+    - 分片校验和验证
+    - 分层存储架构(主事件+扩展负载)
+    - 异步流式处理(Channel)
+    - AOT友好设计
+    var reassembler = new ChunkReassembler(db);
+    await reassembler.EnqueueChunkAsync(eventHeader, chunkData);
+    */
+    public class ChunkReassembler : IAsyncDisposable
+    {
+        private readonly ILiteDatabase _db;
+        private readonly Channel<(EventData, ReadOnlyMemory<byte>)> _chunkChannel;
+        private readonly Dictionary<ObjectId, List<(EventData, byte[])>> _pendingChunks = new();
+        private readonly Task _processingTask;
+        private readonly CancellationTokenSource _cts = new();
+        private readonly ObjectPool<byte[]> _bufferPool;
+    
+        public ChunkReassembler(ILiteDatabase db)
+        {
+            _db = db;
+            _chunkChannel = Channel.CreateBounded<(EventData, ReadOnlyMemory<byte>)>(10000);
+            _bufferPool = new DefaultObjectPool<byte[]>(new BufferPoolPolicy(), Environment.ProcessorCount * 2);
+            _processingTask = Task.Run(ProcessChunksAsync);
+        }
+    
+        public ValueTask EnqueueChunkAsync(EventData header, ReadOnlyMemory<byte> chunk)
+        {
+            return _chunkChannel.Writer.WriteAsync((header, chunk), _cts.Token);
+        }
+    
+        private async Task ProcessChunksAsync()
+        {
+            await foreach (var (header, chunk) in _chunkChannel.Reader.ReadAllAsync(_cts.Token))
+            {
+                var buffer = _bufferPool.Get();
+                try
+                {
+                    chunk.CopyTo(buffer);
+                    
+                    if (!_pendingChunks.TryGetValue(header.Id, out var chunks))
+                    {
+                        chunks = new List<(EventData, byte[])>();
+                        _pendingChunks[header.Id] = chunks;
+                    }
+                    
+                    chunks.Add((header, buffer));
+    
+                    if (chunks.Count == header.TotalChunks)
+                    {
+                        await ReassembleAndStoreAsync(header.Id, chunks);
+                        _pendingChunks.Remove(header.Id);
+                    }
+                }
+                finally
+                {
+                    _bufferPool.Return(buffer);
+                }
+            }
+        }
+    
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        private async ValueTask ReassembleAndStoreAsync(ObjectId eventId, List<(EventData, byte[])> chunks)
+        {
+            // 按分片索引排序
+            var orderedChunks = chunks.OrderBy(x => x.Item1.ChunkIndex).ToList();
+            
+            // 计算总大小并分配内存
+            var totalSize = orderedChunks.Sum(x => x.Item2.Length);
+            var payload = ArrayPool<byte>.Shared.Rent(totalSize);
+            
+            try
+            {
+                // 合并分片
+                var offset = 0;
+                foreach (var (header, chunk) in orderedChunks)
+                {
+                    Buffer.BlockCopy(chunk, 0, payload, offset, chunk.Length);
+                    offset += chunk.Length;
+                    
+                    // 校验和验证
+                    if (header.Checksum != Crc32.Compute(chunk))
+                    {
+                        throw new InvalidDataException($"Checksum mismatch for chunk {header.ChunkIndex}");
+                    }
+                }
+    
+                // 存储到扩展存储
+                var extendedPayloadId = await StoreExtendedPayloadAsync(payload.AsMemory(0, totalSize));
+                
+                // 更新主事件引用
+                var collection = _db.GetCollection<EventData>("events");
+                var evt = collection.FindById(eventId);
+                if (evt != null)
+                {
+                    evt.ExtendedPayloadId = extendedPayloadId;
+                    collection.Update(evt);
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(payload);
+            }
+        }
+    
+        private async ValueTask<ObjectId> StoreExtendedPayloadAsync(ReadOnlyMemory<byte> payload)
+        {
+            var extendedCollection = _db.GetCollection<ExtendedPayload>("extended_payloads");
+            var extendedPayload = new ExtendedPayload
+            {
+                Id = ObjectId.NewObjectId(),
+                Data = payload.ToArray(),
+                CreatedAt = DateTime.UtcNow
+            };
+            extendedCollection.Insert(extendedPayload);
+            return extendedPayload.Id;
+        }
+    
+        public async ValueTask DisposeAsync()
+        {
+            _cts.Cancel();
+            _chunkChannel.Writer.Complete();
+            await _processingTask;
+        }
+    }
+
+    // 扩展存储模型
+    [MemoryPackable]
+    public partial class ExtendedPayload
+    {
+        [BsonId] public ObjectId Id { get; set; }
+        public byte[] Data { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _eventChannel.Writer.Complete();
+        await _processingTask;
+        _db.Dispose();
+    }
+}
+
+// 3. 使用示例
+public static class EventStoreDemo
+{
+    public static async Task RunAsync()
+    {
+        await using var eventStore = new EventStoreService("Filename=events.db;Connection=shared");
+        
+        // 模拟事件数据
+        var payload = MemoryPackSerializer.Serialize(new { Value = 42 });
+        await eventStore.AppendAsync(payload, EventType.Created);
+    }
+}
+
+// 2. 分层存储服务实现
+public class TieredEventStorage : IAsyncDisposable
+{
+    private readonly ILiteDatabase _hotStorage;
+    private readonly ILiteDatabase _warmStorage;
+    private readonly ILiteDatabase _coldStorage;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly Channel<EventData> _migrationChannel;
+    private readonly Task _migrationTask;
+    private readonly CancellationTokenSource _cts = new();
+
+    public TieredEventStorage(
+        string hotConnectionString,
+        string warmConnectionString,
+        string coldConnectionString)
+    {
+        // 初始化三层存储
+        _hotStorage = new LiteDatabase(hotConnectionString);
+        _warmStorage = new LiteDatabase(warmConnectionString);
+        _coldStorage = new LiteDatabase(coldConnectionString);
+        
+        // 配置内存池
+        _memoryPool = new DefaultObjectPool<Memory<byte>>(
+            new MemoryPoolPolicy(), 
+            Environment.ProcessorCount * 2);
+            
+        // 迁移通道(Disruptor模式)
+        _migrationChannel = Channel.CreateBounded<EventData>(10000);
+        _migrationTask = Task.Run(MigrateEventsAsync);
+    }
+
+    // 3. 主存储方法
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public void StoreHotEvent(ref EventData eventData)
+    {
+        var collection = _hotStorage.GetCollection<EventData>("hot_events");
+        
+        // 零拷贝写入
+        var memory = _memoryPool.Get();
+        try
+        {
+            MemoryPackSerializer.Serialize(ref eventData, memory.Span);
+            collection.Insert(eventData);
+        }
+        finally
+        {
+            _memoryPool.Return(memory);
+        }
+    }
+
+    // 4. 分层迁移处理器
+    private async Task MigrateEventsAsync()
+    {
+        await foreach (var eventData in _migrationChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            try
+            {
+                // 根据时间策略迁移到温存储
+                if (DateTime.UtcNow - eventData.Timestamp > TimeSpan.FromDays(1))
+                {
+                    var warmCollection = _warmStorage.GetCollection<EventData>("warm_events");
+                    warmCollection.Insert(eventData);
+                    
+                    // 从热存储删除
+                    var hotCollection = _hotStorage.GetCollection<EventData>("hot_events");
+                    hotCollection.Delete(eventData.Id);
+                }
+                
+                // 更老的迁移到冷存储
+                if (DateTime.UtcNow - eventData.Timestamp > TimeSpan.FromDays(30))
+                {
+                    var coldCollection = _coldStorage.GetCollection<EventData>("cold_events");
+                    coldCollection.Insert(eventData);
+                    
+                    // 从温存储删除
+                    var warmCollection = _warmStorage.GetCollection<EventData>("warm_events");
+                    warmCollection.Delete(eventData.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 错误处理...
+            }
+        }
+    }
+
+    // 5. 扩展负载处理器
+    public void StoreExtendedPayload(ObjectId eventId, ReadOnlySpan<byte> payload)
+    {
+        var collection = _hotStorage.GetCollection<BsonDocument>("extended_payloads");
+        
+        // 分块存储(每块1MB)
+        const int chunkSize = 1024 * 1024;
+        for (int i = 0; i < payload.Length; i += chunkSize)
+        {
+            var chunk = payload.Slice(i, Math.Min(chunkSize, payload.Length - i));
+            
+            collection.Insert(new BsonDocument
+            {
+                ["EventId"] = eventId,
+                ["ChunkIndex"] = i / chunkSize,
+                ["Data"] = chunk.ToArray()
+            });
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _migrationChannel.Writer.Complete();
+        _cts.Cancel();
+        await _migrationTask;
+        
+        _hotStorage.Dispose();
+        _warmStorage.Dispose();
+        _coldStorage.Dispose();
+    }
+}

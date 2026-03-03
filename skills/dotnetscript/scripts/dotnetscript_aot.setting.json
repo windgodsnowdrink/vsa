@@ -1,0 +1,11 @@
+{
+  "DotNetScript": {
+    "DefaultTimeoutMs": 30000,
+    "EnableCompilationCache": true,
+    "CacheDirectory": "dotnetscript-aot-cache",
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "DefaultScriptExtension": ".csx",
+    "SupportedExtensions": [".csx", ".cs"]
+  }
+}

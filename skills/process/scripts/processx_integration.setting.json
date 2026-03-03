@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ProcessXIntegration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5005",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "ProcessXIntegration-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5005",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Diagnostics.Process": "10.0.0",
+    "System.Threading.Tasks.Dataflow": "10.0.0",
+    "System.IO.Pipelines": "10.0.0",
+    "System.Threading.Channels": "10.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.dll",
+      "**/*.json",
+      "**/*.config"
+    ],
+    "exclude": [
+      "**/*.pdb",
+      "**/*.xml"
+    ]
+  },
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "deterministic": true,
+    "strict": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "ProcessXIntegration": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "ProcessManagement": {
+    "EnableProcessPooling": true,
+    "MaxProcesses": 10,
+    "ProcessStartTimeout": "00:00:30",
+    "ProcessIdleTimeout": "00:05:00",
+    "EnableProcessMonitoring": true,
+    "CpuUsageCheckInterval": "00:00:05",
+    "MaxCpuUsagePercentage": 80,
+    "MaxMemoryBytes": 1073741824,
+    "EnableCrossPlatformSupport": true
+  }
+}

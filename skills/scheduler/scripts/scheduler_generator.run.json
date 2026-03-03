@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Generate Host": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type host --output \"..\\generated\\SchedulerHost.cs\" --namespace \"Scheduler.Generated\" --class \"SchedulerHost\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Worker": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type worker --output \"..\\generated\\SchedulerWorker.cs\" --namespace \"Scheduler.Generated\" --class \"SchedulerWorker\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Service": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type service --output \"..\\generated\\SchedulerService.cs\" --namespace \"Scheduler.Generated\" --class \"SchedulerService\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "template list",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

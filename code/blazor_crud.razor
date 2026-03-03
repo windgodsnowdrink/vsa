@@ -1,0 +1,83 @@
+#:sdk Microsoft.NET.Sdk.Razor
+#:package Microsoft.AspNetCore.Components.Web@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+
+@page "/{entityName}"
+@inject I{entityName}Service Service
+
+<h3>{entityName} Management</h3>
+
+<EditForm Model="@CurrentItem" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    @foreach(var prop in Properties)
+    {
+        <div class="form-group">
+            <label>@prop.Name</label>
+            <InputText @bind-Value="@CurrentItem.GetType().GetProperty(prop.Name)" class="form-control" />
+        </div>
+    }
+    
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+<table class="table">
+    <thead>
+        <tr>
+            @foreach(var prop in Properties)
+            {
+                <th>@prop.Name</th>
+            }
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Items)
+        {
+            <tr>
+                @foreach(var prop in Properties)
+                {
+                    <td>@item.GetType().GetProperty(prop.Name)?.GetValue(item)</td>
+                }
+                <td>
+                    <button @onclick="(() => EditItem(item))" class="btn btn-sm btn-info">Edit</button>
+                    <button @onclick="(() => DeleteItem(item))" class="btn btn-sm btn-danger">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public string EntityName { get; set; }
+    private List<{entityName}Dto> Items { get; set; } = new();
+    private {entityName}Dto CurrentItem { get; set; } = new();
+    private List<PropertyInfo> Properties { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = await Service.GetAllAsync();
+        Properties = typeof({entityName}Dto).GetProperties().ToList();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if(CurrentItem.Id == 0)
+            await Service.CreateAsync(CurrentItem);
+        else
+            await Service.UpdateAsync(CurrentItem);
+        
+        Items = await Service.GetAllAsync();
+        CurrentItem = new();
+    }
+
+    private void EditItem({entityName}Dto item) => CurrentItem = item;
+
+    private async Task DeleteItem({entityName}Dto item)
+    {
+        await Service.DeleteAsync(item.Id);
+        Items = await Service.GetAllAsync();
+    }
+}

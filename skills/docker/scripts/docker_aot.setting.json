@@ -1,0 +1,12 @@
+{
+  "Docker": {
+    "DockerEndpoint": "npipe://./pipe/docker_engine",
+    "UseTls": false,
+    "TlsCertPath": null,
+    "TimeoutMs": 30000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "DefaultImage": "nginx:latest",
+    "ContainerNamePrefix": "vsa-"
+  }
+}

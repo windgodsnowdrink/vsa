@@ -1,0 +1,61 @@
+# localization 智能体技能 - localization 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的 localization 技能实现
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Localization@10.0.0
+# - System.Threading.Channels@8.0.0
+# - Microsoft.Extensions.ObjectPool@8.0.0
+# 应用场景: localization 相关功能
+# 激活条件: 当需要 localization 功能时激活
+# 主要功能:
+# - 多语言支持
+# - 资源管理
+# - 动态翻译
+# - 高性能设计
+# - 易于使用的 API
+# - 可扩展架构
+# 性能特性:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 低延迟处理
+# 技术特性:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - AOT 编译支持
+# - Threading.Channels 事件处理
+# - Span 零拷贝优化
+# AOT 配置:
+# - PublishAot: true
+# - IncludeNativeLibrariesForSelfExtract: true
+# - EnableCppCodeGen: true
+# - PublishSingleFile: true
+# - SelfContained: true
+# - RuntimeIdentifier: win-x64
+# 执行脚本:
+# - 脚本路径: scripts/localization_integration.cs
+# - 运行配置: scripts/localization_integration.run.json
+# - 设置文件: scripts/localization_integration.setting.json
+# 执行流程:
+# 1. 编译: dotnet publish scripts/localization_integration.cs -c Release -r win-x64 --aot
+# 2. 部署: 将生成的可执行文件部署到目标环境
+# 3. 运行: 执行可执行文件，启动 localization 服务
+# 4. 集成: 与主应用集成，使用 localization 功能
+# Channel 事件处理:
+# - 翻译请求: 使用 Channel 实现高效的翻译请求队列
+# - 资源加载: 使用 Channel 实现高效的资源加载处理
+# - 缓存更新: 使用 Channel 实现高效的缓存更新
+# 内存优化:
+# - Span 零拷贝: 减少内存分配和复制
+# - 对象池: 减少对象创建开销
+# - 内存池: 优化内存使用
+# 跨平台支持:
+# - Windows: win-x64
+# - Linux: linux-x64
+# - macOS: osx-x64

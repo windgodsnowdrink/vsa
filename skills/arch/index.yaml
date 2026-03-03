@@ -1,0 +1,23 @@
+# arch Agent Skill - arch Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: arch skill implementation based on .NET 10
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# Application Scenarios: arch related functions
+# Activation Conditions: Activate when arch functionality is needed
+# Main Features:
+# - arch core feature 1
+# - arch core feature 2
+# - arch core feature 3
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms

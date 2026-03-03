@@ -1,0 +1,39 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MagicOnion": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "MagicOnion": {
+    "Server": {
+      "Port": 5001,
+      "UseTls": false,
+      "MaxConcurrentConnections": 1000,
+      "ReceiveTimeoutMilliseconds": 30000
+    },
+    "Serialization": {
+      "EnableCompression": true,
+      "CompressionType": "Lz4BlockArray",
+      "BufferSize": 65536
+    }
+  },
+  "Channel": {
+    "Capacity": 10000,
+    "FullMode": "Wait",
+    "SingleReader": false,
+    "SingleWriter": false
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

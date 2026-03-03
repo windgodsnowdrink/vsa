@@ -1,0 +1,104 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package LibVLCSharp@3.8.0
+#:package LibVLCSharp.Forms@3.8.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.Threading.Channels;
+using LibVLCSharp.Shared;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+
+// 1. 视频流处理器(Blazor Hybrid优化版)
+[SkipLocalsInit]
+public sealed class BlazorVideoStreamProcessor : IDisposable
+{
+    private readonly LibVLC _libVlc;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    private readonly ObjectPool<MediaPlayer> _playerPool;
+    private readonly Channel<VideoFrame> _frameChannel;
+    private readonly ILogger<BlazorVideoStreamProcessor> _logger;
+    
+    public BlazorVideoStreamProcessor(ILogger<BlazorVideoStreamProcessor> logger)
+    {
+        _logger = logger;
+        _libVlc = new LibVLC(enableDebugLogs: true);
+        _buffer = new(() => stackalloc byte[4096 * 4096 * 4]); // 4K帧缓冲区
+        _playerPool = new DefaultObjectPool<MediaPlayer>(
+            new MediaPlayerPooledPolicy(_libVlc), 4);
+        _frameChannel = Channel.CreateBounded<VideoFrame>(1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe void ProcessStream(string streamUrl)
+    {
+        var player = _playerPool.Get();
+        try
+        {
+            using var media = new Media(_libVlc, streamUrl);
+            player.Play(media);
+            
+            // 设置视频回调
+            player.SetVideoFormatCallbacks(SetupVideoFormat, CleanupVideoFormat);
+            player.SetVideoCallbacks(LockVideo, null, DisplayVideo);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "视频流处理失败");
+            throw;
+        }
+        finally
+        {
+            _playerPool.Return(player);
+        }
+    }
+
+    private unsafe IntPtr LockVideo(IntPtr opaque, IntPtr planes)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                Marshal.WriteIntPtr(planes, (IntPtr)ptr);
+                return (IntPtr)ptr;
+            }
+        }
+        return IntPtr.Zero;
+    }
+}
+
+// 2. Blazor组件集成
+public class VideoPlayer : ComponentBase
+{
+    [Inject] 
+    private BlazorVideoStreamProcessor Processor { get; set; }
+
+    [Parameter]
+    public string StreamUrl { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Processor.ProcessStream(StreamUrl);
+        base.OnInitialized();
+    }
+}
+
+// 3. 主程序集成
+var builder = WebApplication.CreateBuilder();
+
+// 注册Blazor服务和流处理器
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<BlazorVideoStreamProcessor>();
+
+var app = builder.Build();
+app.UseStaticFiles();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+app.Run();

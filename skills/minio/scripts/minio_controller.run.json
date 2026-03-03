@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "minio_controller",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\minio\scripts\minio_controller.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\minio\scripts\minio_controller.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

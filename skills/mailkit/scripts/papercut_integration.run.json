@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "papercut_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:/Trae/vsa/skills/mailkit/scripts/papercut_integration.cs",
+      "args": [
+        "--settings",
+        "D:/Trae/vsa/skills/mailkit/scripts/papercut_integration.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SINGLE_FILE": "true",
+        "DOTNET_SELF_CONTAINED": "true",
+        "PAPERCUT_SMTP_IP": "0.0.0.0",
+        "PAPERCUT_SMTP_PORT": "25",
+        "PAPERCUT_MAILSTORE_PATH": "./mailstore",
+        "PAPERCUT_MAX_MESSAGES": "10000"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

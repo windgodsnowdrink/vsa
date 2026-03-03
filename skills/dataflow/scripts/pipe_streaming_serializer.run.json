@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "pipe_streaming_serializer",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\dataflow\scripts\pipe_streaming_serializer.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\dataflow\scripts\pipe_streaming_serializer.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

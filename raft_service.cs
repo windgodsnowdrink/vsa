@@ -1,0 +1,313 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Raft.Net@1.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Raft.Net;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. Raft节点服务实现
+[SkipLocalsInit]
+public sealed class RaftNodeService : BackgroundService
+{
+    private readonly Channel<RaftMessage> _messageChannel;
+    private readonly ObjectPool<RaftContext> _contextPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly IRaftNode _raftNode;
+    private readonly IRaftStateMachine _stateMachine;
+
+    public RaftNodeService(IRaftNode raftNode, IRaftStateMachine stateMachine)
+    {
+        _raftNode = raftNode;
+        _stateMachine = stateMachine;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _messageChannel = Channel.CreateBounded<RaftMessage>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<RaftContext>(
+            new RaftContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessMessageAsync(RaftMessage message)
+    {
+        await _messageChannel.Writer.WriteAsync(message);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Process(message, _raftNode, _stateMachine);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 2. 主程序集成
+// 新增Raft集成扩展方法
+public static class RaftIntegrationExtensions
+{
+    public static IServiceCollection AddRaftCluster(
+        this IServiceCollection services,
+        Action<RaftOptions> configure)
+    {
+        services.AddOptions<RaftOptions>().Configure(configure);
+        
+        services.AddSingleton<IRaftCommandSerializer, JsonRaftCommandSerializer>();
+        services.AddSingleton<IRaftNode, DefaultRaftNode>();
+        services.AddSingleton<RaftNodeService>();
+        services.AddHostedService<RaftNodeService>();
+        
+        // 支持DI容器获取集群状态
+        services.AddSingleton<RaftClusterStatus>();
+        
+        return services;
+    }
+    
+    // 支持从DI获取Raft服务
+    public static IRaftService GetRaftService(this IServiceProvider provider)
+    {
+        return provider.GetRequiredService<RaftNodeService>();
+    }
+}
+
+// 新增集群状态监控
+public class RaftClusterStatus
+{
+    public NodeState CurrentState { get; set; }
+    public DateTime LastHeartbeat { get; set; }
+    public Dictionary<string, NodeInfo> ClusterNodes { get; } = new();
+}
+
+public enum NodeState { Follower, Candidate, Leader }
+
+public record NodeInfo(string Id, DateTime LastContact, bool IsHealthy);
+
+// 修改主程序集成方式
+var builder = WebApplication.CreateBuilder(args);
+
+// 新集成方式
+builder.Services.AddRaftCluster(options =>
+{
+    options.NodeId = Environment.MachineName;
+    options.ClusterNodes = new List<string> { "node1", "node2", "node3" };
+    options.ElectionTimeout = TimeSpan.FromMilliseconds(150);
+    options.HeartbeatInterval = TimeSpan.FromMilliseconds(50);
+});
+
+// 注册自定义状态机
+builder.Services.AddSingleton<IRaftStateMachine, KeyValueStateMachine>();
+
+var app = builder.Build();
+
+// Raft消息端点
+app.MapPost("/raft/message", async (RaftMessage message, RaftNodeService service) =>
+{
+    await service.ProcessMessageAsync(message);
+    return Results.Ok();
+});
+
+app.Run();
+
+// 3. 辅助类
+public record RaftMessage(string Type, byte[] Payload);
+
+public class RaftContext
+{
+    public void Process(RaftMessage message, IRaftNode raftNode, IRaftStateMachine stateMachine)
+    {
+        switch (message.Type)
+        {
+            case "AppendEntries":
+                raftNode.AppendEntries(message.Payload);
+                break;
+            case "RequestVote":
+                raftNode.RequestVote(message.Payload);
+                break;
+            case "StateMachineCommand":
+                stateMachine.Apply(message.Payload);
+                break;
+        }
+    }
+}
+
+public class RaftContextPooledPolicy : IPooledObjectPolicy<RaftContext>
+{
+    public RaftContext Create() => new RaftContext();
+    public bool Return(RaftContext obj) => true;
+}
+
+// 4. 状态机实现示例
+// 修改状态机接口定义
+public interface IRaftStateMachine
+{
+    void Apply(byte[] command);
+    byte[] Query(byte[] query);
+    
+    // 新增状态机元数据接口
+    StateMachineMetadata GetMetadata();
+    
+    // 新增快照接口
+    Task<byte[]> CreateSnapshotAsync();
+    Task LoadSnapshotAsync(byte[] snapshot);
+}
+
+// 新增状态机元数据类
+public record StateMachineMetadata(
+    string TypeName,
+    Version Version,
+    Dictionary<string, string> Properties);
+
+// 修改KeyValueStateMachine实现
+public class KeyValueStateMachine : IRaftStateMachine
+{
+    private readonly Dictionary<string, string> _store = new();
+
+    public void Apply(byte[] command)
+    {
+        // 实现状态机应用逻辑
+        var cmd = System.Text.Json.JsonSerializer.Deserialize<KeyValueCommand>(command);
+        _store[cmd.Key] = cmd.Value;
+    }
+
+    public byte[] Query(byte[] query)
+    {
+        var key = System.Text.Encoding.UTF8.GetString(query);
+        return _store.TryGetValue(key, out var value) 
+            ? System.Text.Encoding.UTF8.GetBytes(value) 
+            : Array.Empty<byte>();
+    }
+
+    public StateMachineMetadata GetMetadata() => new(
+        "KeyValueStore",
+        new Version(1, 0),
+        new Dictionary<string, string>
+        {
+            ["MaxKeySize"] = "1024",
+            ["MaxValueSize"] = "8192"
+        });
+
+    public async Task<byte[]> CreateSnapshotAsync()
+    {
+        using var ms = new MemoryStream();
+        await System.Text.Json.JsonSerializer.SerializeAsync(ms, _store);
+        return ms.ToArray();
+    }
+
+    public async Task LoadSnapshotAsync(byte[] snapshot)
+    {
+        using var ms = new MemoryStream(snapshot);
+        _store = await System.Text.Json.JsonSerializer
+            .DeserializeAsync<Dictionary<string, string>>(ms) 
+            ?? new Dictionary<string, string>();
+    }
+}
+
+public record KeyValueCommand(string Key, string Value);
+
+// 新增命令序列化接口
+public interface IRaftCommandSerializer
+{
+    byte[] Serialize<TCommand>(TCommand command);
+    TCommand Deserialize<TCommand>(byte[] data);
+}
+
+// 默认JSON实现
+public class JsonRaftCommandSerializer : IRaftCommandSerializer
+{
+    public byte[] Serialize<TCommand>(TCommand command)
+    {
+        return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(command);
+    }
+
+    public TCommand Deserialize<TCommand>(byte[] data)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<TCommand>(data) 
+            ?? throw new InvalidOperationException("Deserialization failed");
+    }
+}
+
+// 修改RaftNodeService以支持自定义序列化
+public sealed class RaftNodeService : BackgroundService
+{
+    private readonly IRaftCommandSerializer _commandSerializer;
+    
+    public RaftNodeService(
+        IRaftNode raftNode, 
+        IRaftStateMachine stateMachine,
+        IRaftCommandSerializer commandSerializer)
+    {
+        _commandSerializer = commandSerializer;
+        _raftNode = raftNode;
+        _stateMachine = stateMachine;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _messageChannel = Channel.CreateBounded<RaftMessage>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<RaftContext>(
+            new RaftContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessMessageAsync(RaftMessage message)
+    {
+        await _messageChannel.Writer.WriteAsync(message);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Process(message, _raftNode, _stateMachine);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+
+    // 新增通用命令处理方法
+    public async Task ProcessCommandAsync<TCommand>(TCommand command)
+    {
+        var bytes = _commandSerializer.Serialize(command);
+        await ProcessMessageAsync(new RaftMessage("StateMachineCommand", bytes));
+    }
+}

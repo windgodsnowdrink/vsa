@@ -1,0 +1,62 @@
+# rabbitmq Agent Skill - rabbitmq 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的高性能 RabbitMQ 技能实现，提供完整的消息队列功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - RabbitMQ.Client@6.8.1
+# - Polly@8.3.1
+# - System.Threading.Channels@8.0.0
+# Application Scenarios: 消息队列相关功能，如消息发布/订阅、RPC 模式、工作队列等
+# Activation Conditions: 当需要 RabbitMQ 功能时激活
+# Main Features:
+# - 消息发布与订阅
+# - RPC 模式支持
+# - 工作队列实现
+# - 死信队列支持
+# - 延迟消息队列
+# - 消息确认机制
+# - 集群支持
+# - 镜像队列配置
+# Performance Features:
+# - 高性能连接池
+# - 内存优化
+# - 并发支持
+# - 批量消息处理
+# - 消息压缩
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 重试机制
+# - 熔断保护
+# AOT Compilation Options:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - Optimize: true
+# Target Framework:
+# - TargetFramework: net10.0
+# Runtime Identifiers:
+# - win-x64
+# - linux-x64
+# - osx-x64
+# Platform Support:
+# - Windows: Full support
+# - Linux: Full support
+# - macOS: Full support
+# Architecture:
+# - Modular design with dependency injection
+# - Async/await pattern for non-blocking operations
+# - Connection pooling for efficient resource management
+# - Circuit breaker pattern for fault tolerance
+# - Retry pattern for transient failures
+# - Batch processing for improved performance
+# - Message compression for reduced network traffic
+# - Memory optimization for high throughput
+# - Thread safety for concurrent operations

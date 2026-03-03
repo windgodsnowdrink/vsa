@@ -1,0 +1,82 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MediatR@12.1.1
+#:package System.Transactions@8.0.0
+#:property TargetFramework net10.0
+#:property Nullable enable
+
+using MediatR;
+using System.Transactions;
+
+// XA事务行为
+public class XATransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    private readonly ILogger<XATransactionBehavior<TRequest, TResponse>> _logger;
+
+    public XATransactionBehavior(ILogger<XATransactionBehavior<TRequest, TResponse>> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        if (request is not IXATransactional)
+        {
+            return await next();
+        }
+
+        using var scope = new TransactionScope(
+            TransactionScopeOption.Required,
+            new TransactionOptions
+            {
+                IsolationLevel = IsolationLevel.ReadCommitted,
+                Timeout = TransactionManager.DefaultTimeout
+            },
+            TransactionScopeAsyncFlowOption.Enabled);
+
+        _logger.LogInformation("XA事务开始: {RequestType}", typeof(TRequest).Name);
+
+        try
+        {
+            var response = await next();
+            scope.Complete();
+            _logger.LogInformation("XA事务提交: {RequestType}", typeof(TRequest).Name);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "XA事务回滚: {RequestType}", typeof(TRequest).Name);
+            throw;
+        }
+    }
+}
+
+// DI扩展
+public static class MediatRDependencyInjectionExtensions
+{
+    public static IServiceCollection AddMediatRXATransactionSupport(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(XATransactionBehavior<,>));
+        return services;
+    }
+}
+
+// 使用示例
+public class OrderService
+{
+    private readonly IMediator _mediator;
+
+    public OrderService(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    public async Task CreateOrderAsync(CreateOrderCommand command)
+    {
+        // 此命令将自动参与XA事务
+        await _mediator.Send(command);
+    }
+}

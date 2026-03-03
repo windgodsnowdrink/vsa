@@ -1,0 +1,346 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Foundatio@10.6.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using Foundatio;
+using Foundatio.Queues;
+using Foundatio.Messaging;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. 可插拔基础块接口
+public interface IPluggableComponent
+{
+    string ComponentType { get; }
+    Task InitializeAsync();
+    Task ExecuteAsync(object payload);
+}
+
+// 2. 高性能基础块处理器(Disruptor模式)
+[SkipLocalsInit]
+public sealed class ComponentProcessor : BackgroundService
+{
+    private readonly Channel<ComponentMessage> _messageChannel;
+    private readonly ObjectPool<ComponentContext> _contextPool;
+    private readonly IMessageBus _messageBus;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly Dictionary<string, IPluggableComponent> _components;
+
+    public ComponentProcessor(IMessageBus messageBus, IEnumerable<IPluggableComponent> components)
+    {
+        _messageBus = messageBus;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _components = components.ToDictionary(c => c.ComponentType);
+        
+        // Disruptor模式通道配置
+        _messageChannel = Channel.CreateBounded<ComponentMessage>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<ComponentContext>(
+            new ComponentContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessMessageAsync(ComponentMessage message)
+    {
+        await _messageChannel.Writer.WriteAsync(message);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Process(message, _components, _messageBus);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 3. 主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Foundatio
+builder.Services.AddSingleton<IMessageBus>(_ => 
+    new InMemoryMessageBus(new InMemoryMessageBusOptions()));
+
+// 注册可插拔组件
+builder.Services.AddSingleton<IPluggableComponent, LoggingComponent>();
+builder.Services.AddSingleton<IPluggableComponent, CachingComponent>();
+
+// 注册处理器
+builder.Services.AddHostedService<ComponentProcessor>();
+
+var app = builder.Build();
+
+// 组件消息端点
+app.MapPost("/component", async (ComponentMessage message, ComponentProcessor processor) =>
+{
+    await processor.ProcessMessageAsync(message);
+    return Results.Ok();
+});
+
+app.Run();
+
+// 4. 辅助类
+public record ComponentMessage(string ComponentType, object Payload);
+public class ComponentContext
+{
+    public void Process(
+        ComponentMessage message,
+        Dictionary<string, IPluggableComponent> components,
+        IMessageBus messageBus)
+    {
+        if (components.TryGetValue(message.ComponentType, out var component))
+        {
+            component.ExecuteAsync(message.Payload).Wait();
+            messageBus.PublishAsync(message).Wait();
+        }
+    }
+}
+
+public class ComponentContextPooledPolicy : IPooledObjectPolicy<ComponentContext>
+{
+    public ComponentContext Create() => new ComponentContext();
+    public bool Return(ComponentContext obj) => true;
+}
+
+// 5. 示例组件
+public class LoggingComponent : IPluggableComponent
+{
+    public string ComponentType => "logging";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public Task ExecuteAsync(object payload)
+    {
+        Console.WriteLine($"Logging: {payload}");
+        return Task.CompletedTask;
+    }
+}
+
+public class CachingComponent : IPluggableComponent
+{
+    public string ComponentType => "caching";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public Task ExecuteAsync(object payload)
+    {
+        Console.WriteLine($"Caching: {payload}");
+        return Task.CompletedTask;
+    }
+}
+
+// 6. 扩展组件实现
+public class MetricsComponent : IPluggableComponent
+{
+    private readonly IMetricsClient _metrics;
+    
+    public MetricsComponent(IMetricsClient metrics)
+    {
+        _metrics = metrics;
+    }
+
+    public string ComponentType => "metrics";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public Task ExecuteAsync(object payload)
+    {
+        _metrics.Counter("component.executions").Increment();
+        return Task.CompletedTask;
+    }
+}
+
+public class DistributedLockComponent : IPluggableComponent
+{
+    private readonly ILockProvider _lockProvider;
+    
+    public DistributedLockComponent(ILockProvider lockProvider)
+    {
+        _lockProvider = lockProvider;
+    }
+
+    public string ComponentType => "distributed-lock";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public async Task ExecuteAsync(object payload)
+    {
+        using (var @lock = await _lockProvider.AcquireAsync("resource-key"))
+        {
+            if (@lock.IsAcquired)
+            {
+                // 执行临界区代码
+                Console.WriteLine($"Lock acquired: {payload}");
+            }
+        }
+    }
+}
+
+public class StorageComponent : IPluggableComponent
+{
+    private readonly IFileStorage _storage;
+    
+    public StorageComponent(IFileStorage storage)
+    {
+        _storage = storage;
+    }
+
+    public string ComponentType => "storage";
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public async Task ExecuteAsync(object payload)
+    {
+        var filePath = $"data/{Guid.NewGuid()}.json";
+        await _storage.SaveFileAsync(filePath, 
+            new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString())));
+    }
+}
+
+// 1. Todo组件实现
+public class TodoComponent : IPluggableComponent, IDisposable
+{
+    private readonly Channel<TodoCommand> _commandChannel;
+    private readonly ObjectPool<TodoContext> _contextPool;
+    private readonly List<TodoItem> _todoStore = new();
+    private readonly CancellationTokenSource _cts = new();
+    private Task _processingTask;
+
+    public string ComponentType => "todo";
+    
+    public Task InitializeAsync()
+    {
+        // 初始化通道和对象池
+        _commandChannel = Channel.CreateBounded<TodoCommand>(1000);
+        _contextPool = new DefaultObjectPool<TodoContext>(
+            new TodoContextPooledPolicy(), Environment.ProcessorCount * 2);
+        
+        _processingTask = Task.Run(ProcessCommandsAsync);
+        return Task.CompletedTask;
+    }
+
+    public async Task ExecuteAsync(object payload)
+    {
+        if (payload is TodoCommand cmd)
+        {
+            await _commandChannel.Writer.WriteAsync(cmd);
+        }
+    }
+
+    private async Task ProcessCommandsAsync()
+    {
+        await foreach (var command in _commandChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                await context.ProcessAsync(command, _todoStore);
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _commandChannel.Writer.Complete();
+        _processingTask?.Wait();
+    }
+
+    // 2. 查询接口
+    public IEnumerable<TodoItem> GetTodos() => _todoStore.AsReadOnly();
+    public TodoItem GetTodo(Guid id) => _todoStore.FirstOrDefault(x => x.Id == id);
+}
+
+// 3. 命令和模型
+public record TodoCommand(string Operation, TodoItem Item);
+public record TodoItem(Guid Id, string Title, bool IsCompleted);
+
+// 4. 上下文处理
+public class TodoContext
+{
+    public async Task ProcessAsync(TodoCommand command, List<TodoItem> store)
+    {
+        switch (command.Operation.ToLower())
+        {
+            case "create":
+                store.Add(command.Item);
+                break;
+            case "update":
+                var existing = store.FirstOrDefault(x => x.Id == command.Item.Id);
+                if (existing != null)
+                {
+                    store.Remove(existing);
+                    store.Add(command.Item);
+                }
+                break;
+            case "delete":
+                store.RemoveAll(x => x.Id == command.Item.Id);
+                break;
+        }
+    }
+}
+
+// 7. 更新主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Foundatio扩展服务
+builder.Services.AddSingleton<IMetricsClient>(_ => 
+    new InMemoryMetricsClient(new InMemoryMetricsClientOptions()));
+    
+builder.Services.AddSingleton<ILockProvider>(_ => 
+    new CacheLockProvider(new InMemoryCacheClient(new InMemoryCacheClientOptions())));
+
+builder.Services.AddSingleton<IFileStorage>(_ => 
+    new InMemoryFileStorage(new InMemoryFileStorageOptions()));
+
+// 注册扩展组件
+builder.Services.AddSingleton<IPluggableComponent, MetricsComponent>();
+builder.Services.AddSingleton<IPluggableComponent, DistributedLockComponent>(); 
+builder.Services.AddSingleton<IPluggableComponent, StorageComponent>();
+// 注册组件
+builder.Services.AddSingleton<IPluggableComponent, TodoComponent>();
+builder.Services.AddHostedService<ComponentProcessor>();
+
+var app = builder.Build();
+
+// Todo端点
+app.MapPost("/todo", async (TodoCommand command, IPluggableComponent component) =>
+{
+    await component.ExecuteAsync(command);
+    return Results.Ok();
+});
+
+app.MapGet("/todo", (TodoComponent component) => 
+    Results.Ok(component.GetTodos()));
+
+app.MapGet("/todo/{id}", (Guid id, TodoComponent component) => 
+    Results.Ok(component.GetTodo(id)));
+
+app.Run();

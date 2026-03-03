@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "sdk": "10.0.0",
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "environment": {
+    "development": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "PLUGIN_DIRECTORY": "plugins",
+      "ENABLE_HOT_RELOAD": "true",
+      "ENABLE_SANDBOX": "false",
+      "MAX_CONCURRENT_PLUGINS": "10",
+      "ENABLE_PERFORMANCE_METRICS": "true",
+      "ENABLE_ZERO_COPY": "true",
+      "THREAD_LOCAL_CACHE_SIZE": "1024"
+    },
+    "production": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOG_LEVEL": "Warning",
+      "PLUGIN_DIRECTORY": "plugins",
+      "ENABLE_HOT_RELOAD": "false",
+      "ENABLE_SANDBOX": "true",
+      "MAX_CONCURRENT_PLUGINS": "20",
+      "ENABLE_PERFORMANCE_METRICS": "true",
+      "ENABLE_ZERO_COPY": "true",
+      "THREAD_LOCAL_CACHE_SIZE": "2048"
+    }
+  },
+  "deployment": {
+    "aot": {
+      "enabled": true,
+      "publishProfiles": {
+        "win-x64": {
+          "command": "dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/win-x64/publish"
+        },
+        "linux-x64": {
+          "command": "dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/linux-x64/publish"
+        },
+        "osx-x64": {
+          "command": "dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/osx-x64/publish"
+        }
+      }
+    },
+    "container": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "buildArgs": {
+        "SDK_VERSION": "10.0",
+        "RUNTIME_VERSION": "10.0"
+      },
+      "tags": [
+        "plugin-loader:latest",
+        "plugin-loader:{version}"
+      ]
+    }
+  },
+  "performance": {
+    "optimizations": {
+      "zeroCopy": true,
+      "threadLocalCache": true,
+      "parallelLoading": true,
+      "batchProcessing": true,
+      "memoryPooling": true
+    },
+    "limits": {
+      "maxConcurrentLoads": 5,
+      "maxPluginLoadTime": "30s",
+      "maxPluginMemoryUsage": "1024MB",
+      "pluginCacheSize": 100
+    }
+  },
+  "security": {
+    "sandbox": {
+      "enabled": true,
+      "restrictedDirectories": [
+        "../",
+        "/etc/",
+        "/sys/",
+        "/proc/"
+      ],
+      "allowedDirectories": [
+        "./plugins/",
+        "./temp/",
+        "./logs/"
+      ]
+    },
+    "permissions": {
+      "allowFileAccess": true,
+      "allowNetworkAccess": true,
+      "allowReflection": true,
+      "allowDynamicCode": true
+    }
+  },
+  "logging": {
+    "providers": [
+      "Console",
+      "Debug",
+      "EventLog"
+    ],
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Plugin": "Debug"
+    },
+    "fileLogging": {
+      "enabled": true,
+      "path": "logs/plugin-loader.log",
+      "maxFileSize": "10MB",
+      "maxRetainedFiles": 5
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "enabled": true,
+      "endpoint": "/health",
+      "interval": "30s"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "collectionInterval": "10s"
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        "Jaeger",
+        "Zipkin"
+      ]
+    }
+  }
+}

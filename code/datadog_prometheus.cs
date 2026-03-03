@@ -1,0 +1,34 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Datadog.Trace@3.0.0
+#:package Prometheus.Client@4.3.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Prometheus.Client;
+using System.Threading.Channels;
+
+public class PrometheusExporter : BackgroundService
+{
+    private readonly ChannelWriter<MetricSample> _writer;
+    private readonly IMetricFactory _factory;
+
+    public PrometheusExporter(ChannelWriter<MetricSample> writer, IMetricFactory factory)
+    {
+        _writer = writer;
+        _factory = factory;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var counter = _factory.CreateCounter("datadog_metrics_total", "Total exported metrics");
+        
+        while (await _writer.WaitToWriteAsync(stoppingToken))
+        {
+            var sample = new MetricSample(); // 从DataDog获取指标
+            await _writer.WriteAsync(sample, stoppingToken);
+            counter.Inc();
+        }
+    }
+}

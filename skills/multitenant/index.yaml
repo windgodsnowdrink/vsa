@@ -1,0 +1,58 @@
+# 多租户智能体技能 - Multitenant 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的高性能多租户技能实现，采用 AOT 编译优化，支持租户隔离、资源管理、配额控制和生命周期管理
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.Extensions.Caching.Memory@10.0.0
+# 应用场景: 多租户应用、SaaS 平台、云服务、企业级应用、微服务架构
+# 激活条件: 需要多租户功能时激活
+# 主要功能:
+# - 租户隔离：实现租户数据和资源的完全隔离
+# - 资源管理：管理租户的计算、存储等资源
+# - 配额控制：设置和监控租户资源配额
+# - 生命周期管理：租户的创建、更新、删除等生命周期操作
+# - 身份验证和授权：租户级别的身份验证和授权
+# - 配置管理：租户级别的配置管理
+# - 监控和计费：租户使用情况的监控和计费
+# - 高性能设计：采用 AOT 编译优化，提供高性能的多租户操作
+# - 可扩展架构：支持自定义扩展，适应不同业务场景的需求
+# 性能特性:
+# - 高性能设计，支持高并发租户操作
+# - 内存优化，减少内存占用和拷贝
+# - 并发支持，充分利用多核 CPU
+# - 低延迟设计，优化租户操作延迟
+# - 智能缓存机制，提高频繁操作的响应速度
+# - 批量操作支持，减少网络往返
+# - 资源使用监控，实时跟踪租户资源消耗
+# 技术特性:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，提高代码的可测试性
+# - 异步编程，避免阻塞主线程
+# - 高性能算法，优化租户操作效率
+# - 零拷贝技术，减少内存拷贝开销
+# - 事件驱动，实现租户操作的异步处理
+# - AOT 编译优化，提高运行时性能
+# - 跨平台支持，适用于不同运行环境
+# 安全特性:
+# - 租户数据隔离，防止跨租户访问
+# - 资源访问控制，确保租户只能访问自己的资源
+# - 敏感信息加密，保护租户配置和连接字符串
+# - 审计日志，记录租户操作历史
+# 部署特性:
+# - 支持容器化部署
+# - 支持微服务架构
+# - 支持无服务器部署
+# - 支持边缘计算场景
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

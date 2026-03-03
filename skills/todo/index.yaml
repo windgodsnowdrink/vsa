@@ -1,0 +1,23 @@
+# todo Agent Skill - todo Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: todo skill implementation based on .NET 10
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# Application Scenarios: todo related functions
+# Activation Conditions: Activate when todo functionality is needed
+# Main Features:
+# - todo core feature 1
+# - todo core feature 2
+# - todo core feature 3
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms

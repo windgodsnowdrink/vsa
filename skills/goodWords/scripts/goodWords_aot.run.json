@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "version": "1.0.0",
+  "profiles": {
+    "GoodWordsAOT": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GOODWORDS_MAX_WORDS": "1000",
+        "GOODWORDS_DEFAULT_SCORE": "80",
+        "GOODWORDS_DEFAULT_CATEGORY": "general"
+      },
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": false
+    },
+    "GoodWordsAOT-Production": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GOODWORDS_MAX_WORDS": "2000",
+        "GOODWORDS_DEFAULT_SCORE": "80",
+        "GOODWORDS_DEFAULT_CATEGORY": "general",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1"
+      },
+      "dotnetRunMessages": false,
+      "hotReloadEnabled": false
+    },
+    "GoodWordsAOT-Test": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Testing",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GOODWORDS_MAX_WORDS": "500",
+        "GOODWORDS_DEFAULT_SCORE": "80",
+        "GOODWORDS_DEFAULT_CATEGORY": "general"
+      },
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": true
+    }
+  },
+  "commandAliases": {
+    "gen": "generate",
+    "g": "generate",
+    "search": "search",
+    "s": "search",
+    "add": "add",
+    "a": "add",
+    "remove": "remove",
+    "r": "remove",
+    "update": "update",
+    "u": "update",
+    "list": "list",
+    "l": "list",
+    "categories": "categories",
+    "cat": "categories",
+    "count": "count",
+    "c": "count",
+    "help": "help",
+    "h": "help"
+  },
+  "commandDefaults": {
+    "generate": {
+      "count": 5,
+      "category": null
+    },
+    "search": {
+      "maxResults": 10
+    },
+    "add": {
+      "category": "general",
+      "score": 80
+    }
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": "Microsoft.NETCore.App",
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32,
+      "System.Net.Sockets.UseOnlyIPv4": false,
+      "System.Net.Http.UseSocketsHttpHandler": true,
+      "System.Text.Json.Serialization.MaxDepth": 64
+    }
+  },
+  "debugOptions": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "exposeDebugPort": true,
+    "debugPort": 5005
+  },
+  "performanceOptions": {
+    "enableMemoryProfiling": false,
+    "enableCpuProfiling": false,
+    "enableGcLogging": false,
+    "enableTracing": false,
+    "traceLevel": "Information"
+  },
+  "loggingOptions": {
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "GoodWordsAOT": "Information"
+    },
+    "console": {
+      "enabled": true,
+      "format": "default",
+      "includeScopes": false,
+      "timestampFormat": "yyyy-MM-dd HH:mm:ss.fff"
+    },
+    "debug": {
+      "enabled": true,
+      "logLevel": {
+        "Default": "Debug",
+        "GoodWordsAOT": "Debug"
+      }
+    }
+  },
+  "validationOptions": {
+    "enableInputValidation": true,
+    "enableOutputValidation": true,
+    "enablePerformanceValidation": false,
+    "maxValidationErrors": 10
+  },
+  "extensionCommands": {
+    "analyze": {
+      "description": "分析好词库",
+      "commandLineArgs": "analyze"
+    },
+    "optimize": {
+      "description": "优化好词库",
+      "commandLineArgs": "optimize"
+    },
+    "export": {
+      "description": "导出好词库",
+      "commandLineArgs": "export"
+    },
+    "import": {
+      "description": "导入好词库",
+      "commandLineArgs": "import"
+    }
+  },
+  "deploymentOptions": {
+    "selfContained": true,
+    "publishSingleFile": true,
+    "publishReadyToRun": true,
+    "publishTrimmed": true,
+    "runtimeIdentifier": "win-x64",
+    "targetFramework": "net10.0",
+    "outputPath": "bin\\Release\\net10.0\\win-x64\\publish",
+    "publishDir": "bin\\Release\\net10.0\\win-x64\\publish"
+  },
+  "healthChecks": {
+    "enabled": true,
+    "endpoints": {
+      "health": "/health",
+      "ready": "/ready",
+      "live": "/live"
+    }
+  },
+  "metrics": {
+    "enabled": true,
+    "endpoints": {
+      "metrics": "/metrics"
+    },
+    "exporters": {
+      "prometheus": {
+        "enabled": true,
+        "url": "http://localhost:9100/metrics"
+      }
+    }
+  },
+  "securityOptions": {
+    "enableSsl": false,
+    "enableCors": false,
+    "enableHsts": false,
+    "enableContentSecurityPolicy": false,
+    "allowedOrigins": [],
+    "allowedMethods": [],
+    "allowedHeaders": []
+  }
+}

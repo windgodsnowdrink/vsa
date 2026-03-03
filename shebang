@@ -1,0 +1,17 @@
+# 1. Create a single-file C# app with a shebang
+# cat << 'EOF' > hello.cs
+
+#!/usr/bin/env dotnet
+Console.WriteLine("Hello!");
+EOF
+
+# 2. Copy it (extensionless) into ~/utils/hello (~/utils is on my PATH)
+# mkdir -p ~/utils
+# cp hello.cs ~/utils/hello
+
+# 3. Mark it executable
+# chmod +x ~/utils/hello
+
+# 4. Run it directly from anywhere
+# cd ~
+# hello

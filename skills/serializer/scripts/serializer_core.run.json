@@ -1,0 +1,86 @@
+{
+  "version": "1.0",
+  "profiles": [
+    {
+      "name": "JSON Serialize",
+      "commandName": "Project",
+      "commandLineArgs": "json serialize --input \"{\"name\": \"John\", \"age\": 30}\" --output output.json",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "JSON Deserialize",
+      "commandName": "Project",
+      "commandLineArgs": "json deserialize --input output.json --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "XML Serialize",
+      "commandName": "Project",
+      "commandLineArgs": "xml serialize --input \"{\"name\": \"John\", \"age\": 30}\" --output output.xml",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "XML Deserialize",
+      "commandName": "Project",
+      "commandLineArgs": "xml deserialize --input output.xml --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "YAML Serialize",
+      "commandName": "Project",
+      "commandLineArgs": "yaml serialize --input \"{\"name\": \"John\", \"age\": 30}\" --output output.yaml",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "YAML Deserialize",
+      "commandName": "Project",
+      "commandLineArgs": "yaml deserialize --input output.yaml --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Protobuf Serialize",
+      "commandName": "Project",
+      "commandLineArgs": "protobuf serialize --input \"{\"name\": \"John\", \"age\": 30}\" --output output.proto",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Protobuf Deserialize",
+      "commandName": "Project",
+      "commandLineArgs": "protobuf deserialize --input output.proto --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Performance Test",
+      "commandName": "Project",
+      "commandLineArgs": "test performance --type \"System.Collections.Generic.List`1[[System.String]]\" --iterations 10000 --formats \"json,xml,yaml,proto\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

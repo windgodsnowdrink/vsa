@@ -1,0 +1,50 @@
+{
+  "runtime": {
+    "environment": "Development",
+    "command": "dotnet run --project publicapi_integration.cs",
+    "args": []
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "trimMode": "partial",
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "enableCompressionInSingleFile": true,
+    "selfContained": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Http": "10.0.0",
+    "Microsoft.Extensions.Http.Polly": "10.0.0",
+    "Polly": "7.2.4",
+    "System.Net.Http": "8.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0"
+  },
+  "configuration": {
+    "ApiIntegration": {
+      "BaseUrl": "https://jsonplaceholder.typicode.com",
+      "Timeout": "00:00:30",
+      "RetryCount": 3,
+      "RetryBackoff": "00:00:01",
+      "CircuitBreakThreshold": 5,
+      "CircuitBreakDuration": "00:00:30",
+      "CircuitBreakSamplingDuration": "00:01:00",
+      "RateLimitPermits": 100,
+      "RateLimitWindow": "00:00:01",
+      "HealthCheckInterval": "00:01:00",
+      "EnableHealthCheck": true,
+      "EnableTelemetry": true,
+      "EnableDetailedLogging": true
+    },
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "System": "Warning",
+        "Microsoft": "Warning"
+      }
+    },
+    "AllowedHosts": "*"
+  }
+}

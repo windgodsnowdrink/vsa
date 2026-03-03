@@ -1,0 +1,120 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Coravel@5.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Coravel;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. 高性能队列处理器(Disruptor模式)
+[SkipLocalsInit]
+public sealed class CoravelQueueProcessor : BackgroundService
+{
+    private readonly Channel<QueueItem> _queueChannel;
+    private readonly ObjectPool<QueueContext> _contextPool;
+    private readonly IQueue _queue;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public CoravelQueueProcessor(IQueue queue)
+    {
+        _queue = queue;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _queueChannel = Channel.CreateBounded<QueueItem>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<QueueContext>(
+            new QueueContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task EnqueueItemAsync(QueueItem item)
+    {
+        await _queueChannel.Writer.WriteAsync(item);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var item in _queueChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Process(item, _queue);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 2. 主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Coravel
+builder.Services.AddQueue();
+builder.Services.AddScheduler();
+
+// 注册队列处理器
+builder.Services.AddHostedService<CoravelQueueProcessor>();
+
+var app = builder.Build();
+
+// 队列端点
+app.MapPost("/enqueue", async (QueueItem item, CoravelQueueProcessor processor) =>
+{
+    await processor.EnqueueItemAsync(item);
+    return Results.Ok();
+});
+
+// 3. 定时任务配置
+app.Services.UseScheduler(scheduler =>
+{
+    scheduler.Schedule<SampleJob>()
+        .EveryFiveMinutes()
+        .PreventOverlapping("SampleJob");
+}).OnError(ex => Console.WriteLine(ex));
+
+app.Run();
+
+// 4. 辅助类
+public record QueueItem(string Id, string Payload);
+public class QueueContext
+{
+    public void Process(QueueItem item, IQueue queue)
+    {
+        queue.QueueAsyncItem(item.Payload);
+    }
+}
+public class QueueContextPooledPolicy : IPooledObjectPolicy<QueueContext>
+{
+    public QueueContext Create() => new QueueContext();
+    public bool Return(QueueContext obj) => true;
+}
+
+// 5. 示例Job
+public class SampleJob : IJob
+{
+    public Task ExecuteAsync()
+    {
+        Console.WriteLine("SampleJob executed at: " + DateTime.Now);
+        return Task.CompletedTask;
+    }
+}

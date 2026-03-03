@@ -1,0 +1,364 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Scrutor@4.0.0
+#:package Microsoft.Extensions.Options@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Reflection;
+using System.Threading.Channels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Scrutor;
+
+// 1. 装饰器链实现
+public interface IDataProcessor
+{
+    ValueTask<DataResult> ProcessAsync(ReadOnlyMemory<byte> data);
+}
+
+// 核心处理器
+public class CoreDataProcessor : IDataProcessor
+{
+    public ValueTask<DataResult> ProcessAsync(ReadOnlyMemory<byte> data) 
+        => new(new DataResult(StatusCodes.Success));
+}
+
+// 加密装饰器
+public class EncryptionDecorator : IDataProcessor
+{
+    private readonly IDataProcessor _inner;
+    private readonly IEncryptionProvider _encryption;
+
+    public EncryptionDecorator(IDataProcessor inner, IEncryptionProvider encryption)
+        => (_inner, _encryption) = (inner, encryption);
+
+    public async ValueTask<DataResult> ProcessAsync(ReadOnlyMemory<byte> data)
+    {
+        var decrypted = _encryption.Decrypt(data);
+        return await _inner.ProcessAsync(decrypted);
+    }
+}
+
+// 压缩装饰器
+public class CompressionDecorator : IDataProcessor
+{
+    private readonly IDataProcessor _inner;
+    private readonly ICompressionProvider _compression;
+
+    public CompressionDecorator(IDataProcessor inner, ICompressionProvider compression)
+        => (_inner, _compression) = (inner, compression);
+
+    public async ValueTask<DataResult> ProcessAsync(ReadOnlyMemory<byte> data)
+    {
+        var decompressed = _compression.Decompress(data);
+        return await _inner.ProcessAsync(decompressed);
+    }
+}
+
+// 2. 条件注册实现
+public interface IConditionalService 
+{
+    bool ShouldRun(ServiceContext context);
+    Task ExecuteAsync();
+}
+
+public class DevelopmentService : IConditionalService
+{
+    public bool ShouldRun(ServiceContext ctx) => ctx.Environment == "Development";
+    public Task ExecuteAsync() => Task.CompletedTask;
+}
+
+public class ProductionService : IConditionalService
+{
+    public bool ShouldRun(ServiceContext ctx) => ctx.Environment == "Production";
+    public Task ExecuteAsync() => Task.CompletedTask;
+}
+
+// 3. 命名服务实现
+public interface INamedService
+{
+    string ServiceName { get; }
+    Task ExecuteAsync();
+}
+
+public class FastService : INamedService
+{
+    public string ServiceName => "Fast";
+    public Task ExecuteAsync() => Task.CompletedTask;
+}
+
+public class ReliableService : INamedService
+{
+    public string ServiceName => "Reliable";
+    public Task ExecuteAsync() => Task.CompletedTask;
+}
+
+// 4. 高级注册扩展
+public static class AdvancedDependencyInjection
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static IServiceCollection AddAdvancedServices(this IServiceCollection services)
+    {
+        // 装饰器链注册(顺序很重要)
+        services.AddSingleton<IEncryptionProvider, AesEncryptionProvider>();
+        services.AddSingleton<ICompressionProvider, GzipCompressionProvider>();
+        services.AddSingleton<IDataProcessor, CoreDataProcessor>()
+            .Decorate<IDataProcessor, EncryptionDecorator>()
+            .Decorate<IDataProcessor, CompressionDecorator>();
+
+        // 条件注册
+        services.AddConditional<IConditionalService, DevelopmentService>(
+            ctx => ctx.Environment == "Development");
+            
+        services.AddConditional<IConditionalService, ProductionService>(
+            ctx => ctx.Environment == "Production");
+
+        // 命名服务注册
+        services.AddNamed<INamedService>(typeof(FastService), "Fast");
+        services.AddNamed<INamedService>(typeof(ReliableService), "Reliable");
+
+        // 程序集扫描注册(高性能实现)
+        services.Scan(scan => scan
+            .FromApplicationDependencies()
+            .AddClasses(c => c.AssignableTo<ITransientService>())
+            .AsImplementedInterfaces()
+            .WithTransientLifetime()
+            .AddClasses(c => c.AssignableTo<IScopedService>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+            .AddClasses(c => c.AssignableTo<ISingletonService>())
+            .AsImplementedInterfaces()
+            .WithSingletonLifetime());
+
+        return services;
+    }
+
+    // 条件注册扩展方法
+    public static IServiceCollection AddConditional<TService, TImplementation>(
+        this IServiceCollection services,
+        Func<ServiceContext, bool> predicate)
+        where TService : class
+        where TImplementation : class, TService
+    {
+        services.AddSingleton<TService>(sp => 
+            predicate(sp.GetRequiredService<ServiceContext>()) 
+                ? ActivatorUtilities.CreateInstance<TImplementation>(sp) 
+                : null);
+
+        return services;
+    }
+
+    // 命名服务扩展方法
+    public static IServiceCollection AddNamed<TService>(
+        this IServiceCollection services,
+        Type implementationType,
+        string name)
+        where TService : class
+    {
+        services.AddSingleton<NamedServiceFactory<TService>>();
+        services.AddSingleton(implementationType);
+        
+        services.Configure<NamedServiceOptions<TService>>(options => 
+            options.Mappings[name] = implementationType);
+
+        return services;
+    }
+}
+
+// 支持类型
+public record DataResult(int StatusCode);
+public record ServiceContext(string Environment);
+public interface ITransientService {}
+public interface IScopedService {}
+public interface ISingletonService {}
+public interface IEncryptionProvider { ReadOnlyMemory<byte> Decrypt(ReadOnlyMemory<byte> data); }
+public interface ICompressionProvider { ReadOnlyMemory<byte> Decompress(ReadOnlyMemory<byte> data); }
+public class AesEncryptionProvider : IEncryptionProvider { /* 实现省略 */ }
+public class GzipCompressionProvider : ICompressionProvider { /* 实现省略 */ }
+
+// 命名服务支持
+public class NamedServiceOptions<T> where T : class
+{
+    public Dictionary<string, Type> Mappings { get; } = new();
+}
+
+public class NamedServiceFactory<T> where T : class
+{
+    private readonly IServiceProvider _provider;
+    private readonly IOptions<NamedServiceOptions<T>> _options;
+
+    public NamedServiceFactory(IServiceProvider provider, IOptions<NamedServiceOptions<T>> options)
+        => (_provider, _options) = (provider, options);
+
+    public T GetService(string name)
+    {
+        if (_options.Value.Mappings.TryGetValue(name, out var type))
+        {
+            return (T)_provider.GetRequiredService(type);
+        }
+        throw new KeyNotFoundException($"No service registered with name: {name}");
+    }
+}
+
+// 分层标记接口
+public interface IDomainMarker {} // 领域层
+public interface IApplicationMarker {} // 应用层
+public interface IInfrastructureMarker {} // 基础设施层
+public interface IApiMarker {} // API层
+
+// 装饰器模式集成
+public interface IProcessor { string Process(string input); }
+
+public class CoreProcessor : IProcessor
+{
+    public string Process(string input) => $"Processed: {input}";
+}
+
+public class LoggingProcessor : IProcessor
+{
+    private readonly IProcessor _inner;
+    public LoggingProcessor(IProcessor inner) => _inner = inner;
+    public string Process(string input) => $"Logged: {_inner.Process(input)}";
+}
+
+// 选项模式集成
+public class ProcessingOptions
+{
+    public int MaxRetryCount { get; set; } = 3;
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
+// 命令处理器
+public interface ICommandHandler<TCommand>
+{
+    Task HandleAsync(TCommand command);
+}
+
+public class CreateUserCommand { public string Name { get; set; } = ""; }
+public class CreateUserHandler : ICommandHandler<CreateUserCommand>
+{
+    public Task HandleAsync(CreateUserCommand command) => Task.CompletedTask;
+}
+
+// 领域层实现示例
+public class DomainService : IDomainMarker
+{
+    public string Process() => "Domain processed";
+}
+
+// 应用层实现示例
+public class AppService : IApplicationMarker
+{
+    private readonly IDomainMarker _domain;
+    public AppService(IDomainMarker domain) => _domain = domain;
+    public string Execute() => _domain.Process() + " -> App executed";
+}
+
+// 基础设施层实现示例
+public class Repository : IInfrastructureMarker
+{
+    public string GetData() => "Data from DB";
+}
+
+// API层实现示例
+public class ApiController : IApiMarker
+{
+    private readonly IApplicationMarker _app;
+    private readonly IInfrastructureMarker _infra;
+    
+    public ApiController(IApplicationMarker app, IInfrastructureMarker infra)
+    {
+        _app = app;
+        _infra = infra;
+    }
+    
+    public string Get() => _app.Execute() + " | " + _infra.GetData();
+}
+
+[AttributeUsage(AttributeTargets.Class)]
+public class InjectableAttribute : Attribute { }
+
+public static class DependencyInjection
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static IServiceCollection AddAllServices(this IServiceCollection services)
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.FullName!.StartsWith("MyApp."));
+        
+        // 1. 分层服务注册
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo<IDomainMarker>())
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo<IApplicationMarker>())
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo<IInfrastructureMarker>())
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo<IApiMarker>())
+                .AsSelf()
+                .WithScopedLifetime());
+        
+        // 2. 装饰器注册
+        services.AddSingleton<IProcessor, CoreProcessor>();
+        services.Decorate<IProcessor, LoggingProcessor>();
+        
+        // 3. 选项配置注册
+        services.Configure<ProcessingOptions>(options =>
+        {
+            options.MaxRetryCount = 5;
+            options.Timeout = TimeSpan.FromMinutes(1);
+        });
+        
+        // 4. 泛型接口注册
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+        
+        // 5. 命名服务注册
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses()
+                .UsingRegistrationStrategy(RegistrationStrategy.Append)
+                .AsMatchingInterface()
+                .WithTransientLifetime());
+        
+        // 6. 属性注入
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.Where(t => 
+                t.GetCustomAttributes<InjectableAttribute>() != null))
+                .AsSelf()
+                .WithScopedLifetime());
+        
+        return services;
+    }
+}
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAllServices();
+builder.Services
+    .AddSingleton(new ServiceContext("Production"))
+    .AddAdvancedServices();
+
+var app = builder.Build();
+app.MapGet("/", ([FromServices] IApiMarker api) => api.Get());
+app.MapGet("/process", ([FromServices] IProcessor processor) => 
+    processor.Process("test"));
+// 使用命名服务
+var factory = app.Services.GetRequiredService<NamedServiceFactory<INamedService>>();
+var reliableService = factory.GetService("Reliable");
+
+// 使用装饰器链
+var processor = app.Services.GetRequiredService<IDataProcessor>();
+await processor.ProcessAsync(data);
+
+app.Run();

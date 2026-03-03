@@ -1,0 +1,73 @@
+{
+  "Title": "IOC AOT 容器",
+  "Description": "使用 AOT 编译的高性能依赖注入容器，支持服务注册、解析和管理",
+  "Version": "1.0.0",
+  "Author": "NET 专家",
+  "Tags": ["ioc", "aot", "dependency-injection", "container"],
+  "Icon": "ioc",
+  "EntryPoint": "ioc_aot.cs",
+  "OutputType": "Console",
+  "PublishAot": true,
+  "RuntimeIdentifier": "win-x64",
+  "TrimMode": "partial",
+  "Configuration": {
+    "DefaultLifetime": "transient",
+    "EnableAutoWiring": true,
+    "EnableCircularDependencyDetection": true,
+    "EnableLogging": true,
+    "MaxRegistrationDepth": 10,
+    "EnableBenchmarking": true
+  },
+  "Dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Text.Json": "4.7.2",
+    "System.Reflection.MetadataLoadContext": "4.7.0",
+    "System.Collections.Immutable": "4.5.3",
+    "System.Linq.Expressions": "4.3.0",
+    "System.Reflection.Emit": "4.7.0"
+  },
+  "Commands": {
+    "register": {
+      "Description": "注册服务",
+      "Aliases": ["r"],
+      "Parameters": ["serviceType", "lifetime"]
+    },
+    "resolve": {
+      "Description": "解析服务",
+      "Aliases": ["res"],
+      "Parameters": ["serviceType"]
+    },
+    "build": {
+      "Description": "构建容器",
+      "Aliases": ["b"],
+      "Parameters": []
+    },
+    "config": {
+      "Description": "显示配置",
+      "Aliases": ["co"],
+      "Parameters": []
+    },
+    "benchmark": {
+      "Description": "运行基准测试",
+      "Aliases": ["bm"],
+      "Parameters": ["iterations"]
+    },
+    "help": {
+      "Description": "显示帮助信息",
+      "Aliases": ["h", "?"],
+      "Parameters": []
+    }
+  },
+  "Lifetimes": {
+    "transient": "每次请求创建新实例",
+    "scoped": "每个作用域创建一个实例",
+    "singleton": "整个应用程序生命周期只创建一个实例"
+  },
+  "Logging": {
+    "Level": "Information",
+    "Console": true,
+    "File": false
+  }
+}

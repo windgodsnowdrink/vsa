@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "kiota_openapi_loader",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\kiota\scripts\kiota_openapi_loader.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\kiota\scripts\kiota_openapi_loader.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

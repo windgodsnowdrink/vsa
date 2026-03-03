@@ -1,0 +1,92 @@
+{
+  "$schema": "https://trae-ai.bytedance.net/schema/runfile.run.json",
+  "description": "FreeIM AOT 运行环境配置",
+  "runtime": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\freeim",
+    "environmentVariables": {
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+      "DOTNET_PUBLISH_AOT": "1",
+      "FREEIM_SERVER_ADDRESS": "localhost",
+      "FREEIM_SERVER_PORT": "8080",
+      "FREEIM_ENABLE_SSL": "false",
+      "FREEIM_WORKING_DIRECTORY": "d:\\Trae\\vsa\\skills\\freeim",
+      "FREEIM_ENABLE_DETAILED_LOGGING": "false",
+      "FREEIM_ENABLE_PERFORMANCE_MONITORING": "true",
+      "FREEIM_REQUEST_TIMEOUT_MS": "30000",
+      "FREEIM_ENABLE_CACHE": "true",
+      "FREEIM_CACHE_SIZE": "1000"
+    },
+    "commandLineArgs": [],
+    "executionMode": "console",
+    "compilationMode": "aot",
+    "targetFramework": "net10.0",
+    "language": "csharp"
+  },
+  "commands": {
+    "default": {
+      "description": "默认命令 - 显示帮助信息",
+      "commandLineArgs": ["help"]
+    },
+    "connect": {
+      "description": "连接到 IM 服务器",
+      "commandLineArgs": ["connect", "user1"]
+    },
+    "send": {
+      "description": "发送消息",
+      "commandLineArgs": ["send", "user1", "user2", "Hello World"]
+    },
+    "receive": {
+      "description": "接收消息",
+      "commandLineArgs": ["receive", "user2"]
+    },
+    "list": {
+      "description": "列出用户",
+      "commandLineArgs": ["list"]
+    },
+    "disconnect": {
+      "description": "断开连接",
+      "commandLineArgs": ["disconnect", "user1"]
+    },
+    "version": {
+      "description": "显示版本信息",
+      "commandLineArgs": ["version"]
+    }
+  },
+  "debug": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "browserUrl": "",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "FREEIM_ENABLE_DETAILED_LOGGING": "true"
+    }
+  },
+  "profiles": {
+    "Development": {
+      "runtime": {
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "FREEIM_ENABLE_DETAILED_LOGGING": "true"
+        }
+      }
+    },
+    "Production": {
+      "runtime": {
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "FREEIM_ENABLE_DETAILED_LOGGING": "false"
+        }
+      }
+    }
+  },
+  "compilation": {
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "enableUnsafeBinaryFormatterSerialization": false,
+    "trimMode": "full",
+    "enableCompressionInSingleFile": true,
+    "singleFile": true
+  }
+}

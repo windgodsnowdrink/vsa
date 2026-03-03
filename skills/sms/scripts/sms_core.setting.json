@@ -1,0 +1,29 @@
+{
+  "sdk": "Microsoft.NET.Sdk",
+  "properties": {
+    "LangVersion": "latest",
+    "TargetFramework": "net10.0",
+    "Nullable": "enable",
+    "ImplicitUsings": "enable",
+    "PublishAot": true,
+    "TrimMode": "partial",
+    "SelfContained": true,
+    "PublishSingleFile": true
+  },
+  "dependencies": {
+    "Twilio": "7.0.0",
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Scrutor": "4.0.0",
+    "System.CommandLine": "2.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Logging.Console": "10.0.0",
+    "Newtonsoft.Json": "13.0.3"
+  },
+  "publishOptions": {
+    "include": [
+      "templates/**/*",
+      "analytics/**/*"
+    ]
+  }
+}

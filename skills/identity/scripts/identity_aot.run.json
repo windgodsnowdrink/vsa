@@ -1,0 +1,201 @@
+{
+  "$schema": "https://aka.ms/run-csharp.schema.json",
+  "profiles": {
+    "Generate Token": {
+      "commandName": "Project",
+      "commandLineArgs": "generate admin admin",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Validate Token": {
+      "commandName": "Project",
+      "commandLineArgs": "validate",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Decode Token": {
+      "commandName": "Project",
+      "commandLineArgs": "decode",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Revoke Token": {
+      "commandName": "Project",
+      "commandLineArgs": "revoke",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Refresh Token": {
+      "commandName": "Project",
+      "commandLineArgs": "refresh",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Authenticate User": {
+      "commandName": "Project",
+      "commandLineArgs": "auth admin admin123",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Authorize User": {
+      "commandName": "Project",
+      "commandLineArgs": "authorize read",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark 1000",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    },
+    "Show Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Show Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "launchSettings": {
+    "profiles": {
+      "Generate Token": {
+        "commandName": "Project",
+        "commandLineArgs": "generate admin admin",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Validate Token": {
+        "commandName": "Project",
+        "commandLineArgs": "validate",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Decode Token": {
+        "commandName": "Project",
+        "commandLineArgs": "decode",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Revoke Token": {
+        "commandName": "Project",
+        "commandLineArgs": "revoke",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Refresh Token": {
+        "commandName": "Project",
+        "commandLineArgs": "refresh",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Authenticate User": {
+        "commandName": "Project",
+        "commandLineArgs": "auth admin admin123",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Authorize User": {
+        "commandName": "Project",
+        "commandLineArgs": "authorize read",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Benchmark": {
+        "commandName": "Project",
+        "commandLineArgs": "benchmark 1000",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "ASPNETCORE_ENVIRONMENT": "Production"
+        }
+      },
+      "Show Config": {
+        "commandName": "Project",
+        "commandLineArgs": "config",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Show Help": {
+        "commandName": "Project",
+        "commandLineArgs": "help",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      }
+    }
+  },
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "trimMode": "partial",
+    "runtimeIdentifier": "win-x64",
+    "optimize": true,
+    "debugType": "portable",
+    "outputType": "exe"
+  }
+}

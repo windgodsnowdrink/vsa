@@ -1,0 +1,52 @@
+# NodaTime Agent Skill - NodaTime 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的 NodaTime 技能实现，提供强大的日期和时间处理功能
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - NodaTime@3.1.9
+# - NodaTime.Serialization.JsonNet@3.1.0
+# - NodaTime.Serialization.SystemTextJson@1.0.0
+# 应用场景:
+# - 企业级应用开发
+# - 金融系统
+# - 预约系统
+# - 国际化应用
+# - 日志系统
+# 激活条件: 当需要日期和时间处理功能时激活
+# 主要功能:
+# - 日期和时间处理：提供强大的日期和时间类型，如 LocalDate、LocalTime、LocalDateTime、ZonedDateTime 等
+# - 时区支持：内置丰富的时区数据，支持全球时区转换
+# - 时间计算：提供时间差计算、时间加减、周期计算等功能
+# - 格式化和解析：支持多种日期时间格式的格式化和解析
+# - 序列化支持：集成 JSON 序列化，支持 NodaTime 类型的序列化和反序列化
+# 性能特性:
+# - 高吞吐量：使用缓存和不可变类型，支持高并发处理
+# - 低延迟：优化的时间计算算法，减少计算时间
+# - 内存优化：使用缓存和对象池，减少内存分配
+# - 可扩展性：支持水平扩展，适用于大规模应用
+# 技术特性:
+# - 模块化设计：清晰的模块划分，易于扩展和维护
+# - 依赖注入：使用 .NET 内置的依赖注入系统
+# - 异步编程：全面支持异步操作，提高系统吞吐量
+# - 高性能算法：使用高效的算法和数据结构
+# - 跨平台支持：支持 Windows、Linux 和 macOS
+# 安全特性:
+# - 不可变类型：使用不可变类型，避免并发问题
+# - 错误处理：完善的错误处理机制，提高系统稳定性
+# 部署特性:
+# - 容器化支持：支持 Docker 容器部署
+# - 云平台兼容：兼容主流云平台
+# - AOT 编译：支持 Ahead-of-Time 编译，提高运行时性能
+# AOT 编译选项:
+# - PublishAot=true
+# - ReadyToRun=true
+# - TieredCompilation=true
+# 支持的运行时:
+# - win-x64
+# - linux-x64
+# - osx-x64
+# - linux-arm64
+# - osx-arm64

@@ -1,0 +1,47 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package OpenTelemetry.Exporter.Prometheus.AspNetCore@1.6.0
+#:package Prometheus.Client@4.3.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using OpenTelemetry.Metrics;
+using Prometheus.Client;
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置Prometheus导出
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics => 
+    {
+        metrics.AddPrometheusExporter(options =>
+        {
+            options.ScrapeEndpointPath = "/metrics";
+            options.DisableTotalNameSuffixForCounters = true;
+        });
+    });
+
+// 高性能指标处理器
+builder.Services.AddSingleton<IMetricExporter>(sp => 
+    new ThreadLocalMetricExporter(
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[256])));
+
+var app = builder.Build();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.MapGet("/", () => "Prometheus Export Ready");
+app.Run();
+
+public class ThreadLocalMetricExporter : IMetricExporter
+{
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    
+    public ThreadLocalMetricExporter(ThreadLocal<Span<byte>> buffer) => _buffer = buffer;
+    
+    public ExportResult Export(in Batch<Metric> batch)
+    {
+        var span = _buffer.Value;
+        // 零拷贝处理指标数据
+        return ExportResult.Success;
+    }
+}

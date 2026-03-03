@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "boxed_graphql",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\boxed\scripts\boxed_graphql.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\boxed\scripts\boxed_graphql.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

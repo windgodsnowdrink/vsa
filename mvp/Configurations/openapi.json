@@ -1,0 +1,14 @@
+﻿{
+    "SwaggerSettings": {
+        "Enable": true,
+        "Title": "机器人平台",
+        "Version": "v1",
+        "Description": "清洁/协运机器人平台.",
+        "ContactName": "盛视科技",
+        "ContactEmail": "maxvisioncloud@maxvision.com.cn",
+        "ContactUrl": "https://127.0.0.1:8101/sso/",
+        "License": true,
+        "LicenseName": "Maxvision License",
+        "LicenseUrl": "https://127.0.0.1:8101/sso/"
+    }
+}

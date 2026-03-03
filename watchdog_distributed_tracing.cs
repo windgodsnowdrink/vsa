@@ -1,0 +1,39 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package WatchDog.NET@3.0.0
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.6.0
+#:package OpenTelemetry.Extensions.Hosting@1.6.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置WatchDog与OpenTelemetry集成
+builder.Services.AddWatchDogServices(settings => {
+    settings.IsAutoClear = true;
+    settings.EnableOpenTelemetryIntegration = true;
+});
+
+// 配置OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder => {
+        tracerProviderBuilder
+            .AddSource("WatchDog.*")
+            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService("WatchDogService"))
+            .AddOtlpExporter(opt => {
+                opt.Endpoint = new Uri("http://localhost:4317");
+                opt.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+            })
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation();
+    });
+
+var app = builder.Build();
+app.UseWatchDog();
+app.MapGet("/", () => "WatchDog with Distributed Tracing Ready");
+app.Run();

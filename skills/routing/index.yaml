@@ -1,0 +1,98 @@
+# Routing 技能配置文件
+# 基于 .NET 10 和 AOT 架构的路由管理工具
+
+name: Routing
+version: 1.0.0
+author: 大佬
+description: 基于 .NET 10 和 AOT 编译的路由管理工具，支持 RESTful API 路由、路由参数解析、中间件集成等功能
+language: zh-CN
+
+# 依赖项配置
+dependencies:
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行参数解析库
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+    description: 依赖注入库
+  - name: Microsoft.Extensions.Configuration
+    version: 8.0.0
+    description: 配置管理库
+  - name: System.Text.Json
+    version: 8.0.0
+    description: JSON 序列化和反序列化库
+
+# 功能配置
+features:
+  - name: route-management
+    description: 路由管理，支持 RESTful API 路由定义、路由参数解析、路由匹配等功能
+    commands:
+      - name: add
+        description: 添加新路由
+        parameters:
+          - name: path
+            type: string
+            description: 路由路径
+          - name: method
+            type: string
+            description: HTTP 方法
+            default: GET
+          - name: handler
+            type: string
+            description: 路由处理程序
+  
+      - name: list
+        description: 列出所有路由
+        parameters:
+          - name: format
+            type: string
+            description: 输出格式
+            default: json
+  
+      - name: remove
+        description: 删除路由
+        parameters:
+          - name: path
+            type: string
+            description: 路由路径
+          - name: method
+            type: string
+            description: HTTP 方法
+            default: GET
+
+  - name: route-generation
+    description: 路由代码生成，支持从 API 定义生成路由代码
+    commands:
+      - name: generate
+        description: 生成路由代码
+        parameters:
+          - name: input
+            type: string
+            description: 输入文件路径（Swagger/OpenAPI 规范）
+          - name: output
+            type: string
+            description: 输出文件路径
+          - name: language
+            type: string
+            description: 生成语言
+            default: csharp
+
+# AOT 编译配置
+aot:
+  enabled: true
+  options:
+    - name: PublishAot
+      value: true
+      description: 启用 AOT 编译
+    - name: TrimMode
+      value: partial
+      description: 裁剪模式
+    - name: SelfContained
+      value: true
+      description: 自包含部署
+    - name: PublishSingleFile
+      value: true
+      description: 发布为单文件
+    - name: RuntimeIdentifier
+      value: win-x64
+      description: 运行时标识符

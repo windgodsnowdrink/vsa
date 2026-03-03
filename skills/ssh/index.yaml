@@ -1,0 +1,119 @@
+name: ssh
+version: 1.0.0
+author: NET专家
+description: SSH客户端技能，提供SSH连接、命令执行、文件传输等功能
+tags:
+  - ssh
+  - remote
+  - terminal
+  - file-transfer
+aot:
+  enabled: true
+  publishOptions:
+    PublishAot: true
+    TrimMode: partial
+    SelfContained: true
+    PublishSingleFile: true
+    PublishReadyToRun: true
+    RuntimeIdentifier: win-x64
+dependencies:
+  - SSH.NET@2023.0.0
+  - Microsoft.Extensions.DependencyInjection@10.0.0
+  - Microsoft.Extensions.Logging@10.0.0
+  - Scrutor@4.2.2
+  - System.CommandLine@2.0.0
+  - System.Text.Json@10.0.0
+  - System.Threading.Channels@8.0.0
+  - System.IO.Pipelines@8.0.0
+features:
+  - ssh-connection
+  - ssh-command-execution
+  - ssh-file-transfer
+  - ssh-tunneling
+  - ssh-key-management
+  - ssh-session-management
+  - ssh-config-management
+  - ssh-batch-operations
+  - ssh-scrutor-integration
+commands:
+  - name: connect
+    description: 连接到SSH服务器
+    parameters:
+      - name: host
+        type: string
+        required: true
+        description: 服务器主机名或IP地址
+      - name: port
+        type: int
+        default: 22
+        description: SSH端口
+      - name: username
+        type: string
+        required: true
+        description: 用户名
+      - name: password
+        type: string
+        description: 密码
+      - name: keyfile
+        type: string
+        description: 私钥文件路径
+  - name: execute
+    description: 在SSH服务器上执行命令
+    parameters:
+      - name: command
+        type: string
+        required: true
+        description: 要执行的命令
+      - name: host
+        type: string
+        required: true
+        description: 服务器主机名或IP地址
+  - name: upload
+    description: 上传文件到SSH服务器
+    parameters:
+      - name: local-path
+        type: string
+        required: true
+        description: 本地文件路径
+      - name: remote-path
+        type: string
+        required: true
+        description: 远程文件路径
+  - name: download
+    description: 从SSH服务器下载文件
+    parameters:
+      - name: remote-path
+        type: string
+        required: true
+        description: 远程文件路径
+      - name: local-path
+        type: string
+        required: true
+        description: 本地文件路径
+  - name: scrutor-demo
+    description: 演示Scrutor用法
+files:
+  - path: scripts/ssh_core.cs
+    type: script
+    description: SSH核心实现文件
+  - path: scripts/ssh_core.setting.json
+    type: config
+    description: SSH核心编译配置文件
+  - path: scripts/ssh_core.run.json
+    type: config
+    description: SSH核心运行配置文件
+  - path: scripts/ssh_generator.cs
+    type: script
+    description: SSH代码生成文件，包含Scrutor用法示例
+  - path: scripts/ssh_generator.setting.json
+    type: config
+    description: SSH代码生成编译配置文件
+  - path: scripts/ssh_generator.run.json
+    type: config
+    description: SSH代码生成运行配置文件
+  - path: reference/README.md
+    type: documentation
+    description: SSH参考文档
+  - path: reference/examples.md
+    type: documentation
+    description: SSH使用示例文档，包含Scrutor用法示例

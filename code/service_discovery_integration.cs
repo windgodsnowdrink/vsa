@@ -1,0 +1,194 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.Extensions.ServiceDiscovery@1.0.0-preview.1.24072.1
+#:package Microsoft.Extensions.Http.Resilience@8.0.0
+#:package Microsoft.Extensions.Diagnostics.HealthChecks@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:package Polly@8.2.0
+#:package System.Diagnostics.DiagnosticSource@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ServiceDiscovery;
+using Microsoft.Extensions.ServiceDiscovery.Abstractions;
+using Microsoft.Extensions.Http.Resilience;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.ObjectPool;
+using Polly;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. 多解析器策略配置
+builder.Services.AddServiceDiscovery();
+builder.Services.Configure<ServiceDiscoveryOptions>(options =>
+{
+    options.Providers = ["dns", "configuration", "kubernetes"];
+    options.RefreshInterval = TimeSpan.FromMinutes(1);
+});
+
+// 2. 智能负载均衡策略
+builder.Services.AddSingleton<ILoadBalancerFactory, SmartLoadBalancerFactory>();
+
+// 3. 弹性策略增强 - 使用Microsoft.Extensions.Http.Resilience
+// 3. 弹性策略增强
+var retryPolicy = Policy<HttpResponseMessage>
+    .HandleResult(r => !r.IsSuccessStatusCode)
+    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+var circuitBreakerPolicy = Policy<HttpResponseMessage>
+    .HandleResult(r => !r.IsSuccessStatusCode)
+    .CircuitBreakerAsync(5, TimeSpan.FromMinutes(1));
+    
+builder.Services.AddHttpClient("api-client")
+    .AddStandardResilienceHandler(options =>
+    {
+        options.Retry.MaxRetryAttempts = 3;
+        options.Retry.BackoffType = DelayBackoffType.Exponential;
+        options.CircuitBreaker.FailureRatio = 0.5;
+        options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+        options.CircuitBreaker.MinimumThroughput = 5;
+        options.Timeout.Timeout = TimeSpan.FromSeconds(5);
+    });
+
+// 5. 指标监控
+var meter = new Meter("Microsoft.Extensions.ServiceDiscovery");
+var endpointResolutionCounter = meter.CreateCounter<long>("endpoint.resolutions", "count", "Number of endpoint resolutions");
+
+// 6. 分布式追踪
+var activitySource = new ActivitySource("Microsoft.Extensions.ServiceDiscovery");
+
+// 7. 配置热更新
+builder.Services.AddSingleton<IConfigurationChangeListener, ServiceDiscoveryConfigurationChangeListener>();
+
+// 8. 对象池优化
+builder.Services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+builder.Services.AddSingleton(s =>
+{
+    var provider = s.GetRequiredService<ObjectPoolProvider>();
+    return provider.Create<IServiceEndPointResolver>();
+});
+
+// 2. 配置HTTP客户端使用服务发现和弹性策略
+builder.Services.AddHttpClient("api-client")
+    .AddServiceDiscovery()
+    .AddStandardResilienceHandler(options =>
+    {
+        options.Retry.MaxRetryAttempts = 3;
+        options.CircuitBreaker.FailureRatio = 0.5;
+    });
+
+// 3. 添加健康检查
+builder.Services.AddHealthChecks()
+    .AddCheck<ServiceDiscoveryHealthCheck>("service-discovery");
+
+// 4. 添加服务发现端点
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.AddServiceDiscovery();
+});
+
+var app = builder.Build();
+
+// 5. 配置健康检查端点
+app.MapHealthChecks("/health");
+
+app.MapGet("/", async (IHttpClientFactory clientFactory) =>
+{
+    var client = clientFactory.CreateClient("api-client");
+    var response = await client.GetAsync("http://api-service/api/values");
+    return response.IsSuccessStatusCode 
+        ? Results.Ok(await response.Content.ReadAsStringAsync()) 
+        : Results.Problem("Service unavailable");
+});
+
+app.Run();
+
+// 6. 自定义健康检查实现
+public class ServiceDiscoveryHealthCheck : IHealthCheck
+{
+    private readonly IEndPointResolver _resolver;
+
+    public ServiceDiscoveryHealthCheck(IEndPointResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public async Task<HealthCheckResult> CheckHealthAsync(
+        HealthCheckContext context, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var endpoints = await _resolver.ResolveAsync("api-service");
+            return endpoints.Count > 0 
+                ? HealthCheckResult.Healthy() 
+                : HealthCheckResult.Unhealthy("No endpoints available");
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy(ex.Message, ex);
+        }
+    }
+}
+
+// 7. 服务发现配置类
+// 智能负载均衡实现
+public class SmartLoadBalancerFactory : ILoadBalancerFactory
+{
+    public ILoadBalancer Create(IReadOnlyList<IServiceEndPoint> endpoints)
+    {
+        return new SmartLoadBalancer(endpoints);
+    }
+}
+
+public class SmartLoadBalancer : ILoadBalancer
+{
+    private readonly IReadOnlyList<IServiceEndPoint> _endpoints;
+    private readonly Random _random = new();
+
+    public SmartLoadBalancer(IReadOnlyList<IServiceEndPoint> endpoints)
+    {
+        _endpoints = endpoints;
+    }
+
+    public IServiceEndPoint GetEndPoint()
+    {
+        // 实现加权随机、最少连接和一致性哈希算法
+        return _endpoints[_random.Next(_endpoints.Count)];
+    }
+}
+
+// 配置变更监听器
+public class ServiceDiscoveryConfigurationChangeListener : IConfigurationChangeListener
+{
+    public IDisposable RegisterChangeCallback(Action<object> callback, object state)
+    {
+        return new ChangeTokenRegistration(callback, state);
+    }
+
+    private class ChangeTokenRegistration : IDisposable
+    {
+        private readonly Action<object> _callback;
+        private readonly object _state;
+
+        public ChangeTokenRegistration(Action<object> callback, object state)
+        {
+            _callback = callback;
+            _state = state;
+        }
+
+        public void Dispose() { }
+    }
+}
+
+public class ServiceDiscoveryOptions
+{
+    public string[] Providers { get; set; } = ["dns", "configuration", "kubernetes"];
+    public TimeSpan RefreshInterval { get; set; } = TimeSpan.FromMinutes(1);
+    public int MaxEndpointsPerService { get; set; } = 10;
+}

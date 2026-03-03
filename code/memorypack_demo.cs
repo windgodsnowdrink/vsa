@@ -1,0 +1,181 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MemoryPack@1.9.11
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.Threading.Channels;
+using MemoryPack;
+using System.Threading.Tasks.Dataflow;
+
+// MemoryPack序列化处理器
+public class MemoryPackProcessor : IAsyncDisposable
+{
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly Channel<ReadOnlyMemory<byte>> _messageChannel;
+    private readonly ThreadLocal<Span<byte>> _threadLocalBuffer;
+    
+    public MemoryPackProcessor()
+    {
+        _memoryPool = new DefaultObjectPool<Memory<byte>>(
+            new DefaultPooledObjectPolicy<Memory<byte>>(), 1000);
+        _messageChannel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();
+        _threadLocalBuffer = new ThreadLocal<Span<byte>>(() => stackalloc byte[1024]);
+        
+        _ = ProcessMessagesAsync();
+    }
+
+    // 高性能序列化方法
+    public async Task SerializeAsync<T>(T value)
+    {
+        using var memory = _memoryPool.Get();
+        var span = memory.Span;
+        
+        // 使用MemoryPack进行零拷贝序列化
+        var bytesWritten = MemoryPackSerializer.Serialize(span, value);
+        await _messageChannel.Writer.WriteAsync(memory[..bytesWritten]);
+    }
+
+    // 高性能反序列化方法
+    public async IAsyncEnumerable<T> DeserializeAsync<T>()
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync())
+        {
+            // 使用MemoryPack进行零拷贝反序列化
+            var result = MemoryPackSerializer.Deserialize<T>(message.Span);
+            if (result != null)
+                yield return result;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _messageChannel.Writer.CompleteAsync();
+    }
+}
+
+// Todo事件模型
+// 在TodoEvent模型上添加AOT支持
+[MemoryPackable]
+[MemoryPackUnion(0, typeof(TodoEvent))]
+public partial interface ITodoEvent {}
+
+[MemoryPackable]
+public partial class TodoEvent : ITodoEvent
+{
+    [MemoryPackOrder(0)]
+    public int Id { get; set; }
+    
+    [MemoryPackOrder(1)]
+    public string Title { get; set; }
+    
+    [MemoryPackOrder(2)]
+    public bool IsCompleted { get; set; }
+}
+
+// 在Program.cs中添加AOT生成
+var builder = WebApplication.CreateBuilder();
+MemoryPackGenerator.GenerateTypeScript("./memorypack-types.ts");
+
+// 配置MemoryPack服务
+builder.Services.AddSingleton<MemoryPackProcessor>();
+
+var app = builder.Build();
+
+// 测试端点
+app.MapPost("/todos", async (MemoryPackProcessor processor, TodoEvent todo) =>
+{
+    await processor.SerializeAsync(todo);
+    return Results.Ok();
+});
+
+app.MapGet("/todos", async (MemoryPackProcessor processor) =>
+{
+    var todos = new List<TodoEvent>();
+    await foreach (var todo in processor.DeserializeAsync<TodoEvent>())
+    {
+        todos.Add(todo);
+    }
+    return Results.Ok(todos);
+});
+
+app.Run();
+
+
+// 版本容错模型
+[MemoryPackable]
+public partial class VersionTolerantModel
+{
+    [MemoryPackOrder(0)]
+    public int Version { get; set; } = 1;
+    
+    [MemoryPackOrder(1)]
+    public string RequiredField { get; set; }
+    
+    [MemoryPackOrder(2)]
+    [MemoryPackOnDeserializing]
+    public string OptionalField { get; set; } = "default";
+    
+    [MemoryPackOrder(3)]
+    [MemoryPackIgnore]
+    public string IgnoredField { get; set; }
+}
+
+// 自定义格式化器
+[MemoryPackable]
+public partial class CustomFormatterModel
+{
+    [MemoryPackFormatter(typeof(DateTimeOffsetFormatter))]
+    public DateTimeOffset Timestamp { get; set; }
+}
+
+public class DateTimeOffsetFormatter : MemoryPackFormatter<DateTimeOffset>
+{
+    public override void Serialize(ref MemoryPackWriter writer, ref DateTimeOffset value)
+    {
+        writer.WriteUnmanaged(value.UtcTicks);
+    }
+    
+    public override void Deserialize(ref MemoryPackReader reader, ref DateTimeOffset value)
+    {
+        value = new DateTimeOffset(reader.ReadUnmanaged<long>(), TimeSpan.Zero);
+    }
+}
+
+
+// 性能监控服务
+public class MemoryPackMetrics
+{
+    private readonly Counter<int> _serializationCount;
+    private readonly Histogram<double> _serializationLatency;
+    private readonly Counter<int> _deserializationCount;
+    
+    public MemoryPackMetrics(IMeterFactory meterFactory)
+    {
+        var meter = meterFactory.Create("MemoryPack");
+        _serializationCount = meter.CreateCounter<int>("serialization.count");
+        _serializationLatency = meter.CreateHistogram<double>("serialization.latency.ms");
+        _deserializationCount = meter.CreateCounter<int>("deserialization.count");
+    }
+    
+    public void RecordSerialization(int size, double latency)
+    {
+        _serializationCount.Add(1);
+        _serializationLatency.Record(latency);
+    }
+    
+    public void RecordDeserialization()
+    {
+        _deserializationCount.Add(1);
+    }
+}
+
+// 在Startup中注册
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics => metrics
+        .AddMeter("MemoryPack")
+        .AddPrometheusExporter());

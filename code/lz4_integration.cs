@@ -1,0 +1,255 @@
+#:sdk Microsoft.NET.Sdk
+#:package K4os.Compression.LZ4@1.4.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using K4os.Compression.LZ4;
+using K4os.Compression.LZ4.Streams;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Threading.Channels;
+
+// 配置选项
+public class LZ4Options
+{
+    public int BufferSize { get; set; } = 81920;
+    public LZ4Level CompressionLevel { get; set; } = LZ4Level.L12_MAX;
+}
+
+// 解压缩服务接口
+public interface ILZ4Service
+{
+    Task CompressAsync(string sourcePath, string compressedPath, CancellationToken ct = default);
+    Task DecompressAsync(string compressedPath, string targetPath, CancellationToken ct = default);
+    Task<long> GetDecompressedSizeAsync(string compressedPath, CancellationToken ct = default);
+    
+    // 新增功能
+    Task ParallelCompressFileAsync(string sourceFilePath, string compressedFilePath, int degreeOfParallelism = 4, CancellationToken cancellationToken = default);
+    Task ParallelDecompressFileAsync(string compressedFilePath, string outputFilePath, int degreeOfParallelism = 4, CancellationToken cancellationToken = default);
+    Task StreamCompressLargeFileAsync(string sourceFilePath, string compressedFilePath, int bufferSize = 81920, CancellationToken cancellationToken = default);
+    Task StreamDecompressLargeFileAsync(string compressedFilePath, string outputFilePath, int bufferSize = 81920, CancellationToken cancellationToken = default);
+    void SetCompressionDictionary(byte[] dictionary);
+}
+
+// 生产级解压缩服务实现
+public class LZ4Service : ILZ4Service
+    {
+        private readonly ILogger<LZ4Service> _logger;
+        private readonly LZ4Options _options;
+        private byte[] _compressionDictionary;
+        private readonly Channel<byte[]> _bufferPool = Channel.CreateBounded<byte[]>(new BoundedChannelOptions(10)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = true,
+            SingleWriter = false
+        });
+
+        public LZ4Service(ILogger<LZ4Service> logger, IOptions<LZ4Options> options)
+        {
+            _logger = logger;
+            _options = options.Value;
+            
+            // 初始化缓冲区池
+            for (int i = 0; i < 10; i++)
+            {
+                _bufferPool.Writer.TryWrite(new byte[81920]);
+            }
+        }
+
+        public void SetCompressionDictionary(byte[] dictionary)
+        {
+            _compressionDictionary = dictionary;
+            _logger.LogInformation("Compression dictionary set with {Length} bytes", dictionary.Length);
+        }
+
+        public async Task ParallelCompressFileAsync(string sourceFilePath, string compressedFilePath, int degreeOfParallelism = 4, CancellationToken cancellationToken = default)
+        {
+            using var sourceStream = File.OpenRead(sourceFilePath);
+            using var compressedStream = File.Create(compressedFilePath);
+            
+            var chunkSize = (int)Math.Min(sourceStream.Length / degreeOfParallelism, 1024 * 1024); // 1MB chunks
+            var chunks = new List<(long offset, int size)>();
+            
+            // 分割文件为多个块
+            for (long offset = 0; offset < sourceStream.Length; offset += chunkSize)
+            {
+                var size = (int)Math.Min(chunkSize, sourceStream.Length - offset);
+                chunks.Add((offset, size));
+            }
+
+            // 并行压缩块
+            var compressedChunks = new ConcurrentBag<byte[]>();
+            await Parallel.ForEachAsync(chunks, new ParallelOptions 
+            { 
+                MaxDegreeOfParallelism = degreeOfParallelism,
+                CancellationToken = cancellationToken 
+            }, async (chunk, ct) =>
+            {
+                var buffer = await _bufferPool.Reader.ReadAsync(ct);
+                try
+                {
+                    sourceStream.Seek(chunk.offset, SeekOrigin.Begin);
+                    await sourceStream.ReadAsync(buffer.AsMemory(0, chunk.size), ct);
+                    
+                    var compressedSize = LZ4Codec.MaximumOutputSize(chunk.size);
+                    var compressedBuffer = ArrayPool<byte>.Shared.Rent(compressedSize);
+                    
+                    var actualCompressedSize = _compressionDictionary != null 
+                        ? LZ4Codec.Encode(buffer, 0, chunk.size, compressedBuffer, 0, compressedSize, _compressionDictionary)
+                        : LZ4Codec.Encode(buffer, 0, chunk.size, compressedBuffer, 0, compressedSize);
+                    
+                    var result = new byte[actualCompressedSize + 8]; // 8 bytes for chunk header
+                    Buffer.BlockCopy(BitConverter.GetBytes(chunk.offset), 0, result, 0, 8);
+                    Buffer.BlockCopy(compressedBuffer, 0, result, 8, actualCompressedSize);
+                    
+                    compressedChunks.Add(result);
+                    ArrayPool<byte>.Shared.Return(compressedBuffer);
+                }
+                finally
+                {
+                    await _bufferPool.Writer.WriteAsync(buffer, ct);
+                }
+            });
+
+            // 按原始顺序写入压缩块
+            foreach (var chunk in chunks.OrderBy(c => c.offset))
+            {
+                var compressedChunk = compressedChunks.First(c => BitConverter.ToInt64(c, 0) == chunk.offset);
+                await compressedStream.WriteAsync(compressedChunk, cancellationToken);
+            }
+        }
+
+        public async Task StreamCompressLargeFileAsync(string sourceFilePath, string compressedFilePath, int bufferSize = 81920, CancellationToken cancellationToken = default)
+        {
+            using var sourceStream = File.OpenRead(sourceFilePath);
+            using var compressedStream = File.Create(compressedFilePath);
+            
+            var pipe = new Pipe(new PipeOptions(pauseWriterThreshold: bufferSize * 2));
+            var writing = FillPipeAsync(sourceStream, pipe.Writer, bufferSize, cancellationToken);
+            var reading = ReadPipeAsync(pipe.Reader, compressedStream, bufferSize, cancellationToken);
+            
+            await Task.WhenAll(writing, reading);
+            
+            async Task FillPipeAsync(Stream source, PipeWriter writer, int size, CancellationToken ct)
+            {
+                while (true)
+                {
+                    var buffer = await _bufferPool.Reader.ReadAsync(ct);
+                    try
+                    {
+                        var bytesRead = await source.ReadAsync(buffer.AsMemory(0, size), ct);
+                        if (bytesRead == 0) break;
+                        
+                        var memory = writer.GetMemory(bytesRead);
+                        buffer.AsMemory(0, bytesRead).CopyTo(memory);
+                        writer.Advance(bytesRead);
+                    }
+                    finally
+                    {
+                        await _bufferPool.Writer.WriteAsync(buffer, ct);
+                    }
+                    
+                    var result = await writer.FlushAsync(ct);
+                    if (result.IsCompleted) break;
+                }
+                
+                await writer.CompleteAsync();
+            }
+            
+            async Task ReadPipeAsync(PipeReader reader, Stream target, int size, CancellationToken ct)
+            {
+                while (true)
+                {
+                    var result = await reader.ReadAsync(ct);
+                    var buffer = result.Buffer;
+                    
+                    foreach (var segment in buffer)
+                    {
+                        var compressedSize = LZ4Codec.MaximumOutputSize(segment.Length);
+                        var compressedBuffer = ArrayPool<byte>.Shared.Rent(compressedSize);
+                        
+                        var actualCompressedSize = _compressionDictionary != null
+                            ? LZ4Codec.Encode(segment.Span, compressedBuffer.AsSpan(), _compressionDictionary)
+                            : LZ4Codec.Encode(segment.Span, compressedBuffer.AsSpan());
+                        
+                        await target.WriteAsync(BitConverter.GetBytes(actualCompressedSize), ct);
+                        await target.WriteAsync(compressedBuffer.AsMemory(0, actualCompressedSize), ct);
+                        
+                        ArrayPool<byte>.Shared.Return(compressedBuffer);
+                    }
+                    
+                    reader.AdvanceTo(buffer.End);
+                    if (result.IsCompleted) break;
+                }
+                
+                await reader.CompleteAsync();
+            }
+        }
+    
+    public async Task CompressAsync(string sourcePath, string compressedPath, CancellationToken ct = default)
+    {
+        using var sourceStream = File.OpenRead(sourcePath);
+        using var compressedStream = LZ4Stream.Encode(File.Create(compressedPath), _options.CompressionLevel);
+        
+        await sourceStream.CopyToAsync(compressedStream, _options.BufferSize, ct);
+    }
+    
+    public async Task DecompressAsync(string compressedPath, string targetPath, CancellationToken ct = default)
+    {
+        using var compressedStream = LZ4Stream.Decode(File.OpenRead(compressedPath));
+        using var targetStream = File.Create(targetPath);
+        
+        await compressedStream.CopyToAsync(targetStream, _options.BufferSize, ct);
+    }
+    
+    public async Task<long> GetDecompressedSizeAsync(string compressedPath, CancellationToken ct = default)
+    {
+        using var compressedStream = LZ4Stream.Decode(File.OpenRead(compressedPath));
+        return compressedStream.Length;
+    }
+}
+
+// DI扩展方法
+public static class LZ4ServiceCollectionExtensions
+{
+    public static IServiceCollection AddLZ4Services(this IServiceCollection services, Action<LZ4Options> configure = null)
+    {
+        services.AddOptions<LZ4Options>()
+            .Configure(configure ?? (opt => { }))
+            .ValidateDataAnnotations();
+            
+        services.AddSingleton<ILZ4Service, LZ4Service>();
+        return services;
+    }
+}
+
+// 示例用法
+public class LZ4Demo
+{
+    private readonly ILZ4Service _lz4Service;
+    
+    public LZ4Demo(ILZ4Service lz4Service)
+    {
+        _lz4Service = lz4Service;
+    }
+    
+    public async Task RunAsync()
+    {
+        // 压缩示例
+        await _lz4Service.CompressAsync("large_file.bin", "compressed.lz4");
+        
+        // 解压示例
+        await _lz4Service.DecompressAsync("compressed.lz4", "decompressed.bin");
+        
+        // 获取解压后大小
+        var size = await _lz4Service.GetDecompressedSizeAsync("compressed.lz4");
+        Console.WriteLine($"Decompressed size: {size} bytes");
+    }
+}

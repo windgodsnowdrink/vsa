@@ -1,0 +1,32 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "LettuceEncrypt": "Debug",
+      "ACME.LettuceEncrypt": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "LettuceEncrypt": {
+      "EmailAddresses": ["admin@example.com"],
+      "AcceptTermsOfService": true,
+      "CertificateCacheLocation": "./certificate-cache",
+      "UseStagingServer": false,
+      "Domains": [
+        "example.com",
+        "www.example.com"
+      ],
+      "PreferredKeyAlgorithm": "ES256"
+    }
+  }
+}

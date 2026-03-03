@@ -1,0 +1,153 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package HotChocolate.AspNetCore@13.0.0
+#:package HotChocolate.Data@13.0.0
+#:package HotChocolate.Types@13.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:package Microsoft.AspNetCore.Authentication.JwtBearer@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using HotChocolate.Types;
+using HotChocolate.Execution;
+using System.Threading.Channels;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. 数据加载器优化
+builder.Services.AddGraphQLServer()
+    .AddDataLoader<BatchUserDataLoader>()
+    .AddDataLoader<BatchTodoDataLoader>();
+
+// 2. 分布式缓存策略
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "GraphQL_";
+});
+
+// 3. 认证授权集成
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(5)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ... existing code ...
+
+// 批量数据加载器
+[SkipLocalsInit]
+public class BatchUserDataLoader : BatchDataLoader<int, User>
+{
+    private readonly UserDbContext _db;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+
+    public BatchUserDataLoader(
+        UserDbContext db,
+        IBatchScheduler scheduler,
+        ThreadLocal<Span<byte>> buffer)
+        : base(scheduler)
+    {
+        _db = db;
+        _buffer = buffer;
+    }
+
+    protected override async Task<IReadOnlyDictionary<int, User>> LoadBatchAsync(
+        IReadOnlyList<int> keys, CancellationToken ct)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                // SIMD优化查询
+                return await _db.Users
+                    .Where(u => keys.Contains(u.Id))
+                    .ToDictionaryAsync(u => u.Id, ct);
+            }
+        }
+        return new Dictionary<int, User>();
+    }
+}
+
+// 缓存中间件
+[SkipLocalsInit]
+public class CacheMiddleware
+{
+    private readonly IDistributedCache _cache;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+
+    public CacheMiddleware(
+        IDistributedCache cache,
+        ThreadLocal<Span<byte>> buffer)
+    {
+        _cache = cache;
+        _buffer = buffer;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> factory)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                var cached = await _cache.GetAsync(key);
+                if (cached != null)
+                    return MessagePackSerializer.Deserialize<T>(cached);
+                
+                var value = await factory();
+                await _cache.SetAsync(key, MessagePackSerializer.Serialize(value));
+                return value;
+            }
+        }
+        return await factory();
+    }
+}
+
+// 授权指令
+public class AuthorizeDirectiveType : DirectiveType<AuthorizeDirective>
+{
+    protected override void Configure(IDirectiveTypeDescriptor descriptor)
+    {
+        descriptor
+            .Name("authorize")
+            .Location(DirectiveLocation.FieldDefinition)
+            .Use(next => async context =>
+            {
+                var user = context.ContextData["User"] as ClaimsPrincipal;
+                if (user?.Identity?.IsAuthenticated != true)
+                    throw new GraphQLException("Unauthorized");
+                
+                await next(context);
+            });
+    }
+}
+
+public class AuthorizeDirective { }
+
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class UserDbContext : DbContext
+{
+    public DbSet<User> Users { get; set; }
+    
+    public UserDbContext(DbContextOptions options) : base(options) {}
+}

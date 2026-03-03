@@ -1,0 +1,26 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Magicodes.IE": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "DocumentProcessing": {
+    "MaxConcurrentRequests": 100,
+    "ChannelCapacity": 10000,
+    "StreamPoolSize": 16,
+    "TimeoutSeconds": 300
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

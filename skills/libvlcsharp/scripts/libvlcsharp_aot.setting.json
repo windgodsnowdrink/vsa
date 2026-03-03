@@ -1,0 +1,208 @@
+{
+  "name": "libvlcsharp_aot",
+  "description": "基于LibVLCSharp的AOT编译媒体处理工具",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "commands": [
+    {
+      "name": "play",
+      "alias": "p",
+      "description": "播放媒体文件",
+      "arguments": [
+        {
+          "name": "media",
+          "description": "媒体文件路径或URL",
+          "required": true
+        },
+        {
+          "name": "duration",
+          "description": "播放时长（秒），默认无限期",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "record",
+      "alias": "r",
+      "description": "录制媒体文件",
+      "arguments": [
+        {
+          "name": "media",
+          "description": "媒体文件路径或URL",
+          "required": true
+        },
+        {
+          "name": "output",
+          "description": "输出文件路径",
+          "required": true
+        },
+        {
+          "name": "duration",
+          "description": "录制时长（秒），默认无限期",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "stream",
+      "alias": "s",
+      "description": "流媒体播放",
+      "arguments": [
+        {
+          "name": "media",
+          "description": "媒体文件路径或URL",
+          "required": true
+        },
+        {
+          "name": "stream-url",
+          "description": "流媒体URL",
+          "required": true
+        },
+        {
+          "name": "duration",
+          "description": "流媒体时长（秒），默认无限期",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "convert",
+      "alias": "c",
+      "description": "转换媒体格式",
+      "arguments": [
+        {
+          "name": "input",
+          "description": "输入文件路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "description": "输出文件路径",
+          "required": true
+        },
+        {
+          "name": "format",
+          "description": "输出格式，默认mp4",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "info",
+      "alias": "i",
+      "description": "获取媒体信息",
+      "arguments": [
+        {
+          "name": "media",
+          "description": "媒体文件路径或URL",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list-codecs",
+      "alias": "lc",
+      "description": "列出支持的编解码器",
+      "arguments": []
+    },
+    {
+      "name": "list-filters",
+      "alias": "lf",
+      "description": "列出支持的过滤器",
+      "arguments": []
+    },
+    {
+      "name": "benchmark",
+      "alias": "bm",
+      "description": "运行性能基准测试",
+      "arguments": [
+        {
+          "name": "media",
+          "description": "媒体文件路径或URL",
+          "required": true
+        },
+        {
+          "name": "iterations",
+          "description": "运行次数，默认5",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "alias": "h",
+      "description": "显示帮助信息",
+      "arguments": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "LibVLCSharp",
+      "version": "3.8.0",
+      "type": "nuget"
+    },
+    {
+      "name": "LibVLCSharp.WinForms",
+      "version": "3.8.0",
+      "type": "nuget"
+    },
+    {
+      "name": "LibVLCSharp.WPF",
+      "version": "3.8.0",
+      "type": "nuget"
+    },
+    {
+      "name": "LibVLCSharp.Platforms",
+      "version": "3.8.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0",
+      "type": "nuget"
+    }
+  ],
+  "build": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release",
+    "additionalProperties": {
+      "LangVersion": "preview",
+      "Nullable": "enable",
+      "ImplicitUsings": "enable"
+    }
+  },
+  "execution": {
+    "timeout": 300000,
+    "memoryLimit": 1024
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "VLC_PLUGIN_PATH": "%ProgramFiles%\\VideoLAN\\VLC\\plugins",
+    "VLC_LIB_PATH": "%ProgramFiles%\\VideoLAN\\VLC",
+    "LIBVLCSharp_LOG_LEVEL": "INFO",
+    "LIBVLCSharp_CACHE_DIR": "%LOCALAPPDATA%\\LibVLCSharp\\Cache"
+  }
+}

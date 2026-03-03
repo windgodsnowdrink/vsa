@@ -1,0 +1,45 @@
+{
+  "sdk": "Microsoft.NET.Sdk",
+  "packages": [
+    "Microsoft.Extensions.DependencyInjection@10.0.0",
+    "Microsoft.Extensions.Logging@10.0.0",
+    "Microsoft.Extensions.Options@10.0.0",
+    "System.Net.Http@4.3.4",
+    "System.Net.Http.Json@8.0.0",
+    "System.Net.Http.Formatting.Extension@5.2.3",
+    "Refit@7.0.0",
+    "RestSharp@108.0.3",
+    "Polly@8.3.1",
+    "Microsoft.Extensions.Http.Polly@10.0.0",
+    "System.Net.WebSockets@4.3.0",
+    "System.Net.NameResolution@4.3.0",
+    "System.Net.Security@4.3.2",
+    "System.Net.Sockets@4.3.0",
+    "System.Text.Json@8.0.0",
+    "System.Text.RegularExpressions@4.3.1",
+    "System.Collections.Immutable@8.0.0"
+  ],
+  "properties": {
+    "LangVersion": "preview",
+    "TargetFramework": "net10.0",
+    "Nullable": "enable",
+    "ImplicitUsings": "enable",
+    "PublishAot": true,
+    "TrimMode": "partial",
+    "RuntimeIdentifier": "win-x64"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "includedFrameworks": [
+      {
+        "name": "Microsoft.NETCore.App",
+        "version": "10.0.0"
+      }
+    ],
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MinThreads": 10,
+      "System.Threading.ThreadPool.MaxThreads": 100
+    }
+  }
+}

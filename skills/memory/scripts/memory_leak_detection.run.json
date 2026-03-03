@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "memory_leak_detection",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\memory\scripts\memory_leak_detection.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\memory\scripts\memory_leak_detection.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

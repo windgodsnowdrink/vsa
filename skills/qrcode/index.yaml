@@ -1,0 +1,60 @@
+# qrcode Agent Skill - qrcode Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10的QR码和条码生成与识别技能，支持AOT编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Drawing.Common@8.0.0
+# - ZXing.Net@0.16.12
+# - SkiaSharp@2.88.6
+# Application Scenarios:
+# - 生成QR码用于产品标签、票据、证件等
+# - 识别QR码获取信息
+# - 生成各种类型的条码（Code128、EAN13、UPC-A等）
+# - 条码识别与解析
+# - 批量生成与处理条码/QR码
+# - 集成到Web应用、移动应用和桌面应用
+# Activation Conditions: 当需要QR码或条码生成、识别功能时激活
+# Main Features:
+# - QR码生成：支持自定义大小、颜色、容错级别
+# - QR码识别：支持从图片、流中识别QR码
+# - 条码生成：支持多种条码类型
+# - 条码识别：支持从图片、流中识别条码
+# - 批量处理：支持批量生成和识别
+# - 高性能：优化的算法和内存使用
+# - 跨平台：支持Windows、Linux、macOS
+# - AOT编译：支持AOT编译，提高性能和减小部署大小
+# Performance Features:
+# - 高性能设计：优化的编码/解码算法
+# - 内存优化：使用池化和缓存减少内存分配
+# - 并发支持：支持多线程并发处理
+# - 批处理优化：批量操作提高吞吐量
+# - 缓存机制：缓存常用配置和结果
+# Technical Features:
+# - 模块化设计：清晰的接口和实现分离
+# - 依赖注入：集成Microsoft.Extensions.DependencyInjection
+# - 异步编程：支持异步API
+# - 高性能算法：优化的编码/解码算法
+# - 跨平台支持：使用SkiaSharp实现跨平台图形处理
+# - AOT编译支持：避免反射和动态代码，支持AOT编译
+# - 配置管理：支持Options模式配置
+# AOT Compilation Options:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - AllowUnsafeBlocks: true
+# - Deterministic: true
+# - Strict: true
+# Target Framework:
+# - TargetFramework: net10.0
+# Runtime Identifiers:
+# - win-x64
+# - linux-x64
+# - osx-x64
+# - win-arm64
+# - linux-arm64
+# - osx-arm64

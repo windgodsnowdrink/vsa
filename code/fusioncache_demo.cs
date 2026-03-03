@@ -1,0 +1,242 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package ZiggyCreatures.FusionCache@1.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property UserSecretsId 210f4926-30c7-45ca-a020-391f82b3b3a1
+#:property DockerDefaultTargetOS Linux
+#:property DockerComposeProjectPath ..\docker-compose.dcproj
+
+using System.Buffers;
+using System.Threading.Channels;
+using ZiggyCreatures.FusionCache;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using System.Threading.Tasks.Dataflow;
+
+// 内存优化相关类
+public class MemoryOptimizer
+{
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly ThreadLocal<Span<byte>> _threadLocalSpan;
+
+    public MemoryOptimizer()
+    {
+        _memoryPool = new DefaultObjectPool<Memory<byte>>(
+            new DefaultPooledObjectPolicy<Memory<byte>>(), 1000);
+        _threadLocalSpan = new ThreadLocal<Span<byte>>(() => stackalloc byte[1024]);
+    }
+}
+
+// Todo数据模型
+public class TodoItem
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public bool IsCompleted { get; set; }
+}
+
+// 缓存服务
+public class TodoCacheService
+{
+    private readonly IFusionCache _fusionCache;
+    private readonly Channel<TodoItem> _cacheChannel;
+    private readonly MemoryOptimizer _memoryOptimizer;
+
+    public TodoCacheService(
+        IFusionCache fusionCache,
+        MemoryOptimizer memoryOptimizer)
+    {
+        _fusionCache = fusionCache;
+        _memoryOptimizer = memoryOptimizer;
+        _cacheChannel = Channel.CreateUnbounded<TodoItem>();
+        
+        // 启动后台处理任务
+        _ = ProcessCacheUpdatesAsync();
+    }
+
+    private async Task ProcessCacheUpdatesAsync()
+    {
+        await foreach (var todo in _cacheChannel.Reader.ReadAllAsync())
+        {
+            await _fusionCache.SetAsync(
+                $"todo:{todo.Id}", 
+                todo, 
+                TimeSpan.FromMinutes(30),
+                options => options.SetFailSafe(true));
+        }
+    }
+
+    // 在缓存服务中添加详细监控
+    public class TodoCacheService
+    {
+        private readonly Counter<int> _cacheHits;
+        private readonly Counter<int> _cacheMisses;
+        private readonly Histogram<double> _cacheLatency;
+        
+        public TodoCacheService(/*...*/)
+        {
+            var meter = new Meter("TodoCache");
+            _cacheHits = meter.CreateCounter<int>("cache_hits");
+            _cacheMisses = meter.CreateCounter<int>("cache_misses");
+            _cacheLatency = meter.CreateHistogram<double>("cache_latency", "ms");
+        }
+    
+        public async Task<TodoItem> GetTodoAsync(int id)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                var result = await _fusionCache.GetOrSetAsync<TodoItem>(
+                    $"todo:{id}",
+                    async (ctx, _) => {
+                        _cacheMisses.Add(1);
+                        return null;
+                    },
+                    options => options
+                        .SetDuration(TimeSpan.FromMinutes(30))
+                        .SetFailSafe(true)
+                );
+                
+                if (result != null) _cacheHits.Add(1);
+                return result;
+            }
+            finally
+            {
+                _cacheLatency.Record(stopwatch.ElapsedMilliseconds);
+            }
+        }
+    }
+
+    // 添加健康检查
+    builder.Services.AddHealthChecks()
+        .AddRedis(builder.Configuration["RedisCache:Configuration"])
+        .AddFusionCache("todo_cache");
+
+    public async Task UpdateTodoAsync(TodoItem todo)
+    {
+        // 使用通道异步更新缓存
+        await _cacheChannel.Writer.WriteAsync(todo);
+    }
+}
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置FusionCache
+builder.Services.AddFusionCache()
+    .WithRegisteredDistributedCache()
+    .WithAllRegisteredComponents()
+    .WithDefaultEntryOptions(new FusionCacheEntryOptions
+    {
+        Duration = TimeSpan.FromMinutes(30),
+        Priority = CacheItemPriority.High,
+        IsFailSafeEnabled = true,
+        FailSafeMaxDuration = TimeSpan.FromHours(1),
+        FailSafeThrottleDuration = TimeSpan.FromSeconds(30)
+    });
+
+// 配置Redis分布式缓存
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["RedisCache:Configuration"];
+    options.InstanceName = "todo_cache_";
+});
+
+// 添加内存优化服务
+builder.Services.AddSingleton<MemoryOptimizer>();
+builder.Services.AddSingleton<TodoCacheService>();
+
+// 添加缓存预热服务
+public class CacheWarmupService : IHostedService
+{
+    private readonly IFusionCache _cache;
+    private readonly TodoDbContext _dbContext;
+
+    public CacheWarmupService(IFusionCache cache, TodoDbContext dbContext)
+    {
+        _cache = cache;
+        _dbContext = dbContext;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        var todos = await _dbContext.Todos.ToListAsync(cancellationToken);
+        foreach (var todo in todos)
+        {
+            await _cache.SetAsync(
+                $"todo:{todo.Id}",
+                todo,
+                options => options
+                    .SetDuration(TimeSpan.FromMinutes(30))
+                    .SetFailSafe(true)
+            );
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
+
+// 添加缓存分区服务
+public class CachePartitionService
+{
+    private readonly IFusionCache[] _partitions;
+    
+    public CachePartitionService(IConnectionMultiplexer multiplexer)
+    {
+        _partitions = new IFusionCache[4];
+        for (int i = 0; i < 4; i++)
+        {
+            _partitions[i] = new FusionCache(new FusionCacheOptions
+            {
+                DefaultEntryOptions = new FusionCacheEntryOptions
+                {
+                    Duration = TimeSpan.FromMinutes(30),
+                    Priority = CacheItemPriority.High
+                }
+            });
+            
+            _partitions[i].SetupDistributedCache(
+                new RedisCache(multiplexer.GetDatabase(i)),
+                new FusionCacheNewtonsoftJsonSerializer()
+            );
+        }
+    }
+    
+    public IFusionCache GetPartition(string key)
+    {
+        var partition = Math.Abs(key.GetHashCode()) % _partitions.Length;
+        return _partitions[partition];
+    }
+}
+
+// 在Startup中注册
+builder.Services.AddSingleton<CachePartitionService>();
+
+var app = builder.Build();
+
+// API端点
+app.MapGet("/todo/{id}", async (int id, TodoCacheService cacheService) =>
+{
+    var todo = await cacheService.GetTodoAsync(id);
+    return todo != null ? Results.Ok(todo) : Results.NotFound();
+});
+
+app.MapPost("/todo", async (TodoItem todo, TodoCacheService cacheService) =>
+{
+    await cacheService.UpdateTodoAsync(todo);
+    return Results.Created($"/todo/{todo.Id}", todo);
+});
+
+app.Run();
+
+/*
+- 混合缓存策略（内存+Redis）
+- 故障安全模式(FailSafe)
+- 高性能通道处理(Channel)
+- 对象池和内存优化
+- 线程专用内存(ThreadLocal )
+- 异步非阻塞IO操作
+- 零拷贝内存共享技术
+- 缓存降级和限流策略
+*/

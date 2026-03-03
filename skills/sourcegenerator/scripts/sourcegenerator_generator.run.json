@@ -1,0 +1,81 @@
+{
+  "profiles": {
+    "Generate Code": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template ClassGenerator --output ./Generated/MyClass.cs --parameters namespace=MyProject className=MyClass properties=Id:int,Name:string,Description:string",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SOURCEGENERATOR_OUTPUT_PATH": "./Generated"
+      }
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "list",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Scrutor Demo": {
+      "commandName": "Project",
+      "commandLineArgs": "scrutor-demo",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SCRUTOR_DEMO_ENABLED": "true"
+      }
+    },
+    "Generate Interface": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template InterfaceGenerator --output ./Generated/IMyService.cs --parameters namespace=MyProject interfaceName=IMyService methods=Task<MyClass> GetByIdAsync(int id),Task SaveAsync(MyClass entity),Task DeleteAsync(int id)",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Service": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template ServiceGenerator --output ./Generated/MyService.cs --parameters namespace=MyProject serviceName=MyService interfaceName=IMyService methods=Task<MyClass> GetByIdAsync(int id),Task SaveAsync(MyClass entity),Task DeleteAsync(int id)",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Repository": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template ClassGenerator --output ./Generated/MyRepository.cs --parameters namespace=MyProject.Data className=MyRepository properties=DbContext:DbContext,Logger:ILogger<MyRepository> methods=Task<MyClass> GetByIdAsync(int id),Task SaveAsync(MyClass entity),Task DeleteAsync(int id)",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Controller": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template ClassGenerator --output ./Generated/MyController.cs --parameters namespace=MyProject.Controllers className=MyController properties=MyService:IMyService methods=Task<IActionResult> Get(int id),Task<IActionResult> Post([FromBody]MyClass entity),Task<IActionResult> Delete(int id)",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate ViewModel": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --template ClassGenerator --output ./Generated/MyViewModel.cs --parameters namespace=MyProject.ViewModels className=MyViewModel properties=Id:int,Name:string,Description:string,IsActive:bool,CreatedAt:DateTime",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "commonOptions": {
+    "verbose": false,
+    "debug": false,
+    "timeout": 30000,
+    "retries": 3
+  },
+  "compilationOptions": {
+    "optimize": true,
+    "debugSymbols": false,
+    "warningsAsErrors": false
+  }
+}

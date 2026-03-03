@@ -1,0 +1,51 @@
+# Resilient Agent Skill - 弹性技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的弹性技能实现，提供重试、断路器、限速器等弹性模式
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Polly@7.2.4
+# - System.Threading.RateLimiting@8.0.0
+# - Microsoft.Extensions.Http.Resilience@10.0.0
+# 应用场景:
+# - 微服务架构中的服务调用
+# - 网络API调用的错误处理
+# - 分布式系统中的故障恢复
+# - 高并发场景下的流量控制
+# - 云原生应用的弹性设计
+# 激活条件: 当需要弹性功能时激活
+# 主要功能:
+# - 重试策略: 自动重试失败的操作
+# - 断路器模式: 在服务不可用时快速失败
+# - 限速器: 控制请求速率，防止过载
+# - 超时策略: 为操作设置超时时间
+# - 回退策略: 当所有尝试都失败时提供备用方案
+# - 缓存策略: 缓存频繁访问的数据
+# 性能特性:
+# - 高性能设计: 最小化开销
+# - 内存优化: 使用对象池和内存池
+# - 并发支持: 线程安全设计
+# - 低延迟: 优化决策路径
+# 技术特性:
+# - 模块化设计: 易于集成和扩展
+# - 依赖注入: 与.NET标准依赖注入系统集成
+# - 异步编程: 支持async/await
+# - 高性能算法: 优化的弹性策略实现
+# - 配置驱动: 通过配置文件调整行为
+# AOT 编译选项:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - Optimize: true
+# - EnableCompressionInSingleFile: true
+# - SelfContained: true
+# 配置选项:
+# - ResilientOptions: 弹性策略的基本配置
+# - RetryPolicyOptions: 重试策略配置
+# - CircuitBreakerOptions: 断路器配置
+# - RateLimiterOptions: 限速器配置
+# - TimeoutPolicyOptions: 超时策略配置

@@ -1,0 +1,16 @@
+{
+  "command": "roslynator_refactor.exe",
+  "args": [
+    "refactor",
+    "--path", "${workspaceFolder}",
+    "--refactoring-type", "all",
+    "--output", "refactoring-report.json"
+  ],
+  "env": {
+    "DOTNET_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+  },
+  "workingDirectory": "${workspaceFolder}",
+  "problemMatcher": [],
+  "label": "Run Roslynator Refactor"
+}

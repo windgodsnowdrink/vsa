@@ -1,0 +1,32 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Autofac": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Autofac": {
+    "Enabled": true,
+    "Modules": [
+      "CoreModule"
+    ],
+    "AOP": {
+      "Enabled": true,
+      "Interceptors": [
+        "CallLogger"
+      ]
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

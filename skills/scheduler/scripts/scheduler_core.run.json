@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Add Cron Task": {
+      "commandName": "Project",
+      "commandLineArgs": "add --name backup --type cron --expression \"0 1 * * *\" --handler \"BackupService.Execute\" --group maintenance --priority 5",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Add Delay Task": {
+      "commandName": "Project",
+      "commandLineArgs": "add --name notify --type delay --expression \"00:05:00\" --handler \"NotificationService.Send\" --group notification --priority 3",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Add Interval Task": {
+      "commandName": "Project",
+      "commandLineArgs": "add --name cleanup --type interval --expression \"00:10:00\" --handler \"CleanupService.Execute\" --group maintenance --priority 4",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Tasks": {
+      "commandName": "Project",
+      "commandLineArgs": "list --format text",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Remove Task": {
+      "commandName": "Project",
+      "commandLineArgs": "remove --name backup --group maintenance",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Start Scheduler": {
+      "commandName": "Project",
+      "commandLineArgs": "start",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Check Status": {
+      "commandName": "Project",
+      "commandLineArgs": "status",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

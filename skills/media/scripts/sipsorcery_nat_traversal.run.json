@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "sipsorcery_nat_traversal",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\media\scripts\sipsorcery_nat_traversal.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\media\scripts\sipsorcery_nat_traversal.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

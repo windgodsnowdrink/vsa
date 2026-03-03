@@ -1,0 +1,118 @@
+#:sdk Microsoft.NET.Sdk
+#:package BouncyCastle.Cryptography@2.2.1
+#:package System.Diagnostics.Metrics@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net8.0
+#:property Nullable enable
+
+using System;
+using System.Buffers;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Security.Cryptography;
+using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
+
+namespace SmCryptoIntegration
+{
+    public class SmCryptoOptions
+    {
+        //SM2(非对称加密)
+        public int Sm2KeySize { get; set; } = 256;
+        //SM3(哈希)
+        public int Sm4KeySize { get; set; } = 128;
+        //SM4(对称加密)
+        public int Sm4IvSize { get; set; } = 16;
+        public int MaxConcurrentOperations { get; set; } = 100;
+        public TimeSpan OperationTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        public double CircuitBreakerThreshold { get; set; } = 0.5;
+        public TimeSpan CircuitBreakerDuration { get; set; } = TimeSpan.FromMinutes(1);
+    }
+
+    public interface ISmCryptoService
+    {
+        Task<byte[]> Sm2EncryptAsync(byte[] publicKey, byte[] plaintext);
+        Task<byte[]> Sm2DecryptAsync(byte[] privateKey, byte[] ciphertext);
+      public async Task<byte[]> Sm4EncryptAsync(byte[] key, byte[] iv, byte[] plaintext);
+        Task<byte[]> Sm4DecryptAsync(byte[] key, byte[] iv, byte[] ciphertext);
+        Task<byte[]> Sm3HashAsync(byte[] data);
+        IAsyncEnumerable<byte[]> CreateSm4StreamingPipelineAsync(Stream inputStream, byte[] key, byte[] iv);
+    }
+
+    public class SmCryptoService : ISmCryptoService, IDisposable
+    {
+        private readonly ILogger<SmCryptoService> _logger;
+        private readonly SmCryptoOptions _options;
+        private readonly MemoryPool<byte> _memoryPool;
+        private readonly Channel<CryptoJob> _processingChannel;
+        private readonly ActivitySource _activitySource;
+        private readonly Meter _meter;
+        private readonly Histogram<double> _processingTimeHistogram;
+        private readonly Counter<int> _processedItemsCounter;
+        private readonly CircuitBreakerPolicy _circuitBreaker;
+        private readonly CancellationTokenSource _cts = new();
+        private bool _disposed;
+        private readonly ConcurrentDictionary<string, RSA> _rsaKeyCache;
+        private readonly Timer _keyRotationTimer;
+        [ThreadStatic]
+        private static byte[]? _threadLocalBuffer;
+
+        public SmCryptoService(
+            ILogger<SmCryptoService> logger,
+            IOptions<SmCryptoOptions> options)
+        {
+            _logger = logger;
+            _options = options.Value;
+            _memoryPool = MemoryPool<byte>.Shared;
+            _processingChannel = Channel.CreateBounded<CryptoJob>(
+                new BoundedChannelOptions(_options.MaxConcurrentOperations)
+                {
+                    FullMode = BoundedChannelFullMode.Wait
+                });
+            
+            _activitySource = new ActivitySource(nameof(SmCryptoService));
+            _meter = new Meter(nameof(SmCryptoService));
+            _processingTimeHistogram = _meter.CreateHistogram<double>("processing_time_ms", "milliseconds");
+            _processedItemsCounter = _meter.CreateCounter<int>("processed_items", "items");
+            _rsaKeyCache = new ConcurrentDictionary<string, RSA>();
+            _keyRotationTimer = new Timer(KeyRotationCallback, null, TimeSpan.Zero, TimeSpan.FromHours(1));
+            
+            _circuitBreaker = Policy
+                .Handle<Exception>()
+                .CircuitBreakerAsync(
+                    exceptionsAllowedBeforeBreaking: (int)(_options.MaxConcurrentOperations * _options.CircuitBreakerThreshold),
+                    durationOfBreak: _options.CircuitBreakerDuration);
+            
+            StartWorkers();
+        }
+
+        // 实现接口方法和辅助方法...
+        
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            _cts.Cancel();
+            _meter.Dispose();
+            _activitySource.Dispose();
+            _memoryPool.Dispose();
+            _cts.Dispose();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddSmCryptoService(this IServiceCollection services, Action<SmCryptoOptions> configureOptions)
+        {
+            services.Configure(configureOptions);
+            services.AddSingleton<ISmCryptoService, SmCryptoService>();
+            return services;
+        }
+    }
+}

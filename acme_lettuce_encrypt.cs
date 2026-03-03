@@ -1,0 +1,154 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package LettuceEncrypt@2.3.0
+#:package Microsoft.AspNetCore.Server.Kestrel.Core@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Security.Cryptography.X509Certificates;
+using LettuceEncrypt;
+using Microsoft.Extensions.Options;
+using System.Threading.Channels;
+
+[SkipLocalsInit]
+public static class CertificateManager
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static X509Certificate2 FromPem(string certPem, string keyPem)
+    {
+        using var cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+        return new X509Certificate2(cert.Export(X509ContentType.Pkcs12));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static (string CertPem, string KeyPem) ToPem(X509Certificate2 cert)
+    {
+        var certPem = cert.ExportCertificatePem();
+        var keyPem = cert.GetRSAPrivateKey()?.ExportPkcs8PrivateKeyPem() ?? 
+                    cert.GetECDsaPrivateKey()?.ExportPkcs8PrivateKeyPem();
+        return (certPem, keyPem!);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static byte[] ToDer(X509Certificate2 cert)
+    {
+        return cert.Export(X509ContentType.Cert);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static X509Certificate2 FromDer(byte[] derData)
+    {
+        return new X509Certificate2(derData);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static byte[] ToPfx(X509Certificate2 cert, string password)
+    {
+        return cert.Export(X509ContentType.Pkcs12, password);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static X509Certificate2 FromPfx(byte[] pfxData, string password)
+    {
+        return new X509Certificate2(pfxData, password, 
+            X509KeyStorageFlags.EphemeralKeySet);
+    }
+}
+
+// 修改CertificateRenewalService增加格式转换支持
+[SkipLocalsInit]
+public sealed class CertificateRenewalService : BackgroundService
+{
+    private readonly Channel<X509Certificate2> _certChannel;
+    private readonly IOptions<LettuceEncryptOptions> _options;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly ObjectPool<X509Certificate2> _certPool;
+
+    public CertificateRenewalService(IOptions<LettuceEncryptOptions> options)
+    {
+        _options = options;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _certChannel = Channel.CreateBounded<X509Certificate2>(
+            new BoundedChannelOptions(100)
+            {
+                SingleReader = true,
+                FullMode = BoundedChannelFullMode.Wait
+            });
+        
+        _certPool = new DefaultObjectPool<X509Certificate2>(
+            new CertificatePooledPolicy(), 
+            Environment.ProcessorCount);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var cert in _certChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            using var latencyToken = _latencyOptimizer.BeginOperation();
+            var renewedCert = await RenewCertificateAsync(cert, stoppingToken);
+            _certPool.Return(renewedCert);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task<X509Certificate2> RenewCertificateAsync(
+        X509Certificate2 cert, 
+        CancellationToken ct)
+    {
+        // 获取当前证书的PEM格式
+        var (certPem, keyPem) = CertificateManager.ToPem(cert);
+        
+        // 使用ACME协议续期证书
+        var renewedCertPem = await _acmeClient.RenewCertificateAsync(certPem, ct);
+        
+        // 转换回X509Certificate2
+        return CertificateManager.FromPem(renewedCertPem, keyPem);
+    }
+}
+
+[SkipLocalsInit]
+internal sealed class CertificatePooledPolicy : PooledObjectPolicy<X509Certificate2>
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override X509Certificate2 Create() => throw new NotSupportedException();
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override bool Return(X509Certificate2 obj)
+    {
+        return !obj.NotAfter.ToUniversalTime().IsExpired();
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        httpsOptions.UseLettuceEncrypt();
+    });
+});
+
+builder.Services.AddLettuceEncrypt(options =>
+{
+    options.AcceptTermsOfService = true;
+    options.DomainNames = new[] { "example.com" };
+    options.EmailAddress = "admin@example.com";
+    
+    // 使用生产级ACME服务器
+    options.UseProductionServer = true;
+    
+    // 证书续期配置
+    options.RenewalDays = TimeSpan.FromDays(30);
+    options.RenewBeforeExpiry = TimeSpan.FromDays(7);
+});
+
+builder.Services.AddSingleton<CertificateRenewalService>();
+builder.Services.AddHostedService<CertificateRenewalService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "LettuceEncrypt ACME Service");
+app.Run();

@@ -1,0 +1,53 @@
+{
+  "compilation": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishOptions": {
+      "aot": true,
+      "trimMode": "partial",
+      "selfContained": true,
+      "singleFile": true
+    }
+  },
+  "dependencies": [
+    {
+      "name": "SSH.NET",
+      "version": "2023.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scrutor",
+      "version": "4.2.2"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0"
+    },
+    {
+      "name": "System.Text.Json",
+      "version": "10.0.0"
+    }
+  ],
+  "features": [
+    "ssh-code-generation",
+    "ssh-template-management",
+    "ssh-config-generation",
+    "ssh-script-generation",
+    "dependency-injection",
+    "scrutor-usage",
+    "decorator-pattern"
+  ],
+  "cli": {
+    "commands": [
+      "generate-config",
+      "generate-script",
+      "list-templates",
+      "scrutor-demo"
+    ]
+  }
+}

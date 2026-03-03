@@ -1,0 +1,102 @@
+{
+  "$schema": "https://trae-ai.bytedance.net/schema/runfile.run.json",
+  "description": "Gateway AOT 运行环境配置",
+  "runtime": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\gateway",
+    "environmentVariables": {
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+      "DOTNET_PUBLISH_AOT": "1",
+      "GATEWAY_SERVER_ADDRESS": "localhost",
+      "GATEWAY_SERVER_PORT": "8080",
+      "GATEWAY_ENABLE_SSL": "false",
+      "GATEWAY_ENABLE_COMPRESSION": "true",
+      "GATEWAY_ENABLE_CIRCUIT_BREAKER": "true",
+      "GATEWAY_CIRCUIT_BREAKER_FAILURE_THRESHOLD": "5",
+      "GATEWAY_CIRCUIT_BREAKER_RESET_TIME_MS": "30000",
+      "GATEWAY_WORKING_DIRECTORY": "d:\\Trae\\vsa\\skills\\gateway",
+      "GATEWAY_ENABLE_DETAILED_LOGGING": "false",
+      "GATEWAY_ENABLE_PERFORMANCE_MONITORING": "true",
+      "GATEWAY_REQUEST_TIMEOUT_MS": "30000"
+    },
+    "commandLineArgs": [],
+    "executionMode": "console",
+    "compilationMode": "aot",
+    "targetFramework": "net10.0",
+    "language": "csharp"
+  },
+  "commands": {
+    "default": {
+      "description": "默认命令 - 显示帮助信息",
+      "commandLineArgs": ["help"]
+    },
+    "start": {
+      "description": "启动网关服务",
+      "commandLineArgs": ["start"]
+    },
+    "stop": {
+      "description": "停止网关服务",
+      "commandLineArgs": ["stop"]
+    },
+    "restart": {
+      "description": "重启网关服务",
+      "commandLineArgs": ["restart"]
+    },
+    "status": {
+      "description": "获取网关状态",
+      "commandLineArgs": ["status"]
+    },
+    "add": {
+      "description": "添加路由",
+      "commandLineArgs": ["add", "api_route", "/api/{**remainder}", "api_cluster", "http://localhost:5000"]
+    },
+    "remove": {
+      "description": "删除路由",
+      "commandLineArgs": ["remove", "api_route"]
+    },
+    "list": {
+      "description": "列出所有路由",
+      "commandLineArgs": ["list"]
+    },
+    "version": {
+      "description": "显示版本信息",
+      "commandLineArgs": ["version"]
+    }
+  },
+  "debug": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "browserUrl": "",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "GATEWAY_ENABLE_DETAILED_LOGGING": "true"
+    }
+  },
+  "profiles": {
+    "Development": {
+      "runtime": {
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "GATEWAY_ENABLE_DETAILED_LOGGING": "true"
+        }
+      }
+    },
+    "Production": {
+      "runtime": {
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "GATEWAY_ENABLE_DETAILED_LOGGING": "false"
+        }
+      }
+    }
+  },
+  "compilation": {
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "enableUnsafeBinaryFormatterSerialization": false,
+    "trimMode": "full",
+    "enableCompressionInSingleFile": true,
+    "singleFile": true
+  }
+}

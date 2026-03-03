@@ -1,0 +1,97 @@
+{
+  "runtime": {
+    "framework": "net10.0",
+    "aot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release"
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "JIEBA_DICT_PATH": "",
+    "JIEBA_HMM_PATH": "",
+    "JIEBA_USER_DICT_PATH": ""
+  },
+  "memory": {
+    "initial": 64,
+    "maximum": 512
+  },
+  "timeouts": {
+    "command": 30000,
+    "batchProcessing": 60000
+  },
+  "profiles": {
+    "cut": {
+      "command": "cut",
+      "description": "精确模式分词",
+      "arguments": [],
+      "environmentVariables": {}
+    },
+    "cutall": {
+      "command": "cutall",
+      "description": "全模式分词",
+      "arguments": [],
+      "environmentVariables": {}
+    },
+    "cutforsearch": {
+      "command": "cutforsearch",
+      "description": "搜索引擎模式分词",
+      "arguments": [],
+      "environmentVariables": {}
+    },
+    "extract": {
+      "command": "extract",
+      "description": "提取关键词",
+      "arguments": [],
+      "environmentVariables": {}
+    },
+    "pos": {
+      "command": "pos",
+      "description": "词性标注",
+      "arguments": [],
+      "environmentVariables": {}
+    },
+    "batch": {
+      "command": "batch",
+      "description": "批量处理文本文件",
+      "arguments": [],
+      "environmentVariables": {
+        "JIEBA_BATCH_SIZE": "100"
+      },
+      "memory": {
+        "maximum": 1024
+      },
+      "timeouts": {
+        "command": 60000
+      }
+    },
+    "benchmark": {
+      "command": "benchmark",
+      "description": "运行性能基准测试",
+      "arguments": [],
+      "environmentVariables": {
+        "JIEBA_BENCHMARK_ITERATIONS": "10000"
+      },
+      "memory": {
+        "maximum": 1024
+      },
+      "timeouts": {
+        "command": 120000
+      }
+    },
+    "help": {
+      "command": "help",
+      "description": "显示帮助信息",
+      "arguments": [],
+      "environmentVariables": {}
+    }
+  },
+  "logging": {
+    "level": "Information",
+    "format": "json"
+  },
+  "errorHandling": {
+    "showStackTrace": false,
+    "exitOnError": true
+  }
+}

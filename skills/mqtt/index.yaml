@@ -1,0 +1,54 @@
+# MQTT 智能体技能 - MQTT 消息队列技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的高性能 MQTT 消息队列技能实现，采用 AOT 编译优化，支持高并发、低延迟的消息传递
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - MQTTnet@4.1.4.561
+# - System.Threading.Channels@8.0.0
+# - System.IO.Pipelines@7.0.0
+# 应用场景: 物联网、实时通信、消息传递、设备监控、智能家居等
+# 激活条件: 需要 MQTT 功能时激活
+# 主要功能:
+# - MQTT 客户端实现（支持 v3.1.1 和 v5.0 协议）
+# - MQTT 服务器实现（支持 v3.1.1 和 v5.0 协议）
+# - 高级安全特性（TLS/SSL、认证、授权等）
+# - 高性能设计（System.Threading.Channels、Span 零拷贝等）
+# - 异步编程模型
+# - 可扩展架构
+# - 丰富的示例脚本
+# AOT 编译支持: 支持将 MQTT 应用编译为本机代码，提高启动速度和运行性能
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64
+# 性能特性:
+# - 高性能设计，支持高并发消息处理
+# - 内存优化，减少内存占用和拷贝
+# - 并发支持，充分利用多核 CPU
+# - 低延迟设计，优化消息传递延迟
+# 技术特性:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，提高代码的可测试性
+# - 异步编程，避免阻塞主线程
+# - 高性能算法，优化消息处理效率
+# - 零拷贝技术，减少内存拷贝开销
+# - 通道机制，高效处理消息队列
+# - 支持 MQTT v5.0 协议的新特性
+# - 高级安全机制，保护通信安全
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

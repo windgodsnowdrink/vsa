@@ -1,0 +1,108 @@
+name: ui
+version: 1.0.0
+description: UI技能，支持Web、桌面和移动应用的开发和部署
+
+compilation:
+  targetFramework: net10.0
+  publishAot: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  runtimeIdentifiers:
+    - win-x64
+    - linux-x64
+    - osx-x64
+
+nugetPackages:
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 9.0.0
+  - name: Scrutor
+    version: 4.0.0
+  - name: System.CommandLine
+    version: 2.0.0
+  - name: Microsoft.Extensions.Logging
+    version: 9.0.0
+  - name: Microsoft.Extensions.Configuration
+    version: 9.0.0
+  - name: Microsoft.Extensions.Configuration.Json
+    version: 9.0.0
+  - name: Microsoft.Extensions.Configuration.EnvironmentVariables
+    version: 9.0.0
+  - name: Microsoft.AspNetCore.Components.Web
+    version: 9.0.0
+  - name: Microsoft.Maui
+    version: 9.0.0
+  - name: Microsoft.AspNetCore.SignalR.Client
+    version: 9.0.0
+  - name: Microsoft.AspNetCore.Http.Abstractions
+    version: 9.0.0
+
+features:
+  - name: WebUI
+    description: Web用户界面，基于Blazor
+    enabled: true
+  - name: DesktopUI
+    description: 桌面用户界面，基于MAUI
+    enabled: true
+  - name: MobileUI
+    description: 移动用户界面，基于MAUI
+    enabled: true
+  - name: ThemeManagement
+    description: 主题管理，支持浅色和深色模式
+    enabled: true
+  - name: Localization
+    description: 本地化支持，多语言界面
+    enabled: true
+  - name: PerformanceMonitoring
+    description: 性能监控，实时跟踪UI性能
+    enabled: true
+  - name: Accessibility
+    description: 无障碍支持，符合WCAG标准
+    enabled: true
+
+commands:
+  - name: build
+    description: 构建UI技能
+    command: dotnet build
+    args:
+      - -c
+      - Release
+  - name: publish
+    description: 发布UI技能（AOT编译）
+    command: dotnet publish
+    args:
+      - -c
+      - Release
+      - -r
+      - win-x64
+      - --self-contained
+      - true
+      - /p:PublishAot=true
+      - /p:TrimMode=partial
+      - /p:PublishSingleFile=true
+  - name: run
+    description: 运行UI技能
+    command: dotnet run
+    args:
+      - -c
+      - Debug
+  - name: test
+    description: 运行UI技能测试
+    command: dotnet test
+    args:
+      - -c
+      - Release
+
+scripts:
+  - name: ui_core
+    description: 核心UI实现
+    entryPoint: ui_core.cs
+  - name: ui_generator
+    description: UI生成器，包含Scrutor示例
+    entryPoint: ui_generator.cs
+
+reference:
+  - name: README
+    path: reference/README.md
+  - name: Examples
+    path: reference/examples.md

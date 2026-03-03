@@ -1,0 +1,46 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MassTransit": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "MassTransit": {
+    "Enabled": true,
+    "RabbitMQ": {
+      "Host": "localhost",
+      "Username": "guest",
+      "Password": "guest",
+      "VirtualHost": "/",
+      "Port": 5672,
+      "UseSsl": false
+    },
+    "Production": {
+      "EnableCircuitBreaker": true,
+      "CircuitBreaker": {
+        "TrackingPeriod": "00:01:00",
+        "TripThreshold": 15,
+        "ActiveThreshold": 10,
+        "ResetInterval": "00:05:00"
+      },
+      "EnableRateLimiting": true,
+      "RateLimiting": {
+        "Limit": 100,
+        "Window": "00:00:01"
+      },
+      "EnableMonitoring": true
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ],
+    "optimizationLevel": "Release",
+    "warningLevel": 4,
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "langVersion": "preview",
+    "outputType": "Exe"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "9.0.0",
+    "Scrutor": "4.0.0",
+    "System.CommandLine": "2.0.0",
+    "Microsoft.Extensions.Logging": "9.0.0",
+    "Microsoft.Extensions.Configuration": "9.0.0",
+    "Microsoft.Extensions.Configuration.Json": "9.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "9.0.0",
+    "Microsoft.AspNetCore.Components.Web": "9.0.0",
+    "Microsoft.Maui": "9.0.0",
+    "Microsoft.AspNetCore.SignalR.Client": "9.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "9.0.0"
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "outputPath": "../bin/Release/net10.0/win-x64/publish",
+    "define": [
+      "RELEASE"
+    ],
+    "allowUnsafeBlocks": false,
+    "xmlDoc": true,
+    "debugType": "portable"
+  },
+  "publishOptions": {
+    "include": [
+      "appsettings.json",
+      "appsettings.Development.json",
+      "appsettings.Production.json"
+    ],
+    "exclude": [
+      "**/*.settting.json",
+      "**/*.run.json"
+    ]
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32
+    }
+  },
+  "packOptions": {
+    "summary": "Core UI implementation with multiple UI types, theme management, localization, performance monitoring, and accessibility checks",
+    "authors": ["UI Team"],
+    "owners": ["UI Team"],
+    "tags": [
+      "UI",
+      "AOT",
+      "Blazor",
+      "MAUI",
+      "Web",
+      "Desktop",
+      "Mobile"
+    ],
+    "projectUrl": "https://github.com/ui-skill",
+    "licenseUrl": "https://github.com/ui-skill/blob/main/LICENSE",
+    "requireLicenseAcceptance": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "watchdog_distributed_tracing",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\otel\scripts\watchdog_distributed_tracing.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\otel\scripts\watchdog_distributed_tracing.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

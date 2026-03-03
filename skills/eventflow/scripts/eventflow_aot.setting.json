@@ -1,0 +1,22 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "EventFlow": {
+    "EventStoreType": "InMemory",
+    "EventStoreConnectionString": "",
+    "EventBusType": "InMemory",
+    "EventBusConnectionString": "",
+    "RequestTimeoutMs": 5000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "MaxEventStoreCount": 10000,
+    "EnableEventCompression": false,
+    "EnableEventEncryption": false
+  },
+  "AllowedHosts": "*"
+}

@@ -1,0 +1,198 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.AspNetCore.SignalR@8.0.0
+#:package NAudio@2.2.1
+#:package CSCore@1.2.1.2
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using NAudio.Wave;
+using CSCore;
+using CSCore.SoundIn;
+using Microsoft.AspNetCore.SignalR;
+using System.Runtime.CompilerServices;
+using System.Buffers;
+using System.Runtime.InteropServices.JavaScript;
+
+// 1. 音频流缓存管理器
+[SkipLocalsInit]
+public sealed class AudioStreamCache : IAsyncDisposable
+{
+    private readonly Channel<AudioFrame> _cacheChannel;
+    private readonly MemoryPool<byte> _memoryPool;
+    private readonly CancellationTokenSource _cts = new();
+    private const int MaxCacheSize = 100;
+
+    public AudioStreamCache()
+    {
+        _cacheChannel = Channel.CreateBounded<AudioFrame>(MaxCacheSize);
+        _memoryPool = MemoryPool<byte>.Shared;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task CacheAudioAsync(byte[] audioData, WaveFormat format)
+    {
+        using var memory = _memoryPool.Rent(audioData.Length);
+        audioData.CopyTo(memory.Memory.Span);
+        
+        await _cacheChannel.Writer.WriteAsync(new AudioFrame(
+            memory.Memory.Span,
+            format));
+    }
+
+    public IAsyncEnumerable<AudioFrame> GetCachedAudioAsync() =>
+        _cacheChannel.Reader.ReadAllAsync(_cts.Token);
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _cacheChannel.Writer.Complete();
+    }
+}
+
+// 2. WebAssembly音频处理器
+[JSExport]
+public static partial class WasmAudioProcessor
+{
+    [JSImport("processAudio", "audioProcessor.js")]
+    public static partial void ProcessAudio([JSMarshalAs<JSType.MemoryView>] Span<byte> data);
+}
+
+// 3. 增强版音频处理器(带错误处理)
+[SkipLocalsInit]
+public sealed class EnhancedAudioProcessor : IAsyncDisposable
+{
+    private readonly AudioStreamCache _cache;
+    private readonly ILogger<EnhancedAudioProcessor> _logger;
+    private readonly ObjectPool<WasapiOut> _wasapiOutPool;
+    private readonly ThreadLocal<Span<byte>> _audioBuffer;
+
+    public EnhancedAudioProcessor(
+        AudioStreamCache cache,
+        ILogger<EnhancedAudioProcessor> logger)
+    {
+        _cache = cache;
+        _logger = logger;
+        _wasapiOutPool = new DefaultObjectPool<WasapiOut>(
+            new WasapiOutPooledPolicy(), 4);
+        _audioBuffer = new(() => stackalloc byte[48000 * 2 * 2]);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessAudioWithRetryAsync(byte[] audioData, WaveFormat format)
+    {
+        const int maxRetries = 3;
+        int retryCount = 0;
+        
+        while (retryCount < maxRetries)
+        {
+            try
+            {
+                // 缓存音频
+                await _cache.CacheAudioAsync(audioData, format);
+                
+                // 使用WebAssembly处理
+                unsafe
+                {
+                    fixed (byte* ptr = audioData)
+                    {
+                        WasmAudioProcessor.ProcessAudio(new Span<byte>(ptr, audioData.Length));
+                    }
+                }
+                
+                // 播放音频
+                await PlayAudioAsync(audioData, format);
+                return;
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                _logger.LogError(ex, $"Audio processing failed (attempt {retryCount}/{maxRetries})");
+                
+                if (retryCount >= maxRetries)
+                    throw;
+                
+                await Task.Delay(100 * retryCount);
+            }
+        }
+    }
+
+    private async Task PlayAudioAsync(byte[] audioData, WaveFormat format)
+    {
+        var wasapiOut = _wasapiOutPool.Get();
+        try
+        {
+            wasapiOut.Init(new BufferedWaveProvider(format));
+            wasapiOut.Play();
+            
+            unsafe
+            {
+                fixed (byte* ptr = audioData)
+                {
+                    wasapiOut.AddSamples(ptr, 0, audioData.Length);
+                }
+            }
+            
+            await Task.Delay(100); // 确保播放完成
+        }
+        finally
+        {
+            _wasapiOutPool.Return(wasapiOut);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _cache.DisposeAsync();
+    }
+}
+
+// 4. SignalR Hub集成
+public sealed class AudioHub : Hub
+{
+    private readonly EnhancedAudioProcessor _processor;
+    private readonly ILogger<AudioHub> _logger;
+
+    public AudioHub(EnhancedAudioProcessor processor, ILogger<AudioHub> logger)
+    {
+        _processor = processor;
+        _logger = logger;
+    }
+
+    public async Task StreamAudio(byte[] audioData, int sampleRate, int bits, int channels)
+    {
+        try
+        {
+            var format = new WaveFormat(sampleRate, bits, channels);
+            await _processor.ProcessAudioWithRetryAsync(audioData, format);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Audio streaming failed");
+            throw new HubException("Audio processing error", ex);
+        }
+    }
+}
+
+// 5. 主程序集成
+var builder = WebApplication.CreateBuilder();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<AudioStreamCache>();
+builder.Services.AddSingleton<EnhancedAudioProcessor>();
+
+var app = builder.Build();
+app.MapHub<AudioHub>("/audio");
+app.MapGet("/", () => "Enhanced RTC Audio Processor Ready");
+app.Run();
+// 3. 音频帧结构
+[SkipLocalsInit]
+public readonly record struct AudioFrame(
+    ReadOnlySpan<byte> Data,
+    WaveFormat Format,
+    bool IsPooled = false,
+    IMemoryOwner<byte>? Memory = null);

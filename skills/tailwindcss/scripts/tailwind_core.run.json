@@ -1,0 +1,120 @@
+{
+  "profiles": {
+    "build": {
+      "commandName": "Project",
+      "arguments": "build input.css output.css",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "CACHE_ENABLED": "true",
+        "CACHE_SIZE_LIMIT": "104857600" // 100MB
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "watch": {
+      "commandName": "Project",
+      "arguments": "watch input.css output.css",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug",
+        "CACHE_ENABLED": "false",
+        "WATCH_INTERVAL": "1000" // 1 second
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "init": {
+      "commandName": "Project",
+      "arguments": "init",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "purge": {
+      "commandName": "Project",
+      "arguments": "purge input.css output.css --content **/*.html,**/*.cshtml,**/*.razor,**/*.js,**/*.ts",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "PURGE_ENABLED": "true",
+        "CONTENT_PATHS": "**/*.html,**/*.cshtml,**/*.razor,**/*.js,**/*.ts"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "optimize": {
+      "commandName": "Project",
+      "arguments": "optimize input.css output.css",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "OPTIMIZE_ENABLED": "true",
+        "MINIFY_ENABLED": "true",
+        "SOURCE_MAP_ENABLED": "false"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "build-release": {
+      "commandName": "Project",
+      "arguments": "build input.css output.css",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Warning",
+        "CACHE_ENABLED": "true",
+        "OPTIMIZE_ENABLED": "true",
+        "MINIFY_ENABLED": "true"
+      },
+      "dotnetRunMessages": false,
+      "launchBrowser": false
+    },
+    "build-debug": {
+      "commandName": "Project",
+      "arguments": "build input.css output.css",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug",
+        "CACHE_ENABLED": "false",
+        "OPTIMIZE_ENABLED": "false",
+        "MINIFY_ENABLED": "false"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    }
+  },
+  "global": {
+    "environmentVariables": {
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_NOLOGO": "1",
+      "TMPDIR": "$(ProjectDir)\temp",
+      "MAX_CONCURRENCY": "4",
+      "TIMEOUT_SECONDS": "300" // 5 minutes
+    },
+    "workingDirectory": "$(ProjectDir)",
+    "dotnetRunMessages": true
+  },
+  "debug": {
+    "enabled": true,
+    "logLevel": "Debug",
+    "enableLogging": true,
+    "enableMetrics": false,
+    "enableProfiling": false
+  },
+  "performance": {
+    "memoryLimit": "512MB",
+    "cpuLimit": "80%",
+    "ioTimeout": "30000", // 30 seconds
+    "networkTimeout": "10000" // 10 seconds
+  }
+}

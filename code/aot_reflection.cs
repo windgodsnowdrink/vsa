@@ -1,0 +1,156 @@
+#:sdk Microsoft.NET.Sdk
+#:package Microsoft.Extensions.DependencyModel@8.0.0
+#:package System.Text.Json@8.0.0
+#:package MemoryPack@2.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Reflection;
+using MemoryPack;
+using System.Threading.Channels;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. AOT反射标记接口(CPU cache-line对齐)
+[MemoryPackable]
+public partial interface IAotReflectionMarker
+{
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All)]
+    void RegisterTypes(Assembly assembly);
+}
+
+// 2. 高性能反射上下文(Disruptor模式)
+[MemoryPackable]
+[JsonSerializable(typeof(ReflectionData))]
+[JsonSerializable(typeof(TypeInfo))]
+public partial class AotReflectionContext : JsonSerializerContext, IAotReflectionMarker
+{
+    private static readonly HashSet<Type> _registeredTypes = new();
+    private static readonly object _lock = new();
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ReflectionData))]
+    public void RegisterTypes(Assembly assembly)
+    {
+        lock (_lock)
+        {
+            foreach (var type in assembly.GetTypes())
+            {
+                if (type.IsDefined(typeof(JsonSerializableAttribute), false) || 
+                    type.IsDefined(typeof(MemoryPackableAttribute), false))
+                {
+                    _registeredTypes.Add(type);
+                }
+            }
+        }
+    }
+
+    // 3. 零拷贝类型查找(Span优化)
+    [UnconditionalSuppressMessage("Trimming", "IL2072")]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static Type? FindType(ReadOnlySpan<char> fullName)
+    {
+        foreach (var type in _registeredTypes)
+        {
+            if (type.FullName.AsSpan().SequenceEqual(fullName))
+            {
+                return type;
+            }
+        }
+        return null;
+    }
+}
+
+// 4. 反射数据模型(内存池优化)
+[MemoryPackable]
+[method: SkipLocalsInit]
+public partial record ReflectionData(
+    string TypeName,
+    string AssemblyName,
+    Dictionary<string, object?> Properties);
+
+// 5. AOT反射服务(线程安全对象池)
+[SkipLocalsInit]
+public sealed class AotReflectionService : BackgroundService
+{
+    private readonly Channel<ReflectionRequest> _requestChannel;
+    private readonly ObjectPool<ReflectionContext> _contextPool;
+    private readonly IAotReflectionMarker _marker;
+
+    public AotReflectionService(IAotReflectionMarker marker)
+    {
+        _marker = marker;
+        
+        _requestChannel = Channel.CreateBounded<ReflectionRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        _contextPool = new DefaultObjectPool<ReflectionContext>(
+            new ReflectionContextPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+    }
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ReflectionData))]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<ReflectionData?> ReflectAsync(object target)
+    {
+        var request = new ReflectionRequest(target);
+        await _requestChannel.Writer.WriteAsync(request);
+        return await request.CompletionSource.Task;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                var result = await context.ProcessAsync(request, _marker);
+                request.CompletionSource.TrySetResult(result);
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 6. 主程序配置
+var builder = WebApplication.CreateBuilder(args);
+
+// 注册AOT反射服务
+builder.Services.AddSingleton<IAotReflectionMarker, AotReflectionContext>();
+builder.Services.AddSingleton<AotReflectionService>();
+builder.Services.AddHostedService<AotReflectionService>();
+
+var app = builder.Build();
+
+app.MapGet("/reflect", async ([FromServices] AotReflectionService service, [FromQuery] string typeName) =>
+{
+    var type = AotReflectionContext.FindType(typeName);
+    if (type == null) return Results.NotFound();
+    
+    var instance = Activator.CreateInstance(type);
+    var result = await service.ReflectAsync(instance!);
+    return Results.Ok(result);
+});
+
+app.Run();
+
+// 辅助记录类型
+public record ReflectionRequest(object Target, TaskCompletionSource<ReflectionData?> CompletionSource = null!)
+{
+    public ReflectionRequest(object target) : this(target, new TaskCompletionSource<ReflectionData?>())
+    {
+    }
+}

@@ -1,0 +1,313 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Disruptor@6.0.0
+#:package System.Buffers@4.5.1
+#:package Microsoft.Extensions.Hosting@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System;
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Disruptor;
+using Disruptor.Dsl;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+
+/// <summary>
+/// Disruptor消息事件定义，包含原始数据和时间戳
+/// 使用record类型自动实现值相等性比较和不可变性
+/// </summary>
+/// <param name="Data">消息原始数据字节数组</param>
+/// <param name="Timestamp">消息创建时间戳</param>
+public record DisruptorMessage(byte[] Data, DateTimeOffset Timestamp);
+
+/// <summary>
+/// Disruptor配置选项，支持通过DI配置
+/// </summary>
+public sealed class DisruptorOptions
+{
+    /// <summary>
+    /// RingBuffer大小，默认8K，必须是2的幂次方
+    /// 根据业务吞吐量需求调整，过小会导致阻塞，过大会占用更多内存
+    /// </summary>
+    public int RingBufferSize { get; set; } = 1024 * 8;
+    
+    /// <summary>
+    /// 批处理大小，默认16条消息
+    /// 影响处理器的批处理效率，需要根据消息大小和处理耗时调整
+    /// </summary>
+    public int BatchSize { get; set; } = 16;
+    
+    /// <summary>
+    /// 并行处理器数量，默认CPU核心数
+    /// 充分利用多核CPU并行处理能力
+    /// </summary>
+    public int ParallelHandlers { get; set; } = Environment.ProcessorCount;
+}
+
+/// <summary>
+/// Disruptor事件处理器，实现高性能消息处理
+/// 使用Span<T>进行零拷贝处理，避免不必要的内存分配
+/// </summary>
+public sealed class DisruptorEventHandler : IEventHandler<DisruptorMessage>
+{
+    private readonly IOptions<DisruptorOptions> _options;
+
+    public DisruptorEventHandler(IOptions<DisruptorOptions> options)
+    {
+        _options = options;
+    }
+
+    /// <summary>
+    /// 事件处理方法，使用AggressiveInlining优化性能
+    /// </summary>
+    /// <param name="data">消息数据</param>
+    /// <param name="sequence">序列号</param>
+    /// <param name="endOfBatch">是否批处理结束</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void OnEvent(DisruptorMessage data, long sequence, bool endOfBatch)
+    {
+        // 使用Span进行零拷贝处理，避免数组拷贝
+        ProcessData(data.Data.AsSpan());
+    }
+
+    /// <summary>
+    /// 实际数据处理逻辑
+    /// 使用Span<T>操作原始内存，实现高性能处理
+    /// </summary>
+    /// <param name="data">数据内存视图</param>
+    private void ProcessData(Span<byte> data)
+    {
+        // 高性能数据处理逻辑
+        // 示例：计算CRC校验、协议解析等
+    }
+}
+
+// 生产者接口
+public interface IDisruptorProducer
+{
+    ValueTask PublishAsync(ReadOnlyMemory<byte> data);
+}
+
+// 生产者实现
+public sealed class DisruptorProducer : IDisruptorProducer
+{
+    private readonly RingBuffer<DisruptorMessage> _ringBuffer;
+
+    public DisruptorProducer(RingBuffer<DisruptorMessage> ringBuffer)
+    {
+        _ringBuffer = ringBuffer;
+    }
+
+    public ValueTask PublishAsync(ReadOnlyMemory<byte> data)
+    {
+        var sequence = _ringBuffer.Next();
+        try
+        {
+            ref var message = ref _ringBuffer[sequence];
+            message = new DisruptorMessage(data.ToArray(), DateTimeOffset.UtcNow);
+        }
+        finally
+        {
+            _ringBuffer.Publish(sequence);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+// 后台服务
+public sealed class DisruptorBackgroundService : BackgroundService
+{
+    private readonly Disruptor<DisruptorMessage> _disruptor;
+    private readonly RingBuffer<DisruptorMessage> _ringBuffer;
+    private readonly IOptions<DisruptorOptions> _options;
+
+    public DisruptorBackgroundService(
+        Disruptor<DisruptorMessage> disruptor,
+        RingBuffer<DisruptorMessage> ringBuffer,
+        IOptions<DisruptorOptions> options)
+    {
+        _disruptor = disruptor;
+        _ringBuffer = ringBuffer;
+        _options = options;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _disruptor.Start();
+        return Task.CompletedTask;
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _disruptor.Shutdown();
+        await base.StopAsync(cancellationToken);
+    }
+}
+
+// DI扩展方法
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddDisruptor(this IServiceCollection services, Action<DisruptorOptions> configure)
+    {
+        services.Configure(configure);
+        
+        services.AddSingleton<Disruptor<DisruptorMessage>>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<DisruptorOptions>>().Value;
+            
+            var disruptor = new Disruptor<DisruptorMessage>(
+                () => new DisruptorMessage(Array.Empty<byte>(), default),
+                options.RingBufferSize,
+                TaskScheduler.Default,
+                ProducerType.Multi,
+                new BlockingWaitStrategy());
+            
+            // 使用并行处理器
+            var handlers = new IEventHandler<DisruptorMessage>[options.ParallelHandlers];
+            for (var i = 0; i < handlers.Length; i++)
+            {
+                handlers[i] = sp.GetRequiredService<DisruptorEventHandler>();
+            }
+            
+            disruptor.HandleEventsWith(handlers);
+            return disruptor;
+        });
+        
+        services.AddSingleton(sp => sp.GetRequiredService<Disruptor<DisruptorMessage>>().RingBuffer);
+        services.AddSingleton<IDisruptorProducer, DisruptorProducer>();
+        services.AddHostedService<DisruptorBackgroundService>();
+        services.AddSingleton<DisruptorEventHandler>();
+        
+        return services;
+    }
+}
+
+// 高级应用场景示例
+public static class AdvancedScenarios
+{
+    // 场景1: 多生产者并行写入
+    public static async Task MultiProducerScenario(RingBuffer<DisruptorMessage> ringBuffer)
+    {
+        var producers = new List<Task>();
+        for (int i = 0; i < Environment.ProcessorCount; i++)
+        {
+            producers.Add(Task.Run(() =>
+            {
+                for (int j = 0; j < 1000; j++)
+                {
+                    var sequence = ringBuffer.Next();
+                    try
+                    {
+                        ref var message = ref ringBuffer[sequence];
+                        message = new DisruptorMessage(new byte[1024], DateTimeOffset.UtcNow);
+                    }
+                    finally
+                    {
+                        ringBuffer.Publish(sequence);
+                    }
+                }
+            }));
+        }
+        await Task.WhenAll(producers);
+    }
+
+    // 场景2: 批处理消费者
+    public static void BatchConsumerScenario(Disruptor<DisruptorMessage> disruptor)
+    {
+        var batchHandler = new BatchEventHandler();
+        disruptor.HandleEventsWith(batchHandler);
+    }
+
+    // 场景3: 多级处理管道
+    public static void MultiStagePipeline(Disruptor<DisruptorMessage> disruptor)
+    {
+        var handler1 = new FirstStageHandler();
+        var handler2 = new SecondStageHandler();
+        var handler3 = new FinalStageHandler();
+        
+        disruptor.HandleEventsWith(handler1)
+                 .Then(handler2)
+                 .Then(handler3);
+    }
+}
+
+// 批处理事件处理器
+public sealed class BatchEventHandler : IEventHandler<DisruptorMessage>
+{
+    private readonly List<DisruptorMessage> _batch = new(100);
+
+    public void OnEvent(DisruptorMessage data, long sequence, bool endOfBatch)
+    {
+        _batch.Add(data);
+        if (endOfBatch || _batch.Count >= 100)
+        {
+            ProcessBatch(_batch);
+            _batch.Clear();
+        }
+    }
+
+    private void ProcessBatch(List<DisruptorMessage> batch)
+    {
+        // 批处理逻辑
+    }
+}
+
+// 多级处理管道处理器
+public sealed class FirstStageHandler : IEventHandler<DisruptorMessage>
+{
+    public void OnEvent(DisruptorMessage data, long sequence, bool endOfBatch)
+    {
+        // 第一级处理
+    }
+}
+
+public sealed class SecondStageHandler : IEventHandler<DisruptorMessage>
+{
+    public void OnEvent(DisruptorMessage data, long sequence, bool endOfBatch)
+    {
+        // 第二级处理
+    }
+}
+
+public sealed class FinalStageHandler : IEventHandler<DisruptorMessage>
+{
+    public void OnEvent(DisruptorMessage data, long sequence, bool endOfBatch)
+    {
+        // 最终处理
+    }
+}
+
+// 示例使用
+public static class Program
+{
+    public static void Main(string[] args)
+    {
+        var host = Host.CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.AddDisruptor(options =>
+                {
+                    options.RingBufferSize = 1024 * 16;
+                    options.BatchSize = 32;
+                    options.ParallelHandlers = Environment.ProcessorCount * 2;
+                });
+            })
+            .Build();
+
+        // 演示高级场景
+        var disruptor = host.Services.GetRequiredService<Disruptor<DisruptorMessage>>();
+        var ringBuffer = host.Services.GetRequiredService<RingBuffer<DisruptorMessage>>();
+        
+        // 配置多级处理管道
+        AdvancedScenarios.MultiStagePipeline(disruptor);
+        
+        host.Run();
+    }
+}

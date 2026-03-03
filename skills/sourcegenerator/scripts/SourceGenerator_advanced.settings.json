@@ -1,0 +1,34 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.Advanced": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "Advanced": {
+      "EnableIncrementalGenerators": true,
+      "EnableAnalyzers": true,
+      "GenerateDocumentation": true,
+      "GenerateDebugInfo": true,
+      "OutputDirectory": "./generated",
+      "CacheDirectory": "./cache",
+      "SupportedLanguages": ["C#"],
+      "MaxGenerationDepth": 10,
+      "TimeoutSeconds": 30,
+      "EnableParallelGeneration": true,
+      "MaxParallelGenerators": 4,
+      "EnableMemoryOptimization": true
+    }
+  }
+}

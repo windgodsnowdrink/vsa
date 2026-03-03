@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "sqlite_bulk_writer",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\db\scripts\sqlite_bulk_writer.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\db\scripts\sqlite_bulk_writer.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

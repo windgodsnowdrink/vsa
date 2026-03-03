@@ -1,0 +1,47 @@
+{
+  "SecurityHeaders": {
+    "ContentSecurityPolicy": {
+      "DefaultSrc": ["'self'"],
+      "ScriptSrc": [
+        "'self'",
+        "'unsafe-inline'",
+        "'nonce-{0}'",
+        "'strict-dynamic'"
+      ],
+      "StyleSrc": [
+        "'self'",
+        "'unsafe-inline'"
+      ],
+      "ImgSrc": [
+        "'self'",
+        "data:"
+      ],
+      "FontSrc": ["'self'"],
+      "FormAction": ["'self'"],
+      "FrameAncestors": ["'none'"],
+      "UpgradeInsecureRequests": true
+    },
+    "CrossOriginPolicies": {
+      "OpenerPolicy": "same-origin",
+      "ResourcePolicy": "same-origin",
+      "EmbedderPolicy": "require-corp"
+    },
+    "ReferrerPolicy": "strict-origin-when-cross-origin",
+    "PermissionsPolicy": {
+      "Accelerometer": "none",
+      "Camera": "none",
+      "Geolocation": "none",
+      "Microphone": "none",
+      "Payment": "none"
+    },
+    "FeaturePolicy": {
+      "Fullscreen": "'self'",
+      "SyncXHR": "'none'"
+    },
+    "StrictTransportSecurity": {
+      "MaxAge": "63072000",
+      "IncludeSubDomains": true,
+      "Preload": true
+    }
+  }
+}

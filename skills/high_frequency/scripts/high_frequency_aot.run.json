@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "profiles": {
+    "Run High Frequency Test": {
+      "commandName": "Project",
+      "commandLineArgs": "run",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "DOTNET_GCConserveMemory": "0",
+        "DOTNET_ThreadPool_ForceMinWorkerThreads": "10",
+        "DOTNET_ThreadPool_ForceMaxWorkerThreads": "1000",
+        "HIGH_FREQUENCY_MESSAGE_COUNT": "1000000",
+        "HIGH_FREQUENCY_CONCURRENCY_LEVEL": "8",
+        "HIGH_FREQUENCY_BUFFER_SIZE": "65536",
+        "HIGH_FREQUENCY_ENABLE_ZERO_COPY": "true",
+        "HIGH_FREQUENCY_ENABLE_BATCH_PROCESSING": "true",
+        "HIGH_FREQUENCY_BATCH_SIZE": "1000",
+        "HIGH_FREQUENCY_ENABLE_COMPRESSION": "false",
+        "HIGH_FREQUENCY_ENABLE_METRICS": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "nativeDebugging": false
+    },
+    "Run Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HIGH_FREQUENCY_MESSAGE_COUNT": "1000000",
+        "HIGH_FREQUENCY_CONCURRENCY_LEVEL": "8",
+        "HIGH_FREQUENCY_ENABLE_METRICS": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Run Zero Copy Test": {
+      "commandName": "Project",
+      "commandLineArgs": "zero-copy",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HIGH_FREQUENCY_MESSAGE_COUNT": "1000000",
+        "HIGH_FREQUENCY_ENABLE_METRICS": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Run Pipeline Test": {
+      "commandName": "Project",
+      "commandLineArgs": "pipeline",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HIGH_FREQUENCY_MESSAGE_COUNT": "1000000",
+        "HIGH_FREQUENCY_ENABLE_METRICS": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Run Channel Test": {
+      "commandName": "Project",
+      "commandLineArgs": "channel",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HIGH_FREQUENCY_MESSAGE_COUNT": "1000000",
+        "HIGH_FREQUENCY_CONCURRENCY_LEVEL": "8",
+        "HIGH_FREQUENCY_ENABLE_METRICS": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Show Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Show Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Publish AOT": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    }
+  },
+  "compilationOptions": {
+    "buildCommand": "dotnet build -c Release",
+    "publishCommand": "dotnet publish -c Release -r win-x64 --self-contained true /p:PublishAot=true /p:TrimMode=partial",
+    "runCommand": "dotnet run -c Release",
+    "testCommand": "dotnet test -c Release",
+    "cleanCommand": "dotnet clean"
+  },
+  "debugOptions": {
+    "enableLogging": true,
+    "logLevel": "Information",
+    "logFile": "high_frequency_aot.log",
+    "enableMetrics": true,
+    "metricsFile": "high_frequency_aot.metrics.json",
+    "enablePerformanceCounters": true,
+    "enableMemoryProfiling": false,
+    "enableThreadProfiling": false
+  },
+  "performanceOptions": {
+    "enableTailCallOptimization": true,
+    "enableLoopUnrolling": true,
+    "enableInlineArrayOptimizations": true,
+    "enableVectorization": true,
+    "enableMemoryOptimizations": true,
+    "enableStringOptimizations": true,
+    "enableReflectionOptimizations": true
+  },
+  "memoryOptions": {
+    "enableMemoryPooling": true,
+    "enableBufferPooling": true,
+    "enableObjectPooling": true,
+    "maxPoolSize": 1000000,
+    "bufferPoolSize": 65536,
+    "objectPoolSize": 100000
+  },
+  "concurrencyOptions": {
+    "enableAsyncLocal": false,
+    "enableThreadStatic": true,
+    "enableThreadLocalStorage": true,
+    "enableConcurrentCollections": true,
+    "enableSpinLockOptimizations": true,
+    "enableLockFreeAlgorithms": true
+  }
+}

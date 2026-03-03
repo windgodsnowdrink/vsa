@@ -1,0 +1,38 @@
+# Util Agent Skill - 实用工具支持系统
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10的高性能实用工具支持系统，提供全方位工具集
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Scrutor@4.2.2
+# - Microsoft.Extensions.Configuration@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# Application Scenarios: 各种实用工具相关功能
+# Activation Conditions: 当需要使用实用工具功能时激活
+# Main Features:
+# - 文件工具：文件读写、目录操作、文件监控
+# - 加密工具：对称加密、非对称加密、哈希计算
+# - 序列化工具：JSON、XML、二进制序列化
+# - 配置工具：配置文件读取、环境变量管理
+# - 反射工具：类型信息获取、动态方法调用
+# - 时间工具：时间格式化、时间计算、时区转换
+# - 网络工具：HTTP请求、网络诊断
+# Performance Features:
+# - 高性能设计：优化的性能实现
+# - 内存优化：合理的内存使用策略
+# - 并发支持：异步操作和并发处理
+# - 缓存机制：提高重复操作性能
+# Technical Features:
+# - 模块化设计：清晰的模块划分
+# - 依赖注入：支持IoC容器
+# - 异步编程：基于Task的异步API
+# - 高性能算法：优化的算法实现
+# - 可扩展架构：支持自定义扩展
+# - Scrutor集成：自动服务注册
+# Compatibility:
+# - .NET 10: 完全支持
+# - .NET 9: 完全支持
+# - .NET 8: 基本支持
+# - .NET 7: 不支持

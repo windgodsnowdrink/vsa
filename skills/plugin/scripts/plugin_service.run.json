@@ -1,0 +1,164 @@
+{
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "sdk": "10.0.0",
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "environment": {
+    "development": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "PLUGIN_DIRECTORY": "plugins",
+      "ENABLE_HOT_RELOAD": "true",
+      "ENABLE_SANDBOX": "false",
+      "MAX_CONCURRENT_PLUGINS": "10",
+      "ENABLE_PERFORMANCE_METRICS": "true",
+      "HOT_RELOAD_INTERVAL_MS": "2000",
+      "ENABLE_DEPENDENCY_INJECTION": "true",
+      "ENABLE_LIFECYCLE_MANAGEMENT": "true",
+      "PLUGIN_INITIALIZATION_TIMEOUT_MS": "30000",
+      "PLUGIN_EXECUTION_TIMEOUT_MS": "60000"
+    },
+    "production": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOG_LEVEL": "Warning",
+      "PLUGIN_DIRECTORY": "plugins",
+      "ENABLE_HOT_RELOAD": "false",
+      "ENABLE_SANDBOX": "true",
+      "MAX_CONCURRENT_PLUGINS": "20",
+      "ENABLE_PERFORMANCE_METRICS": "true",
+      "HOT_RELOAD_INTERVAL_MS": "5000",
+      "ENABLE_DEPENDENCY_INJECTION": "true",
+      "ENABLE_LIFECYCLE_MANAGEMENT": "true",
+      "PLUGIN_INITIALIZATION_TIMEOUT_MS": "60000",
+      "PLUGIN_EXECUTION_TIMEOUT_MS": "120000"
+    }
+  },
+  "deployment": {
+    "aot": {
+      "enabled": true,
+      "publishProfiles": {
+        "win-x64": {
+          "command": "dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/win-x64/publish"
+        },
+        "linux-x64": {
+          "command": "dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/linux-x64/publish"
+        },
+        "osx-x64": {
+          "command": "dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/osx-x64/publish"
+        }
+      }
+    },
+    "container": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "buildArgs": {
+        "SDK_VERSION": "10.0",
+        "RUNTIME_VERSION": "10.0"
+      },
+      "tags": [
+        "plugin-service:latest",
+        "plugin-service:{version}"
+      ]
+    }
+  },
+  "performance": {
+    "optimizations": {
+      "hotReload": true,
+      "parallelExecution": true,
+      "memoryPooling": true,
+      "batchProcessing": true
+    },
+    "limits": {
+      "maxConcurrentPlugins": 10,
+      "maxPluginInitializationTime": "30s",
+      "maxPluginExecutionTime": "60s",
+      "maxQueueSize": 100
+    }
+  },
+  "security": {
+    "sandbox": {
+      "enabled": true,
+      "restrictedDirectories": [
+        "../",
+        "/etc/",
+        "/sys/",
+        "/proc/"
+      ],
+      "allowedDirectories": [
+        "./plugins/",
+        "./temp/",
+        "./logs/"
+      ]
+    },
+    "permissions": {
+      "allowFileAccess": true,
+      "allowNetworkAccess": true,
+      "allowReflection": true,
+      "allowDynamicCode": true
+    }
+  },
+  "logging": {
+    "providers": [
+      "Console",
+      "Debug",
+      "EventLog"
+    ],
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Plugin.Service": "Debug"
+    },
+    "fileLogging": {
+      "enabled": true,
+      "path": "logs/plugin-service.log",
+      "maxFileSize": "10MB",
+      "maxRetainedFiles": 5
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "enabled": true,
+      "endpoint": "/health",
+      "interval": "30s"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "collectionInterval": "10s",
+      "counters": [
+        "plugin.load.count",
+        "plugin.execute.count",
+        "plugin.error.count",
+        "plugin.loaded.count"
+      ],
+      "histograms": [
+        "plugin.execute.time.ms",
+        "plugin.initialize.time.ms",
+        "plugin.load.time.ms"
+      ]
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        "Jaeger",
+        "Zipkin"
+      ]
+    }
+  }
+}

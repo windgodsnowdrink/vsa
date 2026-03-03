@@ -1,0 +1,35 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.EasyRSA": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "EasyRSA": {
+      "EasyRsaPath": "./easy-rsa",
+      "CertificateAuthorityName": "MyACMEAuthority",
+      "ServerUrl": "https://acme-v02.api.letsencrypt.org/directory",
+      "Email": "admin@example.com",
+      "KeySize": 2048,
+      "KeyType": "RSA",
+      "CountryCode": "US",
+      "State": "California",
+      "Locality": "San Francisco",
+      "Organization": "Example Org",
+      "OrganizationalUnit": "IT",
+      "ValidDays": 365,
+      "OutputPath": "./certificates"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "RabbitMqIntegration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5007",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "RabbitMqIntegration-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5007",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "RabbitMQ.Client": "6.8.1",
+    "Polly": "8.3.1",
+    "System.Threading.Channels": "8.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.dll",
+      "**/*.json",
+      "**/*.config"
+    ],
+    "exclude": [
+      "**/*.pdb",
+      "**/*.xml"
+    ]
+  },
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "deterministic": true,
+    "strict": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "RabbitMqSkill": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "RabbitMq": {
+    "HostName": "localhost",
+    "Port": 5672,
+    "UserName": "guest",
+    "Password": "guest",
+    "VirtualHost": "/",
+    "EnableConnectionPooling": true,
+    "MaxConnections": 10,
+    "ConnectionTimeout": 30,
+    "EnableAutomaticRecovery": true,
+    "RequestedHeartbeat": 60,
+    "EnableMessageCompression": false,
+    "EnableBatchProcessing": false,
+    "BatchSize": 100,
+    "BatchTimeout": 100,
+    "MaxRetries": 3,
+    "RetryInterval": 500,
+    "EnableCircuitBreaker": true,
+    "CircuitBreakerFailureThreshold": 50,
+    "CircuitBreakerResetTimeout": 30
+  },
+  "Performance": {
+    "EnableMemoryPooling": true,
+    "MaxPoolSize": 100,
+    "EnableThreadLocalStorage": true,
+    "MaxDegreeOfParallelism": 4
+  },
+  "Security": {
+    "EnableInputValidation": true,
+    "MaxMessageSize": 10485760, // 10MB
+    "AllowedContentTypes": [
+      "application/json",
+      "application/xml",
+      "text/plain"
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package WolverineFx@4.2.0
+#:package WolverineFx.Marten@4.2.0
+#:package WolverineFx.RDBMS@4.2.0
+#:package WolverineFx.Postgresql@4.2.0
+#:package WolverineFx.FluentValidation@4.2.0
+#:package WolverineFx.Http@4.2.0
+#:package WolverineFx.RabbitMQ@4.2.0
+#:package WolverineFx.AzureServiceBus@4.2.0
+#:package WolverineFx.Http.FluentValidation@4.2.0
+#:package WolverineFx.Http.Marten@4.2.0
+#:package WolverineFx.AmazonSqs@4.2.0
+#:package WolverineFx.EntityFrameworkCore@4.2.0
+#:package WolverineFx.SqlServer@4.2.0
+#:package WolverineFx.Kafka@4.2.0
+#:package WolverineFx.MemoryPack@4.2.0
+#:package WolverineFx.MessagePack@4.2.0
+#:package WolverineFx.MQTT@4.2.0
+#:package WolverineFx.Pubsub@4.2.0
+#:package WolverineFx.Pulsar@4.2.0
+#:package WolverineFx.RavenDb@4.2.0
+#:package Microsoft.CodeAnalysis.Common@4.14.0
+#:package Microsoft.CodeAnalysis.Workspaces.Common@4.14.0
+#:package Swashbuckle.AspNetCore@9.0.3
+#:package Swashbuckle.AspNetCore.Swagger@9.0.3
+#:package Swashbuckle.AspNetCore.SwaggerGen@9.0.3
+#:package Swashbuckle.AspNetCore.SwaggerUI@9.0.3
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property GenerateJsonSourceGeneration=true
+
+using System.Buffers;
+using Wolverine;
+using Wolverine.Http;
+using Wolverine.RabbitMQ;
+using Wolverine.Kafka;
+using Wolverine.AzureServiceBus;
+using Wolverine.AmazonSqs;
+using Wolverine.Marten;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.FluentValidation;
+using Wolverine.MessagePack;
+using Wolverine.MemoryPack;
+using Wolverine.MQTT;
+using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+ 
+var builder = WebApplication.CreateBuilder(args);
+ // 替换默认的 JsonOptions，使用我们生成的上下文
+builder.Services.ConfigureHttpJsonOptions(opts =>
+{
+    // 让 Minimal API 在读取 Request.Body 时使用我们的 Context
+    opts.SerializerOptions.TypeInfoResolver = AppJsonContext.Default;
+    opts.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    opts.SerializerOptions.WriteIndented = true;
+});
+// 添加swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+ 
+// 将Wolverine添加到应用程序
+builder.Host.UseWolverine(options =>{
+    // 使用MessagePack
+    options.UseMessagePackSerialization();
+    // 或者使用MemoryPack
+    options.UseMemoryPackSerialization();
+    options.UseFluentValidation();
+    // 配置本地队列
+    options.LocalQueue("important")
+    .MaximumParallelMessages(20)
+    .UseDurableInbox();
+});
+ 
+var app = builder.Build();
+ 
+// 配置HTTP管道
+app.UseSwagger();
+app.UseSwaggerUI();
+ 
+// 添加一个使用Wolverine作为中介的端点
+app.MapPost("/greet",async (GreetingCommand command, IMessageBus bus) => {
+    var response = await bus.InvokeAsync<GreetingResponse>(command);
+    return response;
+});
+ 
+app.Run();
+
+[Serializable]
+public  record GreetingCommand(string Name);
+
+[Serializable] 
+public record GreetingResponse(string Greeting);
+
+public class GreetingHandler
+{
+    // Wolverine将自动发现这个方法作为GreetingCommand消息的处理器
+    public async Task<GreetingResponse> Handle(GreetingCommand command)
+    {
+        await Task.Delay(100);
+        return new GreetingResponse($"Hello, {command.Name}!");
+    }
+}
+
+/// <summary>
+/// 所有要交给 System.Text.Json source‑generation 处理的根类型
+/// 必须在这里声明（包括可能的派生类型）
+/// </summary>
+[JsonSerializable(typeof(GreetingCommand))]
+[JsonSerializable(typeof(GreetingResponse))]
+public partial class AppJsonContext : JsonSerializerContext
+{
+}

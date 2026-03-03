@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ImageAOT_Resize": {
+      "commandName": "Project",
+      "commandLineArgs": "resize {inputFile} {outputFile} {size}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IMAGE_CACHE_ENABLED": "true",
+        "IMAGE_CACHE_SIZE": "100"
+      }
+    },
+    "ImageAOT_Convert": {
+      "commandName": "Project",
+      "commandLineArgs": "convert {inputFile} {outputFile} {format}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Crop": {
+      "commandName": "Project",
+      "commandLineArgs": "crop {inputFile} {outputFile} {x} {y} {width} {height}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Rotate": {
+      "commandName": "Project",
+      "commandLineArgs": "rotate {inputFile} {outputFile} {angle}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Flip": {
+      "commandName": "Project",
+      "commandLineArgs": "flip {inputFile} {outputFile} {direction}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Watermark": {
+      "commandName": "Project",
+      "commandLineArgs": "watermark {inputFile} {outputFile} {watermark} {position}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Filter": {
+      "commandName": "Project",
+      "commandLineArgs": "filter {inputFile} {outputFile} {filter}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Metadata": {
+      "commandName": "Project",
+      "commandLineArgs": "metadata {inputFile}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Optimize": {
+      "commandName": "Project",
+      "commandLineArgs": "optimize {inputFile} {outputFile} {quality}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Batch": {
+      "commandName": "Project",
+      "commandLineArgs": "batch {inputDir} {outputDir} {operation} {parameters}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IMAGE_PARALLEL_ENABLED": "true",
+        "IMAGE_MAX_PARALLELISM": "4"
+      }
+    },
+    "ImageAOT_Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark {operation} {iterations}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IMAGE_CACHE_ENABLED": "false"
+      }
+    },
+    "ImageAOT_Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "ImageAOT_Publish_AOT": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "commandLineArgs": "",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "publishOptions": {
+        "PublishSingleFile": true,
+        "PublishTrimmed": true,
+        "EnableCompressionInSingleFile": true,
+        "SelfContained": true,
+        "RuntimeIdentifier": "win-x64",
+        "Configuration": "Release"
+      }
+    }
+  },
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "IMAGE_DEFAULT_FORMAT": "png",
+    "IMAGE_DEFAULT_QUALITY": "85",
+    "IMAGE_CACHE_ENABLED": "true",
+    "IMAGE_CACHE_SIZE": "100",
+    "IMAGE_CACHE_EXPIRY": "30",
+    "IMAGE_PARALLEL_ENABLED": "true",
+    "IMAGE_MAX_PARALLELISM": "-1",
+    "IMAGE_TEMP_DIRECTORY": "",
+    "IMAGE_LOG_LEVEL": "Information"
+  },
+  "launchUrl": "",
+  "applicationUrl": "",
+  "dotnetRunMessages": true,
+  "hotReloadEnabled": false
+}

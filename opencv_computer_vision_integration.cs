@@ -1,0 +1,106 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package OpenCvSharp4@4.8.0
+#:package OpenCvSharp4.runtime.win@4.8.0
+#:package OpenCvSharp4.Extensions@4.8.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using OpenCvSharp;
+using System.Buffers;
+using System.Threading.Channels;
+using Microsoft.Extensions.DependencyInjection;
+
+public class ComputerVisionService
+{
+    private readonly Channel<Mat> _processingChannel;
+    private readonly IMemoryOwner<byte> _memoryOwner;
+    
+    public ComputerVisionService()
+    {
+        // 使用Disruptor模式的高性能通道
+        _processingChannel = Channel.CreateBounded<Mat>(new BoundedChannelOptions(1000)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = false,
+            SingleWriter = false
+        });
+        
+        // 使用分层内存管理
+        _memoryOwner = MemoryPool<byte>.Shared.Rent(1024 * 1024 * 10); // 10MB
+    }
+    
+    public async Task ProcessImageAsync(string imagePath)
+    {
+        // 使用Span<T>优化内存分配
+        using var src = new Mat(imagePath, ImreadModes.Color);
+        
+        // 人脸检测
+        using var faceCascade = new CascadeClassifier("haarcascade_frontalface_default.xml");
+        var faces = faceCascade.DetectMultiScale(src);
+        
+        // 目标跟踪
+        using var tracker = TrackerKCF.Create();
+        tracker.Init(src, faces.Length > 0 ? faces[0] : new Rect(0, 0, src.Width, src.Height));
+        
+        // 特征提取
+        using var orb = ORB.Create();
+        KeyPoint[] keypoints;
+        using var descriptors = new Mat();
+        orb.DetectAndCompute(src, null, out keypoints, descriptors);
+        
+        // 将结果写入通道
+        await _processingChannel.Writer.WriteAsync(src);
+    }
+    
+    public async Task StartProcessingAsync(CancellationToken cancellationToken)
+    {
+        // 启动后台处理任务
+        while (await _processingChannel.Reader.WaitToReadAsync(cancellationToken))
+        {
+            if (_processingChannel.Reader.TryRead(out var mat))
+            {
+                try
+                {
+                    // 实际处理逻辑
+                    using var dst = new Mat();
+                    Cv2.CvtColor(mat, dst, ColorConversionCodes.BGR2GRAY);
+                    
+                    // 保存或进一步处理
+                    Cv2.ImWrite("processed_" + Guid.NewGuid() + ".png", dst);
+                }
+                finally
+                {
+                    mat.Dispose();
+                }
+            }
+        }
+    }
+}
+
+// DI扩展方法
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddComputerVision(this IServiceCollection services)
+    {
+        services.AddSingleton<ComputerVisionService>();
+        return services;
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+
+// 添加计算机视觉服务
+builder.Services.AddComputerVision();
+
+var app = builder.Build();
+
+app.MapGet("/process-image", async (ComputerVisionService cvService, string imagePath) =>
+{
+    await cvService.ProcessImageAsync(imagePath);
+    return Results.Ok();
+});
+
+app.Run();

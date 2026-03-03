@@ -1,0 +1,85 @@
+# resonance Agent Skill - resonance Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: resonance skill implementation based on .NET 10 with AOT compilation support
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Collections.Concurrent@8.0.0
+# - System.Threading.Channels@8.0.0
+# - System.Reflection@8.0.0
+# Application Scenarios:
+# - Dynamic routing and request handling
+# - Plugin-based architecture
+# - Extensible service frameworks
+# - High-performance message processing
+# - Distributed system coordination
+# - Real-time data processing
+# Activation Conditions: Activate when resonance functionality is needed
+# Main Features:
+# - Dynamic router with route registration and matching
+# - Plugin system with discovery and loading
+# - Message processing pipeline
+# - Service registration and resolution
+# - Event-driven architecture
+# - High-performance message dispatching
+# - Extensible middleware system
+# - Configuration management
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# - Asynchronous programming
+# - Zero-copy memory operations
+# - Object pooling
+# - Thread-local storage
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms
+# - AOT compilation support
+# - Trim-safe API usage
+# - Resource management
+# AOT 编译选项:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - Optimize: true
+# - EnableCompressionInSingleFile: true
+# - SelfContained: true
+# Configuration Options:
+# - RoutePrefix: API route prefix
+# - MaxConcurrentRequests: Maximum concurrent requests
+# - BufferSize: Message buffer size
+# - PluginDirectory: Directory for plugins
+# - EnableTelemetry: Enable telemetry collection
+# - LogLevel: Logging level
+# - HealthCheckInterval: Health check interval
+# - CircuitBreakerThreshold: Circuit breaker failure threshold
+# - RateLimitPermits: Rate limiter permits per second
+# Platform Support:
+# - Windows
+# - Linux
+# - macOS
+# - Containerized environments
+# - Kubernetes
+# Development Tools:
+# - Visual Studio 2025+
+# - .NET 10 SDK
+# - Docker
+# - Kubernetes CLI
+# Monitoring:
+# - Health checks
+# - Metrics collection
+# - Structured logging
+# - Tracing support
+# Security:
+# - Input validation
+# - Output encoding
+# - Rate limiting
+# - Circuit breaking
+# - Secure configuration management

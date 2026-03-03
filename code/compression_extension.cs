@@ -1,0 +1,43 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package ZstdSharp@0.3.3
+#:property LangVersion preview
+#:property TargetFramework net10.0
+
+using System.Buffers;
+using ZstdSharp;
+
+// 压缩处理器
+[SkipLocalsInit]
+public class MessageCompressor : IDisposable
+{
+    private readonly ThreadLocal<Compressor> _zstdCompressor;
+    private readonly ThreadLocal<Decompressor> _zstdDecompressor;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+
+    public MessageCompressor()
+    {
+        _zstdCompressor = new(() => new Compressor(3));
+        _zstdDecompressor = new(() => new Decompressor());
+        _buffer = new(() => stackalloc byte[4096]);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public ReadOnlySpan<byte> Compress(ReadOnlySpan<byte> input)
+    {
+        var buffer = _buffer.Value;
+        return _zstdCompressor.Value.Wrap(input, buffer);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public ReadOnlySpan<byte> Decompress(ReadOnlySpan<byte> input)
+    {
+        var buffer = _buffer.Value;
+        return _zstdDecompressor.Value.Unwrap(input, buffer);
+    }
+
+    public void Dispose()
+    {
+        _zstdCompressor?.Dispose();
+        _zstdDecompressor?.Dispose();
+    }
+}

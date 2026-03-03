@@ -1,0 +1,15 @@
+{
+  "command": "dotnet run",
+  "args": [],
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\version\\scripts",
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Production",
+    "VERSION_SKILL_CACHE_ENABLED": "true",
+    "VERSION_SKILL_CACHE_SIZE": "1000",
+    "VERSION_SKILL_STRICT_MODE": "false"
+  },
+  "timeout": 30000,
+  "requiresApproval": false,
+  "blocking": true,
+  "commandType": "short_running_process"
+}

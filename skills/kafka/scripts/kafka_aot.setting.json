@@ -1,0 +1,234 @@
+{
+  "name": "kafka_aot",
+  "description": "基于Confluent.Kafka的AOT编译Kafka工具",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "commands": [
+    {
+      "name": "produce",
+      "alias": "p",
+      "description": "发送消息到Kafka主题",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "消息主题名称",
+          "required": true
+        },
+        {
+          "name": "message",
+          "description": "要发送的消息内容",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "consume",
+      "alias": "c",
+      "description": "从Kafka主题消费消息",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "消息主题名称",
+          "required": true
+        },
+        {
+          "name": "group",
+          "description": "消费者组ID",
+          "required": true
+        },
+        {
+          "name": "count",
+          "description": "要消费的消息数量，默认10",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "list-topics",
+      "alias": "lt",
+      "description": "列出所有Kafka主题",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "create-topic",
+      "alias": "ct",
+      "description": "创建新的Kafka主题",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "主题名称",
+          "required": true
+        },
+        {
+          "name": "partitions",
+          "description": "分区数量",
+          "required": true
+        },
+        {
+          "name": "replication-factor",
+          "description": "副本因子，默认1",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "delete-topic",
+      "alias": "dt",
+      "description": "删除Kafka主题",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "主题名称",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "describe-topic",
+      "alias": "dtp",
+      "description": "描述Kafka主题的详细信息",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "主题名称",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "batch-produce",
+      "alias": "bp",
+      "description": "批量发送消息到Kafka主题",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "消息主题名称",
+          "required": true
+        },
+        {
+          "name": "count",
+          "description": "要发送的消息数量",
+          "required": true
+        },
+        {
+          "name": "prefix",
+          "description": "消息前缀",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "benchmark",
+      "alias": "bm",
+      "description": "运行Kafka性能基准测试",
+      "arguments": [
+        {
+          "name": "broker",
+          "description": "Kafka broker地址，格式为host:port",
+          "required": true
+        },
+        {
+          "name": "topic",
+          "description": "消息主题名称",
+          "required": true
+        },
+        {
+          "name": "count",
+          "description": "要测试的消息数量",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "alias": "h",
+      "description": "显示帮助信息",
+      "arguments": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Confluent.Kafka",
+      "version": "2.3.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0",
+      "type": "nuget"
+    }
+  ],
+  "build": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release",
+    "additionalProperties": {
+      "LangVersion": "preview",
+      "Nullable": "enable",
+      "ImplicitUsings": "enable"
+    }
+  },
+  "execution": {
+    "timeout": 60000,
+    "memoryLimit": 512
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "KAFKA_CLIENT_ID": "kafka_aot_client",
+    "KAFKA_PRODUCER_ACKS": "1",
+    "KAFKA_CONSUMER_AUTO_OFFSET_RESET": "earliest"
+  }
+}

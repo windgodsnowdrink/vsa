@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "version": "1.0.0",
+  "profiles": {
+    "Photino Integration (Development)": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "PHOTINO_DEBUG": "true",
+        "PHOTINO_LOG_LEVEL": "Debug",
+        "PHOTINO_TITLE": "Photino 开发环境",
+        "PHOTINO_WIDTH": "1200",
+        "PHOTINO_HEIGHT": "900",
+        "PHOTINO_START_URL": "wwwroot/index.html",
+        "PHOTINO_USE_DEVTOOLS": "true",
+        "PHOTINO_PIPE_NAME": "photino_pipe_dev",
+        "PHOTINO_SHARED_MEMORY_SIZE": "1048576",
+        "PHOTINO_DEFAULT_THEME": "light",
+        "PHOTINO_ENABLE_PERFORMANCE_METRICS": "true",
+        "PHOTINO_DEFAULT_CULTURE": "zh-CN",
+        "PHOTINO_ENABLE_ZERO_COPY": "true",
+        "PHOTINO_THREAD_LOCAL_CACHE_SIZE": "1024",
+        "PHOTINO_ENABLE_PARALLEL_PROCESSING": "true",
+        "PHOTINO_MAX_DEGREE_OF_PARALLELISM": "4",
+        "PHOTINO_LOCAL_STORAGE_PATH": "localstorage_dev.db",
+        "PHOTINO_MAX_WINDOWS": "5",
+        "PHOTINO_UPDATE_URL": "https://api.example.com/updates/dev",
+        "PHOTINO_CRASH_REPORT_URL": "https://api.example.com/crash-reports/dev",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "DOTNET_PRINT_TELEMETRY_MESSAGE": "false"
+      },
+      "workingDirectory": "$(ProjectDir)",
+      "commandLineArgs": ["--debug", "--verbose"],
+      "hotReloadEnabled": true,
+      "hotReloadProfile": "aspnetcore",
+      "applicationInsights": {
+        "enabled": false
+      }
+    },
+    "Photino Integration (Production)": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:8000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_ENVIRONMENT": "Production",
+        "PHOTINO_DEBUG": "false",
+        "PHOTINO_LOG_LEVEL": "Warning",
+        "PHOTINO_TITLE": "Photino 应用",
+        "PHOTINO_WIDTH": "1200",
+        "PHOTINO_HEIGHT": "900",
+        "PHOTINO_START_URL": "wwwroot/index.html",
+        "PHOTINO_USE_DEVTOOLS": "false",
+        "PHOTINO_PIPE_NAME": "photino_pipe",
+        "PHOTINO_SHARED_MEMORY_SIZE": "1048576",
+        "PHOTINO_DEFAULT_THEME": "light",
+        "PHOTINO_ENABLE_PERFORMANCE_METRICS": "true",
+        "PHOTINO_DEFAULT_CULTURE": "zh-CN",
+        "PHOTINO_ENABLE_ZERO_COPY": "true",
+        "PHOTINO_THREAD_LOCAL_CACHE_SIZE": "1024",
+        "PHOTINO_ENABLE_PARALLEL_PROCESSING": "true",
+        "PHOTINO_MAX_DEGREE_OF_PARALLELISM": "4",
+        "PHOTINO_LOCAL_STORAGE_PATH": "localstorage.db",
+        "PHOTINO_MAX_WINDOWS": "5",
+        "PHOTINO_UPDATE_URL": "https://api.example.com/updates",
+        "PHOTINO_CRASH_REPORT_URL": "https://api.example.com/crash-reports",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "DOTNET_PRINT_TELEMETRY_MESSAGE": "false"
+      },
+      "workingDirectory": "$(ProjectDir)",
+      "commandLineArgs": [],
+      "hotReloadEnabled": false,
+      "applicationInsights": {
+        "enabled": true
+      }
+    },
+    "Photino Integration (AOT Debug)": {
+      "commandName": "Executable",
+      "executablePath": "$(OutputPath)photino_integration.exe",
+      "commandLineArgs": ["--debug", "--aot"],
+      "workingDirectory": "$(OutputPath)",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "PHOTINO_DEBUG": "true",
+        "PHOTINO_LOG_LEVEL": "Debug",
+        "PHOTINO_AOT_MODE": "true",
+        "PHOTINO_TITLE": "Photino AOT 调试",
+        "PHOTINO_WIDTH": "1200",
+        "PHOTINO_HEIGHT": "900",
+        "PHOTINO_START_URL": "wwwroot/index.html",
+        "PHOTINO_USE_DEVTOOLS": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false"
+      },
+      "launchBrowser": false,
+      "nativeDebugging": true
+    },
+    "Photino Integration (AOT Release)": {
+      "commandName": "Executable",
+      "executablePath": "$(PublishDir)photino_integration.exe",
+      "commandLineArgs": [],
+      "workingDirectory": "$(PublishDir)",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_ENVIRONMENT": "Production",
+        "PHOTINO_DEBUG": "false",
+        "PHOTINO_LOG_LEVEL": "Warning",
+        "PHOTINO_AOT_MODE": "true",
+        "PHOTINO_TITLE": "Photino AOT 发布",
+        "PHOTINO_WIDTH": "1200",
+        "PHOTINO_HEIGHT": "900",
+        "PHOTINO_START_URL": "wwwroot/index.html",
+        "PHOTINO_USE_DEVTOOLS": "false",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false"
+      },
+      "launchBrowser": false,
+      "nativeDebugging": false
+    },
+    "Photino Integration (Docker)": {
+      "commandName": "Docker",
+      "dockerfile": "Dockerfile",
+      "context": "..",
+      "dockerComposeFile": "../docker-compose.yml",
+      "service": "photino-integration",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_ENVIRONMENT": "Production",
+        "PHOTINO_DEBUG": "false",
+        "PHOTINO_LOG_LEVEL": "Warning",
+        "PHOTINO_TITLE": "Photino Docker",
+        "PHOTINO_WIDTH": "1200",
+        "PHOTINO_HEIGHT": "900",
+        "PHOTINO_START_URL": "wwwroot/index.html",
+        "PHOTINO_USE_DEVTOOLS": "false",
+        "PHOTINO_LOCAL_STORAGE_PATH": "/app/localstorage.db",
+        "PHOTINO_PIPE_NAME": "photino_pipe_docker",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false"
+      },
+      "httpPort": 8080,
+      "useSSL": false
+    }
+  },
+  "compilationOptions": {
+    "debug": {
+      "command": "dotnet",
+      "arguments": ["build", "-c", "Debug", "-r", "win-x64", "--no-self-contained"],
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "release": {
+      "command": "dotnet",
+      "arguments": ["build", "-c", "Release", "-r", "win-x64", "--no-self-contained"],
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "publish": {
+      "command": "dotnet",
+      "arguments": ["publish", "-c", "Release", "-r", "win-x64", "--self-contained", "true", "-p:PublishSingleFile=true", "-p:PublishAot=true", "-p:TrimMode=partial", "-p:ReadyToRun=true"],
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "publish-aot": {
+      "command": "dotnet",
+      "arguments": ["publish", "-c", "Release", "-r", "win-x64", "--self-contained", "true", "-p:PublishSingleFile=true", "-p:PublishAot=true", "-p:TrimMode=partial", "-p:ReadyToRun=true", "-p:TieredCompilation=true", "-p:Optimize=true"],
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "publish-linux": {
+      "command": "dotnet",
+      "arguments": ["publish", "-c", "Release", "-r", "linux-x64", "--self-contained", "true", "-p:PublishSingleFile=true", "-p:PublishAot=true", "-p:TrimMode=partial"],
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "publish-osx": {
+      "command": "dotnet",
+      "arguments": ["publish", "-c", "Release", "-r", "osx-x64", "--self-contained", "true", "-p:PublishSingleFile=true", "-p:PublishAot=true", "-p:TrimMode=partial"],
+      "workingDirectory": "$(ProjectDir)"
+    }
+  },
+  "deploymentOptions": {
+    "selfContained": true,
+    "singleFile": true,
+    "publishReadyToRun": true,
+    "publishTrimmed": true,
+    "publishAot": true,
+    "runtimeIdentifiers": [
+      "win-x64",
+      "win-arm64",
+      "linux-x64",
+      "linux-arm64",
+      "osx-x64",
+      "osx-arm64"
+    ],
+    "publishProfiles": {
+      "windows": {
+        "runtimeIdentifier": "win-x64",
+        "publishDir": "publish/win-x64"
+      },
+      "linux": {
+        "runtimeIdentifier": "linux-x64",
+        "publishDir": "publish/linux-x64"
+      },
+      "osx": {
+        "runtimeIdentifier": "osx-x64",
+        "publishDir": "publish/osx-x64"
+      }
+    }
+  },
+  "performanceOptions": {
+    "gc": {
+      "server": true,
+      "concurrent": true,
+      "retainVM": true,
+      "latencyMode": "Interactive",
+      "heapHardLimit": "1GB"
+    },
+    "threadPool": {
+      "minThreads": 4,
+      "maxThreads": 32,
+      "completionPortThreads": 8
+    },
+    "memory": {
+      "largePageEnabled": true,
+      "poolingEnabled": true,
+      "zeroCopyEnabled": true
+    },
+    "cpu": {
+      "affinity": "0,1,2,3",
+      "priority": "Normal"
+    }
+  },
+  "loggingOptions": {
+    "logLevel": {
+      "default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Photino": "Debug"
+    },
+    "logFile": {
+      "enabled": true,
+      "path": "logs/photino_integration.log",
+      "maxSize": "10MB",
+      "maxFiles": 5
+    },
+    "console": {
+      "enabled": true,
+      "format": "json",
+      "includeScopes": true
+    },
+    "debug": {
+      "enabled": true,
+      "port": 4711,
+      "waitForDebugger": false
+    }
+  },
+  "securityOptions": {
+    "sandbox": {
+      "enabled": true,
+      "allowedPaths": [
+        "$(ProjectDir)wwwroot",
+        "$(ProjectDir)logs",
+        "$(ProjectDir)data"
+      ],
+      "blockedPaths": [
+        "C:\\Windows",
+        "C:\\Program Files"
+      ]
+    },
+    "cors": {
+      "enabled": true,
+      "allowedOrigins": ["*"],
+      "allowedMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "allowedHeaders": ["Content-Type", "Authorization"],
+      "allowCredentials": true
+    },
+    "ssl": {
+      "enabled": false,
+      "certificatePath": "",
+      "certificatePassword": ""
+    }
+  },
+  "networkOptions": {
+    "http": {
+      "enabled": true,
+      "port": 5000,
+      "host": "localhost"
+    },
+    "websocket": {
+      "enabled": true,
+      "path": "/ws",
+      "keepAliveInterval": "30s"
+    },
+    "proxy": {
+      "enabled": false,
+      "address": "",
+      "port": 0
+    }
+  },
+  "resourceOptions": {
+    "wwwroot": {
+      "path": "wwwroot",
+      "serveStaticFiles": true,
+      "defaultFile": "index.html",
+      "enableDirectoryBrowsing": false
+    },
+    "data": {
+      "path": "data",
+      "maxSize": "100MB"
+    },
+    "temp": {
+      "path": "temp",
+      "cleanupOnExit": true,
+      "maxSize": "50MB"
+    }
+  },
+  "updateOptions": {
+    "enabled": true,
+    "checkInterval": "1d",
+    "updateUrl": "https://api.example.com/updates",
+    "betaChannel": false,
+    "autoUpdate": false
+  },
+  "crashReportingOptions": {
+    "enabled": true,
+    "reportUrl": "https://api.example.com/crash-reports",
+    "includeLogs": true,
+    "includeSystemInfo": true,
+    "includeStackTrace": true
+  }
+}

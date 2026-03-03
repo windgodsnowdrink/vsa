@@ -1,0 +1,23 @@
+# ioic Agent Skill - ioic Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: ioic skill implementation based on .NET 10
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# Application Scenarios: ioic related functions
+# Activation Conditions: Activate when ioic functionality is needed
+# Main Features:
+# - ioic core feature 1
+# - ioic core feature 2
+# - ioic core feature 3
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms

@@ -1,0 +1,201 @@
+{
+  "$schema": "https://aka.ms/run-csharp.schema.json",
+  "profiles": {
+    "Generate ID": {
+      "commandName": "Project",
+      "commandLineArgs": "generate snowflake",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Batch Generate IDs": {
+      "commandName": "Project",
+      "commandLineArgs": "batch snowflake 100",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Validate ID": {
+      "commandName": "Project",
+      "commandLineArgs": "validate snowflake",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Decode ID": {
+      "commandName": "Project",
+      "commandLineArgs": "decode snowflake",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Run Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark snowflake 10000",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    },
+    "Show Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Show Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate ULID": {
+      "commandName": "Project",
+      "commandLineArgs": "generate ulid",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate UUID": {
+      "commandName": "Project",
+      "commandLineArgs": "generate uuid",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Snowflake Drift": {
+      "commandName": "Project",
+      "commandLineArgs": "generate snowflake_drift",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "launchSettings": {
+    "profiles": {
+      "Generate ID": {
+        "commandName": "Project",
+        "commandLineArgs": "generate snowflake",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Batch Generate IDs": {
+        "commandName": "Project",
+        "commandLineArgs": "batch snowflake 100",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Validate ID": {
+        "commandName": "Project",
+        "commandLineArgs": "validate snowflake",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Decode ID": {
+        "commandName": "Project",
+        "commandLineArgs": "decode snowflake",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Run Benchmark": {
+        "commandName": "Project",
+        "commandLineArgs": "benchmark snowflake 10000",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "ASPNETCORE_ENVIRONMENT": "Production"
+        }
+      },
+      "Show Config": {
+        "commandName": "Project",
+        "commandLineArgs": "config",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Show Help": {
+        "commandName": "Project",
+        "commandLineArgs": "help",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Generate ULID": {
+        "commandName": "Project",
+        "commandLineArgs": "generate ulid",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Generate UUID": {
+        "commandName": "Project",
+        "commandLineArgs": "generate uuid",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "Generate Snowflake Drift": {
+        "commandName": "Project",
+        "commandLineArgs": "generate snowflake_drift",
+        "workingDirectory": "d:\\Trae\\vsa\\skills\\idgen",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development",
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      }
+    }
+  },
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "trimMode": "partial",
+    "runtimeIdentifier": "win-x64",
+    "optimize": true,
+    "debugType": "portable",
+    "outputType": "exe"
+  }
+}

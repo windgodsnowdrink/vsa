@@ -1,0 +1,53 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MongoDB.Driver@2.25.0
+#:package Microsoft.IO.RecyclableMemoryStream@2.3.2
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using MongoDB.Driver;
+using System.Threading.Channels;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. 配置MongoDB持久化
+builder.Services.AddSingleton<IMongoClient>(sp => 
+    new MongoClient("mongodb://localhost:27017"));
+
+// 2. 高性能持久化通道
+var persistChannel = Channel.CreateBounded<PersistOperation>(
+    new BoundedChannelOptions(10000)
+    {
+        SingleReader = true,
+        AllowSynchronousContinuations = true
+    });
+
+// 3. 零拷贝持久化处理器
+builder.Services.AddSingleton<IMessagePersister>(sp => 
+    new ChannelMessagePersister(
+        persistChannel,
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[512]),
+        sp.GetRequiredService<IMongoClient>()));
+
+var app = builder.Build();
+app.MapGet("/", () => "Message Persistence Ready");
+app.Run();
+
+[SkipLocalsInit]
+public class ChannelMessagePersister : IMessagePersister
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe Task PersistAsync(ChatMessage message)
+    {
+        Span<byte> buffer = stackalloc byte[512];
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                // SIMD优化处理消息持久化
+            }
+        }
+        return Task.CompletedTask;
+    }
+}

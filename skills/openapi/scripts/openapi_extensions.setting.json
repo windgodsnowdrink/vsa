@@ -1,0 +1,61 @@
+{
+  "openapi": {
+    "options": {
+      "enabled": true,
+      "enableSwaggerUI": true,
+      "enableScalarUI": true,
+      "apiTitle": "示例 API",
+      "apiVersion": "v1",
+      "apiDescription": "这是一个示例 API 文档，展示了 OpenAPI 技能的功能",
+      "contactName": "开发者",
+      "contactEmail": "developer@example.com",
+      "licenseName": "MIT",
+      "licenseUrl": "https://opensource.org/licenses/MIT",
+      "enableXmlComments": false,
+      "xmlCommentsPath": "",
+      "enableAuthentication": false,
+      "authenticationScheme": "Bearer",
+      "enableParallelProcessing": true,
+      "maxDegreeOfParallelism": 4
+    },
+    "swagger": {
+      "enabled": true,
+      "routePrefix": "swagger",
+      "docExpansion": "none",
+      "defaultModelsExpandDepth": 1,
+      "defaultModelExpandDepth": 1,
+      "displayOperationId": false,
+      "filter": null,
+      "operationsSorter": null,
+      "tagsSorter": null,
+      "validatorUrl": null
+    },
+    "scalar": {
+      "enabled": true,
+      "routePrefix": "api-reference",
+      "theme": "default",
+      "defaultSchemaExpandLevel": 2,
+      "showExtensions": false,
+      "sortTagsAlphabetically": true
+    },
+    "aot": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true,
+      "optimizeForSize": false,
+      "trimMode": "partial"
+    },
+    "logging": {
+      "enabled": true,
+      "level": "Information",
+      "includeScopes": true,
+      "logFile": "openapi.log"
+    },
+    "performance": {
+      "enableCaching": true,
+      "cacheDuration": "00:05:00",
+      "enableCompression": true,
+      "maxConcurrentRequests": 100
+    }
+  }
+}

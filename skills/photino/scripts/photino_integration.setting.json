@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json.schemastore.org/nuget-package",
+  "title": "Photino 集成脚本配置",
+  "description": "Photino 技能的配置文件，用于定义应用程序的各种设置选项",
+  "version": "1.0.0",
+  "authors": ["Photino Team"],
+  "owners": ["Photino Team"],
+  "requireLicenseAcceptance": false,
+  "license": {
+    "type": "MIT",
+    "url": "https://opensource.org/licenses/MIT"
+  },
+  "projectUrl": "https://github.com/tryphotino/photino.NET",
+  "iconUrl": "https://raw.githubusercontent.com/tryphotino/photino.NET/master/resources/photino-logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tryphotino/photino.NET.git"
+  },
+  "tags": ["photino", "desktop", "webview", "cross-platform", "aot", "net10"],
+  "configuration": "Release",
+  "platform": "Any CPU",
+  "properties": {
+    "TargetFramework": "net10.0",
+    "LangVersion": "preview",
+    "Nullable": "enable",
+    "ImplicitUsings": "enable",
+    "PublishAot": true,
+    "ReadyToRun": true,
+    "TieredCompilation": true,
+    "TrimMode": "partial",
+    "Optimize": true,
+    "OutputType": "Exe",
+    "AssemblyName": "photino_integration",
+    "RootNamespace": "Photino",
+    "GenerateDocumentationFile": true,
+    "WarningLevel": 4,
+    "TreatWarningsAsErrors": false,
+    "RunAnalyzersDuringBuild": true
+  },
+  "photinoOptions": {
+    "title": "Photino 应用",
+    "width": 1200,
+    "height": 900,
+    "startUrl": "wwwroot/index.html",
+    "useDeveloperTools": true,
+    "localStoragePath": "localstorage.db",
+    "maxWindows": 5,
+    "pipeName": "photino_pipe",
+    "sharedMemorySize": 1048576,
+    "defaultTheme": "light",
+    "shortcuts": {
+      "Ctrl+S": "Save",
+      "Ctrl+O": "Open",
+      "Ctrl+N": "New",
+      "Ctrl+Q": "Quit"
+    },
+    "updateUrl": "https://api.example.com/updates",
+    "crashReportUrl": "https://api.example.com/crash-reports",
+    "enablePerformanceMetrics": true,
+    "defaultCulture": "zh-CN",
+    "enableZeroCopy": true,
+    "threadLocalCacheSize": 1024,
+    "enableParallelProcessing": true,
+    "maxDegreeOfParallelism": 4
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "outputName": "photino_integration",
+    "debugType": "portable",
+    "debugSymbols": true,
+    "generateXmlDocumentation": true,
+    "allowUnsafeBlocks": false,
+    "define": ["RELEASE", "NET10_0"]
+  },
+  "publishOptions": {
+    "include": [
+      "wwwroot/**/*",
+      "appsettings.json",
+      "*.md"
+    ],
+    "exclude": [
+      "bin/**/*",
+      "obj/**/*",
+      "*.user",
+      "*.vspscc"
+    ]
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Logging.Console": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Photino.NET": "2.0.0",
+    "CommunityToolkit.Mvvm": "8.2.0",
+    "Microsoft.Data.Sqlite": "10.0.0",
+    "Microsoft.EntityFrameworkCore.Sqlite": "10.0.0",
+    "System.IO.Pipelines": "10.0.0",
+    "System.IO.MemoryMappedFiles": "10.0.0",
+    "System.Composition": "10.0.0",
+    "Microsoft.Extensions.Localization": "10.0.0",
+    "Squirrel": "2.0.0",
+    "OpenTelemetry": "1.6.0",
+    "OpenTelemetry.Exporter.Console": "1.6.0",
+    "OpenTelemetry.Instrumentation.Http": "1.6.0",
+    "OpenTelemetry.Instrumentation.Process": "1.6.0"
+  },
+  "tools": {
+    "dotnet": "10.0.0"
+  },
+  "scripts": {
+    "prebuild": "echo Building Photino integration...",
+    "postbuild": "echo Photino integration built successfully!",
+    "prepublish": "echo Publishing Photino integration...",
+    "postpublish": "echo Photino integration published successfully!"
+  },
+  "launchSettings": {
+    "profiles": {
+      "Photino Integration": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
+        "launchBrowser": false,
+        "applicationUrl": "http://localhost:5000",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "DOTNET_ENVIRONMENT": "Development",
+          "PHOTINO_DEBUG": "true",
+          "PHOTINO_LOG_LEVEL": "Information"
+        }
+      },
+      "Photino Integration (Production)": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
+        "launchBrowser": false,
+        "applicationUrl": "http://localhost:8000",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Production",
+          "DOTNET_ENVIRONMENT": "Production",
+          "PHOTINO_DEBUG": "false",
+          "PHOTINO_LOG_LEVEL": "Warning"
+        }
+      }
+    }
+  },
+  "debugSettings": {
+    "enabled": true,
+    "debugPort": 4711,
+    "waitForDebugger": false,
+    "logLevel": "Debug"
+  },
+  "performanceSettings": {
+    "enabled": true,
+    "metrics": true,
+    "tracing": true,
+    "profiling": false
+  },
+  "securitySettings": {
+    "enableSandbox": true,
+    "enableCors": true,
+    "allowedOrigins": ["*"],
+    "allowedMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allowedHeaders": ["Content-Type", "Authorization"]
+  },
+  "deploymentSettings": {
+    "selfContained": true,
+    "singleFile": true,
+    "publishReadyToRun": true,
+    "publishTrimmed": true,
+    "publishAot": true,
+    "runtimeIdentifiers": [
+      "win-x64",
+      "win-arm64",
+      "linux-x64",
+      "linux-arm64",
+      "osx-x64",
+      "osx-arm64"
+    ]
+  }
+}

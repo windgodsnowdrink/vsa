@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "RxReactiveUI": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5008",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "RxReactiveUI-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5008",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "ReactiveUI": "18.3.1",
+    "System.Reactive": "6.0.0",
+    "System.Threading.Channels": "8.0.0",
+    "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.dll",
+      "**/*.json",
+      "**/*.config"
+    ],
+    "exclude": [
+      "**/*.pdb",
+      "**/*.xml"
+    ]
+  },
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "deterministic": true,
+    "strict": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "ReactiveSkill": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "Reactive": {
+    "EnableMemoryPooling": true,
+    "MaxPoolSize": 1000,
+    "EnableBatchProcessing": false,
+    "BatchSize": 100,
+    "BatchTimeout": 100,
+    "EnableDebugLogging": false,
+    "EnableSchedulerOptimization": true,
+    "EnableSubscriptionTracking": false
+  },
+  "Performance": {
+    "EnableMemoryPooling": true,
+    "MaxPoolSize": 1000,
+    "EnableThreadLocalStorage": true,
+    "MaxDegreeOfParallelism": 4,
+    "EnableAsyncProcessing": true,
+    "EnableThrottling": true,
+    "ThrottleTimeout": 500
+  },
+  "Security": {
+    "EnableInputValidation": true,
+    "MaxMessageSize": 10485760,
+    "AllowedContentTypes": [
+      "application/json",
+      "application/xml",
+      "text/plain"
+    ]
+  }
+}

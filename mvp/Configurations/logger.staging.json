@@ -1,0 +1,7 @@
+﻿{
+  "LoggerSettings": {
+    "AppName": "mcr.devicesvc",
+    "WriteToFile": true,
+    "StructuredConsoleLogging": true
+  }
+}

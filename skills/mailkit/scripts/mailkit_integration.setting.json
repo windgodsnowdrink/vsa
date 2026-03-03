@@ -1,0 +1,47 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MailKit": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Smtp": {
+    "Host": "smtp.example.com",
+    "Port": 587,
+    "Username": "user@example.com",
+    "Password": "password",
+    "UseSsl": true,
+    "MaxRetryCount": 3,
+    "ConnectionTimeoutSeconds": 30
+  },
+  "Email": {
+    "DefaultFrom": "no-reply@example.com",
+    "DefaultFromName": "System Notification",
+    "MaxAttachmentsSize": 10485760, // 10MB
+    "MaxRecipients": 50,
+    "EnableTracking": true
+  },
+  "Channel": {
+    "Capacity": 10000,
+    "FullMode": "DropOldest",
+    "SingleReader": true,
+    "SingleWriter": false
+  },
+  "ObjectPool": {
+    "SmtpClientPoolSize": 16,
+    "BufferPoolSize": 65536,
+    "MaxRetries": 3
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

@@ -1,0 +1,227 @@
+#:sdk Microsoft.NET.Sdk.Worker
+#:package CanalSharp.Client@1.1.0
+#:package Microsoft.Extensions.Hosting.WindowsServices@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using CanalSharp.Client;
+using CanalSharp.Protocol;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Threading.Channels;
+
+public class CanalWorker : BackgroundService
+{
+    private readonly ILogger<CanalWorker> _logger;
+    private readonly Channel<CanalEntry> _entryChannel;
+    private readonly ICanalConnector _connector;
+    private readonly ObjectPool<EntryProcessor> _processorPool;
+    private readonly IOptions<CanalOptions> _options;
+    private readonly IHealthCheckService _healthCheck;
+    private readonly IMetricsRecorder _metrics;
+    private readonly CircuitBreaker _circuitBreaker;
+
+    public CanalWorker(
+        ILogger<CanalWorker> logger,
+        ICanalConnector connector,
+        ObjectPool<EntryProcessor> processorPool,
+        IOptions<CanalOptions> options,
+        IHealthCheckService healthCheck,
+        IMetricsRecorder metrics,
+        CircuitBreaker circuitBreaker)
+    {
+        _logger = logger;
+        _connector = connector;
+        _processorPool = processorPool;
+        _options = options;
+        _healthCheck = healthCheck;
+        _metrics = metrics;
+        _circuitBreaker = circuitBreaker;
+        _entryChannel = Channel.CreateBounded<CanalEntry>(new BoundedChannelOptions(10000)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = true,
+            SingleWriter = false
+        });
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await Task.WhenAll(
+            SubscribeToCanalAsync(stoppingToken),
+            ProcessEntriesAsync(stoppingToken)
+        );
+    }
+
+    private async Task SubscribeToCanalAsync(CancellationToken stoppingToken)
+    {
+        await _circuitBreaker.ExecuteAsync(async () => 
+        {
+            await _connector.ConnectAsync();
+            _connector.Subscribe(_options.Value.Filter);
+            _healthCheck.ReportHealthy("CanalConnected");
+        }, stoppingToken);
+
+        var batchSize = _options.Value.BatchSize;
+        var batchTimeout = TimeSpan.FromMilliseconds(_options.Value.BatchTimeoutMs);
+        
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                var message = await _circuitBreaker.ExecuteAsync(
+                    () => _connector.GetAsync(batchSize, stoppingToken), 
+                    stoppingToken);
+                
+                if (message == null) 
+                {
+                    await Task.Delay(batchTimeout, stoppingToken);
+                    continue;
+                }
+
+                using var batchTimer = _metrics.RecordBatchTimer();
+                var batchEntries = message.Entries
+                    .Where(e => e.EntryType == EntryType.RowData)
+                    .ToList();
+
+                if (batchEntries.Count > 0)
+                {
+                    await _entryChannel.Writer.WriteAsync(
+                        new CanalBatch(batchEntries, message.Id), 
+                        stoppingToken);
+                }
+
+                await _circuitBreaker.ExecuteAsync(
+                    () => _connector.AckAsync(message.Id, stoppingToken), 
+                    stoppingToken);
+                
+                batchTimer.RecordSuccess(batchEntries.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing canal batch");
+                _healthCheck.ReportDegraded("CanalProcessingError");
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            }
+        }
+    }
+
+    private async Task ProcessEntriesAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var entry in _entryChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            using var processor = _processorPool.Get();
+            try
+            {
+                await processor.Value.ProcessAsync(entry, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing canal entry");
+            }
+        }
+    }
+}
+
+public class EntryProcessor : IDisposable
+{
+    private readonly ILogger<EntryProcessor> _logger;
+    private readonly IEventBus _eventBus;
+
+    public EntryProcessor(
+        ILogger<EntryProcessor> logger,
+        IEventBus eventBus)
+    {
+        _logger = logger;
+        _eventBus = eventBus;
+    }
+
+    public async Task ProcessAsync(CanalEntry entry, CancellationToken cancellationToken)
+    {
+        switch (entry.EntryType)
+        {
+            case EntryType.RowData:
+                await ProcessRowChangeAsync(entry, cancellationToken);
+                break;
+            case EntryType.Transactionbegin:
+                _logger.LogInformation("Transaction begin");
+                break;
+            case EntryType.Transactionend:
+                _logger.LogInformation("Transaction end");
+                break;
+            default:
+                _logger.LogWarning("Unhandled entry type: {EntryType}", entry.EntryType);
+                break;
+        }
+    }
+
+    private async Task ProcessRowChangeAsync(CanalEntry entry, CancellationToken cancellationToken)
+    {
+        var rowChange = RowChange.Parser.ParseFrom(entry.StoreValue);
+        await _eventBus.PublishAsync(new RowChangeEvent(
+            entry.Header.SchemaName,
+            entry.Header.TableName,
+            rowChange.EventType,
+            rowChange.RowDatas,
+            entry.Header.ExecuteTime
+        ), cancellationToken);
+    }
+
+    public void Dispose() => GC.SuppressFinalize(this);
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddCanalSharpService(this IServiceCollection services, Action<CanalOptions> configure)
+    {
+        services.Configure(configure);
+        
+        // Core services
+        services.AddSingleton<ICanalConnector, CanalConnector>();
+        
+        // Resilience
+        services.AddSingleton<CircuitBreaker>(sp => new CircuitBreaker(
+            sp.GetRequiredService<ILogger<CircuitBreaker>>(),
+            maxFailures: 5,
+            resetTimeout: TimeSpan.FromSeconds(30)));
+            
+        // Monitoring
+        services.AddHealthChecks()
+            .AddCheck<CanalHealthCheck>("canal");
+            
+        services.AddSingleton<IMetricsRecorder, PrometheusMetricsRecorder>();
+        
+        // Processing
+        services.AddSingleton<ObjectPool<EntryProcessor>>(sp =>
+        {
+            var policy = new DefaultPooledObjectPolicy<EntryProcessor>(() =>
+                new EntryProcessor(
+                    sp.GetRequiredService<ILogger<EntryProcessor>>(),
+                    sp.GetRequiredService<IEventBus>(),
+                    sp.GetRequiredService<IMetricsRecorder>()));
+            return new DefaultObjectPool<EntryProcessor>(policy, 100);
+        });
+        
+        // Worker service
+        services.AddHostedService<CanalWorker>();
+        
+        return services;
+    }
+}
+
+public class CanalOptions
+{
+    public string Host { get; set; } = "127.0.0.1";
+    public int Port { get; set; } = 11111;
+    public string Destination { get; set; } = "example";
+    public string Username { get; set; } = "canal";
+    public string Password { get; set; } = "canal";
+    public string Filter { get; set; } = ".*\\..*";
+    public int BatchSize { get; set; } = 1000;
+    public int BatchTimeoutMs { get; set; } = 100;
+    public int RetryCount { get; set; } = 3;
+    public TimeSpan RetryInterval { get; set; } = TimeSpan.FromSeconds(5);
+    public bool EnableCompression { get; set; } = true;
+}

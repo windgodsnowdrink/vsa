@@ -1,0 +1,115 @@
+{
+  "Title": "Image AOT 引擎",
+  "Description": "使用 AOT 编译的高性能图像处理引擎，支持多种图像处理操作",
+  "Version": "1.0.0",
+  "Author": "NET 专家",
+  "Tags": ["image", "aot", "processing", "optimization"],
+  "Icon": "image",
+  "EntryPoint": "image_aot.cs",
+  "OutputType": "Console",
+  "PublishAot": true,
+  "RuntimeIdentifier": "win-x64",
+  "TrimMode": "partial",
+  "Configuration": {
+    "DefaultFormat": "png",
+    "DefaultQuality": 85,
+    "EnableCache": true,
+    "CacheSize": 100,
+    "CacheExpiry": "00:30:00",
+    "EnableParallelProcessing": true,
+    "MaxDegreeOfParallelism": -1,
+    "TempDirectory": "",
+    "SupportedFormats": ["jpeg", "jpg", "png", "gif", "webp", "bmp"]
+  },
+  "Dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Text.Json": "8.0.0",
+    "System.Text.RegularExpressions": "4.3.1",
+    "System.Collections.Immutable": "8.0.0",
+    "Microsoft.Extensions.Caching.Memory": "10.0.0",
+    "Microsoft.Extensions.Http": "10.0.0",
+    "SixLabors.ImageSharp": "3.0.0",
+    "SixLabors.ImageSharp.Drawing": "3.0.0",
+    "SixLabors.Fonts": "3.0.0"
+  },
+  "Commands": {
+    "resize": {
+      "Description": "调整图像大小",
+      "Aliases": ["r"],
+      "Parameters": ["inputFile", "outputFile", "size"]
+    },
+    "convert": {
+      "Description": "转换图像格式",
+      "Aliases": ["c"],
+      "Parameters": ["inputFile", "outputFile", "format"]
+    },
+    "crop": {
+      "Description": "裁剪图像",
+      "Aliases": ["cr"],
+      "Parameters": ["inputFile", "outputFile", "x", "y", "width", "height"]
+    },
+    "rotate": {
+      "Description": "旋转图像",
+      "Aliases": ["ro"],
+      "Parameters": ["inputFile", "outputFile", "angle"]
+    },
+    "flip": {
+      "Description": "翻转图像",
+      "Aliases": ["f"],
+      "Parameters": ["inputFile", "outputFile", "direction"]
+    },
+    "watermark": {
+      "Description": "添加水印",
+      "Aliases": ["w"],
+      "Parameters": ["inputFile", "outputFile", "watermark", "position"]
+    },
+    "filter": {
+      "Description": "应用滤镜",
+      "Aliases": ["fi"],
+      "Parameters": ["inputFile", "outputFile", "filter"]
+    },
+    "metadata": {
+      "Description": "获取图像元数据",
+      "Aliases": ["m"],
+      "Parameters": ["inputFile"]
+    },
+    "optimize": {
+      "Description": "优化图像",
+      "Aliases": ["o"],
+      "Parameters": ["inputFile", "outputFile", "quality"]
+    },
+    "batch": {
+      "Description": "批量处理图像",
+      "Aliases": ["b"],
+      "Parameters": ["inputDir", "outputDir", "operation", "parameters"]
+    },
+    "benchmark": {
+      "Description": "运行基准测试",
+      "Aliases": ["bm"],
+      "Parameters": ["operation", "iterations"]
+    },
+    "config": {
+      "Description": "显示配置信息",
+      "Aliases": ["co"],
+      "Parameters": []
+    },
+    "help": {
+      "Description": "显示帮助信息",
+      "Aliases": ["h", "?"],
+      "Parameters": []
+    }
+  },
+  "SupportedFormats": ["jpeg", "jpg", "png", "gif", "webp", "bmp"],
+  "Performance": {
+    "EnableCaching": true,
+    "EnableParallelProcessing": true,
+    "MaxConcurrentTasks": -1
+  },
+  "Logging": {
+    "Level": "Information",
+    "Console": true,
+    "File": false
+  }
+}

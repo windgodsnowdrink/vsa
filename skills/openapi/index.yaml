@@ -1,0 +1,44 @@
+# OpenAPI Agent Skill - OpenAPI 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: OpenAPI skill implementation based on .NET 10 with AOT compilation
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Swashbuckle.AspNetCore@6.5.0
+# - Microsoft.OpenApi@1.6.0
+# - System.Text.Json@10.0.0
+# - System.Net.Http.Json@10.0.0
+# - System.Threading.Tasks.Dataflow@8.0.0
+# Application Scenarios: OpenAPI related functions, API documentation, API client generation
+# Activation Conditions: Activate when OpenAPI functionality is needed
+# Main Features:
+# - OpenAPI specification generation
+# - API documentation generation
+# - API client generation
+# - OpenAPI schema validation
+# - Swagger UI integration
+# - Scalar API reference integration
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# - AOT compilation support
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms
+# AOT Compilation Options:
+# - PublishAot: true
+# - ReadyToRun: true
+# - TieredCompilation: true
+# Supported Runtimes:
+# - win-x64
+# - linux-x64
+# - osx-x64
+# - win-arm64
+# - linux-arm64
+# - osx-arm64

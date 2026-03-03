@@ -1,0 +1,155 @@
+{
+  "runtime": {
+    "command": "torchsharp_core",
+    "arguments": [],
+    "working_directory": "../",
+    "exit_code_success": 0,
+    "timeout_seconds": 300,
+    "restart_on_crash": false,
+    "max_restarts": 3
+  },
+  "environment_variables": {
+    "DOTNET_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "TORCHSHARP_USE_CUDA": "true",
+    "TORCHSHARP_CUDA_VERSION": "11.8",
+    "CUDA_PATH": "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.8",
+    "PATH": "%PATH%;%CUDA_PATH%\\bin;%CUDA_PATH%\\libnvvp",
+    "LD_LIBRARY_PATH": "$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64"
+  },
+  "memory": {
+    "max_working_set": "4096",
+    "min_working_set": "512",
+    "gc_heap_limit": "2048",
+    "gc_server": true,
+    "gc_concurrent": true,
+    "gc_retention": "LowLatency"
+  },
+  "cpu": {
+    "affinity": "0-3",
+    "priority": "Normal",
+    "max_processes": 1
+  },
+  "io": {
+    "buffer_size": 8192,
+    "max_open_files": 1024,
+    "file_access_timeout": 30,
+    "directory_cache_enabled": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "format": "json",
+    "file_path": "../logs/torchsharp_core.log",
+    "max_file_size": 10485760,
+    "max_retained_files": 5,
+    "console_output": true,
+    "console_format": "simple"
+  },
+  "metrics": {
+    "enabled": true,
+    "interval_seconds": 60,
+    "collect_memory": true,
+    "collect_cpu": true,
+    "collect_io": true,
+    "collect_gpu": true,
+    "gpu_metrics": [
+      "utilization",
+      "memory_used",
+      "memory_total",
+      "temperature"
+    ]
+  },
+  "security": {
+    "enable_sandbox": false,
+    "restricted_folders": [],
+    "allowed_folders": [
+      "../models",
+      "../images",
+      "../logs",
+      "../temp"
+    ],
+    "network_access": true,
+    "environment_variables_access": true
+  },
+  "deployment": {
+    "type": "standalone",
+    "target_platform": "windows-x64",
+    "require_admin": false,
+    "install_service": false,
+    "service_name": "TorchSharpCore",
+    "service_description": "TorchSharp 核心服务"
+  },
+  "profiles": {
+    "default": {
+      "description": "默认运行配置",
+      "environment_variables": {},
+      "arguments": []
+    },
+    "development": {
+      "description": "开发环境配置",
+      "environment_variables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "TORCHSHARP_USE_CUDA": "false"
+      },
+      "arguments": ["--help"],
+      "logging": {
+        "level": "Debug",
+        "console_output": true
+      }
+    },
+    "production": {
+      "description": "生产环境配置",
+      "environment_variables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "TORCHSHARP_USE_CUDA": "true"
+      },
+      "arguments": [],
+      "logging": {
+        "level": "Warning",
+        "console_output": false
+      }
+    },
+    "cpu_only": {
+      "description": "仅 CPU 模式配置",
+      "environment_variables": {
+        "TORCHSHARP_USE_CUDA": "false"
+      },
+      "arguments": ["--device", "cpu"]
+    },
+    "tensor_demo": {
+      "description": "张量操作演示配置",
+      "arguments": ["tensor", "create", "--shape", "2,3,4"]
+    },
+    "model_demo": {
+      "description": "模型操作演示配置",
+      "arguments": ["model", "save", "--model_path", "../models/demo_model.pt"]
+    },
+    "image_demo": {
+      "description": "图像处理演示配置",
+      "arguments": ["image", "resize", "--image_path", "../images/sample.jpg", "--width", "224", "--height", "224"]
+    },
+    "scrutor_demo": {
+      "description": "Scrutor 演示配置",
+      "arguments": ["scrutor", "decorator"]
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "check_dependencies": true,
+    "check_environment": true,
+    "check_gpu": true,
+    "check_disk_space": true,
+    "min_disk_space_mb": 100,
+    "check_memory": true,
+    "min_memory_mb": 512
+  },
+  "recovery": {
+    "enabled": true,
+    "auto_recovery": false,
+    "recovery_points": [],
+    "max_recovery_attempts": 3,
+    "recovery_delay_seconds": 5
+  }
+}

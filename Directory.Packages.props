@@ -1,0 +1,5 @@
+﻿<Project>
+  <ItemGroup>
+    <PackageVersion Include="StreamRpc" Version="2.1.56" />
+  </ItemGroup>
+</Project>

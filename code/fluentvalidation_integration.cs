@@ -1,0 +1,171 @@
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace FluentValidationIntegration
+{
+    public class FluentValidationOptions
+    {
+        public bool UseValidatorCache { get; set; } = true;
+        public bool EnableDistributedCache { get; set; } = false;
+        public string CacheProvider { get; set; } = "Memory";
+        public TimeSpan CacheExpiration { get; set; } = TimeSpan.FromMinutes(30);
+        public bool EnableDynamicLoading { get; set; } = false;
+        public string DynamicLoadingPath { get; set; } = "Validators";
+        public bool EnablePerformanceMonitoring { get; set; } = false;
+        public bool EnableVersionControl { get; set; } = false;
+        public bool EnableMultiTenancy { get; set; } = false;
+    }
+
+    public interface IDistributedValidatorCache
+    {
+        IValidator<T> GetOrAddValidator<T>(string tenantId, string version, Func<IValidator<T>> validatorFactory);
+    }
+
+    public interface IValidatorLoader
+    {
+        IValidator<T> LoadValidator<T>(string path);
+    }
+
+    public interface IValidatorMonitor
+    {
+        void RecordValidatorLoad(Type validatorType);
+        void RecordValidationTime(Type validatorType, TimeSpan duration);
+    }
+
+    public interface IValidatorVersionControl
+    {
+        string GetCurrentVersion();
+    }
+
+    public interface ITenantValidatorResolver
+    {
+        string GetCurrentTenantId();
+    }
+
+    public static class FluentValidationExtensions
+    {
+        public static IServiceCollection AddFluentValidation(this IServiceCollection services, Action<FluentValidationOptions> configureOptions)
+        {
+            services.Configure(configureOptions);
+            
+            services.AddSingleton<IValidatorFactory, ValidatorFactory>();
+            services.AddSingleton<IValidatorCache, ValidatorCache>();
+            services.AddSingleton<IDistributedValidatorCache, DistributedValidatorCache>();
+            services.AddSingleton<IValidatorLoader, ValidatorLoader>();
+            services.AddSingleton<IValidatorMonitor, ValidatorMonitor>();
+            services.AddSingleton<IValidatorVersionControl, ValidatorVersionControl>();
+            services.AddSingleton<ITenantValidatorResolver, TenantValidatorResolver>();
+            
+            return services;
+        }
+    }
+
+    public class ValidatorFactory : IValidatorFactory
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IValidatorCache _cache;
+        private readonly IDistributedValidatorCache _distributedCache;
+        private readonly IValidatorLoader _loader;
+        private readonly IValidatorMonitor _monitor;
+        private readonly IValidatorVersionControl _versionControl;
+        private readonly ITenantValidatorResolver _tenantResolver;
+        private readonly FluentValidationOptions _options;
+
+        public ValidatorFactory(IServiceProvider serviceProvider, 
+                              IValidatorCache cache,
+                              IDistributedValidatorCache distributedCache,
+                              IValidatorLoader loader,
+                              IValidatorMonitor monitor,
+                              IValidatorVersionControl versionControl,
+                              ITenantValidatorResolver tenantResolver,
+                              IOptions<FluentValidationOptions> options)
+        {
+            _serviceProvider = serviceProvider;
+            _cache = cache;
+            _distributedCache = distributedCache;
+            _loader = loader;
+            _monitor = monitor;
+            _versionControl = versionControl;
+            _tenantResolver = tenantResolver;
+            _options = options.Value;
+        }
+
+        public IValidator<T> GetValidator<T>()
+        {
+            var tenantId = _tenantResolver.GetCurrentTenantId();
+            var version = _versionControl.GetCurrentVersion();
+            
+            if (_options.EnableDistributedCache)
+            {
+                return _distributedCache.GetOrAddValidator<T>(tenantId, version, () => 
+                {
+                    var validator = LoadValidator<T>();
+                    _monitor?.RecordValidatorLoad(typeof(T));
+                    return validator;
+                });
+            }
+            
+            return _cache.GetOrAddValidator<T>(() => LoadValidator<T>());
+        }
+
+        private IValidator<T> LoadValidator<T>()
+        {
+            if (_options.EnableDynamicLoading)
+            {
+                return _loader.LoadValidator<T>(_options.DynamicLoadingPath);
+            }
+            
+            return _serviceProvider.GetService<IValidator<T>>();
+        }
+    }
+
+    // Implementation classes for distributed cache, loader, monitor etc.
+    public class DistributedValidatorCache : IDistributedValidatorCache
+    {
+        private readonly ConcurrentDictionary<string, object> _validators = new();
+        
+        public IValidator<T> GetOrAddValidator<T>(string tenantId, string version, Func<IValidator<T>> validatorFactory)
+        {
+            var cacheKey = $"{typeof(T).FullName}:{tenantId}:{version}";
+            return (IValidator<T>)_validators.GetOrAdd(cacheKey, _ => validatorFactory());
+        }
+    }
+
+    public class ValidatorLoader : IValidatorLoader
+    {
+        public IValidator<T> LoadValidator<T>(string path)
+        {
+            // Implementation for dynamic loading validators from assemblies
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ValidatorMonitor : IValidatorMonitor
+    {
+        public void RecordValidatorLoad(Type validatorType)
+        {
+            // Track validator loading metrics
+        }
+
+        public void RecordValidationTime(Type validatorType, TimeSpan duration)
+        {
+            // Track validation performance metrics
+        }
+    }
+
+    public class ValidatorVersionControl : IValidatorVersionControl
+    {
+        public string GetCurrentVersion() => "1.0.0";
+    }
+
+    public class TenantValidatorResolver : ITenantValidatorResolver
+    {
+        public string GetCurrentTenantId() => "default";
+    }
+}

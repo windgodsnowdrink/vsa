@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Generate API": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type api --service UserService --output ./services/UserService/Services/Interfaces",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Generate Implementation": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type impl --service UserService --output ./services/UserService/Services/Impl",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    },
+    "Generate DTO": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --type dto --service UserService --output ./services/UserService/Services",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\silky"
+    }
+  }
+}

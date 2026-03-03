@@ -1,0 +1,143 @@
+{
+  "runtime": {
+    "framework": "net10.0",
+    "aot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release"
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "KAFKA_CLIENT_ID": "kafka_aot_client",
+    "KAFKA_PRODUCER_ACKS": "1",
+    "KAFKA_CONSUMER_AUTO_OFFSET_RESET": "earliest",
+    "KAFKA_PRODUCER_LINGER_MS": "10",
+    "KAFKA_PRODUCER_BATCH_SIZE": "16384",
+    "KAFKA_CONSUMER_ENABLE_AUTO_COMMIT": "true",
+    "KAFKA_CONSUMER_FETCH_MIN_BYTES": "1",
+    "KAFKA_CONSUMER_FETCH_MAX_WAIT_MS": "500"
+  },
+  "memory": {
+    "initial": 64,
+    "maximum": 512
+  },
+  "timeouts": {
+    "command": 60000,
+    "produce": 30000,
+    "consume": 60000,
+    "adminOperation": 30000,
+    "batchOperation": 120000,
+    "benchmark": 300000
+  },
+  "profiles": {
+    "produce": {
+      "command": "produce",
+      "description": "发送消息到Kafka主题",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "consume": {
+      "command": "consume",
+      "description": "从Kafka主题消费消息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 60000
+      }
+    },
+    "list-topics": {
+      "command": "list-topics",
+      "description": "列出所有Kafka主题",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "create-topic": {
+      "command": "create-topic",
+      "description": "创建新的Kafka主题",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "delete-topic": {
+      "command": "delete-topic",
+      "description": "删除Kafka主题",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "describe-topic": {
+      "command": "describe-topic",
+      "description": "描述Kafka主题的详细信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "batch-produce": {
+      "command": "batch-produce",
+      "description": "批量发送消息到Kafka主题",
+      "arguments": [],
+      "environmentVariables": {
+        "KAFKA_PRODUCER_LINGER_MS": "50",
+        "KAFKA_PRODUCER_BATCH_SIZE": "32768",
+        "KAFKA_BATCH_SIZE": "100"
+      },
+      "memory": {
+        "maximum": 1024
+      },
+      "timeouts": {
+        "command": 120000
+      }
+    },
+    "benchmark": {
+      "command": "benchmark",
+      "description": "运行Kafka性能基准测试",
+      "arguments": [],
+      "environmentVariables": {
+        "KAFKA_PRODUCER_LINGER_MS": "10",
+        "KAFKA_PRODUCER_BATCH_SIZE": "16384",
+        "KAFKA_CONSUMER_FETCH_MIN_BYTES": "1",
+        "KAFKA_CONSUMER_FETCH_MAX_WAIT_MS": "100"
+      },
+      "memory": {
+        "maximum": 1024
+      },
+      "timeouts": {
+        "command": 300000
+      }
+    },
+    "help": {
+      "command": "help",
+      "description": "显示帮助信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 5000
+      }
+    }
+  },
+  "logging": {
+    "level": "Information",
+    "format": "json"
+  },
+  "errorHandling": {
+    "showStackTrace": false,
+    "exitOnError": true
+  },
+  "network": {
+    "socketTimeoutMs": 30000,
+    "requestTimeoutMs": 40000,
+    "metadataRequestTimeoutMs": 10000
+  }
+}

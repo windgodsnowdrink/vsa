@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Add Route": {
+      "commandName": "Project",
+      "commandLineArgs": "add --path /api/users --method GET --handler UsersController.GetUsers",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Routes": {
+      "commandName": "Project",
+      "commandLineArgs": "list --format json",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Remove Route": {
+      "commandName": "Project",
+      "commandLineArgs": "remove --path /api/users --method GET",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Add Global Middleware": {
+      "commandName": "Project",
+      "commandLineArgs": "add-middleware --name AuthenticationMiddleware --handler AuthenticationMiddleware.Invoke",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Add Route Middleware": {
+      "commandName": "Project",
+      "commandLineArgs": "add-route-middleware --path /api/users --method GET --name AuthorizationMiddleware --handler AuthorizationMiddleware.Invoke",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

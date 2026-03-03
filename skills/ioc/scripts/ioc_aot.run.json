@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "IocAOT_Register": {
+      "commandName": "Project",
+      "commandLineArgs": "register {serviceType} {lifetime}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IOC_ENABLE_LOGGING": "true"
+      }
+    },
+    "IocAOT_Resolve": {
+      "commandName": "Project",
+      "commandLineArgs": "resolve {serviceType}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "IocAOT_Build": {
+      "commandName": "Project",
+      "commandLineArgs": "build",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "IocAOT_Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "IocAOT_Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark {iterations}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IOC_ENABLE_BENCHMARKING": "true"
+      }
+    },
+    "IocAOT_Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "IocAOT_Publish_AOT": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "commandLineArgs": "",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "publishOptions": {
+        "PublishSingleFile": true,
+        "PublishTrimmed": true,
+        "EnableCompressionInSingleFile": true,
+        "SelfContained": true,
+        "RuntimeIdentifier": "win-x64",
+        "Configuration": "Release"
+      }
+    }
+  },
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "IOC_DEFAULT_LIFETIME": "transient",
+    "IOC_ENABLE_AUTO_WIRING": "true",
+    "IOC_ENABLE_CIRCULAR_DETECTION": "true",
+    "IOC_ENABLE_LOGGING": "true",
+    "IOC_MAX_REGISTRATION_DEPTH": "10",
+    "IOC_ENABLE_BENCHMARKING": "true"
+  },
+  "launchUrl": "",
+  "applicationUrl": "",
+  "dotnetRunMessages": true,
+  "hotReloadEnabled": false
+}

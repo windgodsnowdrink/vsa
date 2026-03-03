@@ -1,0 +1,117 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Scrutor@4.0.0
+#:package Castle.Core@5.1.1
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Reflection;
+using System.Threading.Channels;
+using Castle.DynamicProxy;
+using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
+
+// 1. 动态代理集成
+public interface IProxyService { void Execute(); }
+
+public class ProxyService : IProxyService
+{
+    public void Execute() => Console.WriteLine("Core logic executed");
+}
+
+public class ProxyInterceptor : IInterceptor
+{
+    public void Intercept(IInvocation invocation)
+    {
+        Console.WriteLine($"Before {invocation.Method.Name}");
+        invocation.Proceed();
+        Console.WriteLine($"After {invocation.Method.Name}");
+    }
+}
+
+// 2. 条件装饰器
+public interface IConditionalDecorator { string Process(string input); }
+
+public class ConditionalCore : IConditionalDecorator
+{
+    public string Process(string input) => input.ToUpper();
+}
+
+public class DevelopmentDecorator : IConditionalDecorator
+{
+    private readonly IConditionalDecorator _inner;
+    public DevelopmentDecorator(IConditionalDecorator inner) => _inner = inner;
+    public string Process(string input) => $"DEV: {_inner.Process(input)}";
+}
+
+// 3. 多生命周期服务
+public interface IMultiLifetimeService { Guid InstanceId { get; } }
+
+public class MultiLifetimeService : IMultiLifetimeService
+{
+    public Guid InstanceId { get; } = Guid.NewGuid();
+}
+
+public static class AdvancedFeatures
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static IServiceCollection AddAdvancedFeatures(this IServiceCollection services)
+    {
+        // 动态代理注册
+        services.AddSingleton<ProxyInterceptor>();
+        services.AddSingleton<IProxyService>(sp => 
+            new ProxyGenerator().CreateInterfaceProxyWithTarget<IProxyService>(
+                new ProxyService(), 
+                sp.GetServices<IInterceptor>().ToArray()));
+
+        // 条件装饰器注册
+        services.AddScoped<IConditionalDecorator, ConditionalCore>();
+        services.Decorate<IConditionalDecorator>((inner, sp) => 
+            sp.GetRequiredService<ServiceContext>().Environment == "Development" 
+                ? new DevelopmentDecorator(inner) 
+                : inner);
+
+        // 多生命周期服务注册
+        services.AddTransient<IMultiLifetimeService, MultiLifetimeService>();
+        services.AddScoped<IMultiLifetimeService, MultiLifetimeService>();
+        services.AddSingleton<IMultiLifetimeService, MultiLifetimeService>();
+
+        // 混合生命周期解析器
+        services.AddSingleton<MultiLifetimeResolver>();
+
+        return services;
+    }
+}
+
+public class MultiLifetimeResolver
+{
+    private readonly IServiceProvider _provider;
+    public MultiLifetimeResolver(IServiceProvider provider) => _provider = provider;
+
+    public (Guid TransientId, Guid ScopedId, Guid SingletonId) GetIds()
+    {
+        using var scope = _provider.CreateScope();
+        return (
+            _provider.GetRequiredService<IMultiLifetimeService>().InstanceId,
+            scope.ServiceProvider.GetRequiredService<IMultiLifetimeService>().InstanceId,
+            _provider.GetRequiredService<IMultiLifetimeService>().InstanceId
+        );
+    }
+}
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services
+    .AddSingleton(new ServiceContext("Development"))
+    .AddAdvancedFeatures();
+
+var app = builder.Build();
+
+app.MapGet("/proxy", ([FromServices] IProxyService svc) => svc.Execute());
+app.MapGet("/decorator", ([FromServices] IConditionalDecorator svc) => 
+    svc.Process("test"));
+app.MapGet("/lifetimes", ([FromServices] MultiLifetimeResolver resolver) => 
+    resolver.GetIds());
+
+app.Run();

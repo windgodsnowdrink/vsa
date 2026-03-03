@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "bouncycastle_advanced",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\encrypt\scripts\bouncycastle_advanced.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\encrypt\scripts\bouncycastle_advanced.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

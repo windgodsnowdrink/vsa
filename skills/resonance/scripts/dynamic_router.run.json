@@ -1,0 +1,63 @@
+{
+  "name": "Dynamic Router",
+  "description": "动态路由脚本运行配置",
+  "command": "dotnet run --project dynamic_router.cs",
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\resonance\\scripts",
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_LOG_LEVEL": "Information",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "ROUTE_PREFIX": "/api",
+    "MAX_CONCURRENT_REQUESTS": "100",
+    "ENABLE_TELEMETRY": "true"
+  },
+  "runtimeOptions": {
+    "framework": "net10.0",
+    "arguments": [],
+    "timeout": 30000,
+    "redirectOutput": true,
+    "redirectError": true,
+    "useShellExecute": false
+  },
+  "debugOptions": {
+    "enableDebugging": false,
+    "debugPort": 0,
+    "waitForDebugger": false
+  },
+  "profiles": {
+    "Development": {
+      "command": "dotnet run --project dynamic_router.cs",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug"
+      }
+    },
+    "Production": {
+      "command": "dotnet run --project dynamic_router.cs",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning"
+      }
+    },
+    "AOT": {
+      "command": ".\\dynamic_router.exe",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "checks": [
+      "dotnet --version",
+      "dotnet build --help",
+      "dotnet publish --help"
+    ]
+  },
+  "recovery": {
+    "enabled": true,
+    "maxRetries": 3,
+    "retryDelayMs": 1000
+  }
+}

@@ -1,0 +1,104 @@
+#:sdk Microsoft.NET.Sdk
+#:package WebDown@1.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+
+using System;
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Threading.Channels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
+using WebDown;
+
+public interface IWebDownService
+{
+    Task DownloadAsync(string url, string savePath, CancellationToken cancellationToken = default);
+}
+
+public class WebDownService : IWebDownService, IDisposable
+{
+    private readonly ObjectPool<WebDownClient> _clientPool;
+    private readonly ThreadLocal<Memory<byte>> _threadLocalBuffer;
+    private readonly Channel<DownloadTask> _downloadChannel;
+    
+    public WebDownService(ObjectPool<WebDownClient> clientPool)
+    {
+        _clientPool = clientPool;
+        _threadLocalBuffer = new ThreadLocal<Memory<byte>>(() => 
+            new byte[8192].AsMemory().Slice(0, 8192));
+        
+        _downloadChannel = Channel.CreateUnbounded<DownloadTask>();
+        _ = ProcessDownloadsAsync();
+    }
+
+    public async Task DownloadAsync(string url, string savePath, CancellationToken cancellationToken = default)
+    {
+        await _downloadChannel.Writer.WriteAsync(new DownloadTask(url, savePath), cancellationToken);
+    }
+
+    private async Task ProcessDownloadsAsync()
+    {
+        await foreach (var task in _downloadChannel.Reader.ReadAllAsync())
+        {
+            var client = _clientPool.Get();
+            try
+            {
+                using var fileStream = new FileStream(task.SavePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous);
+                var pipe = new Pipe(new PipeOptions(pauseWriterThreshold: 81920));
+                
+                var writing = WriteToFileAsync(pipe.Reader, fileStream);
+                var reading = client.DownloadAsync(task.Url, pipe.Writer, _threadLocalBuffer.Value);
+                
+                await Task.WhenAll(reading, writing);
+            }
+            finally
+            {
+                _clientPool.Return(client);
+            }
+        }
+    }
+
+    private static async Task WriteToFileAsync(PipeReader reader, Stream fileStream)
+    {
+        while (true)
+        {
+            var result = await reader.ReadAsync();
+            var buffer = result.Buffer;
+
+            foreach (var segment in buffer)
+            {
+                await fileStream.WriteAsync(segment);
+            }
+
+            reader.AdvanceTo(buffer.End);
+
+            if (result.IsCompleted)
+                break;
+        }
+    }
+
+    public void Dispose()
+    {
+        _threadLocalBuffer.Dispose();
+        _downloadChannel.Writer.Complete();
+    }
+
+    private record DownloadTask(string Url, string SavePath);
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddWebDownServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ObjectPool<WebDownClient>>(sp =>
+        {
+            var policy = new DefaultPooledObjectPolicy<WebDownClient>();
+            return new DefaultObjectPool<WebDownClient>(policy, Environment.ProcessorCount * 2);
+        });
+
+        services.AddSingleton<IWebDownService, WebDownService>();
+        return services;
+    }
+}

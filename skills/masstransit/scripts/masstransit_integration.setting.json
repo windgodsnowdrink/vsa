@@ -1,0 +1,37 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MassTransit": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "MassTransit": {
+    "Enabled": true,
+    "RabbitMQ": {
+      "Host": "localhost",
+      "Username": "guest",
+      "Password": "guest",
+      "VirtualHost": "/",
+      "Port": 5672,
+      "UseSsl": false
+    },
+    "Options": {
+      "PrefetchCount": 16,
+      "ConcurrentMessageLimit": 10,
+      "RetryCount": 3,
+      "EnableCompression": true
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

@@ -1,0 +1,200 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.SemanticKernel@1.0.1
+#:package Microsoft.Extensions.Http.Polly@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net8.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Microsoft.SemanticKernel;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Channels;
+using Microsoft.Extensions.ObjectPool;
+
+public sealed record LlmOptions(
+    string ApiKey,
+    string Endpoint,
+    string ModelId,
+    int MaxTokens = 2048,
+    double Temperature = 0.7,
+    int CacheDurationSeconds = 300,
+    int RateLimitPerMinute = 60,
+    int CircuitBreakerThreshold = 5,
+    int CircuitBreakerDurationSeconds = 30)
+{
+    public LlmOptions() : this(string.Empty, string.Empty, string.Empty) { }
+    
+    public void Validate()
+    {
+        if (string.IsNullOrWhiteSpace(ApiKey))
+            throw new ArgumentNullException(nameof(ApiKey));
+        if (string.IsNullOrWhiteSpace(Endpoint))
+            throw new ArgumentNullException(nameof(Endpoint));
+        if (string.IsNullOrWhiteSpace(ModelId))
+            throw new ArgumentNullException(nameof(ModelId));
+        if (MaxTokens <= 0)
+            throw new ArgumentOutOfRangeException(nameof(MaxTokens));
+        if (Temperature < 0 || Temperature > 1)
+            throw new ArgumentOutOfRangeException(nameof(Temperature));
+        if (CacheDurationSeconds < 0)
+            throw new ArgumentOutOfRangeException(nameof(CacheDurationSeconds));
+        if (RateLimitPerMinute <= 0)
+            throw new ArgumentOutOfRangeException(nameof(RateLimitPerMinute));
+        if (CircuitBreakerThreshold <= 0)
+            throw new ArgumentOutOfRangeException(nameof(CircuitBreakerThreshold));
+        if (CircuitBreakerDurationSeconds <= 0)
+            throw new ArgumentOutOfRangeException(nameof(CircuitBreakerDurationSeconds));
+    }
+}
+
+public interface ILlmPipeline
+{
+    Task<string> ProcessAsync(string input, CancellationToken ct = default);
+    Task<IReadOnlyList<string>> ProcessBatchAsync(IEnumerable<string> inputs, CancellationToken ct = default);
+}
+
+public class LlmProcessor : ILlmPipeline, IDisposable
+{
+    private readonly IKernel _kernel;
+    private readonly Channel<string> _inputChannel;
+    private readonly ObjectPool<MemoryStream> _memoryStreamPool;
+    private readonly LlmOptions _options;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<LlmProcessor> _logger;
+    private readonly AsyncRateLimiter _rateLimiter;
+    private readonly AsyncCircuitBreakerPolicy _circuitBreakerPolicy;
+    private readonly Counter<int> _requestCounter;
+    private readonly Histogram<double> _responseTimeHistogram;
+    private bool _disposed;
+    
+    public LlmProcessor(
+    LlmOptions options,
+    IMemoryCache cache,
+    ILogger<LlmProcessor> logger,
+    IMeterFactory meterFactory)
+{
+    _options = options;
+    _options.Validate();
+    _cache = cache;
+    _logger = logger;
+    
+    var meter = meterFactory.Create("LLM.Processor");
+    _requestCounter = meter.CreateCounter<int>("llm.requests.count");
+    _responseTimeHistogram = meter.CreateHistogram<double>("llm.response.time", "ms");
+    
+    _rateLimiter = AsyncRateLimiter.Create(
+        new TokenBucketRateLimiterOptions
+        {
+            TokenLimit = _options.RateLimitPerMinute,
+            TokensPerPeriod = _options.RateLimitPerMinute,
+            ReplenishmentPeriod = TimeSpan.FromMinutes(1)
+        });
+    
+    _circuitBreakerPolicy = Policy
+        .Handle<Exception>()
+        .CircuitBreakerAsync(
+            _options.CircuitBreakerThreshold,
+            TimeSpan.FromSeconds(_options.CircuitBreakerDurationSeconds),
+            (ex, state, duration, context) => 
+                _logger.LogWarning(ex, "Circuit breaker opened for {Duration} seconds", duration.TotalSeconds),
+            context => 
+                _logger.LogInformation("Circuit breaker reset"));
+    
+    var kernelBuilder = Kernel.Builder
+        .WithAzureChatCompletionService(
+            _options.ModelId,
+            _options.Endpoint,
+            _options.ApiKey);
+            
+    _kernel = kernelBuilder.Build();
+    _inputChannel = Channel.CreateUnbounded<string>();
+    _memoryStreamPool = new DefaultObjectPool<MemoryStream>(new MemoryStreamPooledPolicy());
+}
+    
+    public async Task<string> ProcessAsync(string input, CancellationToken ct = default)
+{
+    if (_cache.TryGetValue<string>(input, out var cachedResult))
+    {
+        _logger.LogDebug("Cache hit for input: {Input}", input);
+        return cachedResult!;
+    }
+    
+    _requestCounter.Add(1);
+    var stopwatch = Stopwatch.StartNew();
+    
+    try
+    {
+        await _rateLimiter.WaitAsync(ct);
+        
+        var result = await _circuitBreakerPolicy.ExecuteAsync(async () => 
+        {
+            var function = _kernel.CreateSemanticFunction(input);
+            var response = await _kernel.RunAsync(input, function);
+            
+            _cache.Set(input, response, TimeSpan.FromSeconds(_options.CacheDurationSeconds));
+            return response;
+        });
+        
+        stopwatch.Stop();
+        _responseTimeHistogram.Record(stopwatch.ElapsedMilliseconds);
+        
+        return result;
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error processing LLM request for input: {Input}", input);
+        throw;
+    }
+}
+    
+    public async Task<IReadOnlyList<string>> ProcessBatchAsync(IEnumerable<string> inputs, CancellationToken ct = default)
+    {
+        var tasks = inputs.Select(input => ProcessAsync(input, ct));
+        return await Task.WhenAll(tasks);
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+        
+        if (disposing)
+        {
+            _kernel?.Dispose();
+        }
+        
+        _disposed = true;
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddLlmIntegration(this IServiceCollection services, Action<LlmOptions> configure)
+    {
+        services.Configure(configure);
+        services.AddMemoryCache();
+        services.AddMetrics();
+        
+        services.AddSingleton<ILlmPipeline, LlmProcessor>();
+        services.AddSingleton<ObjectPool<MemoryStream>>(sp => 
+            new DefaultObjectPool<MemoryStream>(new MemoryStreamPooledPolicy()));
+        
+        return services;
+    }
+}
+
+internal class MemoryStreamPooledPolicy : IPooledObjectPolicy<MemoryStream>
+{
+    public MemoryStream Create() => new MemoryStream();
+    
+    public bool Return(MemoryStream obj)
+    {
+        obj.SetLength(0);
+        return true;
+    }
+}

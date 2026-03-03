@@ -1,0 +1,117 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.EntityFrameworkCore.AutoHistory@6.0.0
+#:package ZstdNet@1.4.5
+#:package Microsoft.EntityFrameworkCore.Sqlite@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ZstdNet;
+using System.Buffers;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. 配置DbContext启用AutoHistory (SQLite版本)
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlite("Data Source=autohistory.db")
+           .EnableAutoHistory(changedMaxLength: 1024); // 限制单个变更记录大小
+});
+
+// 2. 历史记录压缩服务
+builder.Services.AddSingleton<HistoryCompressionService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "AutoHistory Service Ready (SQLite)");
+app.Run();
+
+// 增强版DbContext
+public class AppDbContext : DbContext
+{
+    private readonly HistoryCompressionService _compressionService;
+
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        HistoryCompressionService compressionService) 
+        : base(options)
+    {
+        _compressionService = compressionService;
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.EnableAutoHistory<CompressedAutoHistory>(o => 
+        {
+            o.ChangedMaxLength = 1024;
+            o.Limit = 1000; // 每个实体最多保留1000条历史记录
+        });
+    }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        // 自动记录变更历史
+        this.EnsureAutoHistory();
+        
+        using var transaction = await Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+}
+
+// 压缩版AutoHistory记录
+public class CompressedAutoHistory : AutoHistory
+{
+    public byte[] CompressedData { get; set; }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetCompressedData(string json, HistoryCompressionService service)
+    {
+        CompressedData = service.Compress(json);
+    }
+
+    [SkipLocalsInit]
+    public string GetDecompressedData(HistoryCompressionService service)
+    {
+        return service.Decompress(CompressedData);
+    }
+}
+
+// 历史记录压缩服务
+public sealed class HistoryCompressionService
+{
+    private readonly ThreadLocal<Compressor> _compressor;
+    private readonly ThreadLocal<Decompressor> _decompressor;
+
+    public HistoryCompressionService()
+    {
+        _compressor = new(() => new Compressor(new CompressionOptions(3)));
+        _decompressor = new(() => new Decompressor());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public byte[] Compress(string data)
+    {
+        return _compressor.Value.Wrap(data);
+    }
+
+    [SkipLocalsInit]
+    public unsafe string Decompress(byte[] compressed)
+    {
+        fixed (byte* ptr = compressed)
+        {
+            return _decompressor.Value.Unwrap(ptr, compressed.Length);
+        }
+    }
+}

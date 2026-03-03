@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "profiles": [
+    {
+      "name": "Generate JSON Schema",
+      "commandName": "Project",
+      "commandLineArgs": "schema --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\" --format json --output schema.json",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Generate Type Converter",
+      "commandName": "Project",
+      "commandLineArgs": "converter --source \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\" --target \"System.Collections.Generic.Dictionary`2[[System.String],[System.String]]\" --output converter.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Generate Serializer Config",
+      "commandName": "Project",
+      "commandLineArgs": "config --type \"System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]\" --format json --output serializer_config.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

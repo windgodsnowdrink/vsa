@@ -1,0 +1,199 @@
+name: scrutor
+version: 1.0.0
+description: 基于 Scrutor 的依赖注入扩展工具，支持 AOT 编译
+author: .NET 开发团队
+language: zh-CN
+
+# 依赖项
+dependencies:
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+    description: 依赖注入容器
+  - name: Scrutor
+    version: 4.2.2
+    description: 依赖注入扩展库
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行解析库
+  - name: Microsoft.Extensions.Configuration
+    version: 8.0.0
+    description: 配置管理库
+  - name: Microsoft.Extensions.Configuration.Json
+    version: 8.0.0
+    description: JSON 配置支持
+  - name: System.Text.Json
+    version: 8.0.0
+    description: JSON 序列化库
+
+# 功能特性
+features:
+  - name: assembly-scanning
+    description: 程序集扫描，自动注册服务
+  - name: decorator-registration
+    description: 装饰器注册，支持服务包装
+  - name: service-filtering
+    description: 服务过滤，基于条件注册服务
+  - name: code-generation
+    description: 代码生成，自动生成依赖注入配置代码
+  - name: aot-compatibility
+    description: AOT 兼容，支持 Ahead-of-Time 编译
+
+# AOT 编译选项
+aot:
+  enabled: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  runtimeIdentifier: win-x64
+
+# 命令行接口
+cli:
+  commands:
+    - name: scan
+      description: 扫描程序集并注册服务
+      parameters:
+        - name: assembly
+          description: 要扫描的程序集路径
+          required: true
+        - name: pattern
+          description: 类型匹配模式
+          required: false
+        - name: lifetime
+          description: 服务生命周期 (singleton/transient/scoped)
+          required: false
+    - name: decorate
+      description: 为服务添加装饰器
+      parameters:
+        - name: service
+          description: 服务类型
+          required: true
+        - name: decorator
+          description: 装饰器类型
+          required: true
+        - name: lifetime
+          description: 服务生命周期 (singleton/transient/scoped)
+          required: false
+    - name: generate
+      description: 生成依赖注入配置代码
+      parameters:
+        - name: output
+          description: 输出文件路径
+          required: true
+        - name: namespace
+          description: 命名空间
+          required: false
+        - name: class
+          description: 类名
+          required: false
+    - name: list
+      description: 列出已注册的服务
+      parameters:
+        - name: format
+          description: 输出格式 (text/json)
+          required: false
+
+# 脚本配置
+scripts:
+  - name: scrutor_core.cs
+    description: Scrutor 核心功能实现
+    main: true
+  - name: scrutor_generator.cs
+    description: Scrutor 代码生成功能实现
+
+# 参考文档
+reference:
+  - name: README.md
+    description: 技术参考文档
+  - name: examples.md
+    description: 使用示例文档
+
+# 编译配置
+compilation:
+  targetFramework: net10.0
+  langVersion: preview
+  nullable: enable
+  implicitUsings: enable
+  publishAot: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+
+# 运行时配置
+runtime:
+  environmentVariables:
+    - name: DOTNET_ENVIRONMENT
+      value: Production
+    - name: SCRUTOR_CONFIG_PATH
+      value: appsettings.json
+
+# 测试配置
+testing:
+  enabled: true
+  frameworks:
+    - xunit
+
+# 部署配置
+deployment:
+  platforms:
+    - windows
+    - linux
+    - macos
+  packaging:
+    - name: zip
+      enabled: true
+    - name: installer
+      enabled: false
+
+# 文档配置
+documentation:
+  language: zh-CN
+  format: markdown
+  files:
+    - SKILL.md
+    - reference/README.md
+    - reference/examples.md
+
+# 贡献指南
+contributing:
+  guidelines: CONTRIBUTING.md
+  issues: https://github.com/dotnet/scrutor/issues
+  pullRequests: https://github.com/dotnet/scrutor/pulls
+
+# 许可证
+license:
+  type: MIT
+  url: https://opensource.org/licenses/MIT
+
+# 支持信息
+support:
+  email: support@example.com
+  issues: https://github.com/dotnet/scrutor/issues
+  documentation: https://docs.microsoft.com/zh-cn/dotnet/
+
+# 元数据
+metadata:
+  created: 2026-01-24
+  lastUpdated: 2026-01-24
+  tags:
+    - dependency-injection
+    - scrutor
+    - aot
+    - dotnet
+    - csharp
+
+# 安装说明
+installation:
+  instructions:
+    - 下载最新版本的 scrutor 技能包
+    - 解压到指定目录
+    - 运行 scripts 目录中的 scrutor_core.cs 脚本
+
+# 使用说明
+usage:
+  examples:
+    - name: 基本扫描
+      command: scrutor_core scan --assembly "MyAssembly.dll" --pattern "*Service"
+    - name: 添加装饰器
+      command: scrutor_core decorate --service "IMyService" --decorator "MyServiceDecorator"
+    - name: 生成代码
+      command: scrutor_core generate --output "DependencyInjection.cs" --namespace "MyApp.DependencyInjection" --class "DependencyInjection"

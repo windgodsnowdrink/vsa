@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "magicodes_ie_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:/Trae/vsa/skills/magicodes/scripts/magicodes_ie_integration.cs",
+      "args": [
+        "--settings",
+        "D:/Trae/vsa/skills/magicodes/scripts/magicodes_ie_integration.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SINGLE_FILE": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

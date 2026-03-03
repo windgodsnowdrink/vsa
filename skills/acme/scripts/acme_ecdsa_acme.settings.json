@@ -1,0 +1,32 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.ECDSA": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "ECDSA": {
+      "ServerUrl": "https://acme-v02.api.letsencrypt.org/directory",
+      "Email": "admin@example.com",
+      "KeyAlgorithm": "ES256",
+      "CurveName": "P-256",
+      "ChallengeType": "dns-01",
+      "DnsProvider": "Cloudflare",
+      "DnsApiToken": "your-cloudflare-api-token",
+      "CertificatePath": "./certificates",
+      "PfxPassword": "YourStrongPassword123!",
+      "RenewalThresholdDays": 30
+    }
+  }
+}

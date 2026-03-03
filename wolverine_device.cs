@@ -1,0 +1,307 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package WolverineFx@4.2.0
+#:package WolverineFx.Marten@4.2.0
+#:package WolverineFx.RDBMS@4.2.0
+#:package WolverineFx.Postgresql@4.2.0
+#:package WolverineFx.FluentValidation@4.2.0
+#:package WolverineFx.Http@4.2.0
+#:package WolverineFx.RabbitMQ@4.2.0
+#:package WolverineFx.AzureServiceBus@4.2.0
+#:package WolverineFx.Http.FluentValidation@4.2.0
+#:package WolverineFx.Http.Marten@4.2.0
+#:package WolverineFx.AmazonSqs@4.2.0
+#:package WolverineFx.EntityFrameworkCore@4.2.0
+#:package WolverineFx.SqlServer@4.2.0
+#:package WolverineFx.Kafka@4.2.0
+#:package WolverineFx.MemoryPack@4.2.0
+#:package WolverineFx.MessagePack@4.2.0
+#:package WolverineFx.MQTT@4.2.0
+#:package WolverineFx.Pubsub@4.2.0
+#:package WolverineFx.Pulsar@4.2.0
+#:package WolverineFx.RavenDb@4.2.0
+#:package Microsoft.CodeAnalysis.Common@4.14.0
+#:package Microsoft.CodeAnalysis.Workspaces.Common@4.14.0
+#:package Swashbuckle.AspNetCore@9.0.3
+#:package Swashbuckle.AspNetCore.Swagger@9.0.3
+#:package Swashbuckle.AspNetCore.SwaggerGen@9.0.3
+#:package Swashbuckle.AspNetCore.SwaggerUI@9.0.3
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property GenerateJsonSourceGeneration=true
+
+using Wolverine.Attributes;               // 只在需要时引用
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Wolverine;
+using Wolverine.Configuration;
+using Contracts.Messages;
+
+// 在 Device、UserDevice 表均加上唯一约束 (DeviceId, UserId, CorrelationId)，并在 Handler 中捕获唯一冲突异常后直接返回成功。
+var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
+// 只需要把 Wolverine 加进来，默认使用 *InMemoryTransport*（同进程）
+// 如需跨进程，可在此处统一切换到 RabbitMQ、Kafka 等
+builder.Host.UseWolverine(opts =>
+{
+    // 如果你想把事件持久化到数据库（Outbox），打开下面的配置
+    // opts.PersistMessagesWithPostgres("Host=...;Database=...;Username=...;Password=...");
+    // opts.Policies.OnException<DbUpdateException>(e => e.Retry(3));
+    // opts.DefaultRoutingConvention = new Wolverine.RabbitMq.Routing.RabbitMqRoutingConvention();
+    // opts.UseRabbitMq(rabbit =>
+    // {
+    //     rabbit.ConnectionFactory.Uri = new Uri("amqp://guest:guest@localhost:5672");
+    //     rabbit.HostName = "localhost";
+    //     rabbit.Port = 5672;
+    //     rabbit.Username = "guest";
+    //     rabbit.Password = "guest";
+    // })ConfigureDeadLetterQueue("dead-letter");
+    // 开启 Outbox（即使 InMemory，也可以演示事务）
+    opts.EnableOutbox();   // 若使用真实DB 记得打开
+
+    // 让所有 Handler 自动发现（包括跨程序集）
+    opts.IncludeAssembly(typeof(IDeviceService).Assembly); // 自己的
+
+    //  Grafana/Prometheus、Jaeger 集成，监控每一步延迟、Saga 成功率。
+    opts.EnableOpenTelemetry();
+});
+
+builder.Services.AddSingleton<IDeviceRepository, InMemoryDeviceRepository>();
+builder.Services.AddSingleton<IDeviceService, DeviceService>();
+
+var app = builder.Build();
+
+app.MapPost("/device/create", async (DeviceDto dto,
+    IDeviceService svc, IMessageBus bus) =>
+{
+    var deviceId = await svc.CreateDeviceAsync(dto.Serial);
+    await bus.PublishAsync(new DeviceCreated(deviceId, dto.Serial, DateTimeOffset.UtcNow));
+    return Results.Created($"/device/{deviceId}", new { deviceId });
+});
+
+app.MapPut("/device/update", async (Guid deviceId, DeviceDto dto, IDeviceService svc, IMessageBus bus) =>
+{
+    await svc.UpdateDeviceAsync(deviceId, dto.Serial);
+    await bus.PublishAsync(new DeviceUpdated(deviceId, dto.Serial, DateTimeOffset.UtcNow));
+    return Results.Accepted();
+});
+
+app.MapPost("/devices/bind", async (Guid userId, Guid deviceId, IDeviceService svc, IMessageBus bus) =>
+{
+    // 业务校验、写入设备表等...
+    await svc.BindDeviceAsync(userId, deviceId);
+
+    // 发布事件
+    var ev = new UserDeviceAdded(userId, deviceId, DateTimeOffset.UtcNow);
+    await bus.PublishAsync(ev);           // fire‑and‑forget
+    return Results.Accepted();            // 202
+});
+
+app.MapPost("/devices/unbind", async (Guid userId, Guid deviceId, IDeviceService svc, IMessageBus bus) =>
+{
+    await svc.UnbindDeviceAsync(userId, deviceId);
+    var ev = new UserDeviceRemoved(userId, deviceId, DateTimeOffset.UtcNow);
+    await bus.PublishAsync(ev);
+    return Results.Accepted();
+});
+
+app.Run();
+
+public interface IDeviceService
+{
+    Task<Guid> CreateDeviceAsync(string serial);
+    Task BindDeviceAsync(Guid userId, Guid deviceId);
+    Task UnbindDeviceAsync(Guid userId, Guid deviceId);
+}
+
+public class DeviceService : IDeviceService
+{
+    // 这里可以写入设备库、发送指令到硬件等
+    private readonly IDeviceRepository _repo;
+    public DeviceService(IDeviceRepository repo) => _repo = repo;
+
+    public async Task<Guid> CreateDeviceAsync(string serial)
+        => await _repo.AddAsync(serial);
+
+    public async Task BindAsync(Guid deviceId, Guid userId)
+    {
+        // var d = await _repo.GetAsync(deviceId);
+        // d.OwnerId = userId;
+        // d.BoundAt = DateTimeOffset.UtcNow;
+        // await _repo.UpdateAsync(d);
+        using var tx = await _dbContext.Database.BeginTransactionAsync();
+        // 1️⃣ 更新 Device 表（标记 OwnerId）
+        var device = await _dbContext.Devices.FindAsync(deviceId);
+        device.OwnerId = userId;
+        await _dbContext.SaveChangesAsync();
+
+        // 2️⃣ 将事件写入 Wolverine Outbox（在同一个事务里）
+        await _bus.PublishAsync(new DeviceBoundToUser(deviceId, userId, DateTimeOffset.UtcNow));
+
+        // 3️⃣ 提交事务：Device 更新 + Outbox 同时提交，保证“一致”
+        await tx.CommitAsync();
+    }
+
+    public async Task UnbindAsync(Guid deviceId)
+    {
+        var d = await _repo.GetAsync(deviceId);
+        d.OwnerId = null;
+        d.BoundAt = null;
+        await _repo.UpdateAsync(d);
+    }
+
+    // 设备当前绑定的所有用户(跨上下文)
+    public async Task<IReadOnlyList<Guid>> GetBoundUsersAsync(Guid deviceId, IMessageBus bus)
+    {
+        var query = new QueryDeviceUsers(deviceId);
+        var response = await bus.InvokeAsync<DeviceUsersResponse>(query);
+        return response.UserIds;
+    }
+
+        // 该用户可以绑定的空闲设备（业务组合）
+    public async Task<IReadOnlyList<Guid>> GetAvailableDevicesAsync(Guid userId, IMessageBus bus, IDeviceRepository deviceRepo)
+    {
+        // 1️⃣ 先拿到用户已经绑定的设备
+        var userDevices = await bus.InvokeAsync<UserDevicesResponse>(new QueryUserDevices(userId));
+        var boundSet = new HashSet<Guid>(userDevices.DeviceIds);
+
+        // 2️⃣ 从 Device 仓库取出所有设备（或仅取空闲的）
+        var allDevices = await deviceRepo.GetAllAsync(); // 返回 List<Device>
+        var available = allDevices
+                .Where(d => d.OwnerId == null)   // 直接判断 Device 是否已被占用
+                .Select(d => d.Id)
+                .Except(boundSet)                // 防止重复（理论上已经不在）
+                .ToList();
+
+        return available;
+    }
+}
+
+// 组件 A 中的 Service（或 Controller）
+public class DeviceQueryService
+{
+    private readonly IMessageBus _bus;
+
+    public DeviceQueryService(IMessageBus bus) => _bus = bus;
+
+    public async Task<IReadOnlyList<Guid>> GetDevicesForUserAsync(Guid userId)
+    {
+        var request = new GetUserDevices(userId);
+        // 泛型 InvokeAsync<TResponse> 会阻塞直到 B 返回 reply
+        var response = await _bus.InvokeAsync<UserDevicesResponse>(request, timeout: TimeSpan.FromSecond(5)); // 只能用于 同一 Wolverine 实例,A和B 分别跑在不同进程，需要使用外部 transport
+        return response.DeviceIds;
+    }
+}
+
+public record DeviceDto(string Serial);
+
+public interface IDeviceRepository
+{
+    Task<Guid> AddAsync(string serial);
+    Task<Device> GetAsync(Guid id);
+    Task UpdateAsync(Device device);
+}
+
+public class InMemoryDeviceRepository : IDeviceRepository
+{
+    private readonly ConcurrentDictionary<Guid, Device> _store = new();
+    public Task<Guid> AddAsync(string serial)
+    {
+        var id = Guid.NewGuid();
+        _store[id] = new Device { Id = id, Serial = serial };
+        return Task.FromResult(id);
+    }
+    public Task<Device> GetAsync(Guid id) => Task.FromResult(_store[id]);
+    public Task UpdateAsync(Device device) { _store[device.Id] = device; return Task.CompletedTask; }
+}
+
+public class Device
+{
+    public Guid Id { get; set; }
+    public string Serial { get; set; } = default!;
+    public Guid? OwnerId { get; set; }          // 用来快速判断是否已绑定
+    public DateTimeOffset? BoundAt { get; set; }
+}
+
+public class DeviceHandler
+{
+    private readonly IDeviceRepository _repo;
+    private readonly ILogger<DeviceHandler> _log;
+
+    public DeviceHandler(IDeviceRepository repo, ILogger<DeviceHandler> log)
+    {
+        _repo = repo;
+        _log = log;
+    }
+
+    // 业务层面的 Bind（Command‑Response）,BFF 通过 bus.InvokeAsync<BindDeviceResponse>(cmd) 获得同步结果.
+    public async Task<BindDeviceResponse> Handle(BindDeviceCommand cmd)
+    {
+        try
+        {
+            var device = await _repo.GetAsync(cmd.DeviceId);
+            if (device == null)
+                return new BindDeviceResponse(cmd.DeviceId, cmd.UserId, false,
+                    $"Device {cmd.DeviceId} not found", cmd.CorrelationId);
+
+            if (device.OwnerId != null)
+                return new BindDeviceResponse(cmd.DeviceId, cmd.UserId, false,
+                    $"Device already bound to {device.OwnerId}", cmd.CorrelationId);
+
+            // 业务更新
+            device.OwnerId = cmd.UserId;
+            device.BoundAt = DateTimeOffset.UtcNow;
+            await _repo.UpdateAsync(device);
+
+            // 发布领域事件（UserDevice 负责持久化关联）
+            await _bus.PublishAsync(new DeviceBoundToUser(
+                cmd.DeviceId, cmd.UserId, DateTimeOffset.UtcNow));
+
+            return new BindDeviceResponse(cmd.DeviceId, cmd.UserId, true, null, cmd.CorrelationId);
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex,
+                "BindDeviceCommand failed DeviceId={DeviceId} UserId={UserId}",
+                cmd.DeviceId, cmd.UserId);
+            return new BindDeviceResponse(cmd.DeviceId, cmd.UserId, false,
+                ex.Message, cmd.CorrelationId);
+        }
+    }
+
+    // 解绑（对称实现）...
+}
+
+public class BindDeviceHandler
+{
+    private readonly IDbConnection _db;          // 这里假设使用 Dapper
+    private readonly IMessageBus _bus;
+
+    public BindDeviceHandler(IDbConnection db, IMessageBus bus)
+    {
+        _db = db;
+        _bus = bus;
+    }
+
+    // 业务步骤：绑定成功后把 Device‑User 关系写入
+    public async Task<BindDeviceResponse> Handle(BindDeviceCommand cmd)
+    {
+        // 1️⃣ 业务校验（略）
+        // 2️⃣ 写入关联表
+        var sql = @"INSERT INTO user_device (device_id, user_id, created_at)
+                    VALUES (@DeviceId, @UserId, @Now)";
+        await _db.ExecuteAsync(sql, new { cmd.DeviceId, cmd.UserId, Now = DateTimeOffset.UtcNow });
+
+        // 3️⃣ 通过 Outbox 发出 “UserDeviceSaved” 事件（同事务提交）
+        await _bus.PublishAsync(new UserDeviceSaved(
+            CorrelationId: cmd.CorrelationId,
+            DeviceId:      cmd.DeviceId,
+            UserId:        cmd.UserId,
+            SavedAt:       DateTimeOffset.UtcNow));
+
+        // 4️⃣ 返回业务响应
+        return new BindDeviceResponse(cmd.DeviceId, cmd.UserId, true, null);
+    }
+}

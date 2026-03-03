@@ -1,0 +1,52 @@
+# CsharpFlink AOT Agent Skill - CsharpFlink AOT高性能流处理工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10 AOT架构的高性能流处理工具，提供高效、可靠的Flink作业执行功能，支持流处理、批处理、SQL作业等多种作业类型
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# Application Scenarios:
+# - 实时流处理应用
+# - 批量数据处理
+# - SQL查询处理
+# - 数据集成系统
+# - 实时分析平台
+# - ETL作业执行
+# - 事件处理系统
+# - 批量数据转换
+# Activation Conditions: 当需要流处理或批处理功能时激活
+# Main Features:
+# - 支持多种作业类型（流处理、批处理、SQL作业）
+# - 支持批量执行多个Flink作业
+# - 支持作业状态管理（获取状态、停止作业）
+# - 内置缓存机制，提高重复作业执行速度
+# - 提供详细的状态监控信息
+# - 支持命令行使用
+# - 支持灵活的配置选项
+# - 异步编程，提高并发性能
+# - 详细日志记录，便于调试和监控
+# Performance Features:
+# - .NET 10 AOT编译，提供原生性能
+# - 减少启动时间和内存占用
+# - 异步编程，提高并发性能
+# - 内存优化，减少内存占用
+# - 高效算法，提高作业执行速度
+# - 缓存机制，减少重复计算
+# Technical Features:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，支持IoC容器
+# - 选项模式，支持灵活的配置管理
+# - 异步编程，支持非阻塞操作
+# - 命令行接口，支持脚本化使用
+# - 批量处理，提高执行效率
+# - 作业状态管理，支持状态查询和作业停止
+# - 服务状态监控，提供运行时指标
+# AOT Compilation:
+# - PublishAot=true
+# - InvariantGlobalization=true
+# - EnableCompilationRelaxations=true
+# - PublishReadyToRun=true

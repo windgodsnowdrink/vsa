@@ -1,0 +1,230 @@
+using System.Buffers;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Polly;
+using System.Threading.Channels;
+using System.IO.Pipelines;
+using System.IO.Compression;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace ZstdCompression
+{
+    /// <summary>
+    /// Zstd压缩配置选项
+    /// </summary>
+    public class ZstdCompressionOptions
+    {
+        /// <summary>
+        /// 压缩级别 (1-22)
+        /// </summary>
+        public int CompressionLevel { get; set; } = 3;
+
+        /// <summary>
+        /// 窗口大小 (0表示默认)
+        /// </summary>
+        public int WindowSize { get; set; } = 0;
+
+        /// <summary>
+        /// 是否启用校验和
+        /// </summary>
+        public bool EnableChecksum { get; set; } = true;
+
+        /// <summary>
+        /// 最大输入大小 (字节)
+        /// </summary>
+        public int MaxInputSize { get; set; } = 100 * 1024 * 1024; // 100MB
+
+        /// <summary>
+        /// 自适应压缩阈值 (毫秒)
+        /// </summary>
+        public int AdaptiveThresholdMs { get; set; } = 100;
+
+        /// <summary>
+        /// 熔断阈值 (连续错误次数)
+        /// </summary>
+        public int CircuitBreakerThreshold { get; set; } = 5;
+
+        /// <summary>
+        /// 熔断持续时间 (秒)
+        /// </summary>
+        public int CircuitBreakerDuration { get; set; } = 30;
+
+        /// <summary>
+        /// 最大内存使用限制 (MB)
+        /// </summary>
+        public int MaxMemoryUsageMb { get; set; } = 1024;
+
+        public int CompressionLevel { get; set; } = 3; // 1-22, 默认3
+        public int WindowLog { get; set; } = 22; // 10-30, 默认22
+        public bool EnableChecksum { get; set; } = true;
+        public int MaxInputSize { get; set; } = 1024 * 1024 * 10; // 10MB
+
+        /// <summary>
+        /// Zstd压缩器接口
+        /// </summary>
+        public interface IZstdCompressor : IHealthCheck, IDisposable
+        {
+            /// <summary>
+            /// 同步压缩
+            /// </summary>
+            byte[] Compress(byte[] input);
+
+            /// <summary>
+            /// 同步解压缩
+            /// </summary>
+            byte[] Decompress(byte[] input);
+
+            /// <summary>
+            /// 异步流式压缩
+            /// </summary>
+            ValueTask<Memory<byte>> CompressAsync(ReadOnlyMemory<byte> input, CancellationToken cancellationToken = default);
+
+            /// <summary>
+            /// 异步流式解压缩
+            /// </summary>
+            ValueTask<Memory<byte>> DecompressAsync(ReadOnlyMemory<byte> input, CancellationToken cancellationToken = default);
+
+            /// <summary>
+            /// 创建压缩管道
+            /// </summary>
+            PipeWriter CreateCompressionPipe(PipeWriter output);
+
+            /// <summary>
+            /// 创建解压缩管道
+            /// </summary>
+            PipeReader CreateDecompressionPipe(PipeReader input);
+
+            /// <summary>
+            /// 获取压缩统计信息
+            /// </summary>
+            CompressionMetrics GetMetrics();
+            {
+                byte[] Compress(byte[] input);
+            byte[] Decompress(byte[] input);
+        }
+    }
+
+    /// <summary>
+    /// Zstd压缩器实现
+    /// </summary>
+    public class ZstdCompressor : IZstdCompressor, IDisposable
+    {
+        private readonly ILogger<ZstdCompressor> _logger;
+        private readonly IOptionsMonitor<ZstdCompressionOptions> _options;
+        private readonly IMetricsTracker _metrics;
+        private readonly AsyncCircuitBreaker _circuitBreaker;
+        private readonly ThreadLocal<MemoryPool<byte>> _memoryPool;
+        private readonly Meter _meter = new("ZstdCompression");
+        private readonly Counter<int> _compressionCounter;
+        private readonly Histogram<double> _compressionDuration;
+        private readonly ObjectPool<ZstdCompressorContext> _contextPool;
+        private readonly Channel<CompressionJob> _compressionChannel;
+        private readonly CancellationTokenSource _cts = new();
+        private readonly Task _processingTask;
+
+        public ZstdCompressor(
+    ILogger<ZstdCompressor> logger,
+    IOptionsMonitor<ZstdCompressionOptions> options,
+    IMetricsTracker metrics,
+    ObjectPool<ZstdCompressorContext> contextPool)
+        {
+            _logger = logger;
+            _options = options;
+            _metrics = metrics;
+            _contextPool = contextPool;
+            _memoryPool = new(() => MemoryPool<byte>.Shared);
+
+            var policy = Policy
+                .Handle<Exception>()
+                .CircuitBreakerAsync(
+                    _options.CurrentValue.CircuitBreakerThreshold,
+                    TimeSpan.FromSeconds(_options.CurrentValue.CircuitBreakerDuration));
+
+            _circuitBreaker = new AsyncCircuitBreaker(policy);
+
+            _compressionCounter = _meter.CreateCounter<int>("zstd.compression.count");
+            _compressionDuration = _meter.CreateHistogram<double>("zstd.compression.duration");
+
+            // 初始化压缩通道和工作线程
+            _compressionChannel = Channel.CreateBounded<CompressionJob>(
+                new BoundedChannelOptions(1000)
+                {
+                    SingleWriter = false,
+                    SingleReader = true,
+                    FullMode = BoundedChannelFullMode.Wait
+                });
+
+            _processingTask = Task.Run(ProcessCompressionJobsAsync);
+        private readonly ZstdCompressionOptions _options;
+        private readonly ILogger<ZstdCompressor> _logger;
+        private readonly MemoryPool<byte> _memoryPool;
+
+        public ZstdCompressor(
+            IOptions<ZstdCompressionOptions> options,
+            ILogger<ZstdCompressor> logger,
+            MemoryPool<byte> memoryPool = null)
+        {
+            _options = options.Value;
+            _logger = logger;
+            _memoryPool = memoryPool ?? MemoryPool<byte>.Shared;
+        }
+
+        public byte[] Compress(byte[] input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input.Length > _options.MaxInputSize)
+                throw new ArgumentException("Input size exceeds maximum allowed");
+
+            using var outputMemory = _memoryPool.Rent(input.Length / 2);
+            var outputSpan = outputMemory.Memory.Span;
+
+            var compressedSize = ZstdNet.Compressor.Wrap(
+                input,
+                outputSpan,
+                _options.CompressionLevel,
+                _options.WindowLog,
+                _options.EnableChecksum);
+
+            return outputSpan.Slice(0, compressedSize).ToArray();
+        }
+
+        public byte[] Decompress(byte[] input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            using var outputMemory = _memoryPool.Rent(input.Length * 3);
+            var outputSpan = outputMemory.Memory.Span;
+
+            var decompressedSize = ZstdNet.Decompressor.Unwrap(
+                input,
+                outputSpan);
+
+            return outputSpan.Slice(0, decompressedSize).ToArray();
+        }
+
+        public void Dispose()
+        {
+            _memoryPool?.Dispose();
+        }
+    }
+
+    public static class ZstdCompressionExtensions
+    {
+        public static IServiceCollection AddZstdCompression(
+            this IServiceCollection services,
+            Action<ZstdCompressionOptions> configure = null)
+        {
+            services.AddOptions<ZstdCompressionOptions>()
+                .Configure(configure ?? (opt => { }))
+                .ValidateDataAnnotations();
+
+            services.AddSingleton<IZstdCompressor, ZstdCompressor>();
+            services.AddSingleton<MemoryPool<byte>>(_ => MemoryPool<byte>.Shared);
+
+            return services;
+        }
+    }
+}

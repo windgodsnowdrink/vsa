@@ -1,0 +1,42 @@
+# CppSharp AOT Agent Skill - CppSharp AOT高性能C++和C#交互工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10 AOT架构的高性能C++和C#交互工具，提供高效、可靠的C++头文件解析和C#绑定代码生成功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# Application Scenarios:
+# - C++库封装
+# - 跨语言交互
+# - 高性能计算
+# - 现有代码迁移
+# Activation Conditions: 当需要C++和C#交互功能时激活
+# Main Features:
+# - C++头文件解析
+# - C#绑定代码生成
+# - 支持复杂C++类型和成员
+# - 生成类型安全的C#绑定
+# - 支持命令行使用
+# - 支持配置文件
+# Performance Features:
+# - .NET 10 AOT编译，提供原生性能
+# - 减少启动时间和内存占用
+# - 异步编程，提高并发性能
+# - 内存优化，减少内存占用
+# - 高效算法，提高解析和生成速度
+# Technical Features:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，支持IoC容器
+# - 选项模式，支持灵活的配置管理
+# - 异步编程，支持非阻塞操作
+# - 日志记录，提供详细的执行信息
+# - 命令行接口，支持脚本化使用
+# - 配置文件支持，便于定制化配置
+# AOT Compilation:
+# - PublishAot=true
+# - InvariantGlobalization=true
+# - EnableCompilationRelaxations=true
+# - PublishReadyToRun=true

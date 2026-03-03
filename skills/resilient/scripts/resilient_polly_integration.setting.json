@@ -1,0 +1,57 @@
+{
+  "runtime": {
+    "environment": "Development",
+    "command": "dotnet run --project resilient_polly_integration.cs",
+    "args": []
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "trimMode": "partial",
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "enableCompressionInSingleFile": true,
+    "selfContained": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Http.Polly": "10.0.0",
+    "Polly": "7.2.4",
+    "System.Threading.RateLimiting": "8.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0"
+  },
+  "configuration": {
+    "Resilient": {
+      "Retry": {
+        "Count": 3,
+        "MinBackoff": "00:00:01",
+        "MaxBackoff": "00:00:10",
+        "MaxRetryDelay": "00:00:30"
+      },
+      "CircuitBreaker": {
+        "FailureThreshold": 0.5,
+        "SamplingDuration": "00:00:30",
+        "MinimumThroughput": 10,
+        "BreakDuration": "00:00:30"
+      },
+      "RateLimiter": {
+        "PermitsPerSecond": 100,
+        "QueueLimit": 50
+      },
+      "Timeout": "00:00:30",
+      "Bulkhead": {
+        "MaxParallelization": 10,
+        "MaxQueuedActions": 50
+      }
+    },
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "System": "Warning",
+        "Microsoft": "Warning"
+      }
+    },
+    "AllowedHosts": "*"
+  }
+}

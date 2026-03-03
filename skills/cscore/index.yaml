@@ -1,0 +1,49 @@
+# Cscore AOT Agent Skill - Cscore AOT高性能音频处理工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10 AOT架构的高性能音频处理工具，提供高效、可靠的音频数据处理功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# Application Scenarios:
+# - 音频处理应用
+# - 语音处理系统
+# - 媒体处理平台
+# - 游戏音频处理
+# - 实时音频处理
+# - 音频分析系统
+# - 音频转换工具
+# - 批量音频处理
+# Activation Conditions: 当需要音频处理功能时激活
+# Main Features:
+# - 支持多种音频处理操作（音量调整、重采样、降噪等）
+# - 支持批量处理多个音频文件
+# - 支持获取音频设备列表
+# - 内置缓存机制，提高重复操作执行速度
+# - 提供详细的状态监控信息
+# - 支持命令行使用
+# - 支持灵活的配置选项
+# Performance Features:
+# - .NET 10 AOT编译，提供原生性能
+# - 减少启动时间和内存占用
+# - 异步编程，提高并发性能
+# - 内存优化，减少内存占用
+# - 高效算法，提高音频处理速度
+# Technical Features:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，支持IoC容器
+# - 选项模式，支持灵活的配置管理
+# - 异步编程，支持非阻塞操作
+# - 日志记录，提供详细的执行信息
+# - 命令行接口，支持脚本化使用
+# - 批量处理，提高执行效率
+# - 缓存机制，减少重复计算
+# AOT Compilation:
+# - PublishAot=true
+# - InvariantGlobalization=true
+# - EnableCompilationRelaxations=true
+# - PublishReadyToRun=true

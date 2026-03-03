@@ -1,0 +1,244 @@
+#:sdk Microsoft.NET.Sdk
+#:package UploadStream@2.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+
+using System;
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Threading.Channels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
+using UploadStream;
+
+public interface IUploadStreamService
+{
+    Task UploadAsync(string filePath, Stream sourceStream, CancellationToken cancellationToken = default);
+}
+
+public class UploadStreamService : IUploadStreamService, IDisposable
+{
+    private readonly ObjectPool<UploadStreamClient> _clientPool;
+    private readonly ThreadLocal<Memory<byte>> _threadLocalBuffer;
+    private readonly Channel<UploadTask> _uploadChannel;
+    private readonly ObjectPool<MemoryStream> _memoryPool;
+    private readonly ThreadLocal<Memory<byte>> _threadLocalBuffer;
+    private readonly Channel<UploadProgress> _progressChannel;
+    private readonly IMemoryCache _uploadStateCache;
+
+    public UploadStreamService(ObjectPool<UploadStreamClient> clientPool)
+    {
+        _clientPool = clientPool;
+        _threadLocalBuffer = new ThreadLocal<Memory<byte>>(() => 
+            new byte[8192].AsMemory().Slice(0, 8192));
+        
+        _uploadChannel = Channel.CreateUnbounded<UploadTask>();
+        _ = ProcessUploadsAsync();
+    }
+
+    public async Task UploadAsync(string filePath, Stream sourceStream, CancellationToken cancellationToken = default)
+    {
+        await _uploadChannel.Writer.WriteAsync(new UploadTask(filePath, sourceStream), cancellationToken);
+    }
+
+    private async Task ProcessUploadsAsync()
+    {
+        await foreach (var task in _uploadChannel.Reader.ReadAllAsync())
+        {
+            var client = _clientPool.Get();
+            try
+            {
+                var pipe = new Pipe(new PipeOptions(pauseWriterThreshold: 81920));
+                
+                var writing = WriteToUploadAsync(pipe.Reader, client, task.FilePath);
+                var reading = ReadFromSourceAsync(pipe.Writer, task.SourceStream, _threadLocalBuffer.Value);
+                
+                await Task.WhenAll(reading, writing);
+            }
+            finally
+            {
+                _clientPool.Return(client);
+            }
+        }
+    }
+
+    private static async Task WriteToUploadAsync(PipeReader reader, UploadStreamClient client, string filePath)
+    {
+        while (true)
+        {
+            var result = await reader.ReadAsync();
+            var buffer = result.Buffer;
+
+            foreach (var segment in buffer)
+            {
+                await client.UploadChunkAsync(filePath, segment);
+            }
+
+            reader.AdvanceTo(buffer.End);
+
+            if (result.IsCompleted)
+                break;
+        }
+    }
+
+    private static async Task ReadFromSourceAsync(PipeWriter writer, Stream sourceStream, Memory<byte> buffer)
+    {
+        while (true)
+        {
+            var memory = writer.GetMemory(buffer.Length);
+            var bytesRead = await sourceStream.ReadAsync(buffer);
+            
+            if (bytesRead == 0)
+                break;
+                
+            buffer.Slice(0, bytesRead).CopyTo(memory);
+            writer.Advance(bytesRead);
+            
+            var flushResult = await writer.FlushAsync();
+            
+            if (flushResult.IsCompleted)
+                break;
+        }
+        
+        writer.Complete();
+    }
+
+    public void Dispose()
+    {
+        _threadLocalBuffer.Dispose();
+        _uploadChannel.Writer.Complete();
+    }
+
+    private record UploadTask(string FilePath, Stream SourceStream);
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddUploadStreamServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ObjectPool<UploadStreamClient>>(sp =>
+        {
+            var policy = new DefaultPooledObjectPolicy<UploadStreamClient>();
+            return new DefaultObjectPool<UploadStreamClient>(policy, Environment.ProcessorCount * 2);
+        });
+
+        services.AddSingleton<IUploadStreamService, UploadStreamService>();
+        return services;
+    }
+}
+
+public class UploadProgress
+{
+    public string FileId { get; set; }
+    public long TotalSize { get; set; }
+    public long UploadedSize { get; set; }
+    public int ChunkIndex { get; set; }
+    public int TotalChunks { get; set; }
+}
+
+public class UploadStreamService : IUploadStreamService
+{
+    private readonly ObjectPool<MemoryStream> _memoryPool;
+    private readonly ThreadLocal<Memory<byte>> _threadLocalBuffer;
+    private readonly Channel<UploadProgress> _progressChannel;
+    private readonly IMemoryCache _uploadStateCache;
+
+    // 新增断点续传方法
+    public async Task<UploadResult> UploadWithResumeAsync(
+        Stream stream, 
+        string fileId, 
+        int chunkSize = 81920,
+        CancellationToken cancellationToken = default)
+    {
+        // 实现分片上传和断点续传逻辑
+        private async Task<UploadResult> UploadChunkWithResumeAsync(
+            Stream stream,
+            string fileId,
+            int chunkIndex,
+            int totalChunks,
+            CancellationToken cancellationToken)
+        {
+            // 使用Span<T>进行零拷贝处理
+            var buffer = _threadLocalBuffer.Value;
+            int bytesRead;
+            long totalUploaded = 0;
+            
+            // 检查断点续传状态
+            var resumeState = await _uploadStateCache.GetOrCreateAsync(fileId, entry =>
+            {
+                entry.SlidingExpiration = TimeSpan.FromHours(1);
+                return Task.FromResult(new UploadState());
+            });
+        
+            // 分片上传核心逻辑
+            while ((bytesRead = await stream.ReadAsync(buffer, cancellationToken)) > 0)
+            {
+                // 使用MemoryPool共享内存
+                using var memoryOwner = MemoryPool<byte>.Shared.Rent(bytesRead);
+                buffer.Slice(0, bytesRead).CopyTo(memoryOwner.Memory.Span);
+                
+                // 上传分片
+                await UploadChunkAsync(fileId, chunkIndex, memoryOwner.Memory, cancellationToken);
+                
+                // 更新进度
+                totalUploaded += bytesRead;
+                await _progressChannel.Writer.WriteAsync(new UploadProgress
+                {
+                    FileId = fileId,
+                    ChunkIndex = chunkIndex,
+                    TotalChunks = totalChunks,
+                    UploadedSize = totalUploaded
+                }, cancellationToken);
+                
+                // 更新断点状态
+                resumeState.UploadedSize = totalUploaded;
+                resumeState.ChunkIndex = chunkIndex;
+            }
+            
+            return new UploadResult { FileId = fileId, IsCompleted = chunkIndex == totalChunks - 1 };
+        }
+
+        // 实现高效的分片合并
+        private async Task MergeChunksAsync(
+            string fileId,
+            int totalChunks,
+            CancellationToken cancellationToken)
+        {
+            // 采用管道式流合并
+            var pipe = new Pipe(new PipeOptions(
+                pool: MemoryPool<byte>.Shared,
+                minimumSegmentSize: 81920));
+            
+            // 启动后台合并任务
+            var mergeTask = Task.Run(async () =>
+            {
+                await using var outputStream = new FileStream($"{fileId}.tmp", FileMode.Create);
+                await pipe.Reader.CopyToAsync(outputStream, cancellationToken);
+            }, cancellationToken);
+            
+            // 并行读取所有分片并写入管道
+            await Parallel.ForEachAsync(Enumerable.Range(0, totalChunks), cancellationToken, 
+                async (chunkIndex, ct) =>
+            {
+                await using var chunkStream = await GetChunkStreamAsync(fileId, chunkIndex, ct);
+                await chunkStream.CopyToAsync(pipe.Writer, ct);
+            });
+            
+            await pipe.Writer.CompleteAsync();
+            await mergeTask;
+        }
+}
+
+// DI扩展方法
+public static class UploadStreamServiceExtensions
+{
+    public static IServiceCollection AddUploadStreamServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ObjectPool<MemoryStream>>(sp => 
+            new DefaultObjectPool<MemoryStream>(new MemoryStreamPooledPolicy(), 16));
+        
+        services.AddSingleton<IUploadStreamService, UploadStreamService>();
+        return services;
+    }
+}

@@ -1,0 +1,497 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package SmtpServer@9.1.0
+#:package MessagePack@2.5.122
+#:package Microsoft.AspNetCore.Cryptography.KeyDerivation@8.0.0
+#:package System.Security.Cryptography@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Buffers;
+using System.Threading.Channels;
+using SmtpServer;
+using SmtpServer.Protocol;
+using SmtpServer.Storage;
+using Microsoft.Extensions.ObjectPool;
+using System.Runtime.CompilerServices;
+using MessagePack;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+
+// 1. 邮件存储服务(CPU cache-line对齐)
+[SkipLocalsInit]
+public sealed class MessageStore : MessageStoreBase
+{
+    private readonly Channel<MessageContext> _messageChannel;
+    private readonly ObjectPool<MessageBuffer> _bufferPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly IMessageRepository _messageRepository;  // 新增数据库仓储
+    private readonly IMessageForwarder _messageForwarder;    // 新增消息转发器
+    private readonly MessageEncryptor _encryptor;
+
+    public MessageStore(
+        IMessageRepository messageRepository,
+        IMessageForwarder messageForwarder,
+        string accountEmail) // 注入当前邮箱账号
+    {
+        _messageRepository = messageRepository;
+        _messageForwarder = messageForwarder;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _messageChannel = Channel.CreateBounded<MessageContext>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        _bufferPool = new DefaultObjectPool<MessageBuffer>(
+            new MessageBufferPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+    }
+
+    // 2. 邮件接收处理(零拷贝优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override async Task<SmtpResponse> SaveAsync(
+        ISessionContext context, 
+        IMessageTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        var buffer = _bufferPool.Get();
+        try
+        {
+            using var stream = new MemoryStream(buffer.Data);
+            await transaction.Message.WriteToAsync(stream, cancellationToken);
+            
+            // 序列化为MessagePack格式
+            var messagePackData = MessagePackSerializer.Serialize(new 
+            {
+                From = transaction.From,
+                To = transaction.To,
+                Body = buffer.Data.AsMemory(0, (int)stream.Length)
+            });
+            
+            // 加密数据
+            var encryptedData = _encryptor.Encrypt(messagePackData);
+            
+            await _messageChannel.Writer.WriteAsync(new MessageContext
+            {
+                From = transaction.From,
+                To = transaction.To,
+                Data = encryptedData
+            }, cancellationToken);
+        }
+        finally
+        {
+            _bufferPool.Return(buffer);
+        }
+
+        return SmtpResponse.Ok;
+    }
+
+    [SkipLocalsInit]
+    private async Task ProcessMessagesAsync(CancellationToken ct)
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync(ct))
+        {
+            try
+            {
+                // 解密数据
+                var decryptedData = _encryptor.Decrypt(message.Data.ToArray());
+                
+                // 反序列化
+                var messageData = MessagePackSerializer.Deserialize<dynamic>(decryptedData);
+                
+                // 持久化到数据库
+                var dbMessage = new DbMessage
+                {
+                    From = messageData.From,
+                    To = messageData.To,
+                    Data = messageData.Body,
+                    ReceivedAt = DateTime.UtcNow
+                };
+                
+                await _messageRepository.AddAsync(dbMessage, ct);
+    
+                // 转发到其他服务
+                await _messageForwarder.ForwardAsync(message, ct);
+            }
+            catch (Exception ex)
+            {
+                // 错误处理逻辑
+                _latencyOptimizer.RecordError(ex);
+            }
+        }
+    }
+}
+
+// 3. 消息缓冲区(对象池优化)
+[SkipLocalsInit]
+public class MessageBuffer
+{
+    public byte[] Data { get; } = new byte[1024 * 1024]; // 1MB缓存
+}
+
+// 4. 缓冲区池策略
+public class MessageBufferPooledPolicy : PooledObjectPolicy<MessageBuffer>
+{
+    public override MessageBuffer Create() => new();
+    public override bool Return(MessageBuffer obj) => true;
+}
+
+// 5. 主程序配置
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置SMTP服务器
+builder.Services.AddSingleton<IMessageStore>(sp => 
+    new MessageStore(
+        sp.GetRequiredService<IMessageRepository>(),
+        sp.GetRequiredService<IMessageForwarder>(),
+        "admin@example.com")); // 使用实际邮箱账号
+builder.Services.AddSingleton<IMessageRepository, SqlMessageRepository>();
+builder.Services.AddSingleton<IMessageForwarder, MassTransitMessageForwarder>();
+
+// 配置MassTransit
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+
+var options = new SmtpServerOptionsBuilder()
+    .ServerName("localhost")
+    .Port(25)
+    .MessageStore(new MessageStore())
+    .Build();
+
+// 启动SMTP服务器
+var smtpServer = new SmtpServer.SmtpServer(options);
+var serverTask = smtpServer.StartAsync(CancellationToken.None);
+
+var app = builder.Build();
+app.MapGet("/", () => "SMTP Server is running");
+app.Run();
+
+// 优雅关闭
+app.Lifetime.ApplicationStopping.Register(() => 
+{
+    smtpServer.Shutdown();
+    serverTask.Wait();
+});
+
+
+public interface IMessageRepository
+{
+    Task AddAsync(DbMessage message, CancellationToken ct);
+    Task<IEnumerable<DbMessage>> GetByRecipientAsync(string recipient, CancellationToken ct);
+}
+
+public record DbMessage
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public string From { get; init; } = string.Empty;
+    public string To { get; init; } = string.Empty;
+    public byte[] Data { get; init; } = Array.Empty<byte>();
+    public DateTime ReceivedAt { get; init; }
+}
+
+
+public interface IMessageForwarder
+{
+    Task ForwardAsync(MessageContext message, CancellationToken ct);
+}
+
+// 示例实现：使用MassTransit转发消息
+public class MassTransitMessageForwarder : IMessageForwarder
+{
+    private readonly IBus _bus;
+
+    public MassTransitMessageForwarder(IBus bus) => _bus = bus;
+
+    public async Task ForwardAsync(MessageContext message, CancellationToken ct)
+    {
+        await _bus.Publish(new EmailMessageEvent
+        {
+            From = message.From,
+            To = message.To,
+            Data = message.Data.ToArray(),
+            Timestamp = DateTime.UtcNow
+        }, ct);
+    }
+}
+
+public record EmailMessageEvent
+{
+    public string From { get; init; } = string.Empty;
+    public string To { get; init; } = string.Empty;
+    public byte[] Data { get; init; } = Array.Empty<byte>();
+    public DateTime Timestamp { get; init; }
+}
+
+
+// 1. 消息加密服务(CPU cache-line对齐)
+[SkipLocalsInit]
+public sealed class MessageEncryptor
+{
+    private readonly ThreadLocal<Aes> _aesProvider = new(() => Aes.Create());
+    private readonly byte[] _salt;
+
+    public MessageEncryptor(string accountEmail)
+    {
+        // 使用邮箱账号作为盐值基础
+        _salt = KeyDerivation.Pbkdf2(
+            password: accountEmail,
+            salt: RandomNumberGenerator.GetBytes(16),
+            prf: KeyDerivationPrf.HMACSHA512,
+            iterationCount: 10000,
+            numBytesRequested: 32);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public byte[] Encrypt(ReadOnlySpan<byte> data)
+    {
+        using var aes = _aesProvider.Value!;
+        aes.Key = KeyDerivation.Pbkdf2(
+            password: Convert.ToBase64String(_salt),
+            salt: _salt,
+            prf: KeyDerivationPrf.HMACSHA512,
+            iterationCount: 10000,
+            numBytesRequested: 32);
+
+        using var encryptor = aes.CreateEncryptor();
+        using var ms = new MemoryStream();
+        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+        {
+            cs.Write(data);
+        }
+        return ms.ToArray();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public byte[] Decrypt(ReadOnlySpan<byte> cipherText)
+    {
+        using var aes = _aesProvider.Value!;
+        aes.Key = KeyDerivation.Pbkdf2(
+            password: Convert.ToBase64String(_salt),
+            salt: _salt,
+            prf: KeyDerivationPrf.HMACSHA512,
+            iterationCount: 10000,
+            numBytesRequested: 32);
+
+        using var decryptor = aes.CreateDecryptor();
+        using var ms = new MemoryStream(cipherText.ToArray());
+        using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+        using var result = new MemoryStream();
+        cs.CopyTo(result);
+        return result.ToArray();
+    }
+}
+
+// 2. 修改MessageStore添加序列化和加密
+[SkipLocalsInit]
+public sealed class MessageStore : MessageStoreBase
+{
+    private readonly Channel<MessageContext> _messageChannel;
+    private readonly ObjectPool<MessageBuffer> _bufferPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly IMessageRepository _messageRepository;  // 新增数据库仓储
+    private readonly IMessageForwarder _messageForwarder;    // 新增消息转发器
+
+    public MessageStore(
+        IMessageRepository messageRepository,
+        IMessageForwarder messageForwarder,
+        string accountEmail) // 注入当前邮箱账号
+    {
+        _messageRepository = messageRepository;
+        _messageForwarder = messageForwarder;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _messageChannel = Channel.CreateBounded<MessageContext>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        _bufferPool = new DefaultObjectPool<MessageBuffer>(
+            new MessageBufferPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+    }
+
+    // 2. 邮件接收处理(零拷贝优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override async Task<SmtpResponse> SaveAsync(
+        ISessionContext context, 
+        IMessageTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        var buffer = _bufferPool.Get();
+        try
+        {
+            using var stream = new MemoryStream(buffer.Data);
+            await transaction.Message.WriteToAsync(stream, cancellationToken);
+            
+            // 序列化为MessagePack格式
+            var messagePackData = MessagePackSerializer.Serialize(new 
+            {
+                From = transaction.From,
+                To = transaction.To,
+                Body = buffer.Data.AsMemory(0, (int)stream.Length)
+            });
+            
+            // 加密数据
+            var encryptedData = _encryptor.Encrypt(messagePackData);
+            
+            await _messageChannel.Writer.WriteAsync(new MessageContext
+            {
+                From = transaction.From,
+                To = transaction.To,
+                Data = encryptedData
+            }, cancellationToken);
+        }
+        finally
+        {
+            _bufferPool.Return(buffer);
+        }
+        return SmtpResponse.Ok;
+    }
+
+    [SkipLocalsInit]
+    private async Task ProcessMessagesAsync(CancellationToken ct)
+    {
+        await foreach (var message in _messageChannel.Reader.ReadAllAsync(ct))
+        {
+            try
+            {
+                // 解密数据
+                var decryptedData = _encryptor.Decrypt(message.Data.ToArray());
+                
+                // 反序列化
+                var messageData = MessagePackSerializer.Deserialize<dynamic>(decryptedData);
+                
+                // 持久化到数据库
+                var dbMessage = new DbMessage
+                {
+                    From = messageData.From,
+                    To = messageData.To,
+                    Data = messageData.Body,
+                    ReceivedAt = DateTime.UtcNow
+                };
+                
+                await _messageRepository.AddAsync(dbMessage, ct);
+
+                // 转发到其他服务
+                await _messageForwarder.ForwardAsync(message, ct);
+            }
+            catch (Exception ex)
+            {
+                _latencyOptimizer.RecordError(ex);
+            }
+        }
+    }
+}
+
+// 3. 主程序配置修改
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置SMTP服务器
+builder.Services.AddSingleton<IMessageStore>(sp => 
+    new MessageStore(
+        sp.GetRequiredService<IMessageRepository>(),
+        sp.GetRequiredService<IMessageForwarder>(),
+        "admin@example.com")); // 使用实际邮箱账号
+builder.Services.AddSingleton<IMessageRepository, SqlMessageRepository>();
+builder.Services.AddSingleton<IMessageForwarder, MassTransitMessageForwarder>();
+
+// 配置MassTransit
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+
+var options = new SmtpServerOptionsBuilder()
+    .ServerName("localhost")
+    .Port(25)
+    .MessageStore(new MessageStore())
+    .Build();
+
+// 启动SMTP服务器
+var smtpServer = new SmtpServer.SmtpServer(options);
+var serverTask = smtpServer.StartAsync(CancellationToken.None);
+
+var app = builder.Build();
+app.MapGet("/", () => "SMTP Server is running");
+app.Run();
+
+// 优雅关闭
+app.Lifetime.ApplicationStopping.Register(() => 
+{
+    smtpServer.Shutdown();
+    serverTask.Wait();
+});
+
+
+public interface IMessageRepository
+{
+    Task AddAsync(DbMessage message, CancellationToken ct);
+    Task<IEnumerable<DbMessage>> GetByRecipientAsync(string recipient, CancellationToken ct);
+}
+
+public record DbMessage
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public string From { get; init; } = string.Empty;
+    public string To { get; init; } = string.Empty;
+    public byte[] Data { get; init; } = Array.Empty<byte>();
+    public DateTime ReceivedAt { get; init; }
+}
+
+
+public interface IMessageForwarder
+{
+    Task ForwardAsync(MessageContext message, CancellationToken ct);
+}
+
+// 示例实现：使用MassTransit转发消息
+public class MassTransitMessageForwarder : IMessageForwarder
+{
+    private readonly IBus _bus;
+
+    public MassTransitMessageForwarder(IBus bus) => _bus = bus;
+
+    public async Task ForwardAsync(MessageContext message, CancellationToken ct)
+    {
+        await _bus.Publish(new EmailMessageEvent
+        {
+            From = message.From,
+            To = message.To,
+            Data = message.Data.ToArray(),
+            Timestamp = DateTime.UtcNow
+        }, ct);
+    }
+}
+
+public record EmailMessageEvent
+{
+    public string From { get; init; } = string.Empty;
+    public string To { get; init; } = string.Empty;
+    public byte[] Data { get; init; } = Array.Empty<byte>();
+    public DateTime Timestamp { get; init; }
+}

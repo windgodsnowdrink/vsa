@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.DotNet": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "DotNet": {
+      "ServerUrl": "https://acme-v02.api.letsencrypt.org/directory",
+      "Email": "admin@example.com",
+      "CertificateStoreLocation": "CurrentUser\My",
+      "CertificateStoreName": "My",
+      "KeySize": 2048,
+      "KeyAlgorithm": "RSA",
+      "ValidationTimeoutSeconds": 30,
+      "RetryCount": 3,
+      "RetryDelayMilliseconds": 1000
+    }
+  }
+}

@@ -1,0 +1,40 @@
+﻿{
+  "LocalizationSettings": {
+    "EnableLocalization": true,
+    "ResourcesPath": "Localization",
+    "SupportedCultures": [
+      "zh",
+      "zh-CN",
+      "zh-HK",
+      "zh-Hans",
+      "zh-TW",
+      "en",
+      "en-US",
+      "en-ES",
+      "en-GB",
+      "en-CA",
+      "en-HK",
+      "en-WW",
+      "ar",
+      "fr",
+      "fr-FR",
+      "de",
+      "de-DE",
+      "it",
+      "it-IT",
+      "pt",
+      "nl",
+      "nl-NL",
+      "he",
+      "he-IL",
+      "ja",
+      "ja-JP",
+      "ko",
+      "ko-KR",
+      "ru",
+      "ru-RU"
+    ],
+    "DefaultRequestCulture": "zh-CN",
+    "FallbackToParent": true
+  }
+}

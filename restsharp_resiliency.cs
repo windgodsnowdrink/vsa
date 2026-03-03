@@ -1,0 +1,33 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Polly@8.0.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using Polly;
+using System.Threading.Channels;
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置弹性策略
+builder.Services.AddSingleton<IResiliencyPolicy>(sp => 
+    new PollyResiliencyPolicy(
+        Policy<RestResponse>
+            .Handle<HttpRequestException>()
+            .OrResult(r => (int)r.StatusCode >= 500)
+            .WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(1)),
+        new ObjectPool<Memory<byte>>(new MemoryPooledObjectPolicy(), 1000)));
+
+var app = builder.Build();
+app.MapGet("/", () => "Resiliency Policy Ready");
+app.Run();
+
+public class PollyResiliencyPolicy : IResiliencyPolicy
+{
+    public async Task<RestResponse> ExecuteAsync(Func<Task<RestResponse>> action)
+    {
+        // 实现细节...
+    }
+}

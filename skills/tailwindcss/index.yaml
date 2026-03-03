@@ -1,0 +1,147 @@
+name: tailwindcss
+version: 1.0.0
+description: TailwindCSS 技能，提供 CSS 框架功能和代码生成能力，支持 AOT 编译
+author: NET 专家
+email: expert@dotnet.com
+
+# AOT 编译配置
+aot:
+  enabled: true
+  publish_aot: true
+  trim_mode: partial
+  self_contained: true
+  publish_single_file: true
+  target_framework: net10.0
+
+# 依赖项
+dependencies:
+  - name: Scrutor
+    version: 4.2.0
+  - name: System.CommandLine
+    version: 2.0.0
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+  - name: Microsoft.Extensions.Logging
+    version: 8.0.0
+  - name: Microsoft.Extensions.Caching.Memory
+    version: 8.0.0
+  - name: System.IO.Abstractions
+    version: 17.0.21
+  - name: Newtonsoft.Json
+    version: 13.0.3
+
+# 功能特性
+features:
+  - name: css_generation
+    description: 生成 TailwindCSS 样式
+  - name: theme_management
+    description: 主题管理和配置
+  - name: plugin_system
+    description: 插件系统支持
+  - name: code_generation
+    description: 代码生成能力
+  - name: aot_compilation
+    description: AOT 编译支持
+  - name: scrutor_integration
+    description: Scrutor 高级依赖注入
+
+# CLI 命令
+commands:
+  - name: build
+    description: 构建 TailwindCSS
+    arguments:
+      - name: input
+        description: 输入文件路径
+      - name: output
+        description: 输出文件路径
+  - name: watch
+    description: 监视文件变化并自动构建
+    arguments:
+      - name: input
+        description: 输入文件路径
+      - name: output
+        description: 输出文件路径
+  - name: init
+    description: 初始化 TailwindCSS 配置
+  - name: purge
+    description: 清理未使用的 CSS
+    arguments:
+      - name: input
+        description: 输入文件路径
+      - name: output
+        description: 输出文件路径
+  - name: optimize
+    description: 优化 CSS 文件
+    arguments:
+      - name: input
+        description: 输入文件路径
+      - name: output
+        description: 输出文件路径
+  - name: generate
+    description: 生成代码
+    arguments:
+      - name: template
+        description: 模板名称
+      - name: output
+        description: 输出文件路径
+
+# 文件路径
+files:
+  - path: scripts/tailwind_core.cs
+    description: 核心 TailwindCSS 功能实现
+  - path: scripts/tailwind_core.setting.json
+    description: 核心文件编译配置
+  - path: scripts/tailwind_core.run.json
+    description: 核心文件运行配置
+  - path: scripts/tailwind_generator.cs
+    description: 代码生成功能实现
+  - path: scripts/tailwind_generator.setting.json
+    description: 生成器编译配置
+  - path: scripts/tailwind_generator.run.json
+    description: 生成器运行配置
+  - path: reference/README.md
+    description: 参考文档
+  - path: reference/examples.md
+    description: 使用示例文档
+
+# 配置选项
+config:
+  default_theme: default
+  cache_enabled: true
+  minify_enabled: true
+  purge_enabled: false
+
+# 性能配置
+performance:
+  cache_size: 100MB
+  concurrency_limit: 4
+  timeout: 30s
+
+# 安全配置
+security:
+  allowed_paths:
+    - ./src
+    - ./wwwroot
+  disallowed_patterns:
+    - "*.exe"
+    - "*.dll"
+
+# 兼容性
+compatibility:
+  minimum_dotnet_version: 10.0
+  supported_platforms:
+    - windows
+    - linux
+    - macos
+
+# 文档
+documentation:
+  main: SKILL.md
+  reference: reference/README.md
+  examples: reference/examples.md
+
+# 支持
+support:
+  issues: https://github.com/dotnet-expert/tailwindcss-skill/issues
+  documentation: https://github.com/dotnet-expert/tailwindcss-skill/wiki
+  community: https://discord.gg/dotnet

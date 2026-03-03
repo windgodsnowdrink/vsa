@@ -1,0 +1,148 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Mediator.Abstractions@3.0.1
+#:package Mediator.SourceGenerator@3.0.1
+#:package PublicTransit@8.5.2
+#:package PublicTransit.Abstractions@8.5.2
+#:package PublicTransit.Analyzers@8.5.2
+#:package PublicTransit.Quartz@8.5.2
+#:package PublicTransit.SignalR@8.5.2
+#:package PublicTransit.EntityFrameworkCore@8.5.2
+#:package PublicTransit.Kafka@8.5.2
+#:package PublicTransit.RabbitMQ@8.5.2
+#:package PublicTransit.ActiveMQ@8.5.2
+#:package PublicTransit.MongoDb@8.5.2
+#:package PublicTransit.EventHub@8.5.2
+#:package PublicTransit.Marten@8.5.2
+#:package PublicTransit.MessagePack@8.5.2
+#:package PublicTransit.Redis@8.5.2
+#:package PublicTransit.NHibernate@8.5.2
+#:package PublicTransit.Hangfire@8.5.2
+#:package PublicTransit.StateMachineVisualizer@8.5.2
+#:package PublicTransit.Interop.NServiceBus@8.5.2
+#:package PublicTransit.WebJobs.ServiceBus@8.5.2
+#:package PublicTransit.WebJobs.EventHubs@8.5.2
+#:package PublicTransit.SqlTransport.PostgreSQL@8.5.2
+#:package PublicTransit.SqlTransport.SqlServer@8.5.2
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using Mediator;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Reflection;
+using MassTransit;
+using App;
+
+var builder = WebApplication.CreateBuilder(args);
+ 
+// 注册Mediator
+builder.Services.AddMediator(options =>
+{
+    options.Assemblies = [typeof(WeatherUpdated)];
+});
+ 
+// 注册MassTransit并使用内存传输
+builder.Services.AddMassTransit(options =>
+{
+    options.AddConsumers(Assembly.GetEntryAssembly());
+    options.UsingInMemory((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
+ 
+// 添加我们的简单内存“数据库”
+builder.Services.AddSingleton<Db>();
+ 
+var app = builder.Build();
+ 
+// 发布MassTransit消息的端点
+app.MapPost(
+    "/weather/update",
+    async (IBus bus, string city, int temperature) =>
+    {
+        await bus.Publish(new WeatherUpdated(city, temperature));
+        return Results.Ok($"已发布{city}的天气更新。");
+    }
+);
+
+app.MapGet(
+    "/waather", 
+    async() =>
+    {
+        Db db = new Db();
+        db.Store("今天", 40);
+    });
+ 
+app.Run();
+
+// 消息定义和处理程序
+namespace App
+{
+    // 消息契约 - 适用于MassTransit和Mediator
+    public sealed record WeatherUpdated(string City, int Temperature) : INotification;
+ 
+    // 将消息转发到Mediator的MassTransit消费者
+    public sealed class WeatherUpdatedConsumer : IConsumer<WeatherUpdated>
+    {
+        private readonly IMediator _mediator;
+ 
+        public WeatherUpdatedConsumer(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+ 
+        public async Task Consume(ConsumeContext<WeatherUpdated> context) 
+            => await _mediator.Publish(context.Message);
+    }
+ 
+    // 用于日志的Mediator通知处理程序
+    public sealed class WeatherUpdateLogger : INotificationHandler<WeatherUpdated>
+    {
+        private readonly ILogger<WeatherUpdateLogger> _logger;
+ 
+        public WeatherUpdateLogger(ILogger<WeatherUpdateLogger> logger)
+        {
+            _logger = logger;
+        }
+ 
+        public ValueTask Handle(WeatherUpdated notification, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation(
+                "处理更新：{City}的气温为{Ttemperature}°C",
+                notification.City,
+                notification.Temperature
+            );
+            return default;
+        }
+    }
+ 
+    // 用于存储的Mediator通知处理程序
+    public sealed class WeatherUpdateStorage : INotificationHandler<WeatherUpdated>
+    {
+        private readonly Db _db;
+ 
+        public WeatherUpdateStorage(Db db)
+        {
+            _db = db;
+        }
+ 
+        public ValueTask Handle(WeatherUpdated notification, CancellationToken cancellationToken)
+        {
+            _db.Store(notification.City, notification.Temperature);
+            return default;
+        }
+    }
+ 
+    // 简单的内存数据库
+    public sealed class Db
+    {
+        private readonly ConcurrentDictionary<string, int> _storage = new();
+ 
+        public void Store(string city, int temperature) => _storage[city] = temperature;
+    }
+}

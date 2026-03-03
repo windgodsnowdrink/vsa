@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "sqlite_connection_pool",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\db\scripts\sqlite_connection_pool.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\db\scripts\sqlite_connection_pool.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

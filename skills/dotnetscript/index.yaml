@@ -1,0 +1,48 @@
+# dotnetscript Agent Skill - DotNetScript 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 架构的高性能 DotNetScript 技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.CodeAnalysis.CSharp.Scripting@4.10.0
+# - Microsoft.CodeAnalysis.Common@4.10.0
+# - Microsoft.CodeAnalysis.CSharp@4.10.0
+# Application Scenarios: 脚本执行、代码编译、动态代码生成
+# Activation Conditions: 当需要 DotNetScript 功能时激活
+# Main Features:
+# - 基于 .NET 10 AOT 编译的高性能实现
+# - 支持脚本文件和内联脚本执行
+# - 脚本编译和语法检查
+# - 脚本文件列表管理
+# - 编译缓存清理
+# - 版本信息查询
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 异步编程模型，提高系统响应性
+# - 低延迟设计，毫秒级脚本执行
+# - 内存优化，减少 GC 压力
+# - 高性能脚本编译和执行
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，便于测试和维护
+# - 异步编程模型，提高并发能力
+# - Options 配置模式，灵活配置
+# - 支持 C# 脚本和代码文件
+# - 完善的错误处理和日志记录
+# - 支持脚本超时控制
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - run <script> [options]: 运行脚本文件或内联脚本
+# - compile <script> [options]: 编译脚本而不执行
+# - list [directory] [options]: 列出目录中的脚本文件
+# - clean: 清理编译缓存
+# - version: 显示版本信息
+# - help, --help, -h: 显示帮助信息

@@ -1,0 +1,57 @@
+{
+  "name": "CsharpFlink AOT",
+  "description": "CsharpFlink AOT高性能流处理执行脚本",
+  "version": "1.0.0",
+  "dependencies": [
+    "Microsoft.Extensions.DependencyInjection@10.0.0",
+    "Microsoft.Extensions.Logging@10.0.0",
+    "Microsoft.Extensions.Hosting@10.0.0",
+    "Microsoft.Extensions.Options@10.0.0",
+    "Newtonsoft.Json@13.0.3"
+  ],
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+    "FLINK_PARALLELISM": "4",
+    "FLINK_CHECKPOINT_INTERVAL": "10000",
+    "FLINK_STATE_RETENTION_TIME": "86400000"
+  },
+  "execution": {
+    "command": "dotnet run --project csharpflink_aot.cs",
+    "workingDirectory": "./scripts",
+    "timeout": "300000",
+    "retryCount": 3
+  },
+  "aotCompilation": {
+    "enabled": true,
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "file": "csharpflink_aot.log",
+    "maxFileSize": "10MB",
+    "maxRetainedFiles": 5
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "executionTime",
+      "memoryUsage",
+      "cpuUsage",
+      "successRate",
+      "runningJobs",
+      "cacheHitRate"
+    ],
+    "alertThresholds": {
+      "executionTime": "10000",
+      "memoryUsage": "200MB",
+      "cpuUsage": "80",
+      "runningJobs": "100"
+    }
+  }
+}

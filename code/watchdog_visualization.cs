@@ -1,0 +1,48 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package WatchDog.NET@3.0.0
+#:package Prometheus.Client.Http@4.3.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Prometheus.Client;
+using Prometheus.Client.Http;
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置Prometheus指标导出
+builder.Services.AddWatchDogPrometheus(options => {
+    options.MetricPrefix = "watchdog_";
+    options.Counters = new[] {
+        "requests_total",
+        "errors_total",
+        "response_time_seconds",
+        "memory_usage_bytes"
+    };
+    options.ExportInterval = TimeSpan.FromSeconds(15);
+});
+
+// 高性能内存监控
+builder.Services.AddSingleton<IMemoryTracker>(sp => 
+    new MemoryTracker(
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[256]),
+        new DefaultObjectPool<Memory<byte>>(
+            new DefaultPooledObjectPolicy<Memory<byte>>(), 1000)));
+
+var app = builder.Build();
+app.UseWatchDog();
+app.MapGet("/metrics", () => PrometheusMiddleware.GetMetrics());
+app.MapGet("/", () => "WatchDog Visualization Ready");
+app.Run();
+
+// 高性能内存跟踪器
+public class MemoryTracker : IMemoryTracker {
+    private readonly ThreadLocal<Span<byte>> _threadLocalSpan;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    
+    public MemoryTracker(ThreadLocal<Span<byte>> span, ObjectPool<Memory<byte>> pool) {
+        _threadLocalSpan = span;
+        _memoryPool = pool;
+    }
+}

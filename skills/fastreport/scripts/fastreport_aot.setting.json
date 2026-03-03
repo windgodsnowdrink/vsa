@@ -1,0 +1,20 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "FastReport": {
+    "TemplateDirectory": "templates",
+    "OutputDirectory": "output",
+    "DefaultExportFormat": "PDF",
+    "EnableCache": true,
+    "CacheSize": 100,
+    "RequestTimeoutMs": 30000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true
+  },
+  "AllowedHosts": "*"
+}

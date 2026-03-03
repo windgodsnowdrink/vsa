@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package contracts;
+
+// ---------- 请求/响应 ----------
+message BindDeviceCommand {
+  string device_id = 1;   // string => Guid (use string UUID)
+  string user_id   = 2;
+  string correlation_id = 3;
+  int64  request_ts = 4; // epoch ms
+}
+
+message BindDeviceResponse {
+  string device_id = 1;
+  string user_id   = 2;
+  bool   success   = 3;
+  string error_msg = 4;
+  string correlation_id = 5;
+}
+
+// ---------- 领域事件 ----------
+message DeviceBoundToUser {
+  string device_id = 1;
+  string user_id   = 2;
+  int64  bound_at  = 3;
+}
+
+message DeviceUnboundFromUser {
+  string device_id = 1;
+  string user_id   = 2;
+  int64  unbound_at = 3;
+}

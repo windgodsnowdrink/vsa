@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ml_service_pipeline",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\LLM\scripts\ml_service_pipeline.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\LLM\scripts\ml_service_pipeline.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

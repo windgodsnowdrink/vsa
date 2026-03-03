@@ -1,0 +1,58 @@
+{
+  "$schema": "https://aka.ms/run-csharp.schema.json",
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "trimMode": "partial",
+    "runtimeIdentifier": "win-x64",
+    "optimize": true,
+    "debugType": "portable",
+    "outputType": "exe"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.IdentityModel.Tokens.Jwt": "7.0.0",
+    "Microsoft.IdentityModel.Tokens": "7.0.0",
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "7.0.0",
+    "System.Security.Cryptography": "4.3.0",
+    "System.Text.Json": "8.0.0",
+    "System.Text.RegularExpressions": "4.3.1",
+    "System.Collections.Immutable": "8.0.0",
+    "Microsoft.Extensions.Caching.Memory": "10.0.0",
+    "Microsoft.Extensions.Http": "10.0.0"
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32,
+      "System.Net.SocketsHttpHandler.Http2.MaxConcurrentStreams": 100,
+      "System.Net.SocketsHttpHandler.PooledConnectionIdleTimeout": "00:02:00",
+      "System.Net.SocketsHttpHandler.PooledConnectionLifetime": "00:10:00"
+    }
+  },
+  "fileOptions": {
+    "exclude": [
+      "**/*.md",
+      "**/*.yaml",
+      "**/*.yml",
+      "**/*.json",
+      "**/bin/**",
+      "**/obj/**"
+    ]
+  },
+  "launchOptions": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\identity",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "ASPNETCORE_ENVIRONMENT": "Production"
+    }
+  }
+}

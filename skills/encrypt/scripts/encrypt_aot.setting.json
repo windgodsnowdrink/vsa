@@ -1,0 +1,20 @@
+{
+  "Encrypt": {
+    "DefaultAlgorithm": "AES-GCM",
+    "AesKeySize": 256,
+    "RsaKeySize": 4096,
+    "DefaultHashAlgorithm": "SHA256",
+    "EnableKeyCache": true,
+    "KeyCacheSize": 1000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Encrypt.AOT": "Information"
+    }
+  }
+}

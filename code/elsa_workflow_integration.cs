@@ -1,0 +1,104 @@
+#:sdk Microsoft.NET.Sdk.Worker
+#:package Elsa.Core@3.1.0
+#:package Elsa.Persistence.EntityFramework.SqlServer@3.1.0
+#:property TargetFramework net8.0
+
+using Elsa;
+using Elsa.Activities.ControlFlow;
+using Elsa.Builders;
+using Elsa.Services;
+using System.Threading.Tasks;
+
+public interface IAdvancedWorkflowService
+{
+    Task ExecuteComplexWorkflowAsync();
+}
+
+public class AdvancedWorkflowService : IAdvancedWorkflowService
+{
+    private readonly IWorkflowRunner _workflowRunner;
+    private readonly ObjectPool<IWorkflowBlueprint> _workflowPool;
+    
+    public AdvancedWorkflowService(IWorkflowRunner workflowRunner, 
+        ObjectPool<IWorkflowBlueprint> workflowPool)
+    {
+        _workflowRunner = workflowRunner;
+        _workflowPool = workflowPool;
+    }
+
+    public async Task ExecuteComplexWorkflowAsync()
+    {
+        var workflow = _workflowPool.Get();
+        try
+        {
+            await _workflowRunner.RunWorkflowAsync(workflow);
+        }
+        finally
+        {
+            _workflowPool.Return(workflow);
+        }
+    }
+}
+
+public static class WorkflowExtensions
+{
+    public static IServiceCollection AddAdvancedWorkflowServices(this IServiceCollection services)
+    {
+        services.AddSingleton<ObjectPool<IWorkflowBlueprint>>(sp => 
+            new DefaultObjectPool<IWorkflowBlueprint>(new WorkflowBlueprintPooledObjectPolicy(), 100));
+            
+        services.AddScoped<IAdvancedWorkflowService, AdvancedWorkflowService>();
+        return services;
+    }
+}
+
+// 工作流定义（使用Fluent API）
+public class ComplexWorkflow : IWorkflow
+{
+    public void Build(IWorkflowBuilder builder)
+    {
+        builder
+            .StartWith<Sequence>(x => x.Name("MainSequence"))
+                // 并行分支
+                .Parallel()
+                    .Branch(1, branch => branch
+                        .StartWith<Fork>(x => x.Name("Branch1"))
+                        .Then<CustomActivity>(x => x.Name("Activity1")))
+                    .Branch(2, branch => branch
+                        .StartWith<Fork>(x => x.Name("Branch2"))
+                        .Then<CustomActivity>(x => x.Name("Activity2")))
+                .Join()
+                // 条件判断
+                .Then<IfElse>(x => x.Name("ConditionCheck")
+                    .When(context => context.GetInput<bool>("Condition"))
+                        .Then<CustomActivity>(x => x.Name("TruePath"))
+                    .Else()
+                        .Then<CustomActivity>(x => x.Name("FalsePath")))
+                // 循环控制
+                .Then<While>(x => x.Name("LoopControl")
+                    .While(context => context.GetInput<bool>("ShouldContinue"))
+                        .Do(doBuilder => doBuilder
+                            .StartWith<CustomActivity>(x => x.Name("LoopActivity"))))
+                // 异常处理和重试
+                .Then<TryCatch>(x => x.Name("ErrorHandling")
+                    .Try(tryBuilder => tryBuilder
+                        .StartWith<CustomActivity>(x => x.Name("RiskyActivity")))
+                    .Catch<Exception>(catchBuilder => catchBuilder
+                        .StartWith<CustomActivity>(x => x.Name("RecoveryActivity"))))
+                // 动态转发
+                .Then<Switch>(x => x.Name("DynamicRouting")
+                    .Cases(new Dictionary<string, Action<IWorkflowBuilder>>
+                    {
+                        ["Case1"] = builder => builder.StartWith<CustomActivity>(x => x.Name("Case1Activity")),
+                        ["Case2"] = builder => builder.StartWith<CustomActivity>(x => x.Name("Case2Activity"))
+                    }));
+    }
+}
+
+// 在Startup中注册服务
+services.AddElsa(elsa => elsa
+    .UseEntityFrameworkPersistence(ef => ef.UseSqlServer(connectionString))
+    .AddConsoleActivities()
+    .AddWorkflow<ComplexWorkflow>());
+
+services.AddAdvancedWorkflowServices();

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "snowflake_drift_service",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\idgen\scripts\snowflake_drift_service.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\idgen\scripts\snowflake_drift_service.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

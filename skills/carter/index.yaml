@@ -1,0 +1,38 @@
+# carter Agent Skill - Carter 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的高性能 Carter（最小API框架）技能，支持 AOT（提前编译）编译，用于构建现代化的 Web API 和微服务
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Carter@8.0.0
+# - Microsoft.AspNetCore.Http@10.0.0
+# - Microsoft.AspNetCore.Routing@10.0.0
+# 应用场景: Web API 开发、微服务架构、API 网关、RESTful 服务、GraphQL 服务等
+# 激活条件: 需要构建 Web API 或微服务时激活
+# 主要功能:
+# - 基于 .NET 10 的现代化 API 框架
+# - 支持 AOT 编译优化
+# - 轻量级、高性能设计
+# - 支持路由、模型绑定、验证等核心功能
+# - 支持中间件和过滤器
+# - 支持依赖注入
+# - 支持异步编程模型
+# - 支持 OpenAPI/Swagger 文档生成
+# 性能特性:
+# - 高性能设计，支持高并发场景
+# - 内存优化，减少内存占用和拷贝
+# - 并发支持，充分利用多核 CPU
+# - 低延迟设计，优化 API 响应速度
+# - AOT 编译优化，提高运行时性能
+# 技术特性:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，提高代码的可测试性
+# - 异步编程，避免阻塞主线程
+# - 高性能算法，优化处理效率
+# - 支持多种内容协商（JSON、XML 等）
+# - 支持 AOT 编译
+# - 与 .NET 生态系统无缝集成
+# - 支持 GraphQL 和 gRPC
+# AOT 编译支持: 支持将 Carter 应用编译为本机代码，提高运行时性能和启动速度

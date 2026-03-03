@@ -1,0 +1,50 @@
+# MassTransit 智能体技能 - 消息总线集成技能
+# Version: 1.0.0
+# Author: VSA 架构团队
+# Description: 基于 .NET 10 的 MassTransit 消息总线集成技能，支持 RabbitMQ、Saga 状态机、LiteDB 持久化和 MQTT 集成
+# Skill Type: 系统功能
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - MassTransit@8.0.0
+# - MassTransit.RabbitMQ@8.0.0
+# - MassTransit.MongoDB@8.0.0
+# - MassTransit.LiteDB@8.0.0
+# - MQTTnet@4.0.0
+# Application Scenarios: 分布式系统消息传递、微服务通信、事件驱动架构
+# Activation Conditions: 当需要使用 MassTransit 进行消息传递时激活
+# Main Features:
+# - 消息发布和订阅
+# - Saga 状态机编排
+# - 分布式事务处理
+# - 消息重试和错误处理
+# - 多种消息 broker 集成
+# Performance Features:
+# - 高性能消息处理
+# - 内存优化设计
+# - 并发消息处理
+# - 消息批处理
+# Technical Features:
+# - 模块化设计
+# - 依赖注入集成
+# - 异步编程模型
+# - 高性能算法
+# - AOT 编译优化
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

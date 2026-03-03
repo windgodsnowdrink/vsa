@@ -1,0 +1,310 @@
+﻿{
+    "0": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "1": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "1",
+            "right_camera": "1"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "2": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "3": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "1",
+            "right_camera": "1"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "4": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+            "open_the_door": "1",
+            "close_the_door": "1",
+            "scroll_in": "1",
+            "scroll_out": "1"
+        }
+    },
+    "5": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "0",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "6": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "7": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "0",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "8": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "0",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "9": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "0",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+            "open_the_door": "1",
+            "close_the_door": "1",
+            "scroll_in": "1",
+            "scroll_out": "1"
+        }
+    },
+    "10": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "0",
+            "right_camera": "0"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    },
+    "11": {
+        "video": {
+            "front_camera": "1",
+            "rear_camera": "1",
+            "left_camera": "1",
+            "right_camera": "1"
+        },
+        "voice": {
+            "voice_intercom": "1"
+        },
+        "motion_control": {
+            "forward": "1",
+            "retreat": "1",
+            "turn_left": "1",
+            "turn_right": "1"
+        },
+        "speed": {
+            "select_index": "1",
+            "low_speed": "0.3",
+            "medium_speed": "0.5",
+            "high_speed": "0.7"
+        },
+        "other": {
+        }
+    }
+}

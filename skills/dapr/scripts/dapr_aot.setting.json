@@ -1,0 +1,35 @@
+{
+  "Dapr": {
+    "EnableDaprClient": true,
+    "DaprHost": "http://localhost",
+    "DaprHttpPort": 3500,
+    "DaprGrpcPort": 50001,
+    "EnableTracing": true,
+    "DefaultStateStore": "statestore",
+    "DefaultPubSubName": "pubsub",
+    "DefaultBindingName": "binding",
+    "Timeout": "00:00:30",
+    "RetryCount": 3,
+    "RetryInterval": "00:00:00.5",
+    "EnableDetailedLogging": false
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Dapr.AOT": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Dapr.Client": "Information"
+    }
+  },
+  "Performance": {
+    "EnableMetrics": true,
+    "MetricsInterval": "00:00:10",
+    "EnableTracing": true
+  },
+  "Security": {
+    "EnableAuthentication": false,
+    "EnableAuthorization": false,
+    "AllowedOrigins": ["*"]
+  }
+}

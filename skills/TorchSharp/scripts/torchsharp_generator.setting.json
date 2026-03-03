@@ -1,0 +1,108 @@
+{
+  "compilation": {
+    "target_framework": "net10.0",
+    "publish_aot": true,
+    "trim_mode": "partial",
+    "self_contained": true,
+    "publish_single_file": true,
+    "runtime_identifier": "win-x64",
+    "additional_options": [
+      "-p:UseAppHost=true",
+      "-p:EnableCompressionInSingleFile=true",
+      "-p:Optimize=true"
+    ],
+    "debug_type": "portable",
+    "optimize": true,
+    "warning_level": 4,
+    "treat_warnings_as_errors": false
+  },
+  "dependencies": [
+    {
+      "name": "Scrutor",
+      "version": "4.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Console",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Reflection.Metadata",
+      "version": "7.0.0"
+    },
+    {
+      "name": "System.Linq.Expressions",
+      "version": "4.7.0"
+    },
+    {
+      "name": "System.Reflection",
+      "version": "4.3.0"
+    },
+    {
+      "name": "System.Reflection.Emit",
+      "version": "4.7.0"
+    }
+  ],
+  "build": {
+    "configuration": "Release",
+    "output_path": "../bin",
+    "intermediate_output_path": "../obj/generator",
+    "generate_xml_documentation": true,
+    "disable_analyzers": false,
+    "enable_roslyn_analyzers": true,
+    "additional_msbuild_properties": {
+      "LangVersion": "10.0",
+      "Nullable": "enable",
+      "ImplicitUsings": "enable",
+      "AllowUnsafeBlocks": "false",
+      "CheckForOverflowUnderflow": "true",
+      "DefineConstants": "RELEASE;NET10_0;SCRUTOR_DEMO"
+    }
+  },
+  "aot": {
+    "enabled": true,
+    "trim_mode": "partial",
+    "ready_to_run": false,
+    "native_aot": true,
+    "illink": {
+      "enabled": true,
+      "additional_args": [
+        "--verbose",
+        "--preserve-types",
+        "--preserve-members",
+        "--skip-trim-system-assemblies"
+      ]
+    },
+    "runtime": {
+      "gc_trim_commit": true,
+      "ready_to_run_compile": false
+    }
+  },
+  "runtime": {
+    "framework_version": "10.0",
+    "roll_forward": "Major",
+    "additional_probing_paths": [],
+    "config_properties": {
+      "System.GC.Server": "true",
+      "System.Threading.ThreadPool.MinThreads": "2",
+      "System.Threading.ThreadPool.MaxThreads": "16",
+      "System.Net.Sockets.UseOnlyIPv6": "false"
+    }
+  },
+  "debug": {
+    "enabled": false,
+    "debugger_launch_profile": "Console",
+    "command_line_arguments": "",
+    "environment_variables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "SCRUTOR_DEMO": "true"
+    }
+  }
+}

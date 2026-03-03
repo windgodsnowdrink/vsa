@@ -1,0 +1,34 @@
+{
+  "CsvHelper": {
+    "EnableCache": true,
+    "CacheSize": 1000,
+    "Timeout": "00:00:30",
+    "EnableDetailedLogging": false,
+    "WorkerCount": 4,
+    "RetryCount": 3,
+    "RetryInterval": "00:00:00.5",
+    "DefaultEncoding": "utf-8",
+    "DefaultDelimiter": ",",
+    "HasHeaderRecord": true,
+    "IgnoreBlankLines": true,
+    "SkipFirstRecord": false
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "CsvHelper.AOT": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning"
+    }
+  },
+  "Performance": {
+    "EnableMetrics": true,
+    "MetricsInterval": "00:00:10",
+    "EnableTracing": false
+  },
+  "Security": {
+    "EnableAuthentication": false,
+    "EnableAuthorization": false,
+    "AllowedOrigins": ["*"]
+  }
+}

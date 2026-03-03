@@ -1,0 +1,58 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MessagePack@2.5.122
+#:package System.Text.Json@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using MessagePack;
+using System.Text.Json;
+
+public class HybridProtocolSerializer
+{
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        WriteIndented = false,
+        DefaultBufferSize = 4096
+    };
+
+    // MessagePack序列化
+    public byte[] SerializeWithMessagePack<T>(T value)
+    {
+        return MessagePackSerializer.Serialize(value);
+    }
+
+    // JSON序列化
+    public byte[] SerializeWithJson<T>(T value)
+    {
+        using var buffer = new ArrayBufferWriter<byte>();
+        var writer = new Utf8JsonWriter(buffer);
+        JsonSerializer.Serialize(writer, value, _jsonOptions);
+        return buffer.WrittenMemory.ToArray();
+    }
+
+    // 智能协议选择
+    public byte[] SmartSerialize<T>(T value, bool preferBinary = true)
+    {
+        return preferBinary ? 
+            SerializeWithMessagePack(value) : 
+            SerializeWithJson(value);
+    }
+
+    // 协议自动检测反序列化
+    public T? SmartDeserialize<T>(ReadOnlySpan<byte> data)
+    {
+        try
+        {
+            // 先尝试MessagePack
+            return MessagePackSerializer.Deserialize<T>(data);
+        }
+        catch
+        {
+            // 失败后尝试JSON
+            return JsonSerializer.Deserialize<T>(data, _jsonOptions);
+        }
+    }
+}

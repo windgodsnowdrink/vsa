@@ -1,0 +1,51 @@
+# docker Agent Skill - Docker 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 架构的高性能 Docker 技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Docker.DotNet@3.125.15
+# - Docker.DotNet.BasicAuth@3.125.15
+# - Docker.DotNet.X509@3.125.15
+# Application Scenarios: Docker 容器管理、镜像管理、系统监控
+# Activation Conditions: 当需要 Docker 功能时激活
+# Main Features:
+# - 基于 .NET 10 AOT 编译的高性能实现
+# - 完整的容器生命周期管理（运行、停止、删除）
+# - 镜像管理（拉取、删除、列出）
+# - Docker 系统信息和版本查询
+# - 支持命令行工具
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 异步编程模型，提高系统响应性
+# - 低延迟设计，毫秒级操作响应
+# - 内存优化，减少 GC 压力
+# - 高性能 Docker API 调用
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，便于测试和维护
+# - 异步编程模型，提高并发能力
+# - Options 配置模式，灵活配置
+# - 支持多种 Docker 连接方式
+# - 完善的状态监控
+# - 详细的错误处理和日志记录
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - ps, container, containers: 列出容器
+# - images, image: 列出镜像
+# - run <image> [options]: 运行容器
+# - stop <container>: 停止容器
+# - rm, remove <container>: 删除容器
+# - pull <image>: 拉取镜像
+# - rmi <image>: 删除镜像
+# - info: 显示 Docker 系统信息
+# - version: 显示 Docker 版本信息
+# - help, --help, -h: 显示帮助信息

@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "GrpcAOT": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "GRPC_SERVER_HOST": "localhost",
+        "GRPC_SERVER_PORT": "50051"
+      }
+    }
+  },
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "trimMode": "partial",
+    "enableCompilation": false,
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "allowUnsafeBlocks": false,
+    "defineConstants": [
+      "NET10_0",
+      "GRPC_AOT",
+      "RELEASE"
+    ],
+    "warningLevel": 4,
+    "treatWarningsAsErrors": false
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging.Console": "10.0.0",
+    "Microsoft.Extensions.Logging.Debug": "10.0.0",
+    "Grpc.AspNetCore": "2.62.0",
+    "Grpc.Net.Client": "2.62.0",
+    "Google.Protobuf": "3.26.1",
+    "System.Reflection.DispatchProxy": "4.7.1",
+    "System.Net.Http": "4.3.4",
+    "System.Net.Http.Json": "8.0.0",
+    "System.Runtime.InteropServices": "4.3.0",
+    "System.Threading.Tasks.Extensions": "4.5.4",
+    "System.Collections.Immutable": "8.0.0"
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 10,
+      "System.Threading.ThreadPool.MaxThreads": 100,
+      "System.Net.Sockets.UseOnlyIPv4": false,
+      "System.Net.Http.UseSocketsHttpHandler": true,
+      "System.Net.Http.SocketsHttpHandler.Http2Support": true,
+      "System.Net.Http.SocketsHttpHandler.EnableMultipleHttp2Connections": true,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingDelay": 60,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingTimeout": 30,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingPolicy": 2,
+      "System.Text.Json.Serialization.MaxDepth": 64
+    }
+  },
+  "aotOptions": {
+    "enableMemoryOptimizations": true,
+    "enableStringOptimizations": true,
+    "enableAggressiveTrimming": true,
+    "enableTrimAnalyzer": true,
+    "excludeSymbols": false,
+    "excludeDebugInformation": false,
+    "suppressTrimAnalysisWarnings": true,
+    "additionalTrimmerArguments": [
+      "--skip-unreachable-code-analysis",
+      "--preserve-all",
+      "--trim-mode=partial"
+    ]
+  },
+  "buildOptions": {
+    "outputType": "Exe",
+    "optimize": true,
+    "debugType": "portable",
+    "warnAsError": false,
+    "warningsAsErrors": [],
+    "nowarn": [
+      "IL2104",
+      "IL2105",
+      "IL2111",
+      "IL2119",
+      "IL2120",
+      "IL2130",
+      "IL2131",
+      "IL2132",
+      "IL2133",
+      "IL2134",
+      "IL2135",
+      "IL2136",
+      "IL2137",
+      "IL2138",
+      "IL2139",
+      "IL2140",
+      "IL2141",
+      "IL2142",
+      "IL2143",
+      "IL2144",
+      "IL2145",
+      "IL2146",
+      "IL2147",
+      "IL2148",
+      "IL2149",
+      "IL2150",
+      "IL2151",
+      "IL2152",
+      "IL2153",
+      "IL2154",
+      "IL2155",
+      "IL2156",
+      "IL2157",
+      "IL2158",
+      "IL2159",
+      "IL2160"
+    ],
+    "allowUnsafe": false,
+    "deterministic": true,
+    "publicSign": false,
+    "delaySign": false
+  },
+  "publishOptions": {
+    "include": [
+      "*.json",
+      "*.config",
+      "*.proto"
+    ],
+    "exclude": [
+      "*.cs",
+      "*.csproj",
+      "*.user",
+      "*.vspscc",
+      "*.sln",
+      "*.suo"
+    ]
+  },
+  "launchSettings": {
+    "profiles": {
+      "Server": {
+        "commandName": "Project",
+        "commandLineArgs": "server",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "GRPC_SERVER_HOST": "localhost",
+          "GRPC_SERVER_PORT": "50051",
+          "GRPC_MAX_CONCURRENT_CALLS": "100",
+          "GRPC_KEEP_ALIVE_TIME_SECONDS": "60",
+          "GRPC_MAX_MESSAGE_SIZE": "4194304"
+        }
+      },
+      "ClientHello": {
+        "commandName": "Project",
+        "commandLineArgs": "hello 世界",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "GRPC_SERVER_HOST": "localhost",
+          "GRPC_SERVER_PORT": "50051"
+        }
+      },
+      "ClientPing": {
+        "commandName": "Project",
+        "commandLineArgs": "ping Hello gRPC",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "GRPC_SERVER_HOST": "localhost",
+          "GRPC_SERVER_PORT": "50051"
+        }
+      },
+      "ClientHealth": {
+        "commandName": "Project",
+        "commandLineArgs": "health",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production",
+          "GRPC_SERVER_HOST": "localhost",
+          "GRPC_SERVER_PORT": "50051"
+        }
+      },
+      "ClientConfig": {
+        "commandName": "Project",
+        "commandLineArgs": "config",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
+      }
+    }
+  },
+  "grpcOptions": {
+    "services": [
+      {
+        "name": "Greeter",
+        "serviceName": "greeter.Greeter",
+        "methods": [
+          {
+            "name": "SayHello",
+            "type": "Unary",
+            "requestType": "HelloRequest",
+            "responseType": "HelloResponse"
+          }
+        ]
+      },
+      {
+        "name": "Health",
+        "serviceName": "grpc.health.v1.Health",
+        "methods": [
+          {
+            "name": "Check",
+            "type": "Unary",
+            "requestType": "HealthCheckRequest",
+            "responseType": "HealthCheckResponse"
+          }
+        ]
+      },
+      {
+        "name": "Ping",
+        "serviceName": "ping.Ping",
+        "methods": [
+          {
+            "name": "Ping",
+            "type": "Unary",
+            "requestType": "PingRequest",
+            "responseType": "PingResponse"
+          }
+        ]
+      }
+    ],
+    "protobuf": {
+      "generateContracts": true,
+      "generateServices": true,
+      "generateClient": true,
+      "generateServer": true,
+      "namespace": "GrpcAOT",
+      "outputDirectory": "protos"
+    }
+  },
+  "performanceOptions": {
+    "enableMemoryOptimizations": true,
+    "enableStringPooling": true,
+    "enableAggressiveInlining": true,
+    "enableTailCallOptimization": true,
+    "enableLoopUnrolling": true,
+    "enableVectorization": true,
+    "enableProfileGuidedOptimization": false,
+    "enableCrossGen": false
+  },
+  "securityOptions": {
+    "enableTls": false,
+    "certificatePath": "",
+    "certificatePassword": "",
+    "enableClientCertificateValidation": false,
+    "enableCertificateRevocationCheck": false,
+    "allowedCipherSuites": [
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+    ],
+    "allowedProtocols": [
+      "Tls12",
+      "Tls13"
+    ]
+  },
+  "networkOptions": {
+    "maxConcurrentCalls": 100,
+    "maxConcurrentStreams": 1000,
+    "maxMessageSize": 4194304,
+    "keepAliveTimeSeconds": 60,
+    "keepAliveTimeoutSeconds": 30,
+    "keepAlivePermitWithoutCalls": true,
+    "initialWindowSize": 65536,
+    "initialConnectionWindowSize": 1048576,
+    "maxHeaderListSize": 8192,
+    "maxHeaderSize": 8192,
+    "enableHttp2PriorKnowledge": true,
+    "enableHttp2Multiplexing": true,
+    "enableHttp2ServerPush": false
+  },
+  "diagnosticsOptions": {
+    "enableLogging": true,
+    "enableTracing": false,
+    "enableMetrics": true,
+    "logLevel": "Information",
+    "traceLevel": "Warning",
+    "metricsLevel": "Information",
+    "enableActivityTracing": false,
+    "enableRequestLogging": true,
+    "enableResponseLogging": false,
+    "enableDetailedErrors": false,
+    "enableDeveloperExceptionPage": false
+  },
+  "deploymentOptions": {
+    "selfContained": true,
+    "publishSingleFile": true,
+    "publishReadyToRun": true,
+    "publishTrimmed": true,
+    "runtimeIdentifier": "win-x64",
+    "targetFramework": "net10.0",
+    "outputPath": "bin\\Release\\net10.0\\win-x64\\publish",
+    "publishDir": "bin\\Release\\net10.0\\win-x64\\publish",
+    "includeNativeLibrariesForSelfExtract": true,
+    "includeAllContentForSelfExtract": true,
+    "excludeSymbols": false,
+    "excludeDebugInformation": false
+  },
+  "validationOptions": {
+    "enableInputValidation": true,
+    "enableOutputValidation": true,
+    "enablePerformanceValidation": false,
+    "maxValidationErrors": 10,
+    "enableRequestValidation": true,
+    "enableResponseValidation": true,
+    "enableProtocolValidation": true
+  }
+}

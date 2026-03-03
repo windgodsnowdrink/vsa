@@ -1,0 +1,29 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.DistributedLock": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "DistributedLock": {
+      "LockTimeoutSeconds": 30,
+      "LockRetryDelayMilliseconds": 500,
+      "RedisConnectionString": "localhost:6379,abortConnect=false",
+      "LockKeyPrefix": "acme:lock:",
+      "HeartbeatIntervalSeconds": 10,
+      "MaxHeartbeatAttempts": 3,
+      "EnableMetrics": true
+    }
+  }
+}

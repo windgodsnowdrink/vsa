@@ -1,0 +1,9 @@
+@page "/terminal/{deviceId}"
+@using Microsoft.AspNetCore.Components.Web
+@inherits TerminalComponent
+
+<div class="terminal">
+    <div class="output">@output</div>
+    <input @bind="command" @bind:event="oninput" />
+    <button @onclick="() => ExecuteCommand(command)">Execute</button>
+</div>

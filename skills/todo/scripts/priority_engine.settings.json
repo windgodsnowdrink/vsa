@@ -1,0 +1,44 @@
+{
+  "PriorityEngineSettings": {
+    "DefaultStrategy": "UrgencyPriority",
+    "EnableDetailedCalculation": true,
+    "CacheResults": true,
+    "CalculationTimeout": "00:00:30",
+    "MaxConcurrentCalculations": 10,
+    "EnableParallelProcessing": true,
+    "StrategyWeights": {
+      "UrgencyWeight": 0.25,
+      "ImportanceWeight": 0.20,
+      "BusinessImpactWeight": 0.20,
+      "ResourceAvailabilityWeight": 0.15,
+      "RiskWeight": 0.10,
+      "WorkloadWeight": 0.10
+    },
+    "CacheSettings": {
+      "ExpirationMinutes": 30,
+      "SlidingExpiration": true,
+      "PriorityCalculationCache": true,
+      "StrategyResultCache": true
+    },
+    "OptimizationSettings": {
+      "EnableTailLatencyOptimization": true,
+      "EnableCacheLineAlignment": true,
+      "EnableSpanOptimization": true,
+      "EnableMemoryPooling": true
+    },
+    "LoggingSettings": {
+      "LogCalculationDetails": true,
+      "LogStrategyDecisions": false,
+      "LogPerformanceMetrics": true,
+      "EnableDebugMode": false
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "VSA.TodoSystem.PriorityEngine": "Debug",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

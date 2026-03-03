@@ -1,0 +1,187 @@
+using LiteDB;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+
+#nullable enable
+
+public class LiteDbOptions
+{
+    public string ConnectionString { get; set; } = "Filename=litedb.db;Connection=shared";
+    public int ConnectionPoolSize { get; set; } = 10;
+    public TimeSpan ConnectionTimeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
+public interface ILiteDbConnectionPool
+{
+    Task<LiteDatabase> GetConnectionAsync(CancellationToken cancellationToken = default);
+    ValueTask ReturnConnectionAsync(LiteDatabase connection);
+}
+
+public class LiteDbConnectionPool : ILiteDbConnectionPool, IDisposable
+{
+    private readonly LiteDbOptions _options;
+    private readonly ConcurrentBag<LiteDatabase> _connections = new();
+    private readonly SemaphoreSlim _semaphore;
+    private bool _disposed;
+
+    public LiteDbConnectionPool(IOptions<LiteDbOptions> options)
+    {
+        _options = options.Value;
+        _semaphore = new SemaphoreSlim(_options.ConnectionPoolSize, _options.ConnectionPoolSize);
+    }
+
+    public async Task<LiteDatabase> GetConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        await _semaphore.WaitAsync(cancellationToken);
+        
+        if (_connections.TryTake(out var connection))
+        {
+            return connection;
+        }
+
+        return new LiteDatabase(_options.ConnectionString);
+    }
+
+    public ValueTask ReturnConnectionAsync(LiteDatabase connection)
+    {
+        if (_disposed)
+        {
+            connection.Dispose();
+            return ValueTask.CompletedTask;
+        }
+
+        _connections.Add(connection);
+        _semaphore.Release();
+        return ValueTask.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        
+        _disposed = true;
+        _semaphore.Dispose();
+        
+        foreach (var connection in _connections)
+        {
+            connection.Dispose();
+        }
+        
+        _connections.Clear();
+    }
+}
+
+public static class LiteDbServiceCollectionExtensions
+{
+    public static IServiceCollection AddLiteDbServices(this IServiceCollection services, Action<LiteDbOptions>? configure = null)
+    {
+        services.Configure(configure ?? (opt => { }));
+        services.AddSingleton<ILiteDbConnectionPool, LiteDbConnectionPool>();
+        
+        // 添加EF Core适配层
+        services.AddDbContextPool<LiteDbContext>(options => 
+        {
+            options.UseLiteDatabase(services.BuildServiceProvider()
+                .GetRequiredService<IOptions<LiteDbOptions>>().Value.ConnectionString);
+            options.EnableThreadSafetyChecks(false);
+            options.EnableDetailedErrors();
+        }, poolSize: 128);
+        
+        return services;
+    }
+}
+
+// 示例用法
+public class LiteDbExampleService
+{
+    private readonly ILiteDbConnectionPool _connectionPool;
+
+    public LiteDbExampleService(ILiteDbConnectionPool connectionPool)
+    {
+        _connectionPool = connectionPool;
+    }
+
+    public async Task ExampleUsageAsync()
+    {
+        using var db = await _connectionPool.GetConnectionAsync();
+        var collection = db.GetCollection<ExampleEntity>("examples");
+        
+        // 确保索引存在
+        collection.EnsureIndex(x => x.Name);
+        
+        // 插入数据
+        collection.Insert(new ExampleEntity { Name = "Test", Value = 42 });
+        
+        // 查询数据
+        var results = collection.Query()
+            .Where(x => x.Value > 40)
+            .ToList();
+    }
+}
+
+public class ExampleEntity
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int Value { get; set; }
+}
+
+/// <summary>
+/// EF Core适配DbContext
+/// </summary>
+public class LiteDbContext : DbContext
+{
+    public LiteDbContext(DbContextOptions<LiteDbContext> options) : base(options) { }
+
+    public DbSet<ExampleEntity> Examples { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ExampleEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+    }
+}
+
+/// <summary>
+/// 高性能EF Core批量操作
+/// </summary>
+public class LiteDbBulkOperations
+{
+    private readonly LiteDbContext _dbContext;
+
+    public LiteDbBulkOperations(LiteDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task BulkInsertAsync(IEnumerable<ExampleEntity> entities)
+    {
+        await _dbContext.BulkInsertAsync(entities, options => 
+        {
+            options.BatchSize = 1000;
+            options.InsertIfNotExists = true;
+        });
+    }
+
+    public async Task BulkUpdateAsync(IEnumerable<ExampleEntity> entities)
+    {
+        await _dbContext.BulkUpdateAsync(entities, options => 
+        {
+            options.BatchSize = 1000;
+            options.PropertiesToInclude = new List<string> { nameof(ExampleEntity.Name), nameof(ExampleEntity.Value) };
+        });
+    }
+
+// 在ASP.NET Core中注册
+// builder.Services.AddLiteDbServices(opt => {
+//     opt.ConnectionString = "Filename=mydb.db;Connection=shared";
+//     opt.ConnectionPoolSize = 20;
+// });

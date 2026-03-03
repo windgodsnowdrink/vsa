@@ -1,0 +1,39 @@
+# boxed Agent Skill - boxed 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的高性能 Boxed 模板技能，提供 GraphQL、Web API、Orleans 等多种 .NET 模板支持，支持 AOT 编译优化
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - HotChocolate@14.0.0
+# - Orleans.Core@8.0.0
+# - Swashbuckle.AspNetCore@6.5.0
+# 应用场景: .NET 项目模板生成、GraphQL 服务开发、Web API 开发、Orleans 分布式应用开发、AOT 编译优化等
+# 激活条件: 需要 Boxed 模板功能时激活
+# 主要功能:
+# - GraphQL 服务模板生成
+# - Web API 模板生成
+# - Orleans 分布式应用模板生成
+# - 支持 AOT 编译优化
+# - 支持多种 .NET 10 功能集成
+# - 支持自定义模板扩展
+# - 支持生产级配置
+# - 支持多种认证方式
+# - 支持日志和监控集成
+# 性能特性:
+# - 高性能设计，支持高并发场景
+# - 内存优化，减少内存占用和拷贝
+# - 并发支持，充分利用多核 CPU
+# - 低延迟设计，优化响应速度
+# - AOT 编译优化，提高运行时性能
+# 技术特性:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，提高代码的可测试性
+# - 异步编程，避免阻塞主线程
+# - 高性能算法，优化处理效率
+# - 支持多种 .NET 10 模板场景
+# - 支持 AOT 编译
+# - 与 .NET 生态系统无缝集成
+# - 支持多种认证和授权方式
+# AOT 编译支持: 支持将 Boxed 模板生成的应用编译为本机代码，提高运行时性能和启动速度

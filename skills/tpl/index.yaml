@@ -1,0 +1,107 @@
+id: tpl
+title: TPL 任务并行库技能
+description: 基于 .NET Task Parallel Library 的并行计算技能，支持 AOT 编译和高性能并行处理
+author: NET 专家
+version: 1.0.0
+category: 并行计算
+
+# AOT 编译配置
+compilation:
+  target_framework: net10.0
+  publish_aot: true
+  trim_mode: partial
+  self_contained: true
+  publish_single_file: true
+  runtime_identifier: win-x64
+  additional_options: -p:UseAppHost=true
+
+# 依赖项
+dependencies:
+  - name: Scrutor
+    version: 4.0.0
+  - name: System.CommandLine
+    version: 2.0.0
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+  - name: Microsoft.Extensions.Caching.Memory
+    version: 10.0.0
+  - name: System.IO.Abstractions
+    version: 19.2.0
+  - name: Newtonsoft.Json
+    version: 13.0.3
+  - name: System.Threading.Tasks.Dataflow
+    version: 8.0.0
+  - name: System.Collections.Immutable
+    version: 8.0.0
+  - name: System.Reactive
+    version: 6.0.0
+
+# 功能特性
+features:
+  - name: 并行任务
+    description: 支持创建和管理并行任务
+  - name: 数据流
+    description: 支持基于数据流的并行处理
+  - name: 并行 LINQ
+    description: 支持并行 LINQ 查询
+  - name: 异步编程
+    description: 支持异步和等待模式
+  - name: Scrutor 集成
+    description: 支持高级服务注册和装饰模式
+
+# CLI 命令
+commands:
+  - name: task
+    description: 执行任务操作
+    arguments:
+      - name: operation
+        description: 任务操作类型
+        required: true
+      - name: count
+        description: 任务数量
+        required: false
+  - name: dataflow
+    description: 执行数据流操作
+    arguments:
+      - name: operation
+        description: 数据流操作类型
+        required: true
+      - name: items
+        description: 数据项数量
+        required: false
+  - name: parallel
+    description: 执行并行操作
+    arguments:
+      - name: operation
+        description: 并行操作类型
+        required: true
+      - name: items
+        description: 项目数量
+        required: false
+  - name: scrutor
+    description: 执行 Scrutor 演示
+    arguments:
+      - name: demo
+        description: Scrutor 演示类型
+        required: true
+
+# 文件路径
+files:
+  - path: scripts/tpl_core.cs
+    description: TPL 核心实现
+  - path: scripts/tpl_core.setting.json
+    description: TPL 核心编译配置
+  - path: scripts/tpl_core.run.json
+    description: TPL 核心运行配置
+  - path: scripts/tpl_generator.cs
+    description: Scrutor 用法示例
+  - path: scripts/tpl_generator.setting.json
+    description: Scrutor 演示编译配置
+  - path: scripts/tpl_generator.run.json
+    description: Scrutor 演示运行配置
+  - path: reference/README.md
+    description: 参考文档
+  - path: reference/examples.md
+    description: 使用示例文档

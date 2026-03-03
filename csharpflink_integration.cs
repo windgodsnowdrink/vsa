@@ -1,0 +1,284 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package CSharpFlink@1.0.0
+#:package Polly@7.2.4
+#:package OpenTelemetry@1.7.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using CSharpFlink;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Polly;
+
+namespace FlinkIntegration
+{
+    /// <summary>
+    /// Flink配置选项
+    /// </summary>
+    public class FlinkOptions
+    {
+        /// <summary>
+        /// Flink作业名称
+        /// </summary>
+        public string JobName { get; set; } = "default-job";
+        
+        /// <summary>
+        /// JobManager地址
+        /// </summary>
+        public string JobManagerUrl { get; set; } = "localhost:8081";
+        
+        /// <summary>
+        /// 并行度
+        /// </summary>
+        public int Parallelism { get; set; } = 4;
+        
+        /// <summary>
+        /// 检查点间隔
+        /// </summary>
+        public TimeSpan CheckpointInterval { get; set; } = TimeSpan.FromSeconds(30);
+        
+        /// <summary>
+        /// 重试间隔
+        /// </summary>
+        public TimeSpan RetryInterval { get; set; } = TimeSpan.FromSeconds(5);
+        
+        /// <summary>
+        /// 最大重试次数
+        /// </summary>
+        public int MaxRetryAttempts { get; set; } = 3;
+        
+        /// <summary>
+        /// 缓冲区容量
+        /// </summary>
+        public int BufferCapacity { get; set; } = 1000;
+        
+        /// <summary>
+        /// 状态后端类型 (Memory, RocksDB, FileSystem)
+        /// </summary>
+        public string StateBackend { get; set; } = "Memory";
+        
+        /// <summary>
+        /// 窗口大小
+        /// </summary>
+        public TimeSpan WindowSize { get; set; } = TimeSpan.FromMinutes(5);
+        
+        /// <summary>
+        /// 水印间隔
+        /// </summary>
+        public TimeSpan WatermarkInterval { get; set; } = TimeSpan.FromSeconds(1);
+        
+        /// <summary>
+        /// 最大允许延迟
+        /// </summary>
+        public TimeSpan MaxAllowedLateness { get; set; } = TimeSpan.FromMinutes(1);
+        
+        /// <summary>
+        /// 是否启用精确一次语义
+        /// </summary>
+        public bool EnableExactlyOnce { get; set; } = true;
+        
+        /// <summary>
+        /// 状态检查点超时
+        /// </summary>
+        public TimeSpan CheckpointTimeout { get; set; } = TimeSpan.FromMinutes(10);
+    }
+
+    /// <summary>
+    /// Flink服务接口
+    /// </summary>
+    public interface IFlinkService
+    {
+        /// <summary>
+        /// 提交Flink作业
+        /// </summary>
+        Task SubmitJobAsync(string jobDefinition, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 执行Flink查询
+        /// </summary>
+        Task<ChannelReader<FlinkResult>> ExecuteQueryAsync(string query, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 获取Flink指标
+        /// </summary>
+        Task<FlinkMetrics> GetMetricsAsync(CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 重置熔断器
+        /// </summary>
+        Task ResetCircuitBreakerAsync();
+        
+        /// <summary>
+        /// 保存作业状态
+        /// </summary>
+        Task SaveStateAsync(string jobId, string stateName, byte[] stateData, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 恢复作业状态
+        /// </summary>
+        Task<byte[]> RestoreStateAsync(string jobId, string stateName, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 触发检查点
+        /// </summary>
+        Task TriggerCheckpointAsync(string jobId, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 获取窗口计算结果
+        /// </summary>
+        Task<ChannelReader<WindowResult>> GetWindowResultsAsync(string jobId, TimeSpan windowSize, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 处理迟到数据
+        /// </summary>
+        Task HandleLateDataAsync(string jobId, string lateData, CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// Flink服务实现
+    /// </summary>
+    public class FlinkService : IFlinkService, IDisposable
+    {
+        private readonly FlinkOptions _options;
+        private readonly FlinkClient _flinkClient;
+        private readonly AsyncCircuitBreakerPolicy _circuitBreaker;
+        private readonly Channel<FlinkResult> _resultChannel;
+        private readonly Meter _meter;
+        private readonly Counter<int> _jobCounter;
+        private readonly ConcurrentDictionary<string, FlinkJob> _activeJobs = new();
+
+        public FlinkService(IOptions<FlinkOptions> options)
+        {
+            _options = options.Value;
+            _flinkClient = new FlinkClient(_options.JobManagerUrl);
+            
+            _circuitBreaker = Policy
+                .Handle<Exception>()
+                .CircuitBreakerAsync(
+                    _options.MaxRetryAttempts,
+                    _ => _options.RetryInterval,
+                    onBreak: (ex, _) => Console.WriteLine($"Circuit broken: {ex.Message}"),
+                    onReset: () => Console.WriteLine("Circuit reset"));
+            
+            _resultChannel = Channel.CreateBounded<FlinkResult>(_options.BufferCapacity);
+            
+            _meter = new Meter("FlinkService");
+            _jobCounter = _meter.CreateCounter<int>("flink.jobs.submitted", "count", "Number of jobs submitted");
+        }
+
+        public async Task SubmitJobAsync(string jobDefinition, CancellationToken cancellationToken = default)
+        {
+            await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                var jobId = await _flinkClient.SubmitJobAsync(jobDefinition, cancellationToken);
+                _activeJobs.TryAdd(jobId, new FlinkJob(jobId, jobDefinition));
+                _jobCounter.Add(1);
+            });
+        }
+
+        public async Task<ChannelReader<FlinkResult>> ExecuteQueryAsync(string query, CancellationToken cancellationToken = default)
+        {
+            var resultReader = await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                return await _flinkClient.ExecuteQueryAsync(query, cancellationToken);
+            });
+            
+            return resultReader;
+        }
+
+        public async Task<FlinkMetrics> GetMetricsAsync(CancellationToken cancellationToken = default)
+        {
+            return await _circuitBreaker.ExecuteAsync(async () =>
+            {
+                return await _flinkClient.GetMetricsAsync(cancellationToken);
+            });
+        }
+
+        public Task ResetCircuitBreakerAsync()
+        {
+            _circuitBreaker.Reset();
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            _flinkClient?.Dispose();
+            _meter?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    /// <summary>
+    /// DI扩展方法
+    /// </summary>
+    public static class FlinkServiceExtensions
+    {
+        public static IServiceCollection AddFlinkService(this IServiceCollection services, Action<FlinkOptions> configureOptions)
+        {
+            services.Configure(configureOptions);
+            services.AddSingleton<IFlinkService, FlinkService>();
+            
+            services.AddOpenTelemetry()
+                .WithMetrics(builder => builder.AddMeter("FlinkService"))
+                .WithTracing(builder => builder.AddSource("FlinkService"));
+                
+            return services;
+        }
+    }
+
+    // 其他辅助类...
+    public record FlinkResult(string JobId, string Data);
+    
+    /// <summary>
+    /// Flink指标
+    /// </summary>
+    public record FlinkMetrics(
+        int ActiveJobs, 
+        int CompletedJobs, 
+        double Throughput,
+        double Latency,
+        int CheckpointCount,
+        int WindowCount,
+        int LateRecordsProcessed);
+        
+    /// <summary>
+    /// Flink作业信息
+    /// </summary>
+    public record FlinkJob(string JobId, string Definition);
+    
+    /// <summary>
+    /// 窗口计算结果
+    /// </summary>
+    public record WindowResult(
+        string JobId, 
+        DateTime WindowStart, 
+        DateTime WindowEnd, 
+        string AggregatedData);
+    
+    /// <summary>
+    /// 状态快照
+    /// </summary>
+    public record StateSnapshot(
+        string JobId, 
+        string StateName, 
+        DateTime SnapshotTime, 
+        byte[] StateData);
+    
+    /// <summary>
+    /// 水印信息
+    /// </summary>
+    public record Watermark(
+        string JobId, 
+        DateTime EventTime, 
+        DateTime ProcessingTime);
+}

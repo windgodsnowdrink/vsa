@@ -1,0 +1,47 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.MQTT.Disruptor": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "MQTT": {
+      "Disruptor": {
+        "MqttBrokerUrl": "mqtt://localhost:1883",
+        "MqttUsername": "admin",
+        "MqttPassword": "password",
+        "ClientId": "SourceGeneratorDisruptor",
+        "Topics": [
+          "mqtt/disruptor/topic1",
+          "mqtt/disruptor/topic2",
+          "mqtt/disruptor/topic3"
+        ],
+        "QoSLevel": 2,
+        "CleanSession": true,
+        "KeepAlivePeriodSeconds": 60,
+        "AutoReconnectDelaySeconds": 5,
+        "MaxReconnectAttempts": 10,
+        "DisruptorRingBufferSize": 8192,
+        "DisruptorWaitStrategy": "BusySpin",
+        "EnableBatchProcessing": true,
+        "BatchSize": 64,
+        "EnableParallelProcessing": true,
+        "ProcessorCount": 4,
+        "EnableMemoryOptimization": true,
+        "GenerateDebugInfo": true,
+        "OutputDirectory": "./generated-mqtt-disruptor"
+      }
+    }
+  }
+}

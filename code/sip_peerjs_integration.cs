@@ -1,0 +1,109 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package SIPSorcery@6.0.0
+#:package PeerJS@1.4.7
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.Threading.Channels;
+using SIPSorcery.SIP;
+using PeerJs;
+
+// 1. PeerJS客户端集成(高性能实现)
+[SkipLocalsInit]
+public sealed class PeerJsClient : IDisposable
+{
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    private readonly ObjectPool<Peer> _peerPool;
+    private readonly Channel<PeerEvent> _eventChannel;
+    
+    public PeerJsClient()
+    {
+        _buffer = new(() => stackalloc byte[2048]);
+        _peerPool = new DefaultObjectPool<Peer>(
+            new PeerPooledPolicy(), 1000);
+        _eventChannel = Channel.CreateBounded<PeerEvent>(10000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe Task ConnectAsync(string peerId)
+    {
+        var buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                var peer = _peerPool.Get();
+                try
+                {
+                    // 连接PeerJS服务器
+                    peer.Connect(peerId);
+                    
+                    // 设置事件处理器
+                    peer.On("open", () => {
+                        _eventChannel.Writer.TryWrite(new PeerEvent(peer));
+                    });
+                }
+                finally
+                {
+                    _peerPool.Return(peer);
+                }
+            }
+        }
+        return Task.CompletedTask;
+    }
+}
+
+// 2. SIP信令引擎(集成PeerJS)
+[SkipLocalsInit]
+public sealed class SIPSignalingEngine : ISIPSignalingEngine
+{
+    private readonly SIPTransport _transport;
+    private readonly PeerJsClient _peerJsClient;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    
+    public SIPSignalingEngine(
+        SIPTransport transport,
+        PeerJsClient peerJsClient)
+    {
+        _transport = transport;
+        _peerJsClient = peerJsClient;
+        _buffer = new(() => stackalloc byte[4096]);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessRequestAsync(SIPRequest request)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                // 通过PeerJS处理SIP请求
+                await _peerJsClient.ConnectAsync("sip-peer");
+                
+                // ... SIP消息处理逻辑 ...
+            }
+        }
+    }
+}
+
+// 3. 主程序集成
+var builder = WebApplication.CreateBuilder();
+
+// 配置PeerJS客户端
+builder.Services.AddSingleton<PeerJsClient>();
+
+// 注册SIP引擎
+builder.Services.AddSingleton<ISIPSignalingEngine>(sp => 
+    new SIPSignalingEngine(
+        new SIPTransport(),
+        sp.GetRequiredService<PeerJsClient>()));
+
+var app = builder.Build();
+app.MapGet("/", () => "SIP/PeerJS Integration Ready");
+app.Run();

@@ -1,0 +1,824 @@
+﻿{
+    "schema": "",
+    "version": "1.0",
+    "profile": {
+        "productKey": "6aa03411baae479c85dfd464aa572e4b"
+    },
+    "properties": [
+        {
+            "identifier": "device",
+            "name": "设备信息",
+            "desc": "设备信息",
+            "data": [
+                {
+                    "identifier": "deviceCustomName",
+                    "name": "设备自定义名称",
+                    "desc": "设备自定义名称",
+                    "dataType": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "identifier": "deviceId",
+                    "name": "设备编号",
+                    "desc": "设备编号",
+                    "dataType": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "identifier": "power",
+                    "name": "设备电量",
+                    "desc": "设备电量",
+                    "dataType": {
+                        "type": "number"
+                    }
+                },
+                {
+                    "identifier": "deviceState",
+                    "name": "设备状态",
+                    "desc": "设备状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "任务中"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "待机中"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "故障中"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "identifier": "alarmState",
+                    "name": "报警状态",
+                    "desc": "报警状态",
+                    "dataType": {
+                        "type": "bool",
+                        "specs": {
+                            "0": "未报警",
+                            "1": "报警"
+                        }
+                    }
+                },
+                {
+                    "identifier": "deviceTime",
+                    "name": "设备时间",
+                    "desc": "设备上的时间",
+                    "dataType": {
+                        "type": "date"
+                    }
+                },
+                {
+                    "identifier": "firmwareVersion",
+                    "name": "设备固件版本",
+                    "desc": "设备固件版本",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "log",
+            "name": "日志参数",
+            "desc": "日志参数",
+            "data": [
+                {
+                    "identifier": "maxSaveDays",
+                    "name": "日志最大保存天数",
+                    "desc": "日志最大保存天数",
+                    "dataType": {
+                        "type": "int"
+                    }
+                }
+            ]
+        }
+    ],
+    "events": [
+        {
+            "identifier": "device:dormant",
+            "name": "设备休眠",
+            "desc": "设备休眠 定时上报10秒一次",
+            "eventType": "info",
+            "method": "things.event.post.device:dormant",
+            "outputData": [
+                {
+                    "identifier": "power",
+                    "name": "电池电量",
+                    "desc": "电池电量 百分比",
+                    "dataType": {
+                        "type": "int"
+                    }
+                },
+                {
+                    "identifier": "temperature",
+                    "name": "电池温度",
+                    "desc": "电池温度 ℃",
+                    "dataType": {
+                        "type": "double"
+                    }
+                },
+                {
+                    "identifier": "duration",
+                    "name": "可用时长",
+                    "desc": "可用时长 秒",
+                    "dataType": {
+                        "type": "int"
+                    }
+                },
+                {
+                    "identifier": "number",
+                    "name": "充电次数",
+                    "desc": "充电次数",
+                    "dataType": {
+                        "type": "int"
+                    }
+                },
+                {
+                    "identifier": "state",
+                    "name": "状态",
+                    "desc": "状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 1,
+                                    "value": "空闲"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "充电中"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "log:report",
+            "name": "日志上报",
+            "desc": "日志上报",
+            "eventType": "info",
+            "method": "things.event.post.log:report",
+            "outputData": [
+                {
+                    "identifier": "reportDate",
+                    "name": "日志发生时间",
+                    "desc": "日志发生时间",
+                    "dataType": {
+                        "type": "date"
+                    }
+                },
+                {
+                    "identifier": "logType",
+                    "name": "日志类型",
+                    "desc": "日志类型",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 1,
+                                    "value": "报警日志"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "操作日志"
+                                },
+                                {
+                                    "key": 3,
+                                    "value": "系统日志"
+                                },
+                                {
+                                    "key": 4,
+                                    "value": "普通日志"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "identifier": "logLevel",
+                    "name": "日志等级",
+                    "desc": "日志等级",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 1,
+                                    "value": "调试"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "信息"
+                                },
+                                {
+                                    "key": 3,
+                                    "value": "警告"
+                                },
+                                {
+                                    "key": 4,
+                                    "value": "错误"
+                                },
+                                {
+                                    "key": 5,
+                                    "value": "严重"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "identifier": "logContent",
+                    "name": "日志内容",
+                    "desc": "日志内容",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "expansion:event",
+            "name": "自定义拓展事件",
+            "desc": "自定义拓展事件",
+            "eventType": "info",
+            "method": "things.event.post.expansion:event",
+            "inputData": [
+                {
+                    "identifier": "json",
+                    "name": "自定义json",
+                    "desc": "自定义json",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "outputData": [
+                {
+                    "identifier": "json",
+                    "name": "自定义json",
+                    "desc": "自定义json",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "identifier": "system:restart",
+            "name": "设备重启功能",
+            "desc": "设备重启功能",
+            "method": "things.action.exec.system:restart",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败:当前正在执行任务"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "system:reset",
+            "name": "恢复出厂",
+            "desc": "恢复出厂",
+            "method": "things.action.exec.system:reset",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败:当前正在执行任务"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "system:shutdown",
+            "name": "关机",
+            "desc": "关机",
+            "method": "things.action.exec.system:shutdown",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败:当前正在执行任务"
+                                },
+                                {
+                                    "key": 2,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:lock",
+            "name": "锁定",
+            "desc": "锁定",
+            "method": "things.action.exec.authorize:lock",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:unLock",
+            "name": "解锁",
+            "desc": "解锁",
+            "method": "things.action.exec.authorize:unLock",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:activation",
+            "name": "激活",
+            "desc": "激活",
+            "method": "things.action.exec.authorize:activation",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:logout",
+            "name": "注销",
+            "desc": "注销",
+            "method": "things.action.exec.authorize:logout",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:registerSuccess",
+            "name": "注册成功",
+            "desc": "注册成功",
+            "method": "things.action.exec.authorize:registerSuccess",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "authorize:passwordReset",
+            "name": "密码重置",
+            "desc": "密码重置",
+            "method": "things.action.exec.authorize:passwordReset",
+            "inputData": [
+                {
+                    "identifier": "password",
+                    "name": "密码",
+                    "desc": "密码",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "upgrade:start",
+            "name": "开始升级",
+            "desc": "开始升级",
+            "method": "things.action.exec.upgrade:start",
+            "inputData": [
+                {
+                    "identifier": "firmwareVersion",
+                    "name": "固件版本",
+                    "desc": "固件版本",
+                    "dataType": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "identifier": "firmwareDownloadUrl",
+                    "name": "固件下载地址",
+                    "desc": "固件下载地址",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "upgrade:progress",
+            "name": "固件升级进度",
+            "desc": "固件升级进度",
+            "method": "things.action.exec.upgrade:progress",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "progress",
+                    "name": "进度",
+                    "desc": "进度",
+                    "dataType": {
+                        "type": "number"
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "upgrade:cancel",
+            "name": "取消升级",
+            "desc": "取消升级",
+            "method": "things.action.exec.upgrade:cancel",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "system:charging",
+            "name": "充电",
+            "desc": "充电",
+            "method": "things.action.exec.system:charging",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "system:lockScreen",
+            "name": "锁屏",
+            "desc": "锁屏",
+            "method": "things.action.exec.system:lockScreen",
+            "inputData": [
+                {
+                    "identifier": "lockScreenTime",
+                    "name": "锁屏时间",
+                    "desc": "锁屏时间",
+                    "dataType": {
+                        "type": "number"
+                    }
+                },
+                {
+                    "identifier": "turnOffScreenTime",
+                    "name": "熄屏时间",
+                    "desc": "熄屏时间",
+                    "dataType": {
+                        "type": "number"
+                    }
+                }
+            ],
+            "outputData": [
+                {
+                    "identifier": "commandStatus",
+                    "name": "指令状态",
+                    "desc": "指令状态",
+                    "dataType": {
+                        "type": "enum",
+                        "specs": {
+                            "range": [
+                                {
+                                    "key": 0,
+                                    "value": "执行成功"
+                                },
+                                {
+                                    "key": 1,
+                                    "value": "执行失败"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "device:wakeup",
+            "name": "唤醒",
+            "desc": "唤醒",
+            "method": "things.action.exec.device:wakeup",
+            "inputData": [],
+            "outputData": []
+        },
+        {
+            "identifier": "system:getLockScreen",
+            "name": "获取锁屏参数",
+            "desc": "获取锁屏参数",
+            "method": "things.action.exec.system:getLockScreen",
+            "inputData": [],
+            "outputData": [
+                {
+                    "identifier": "lockScreenTime",
+                    "name": "锁屏时间",
+                    "desc": "锁屏时间",
+                    "dataType": {
+                        "type": "number"
+                    }
+                },
+                {
+                    "identifier": "turnOffScreenTime",
+                    "name": "熄屏时间",
+                    "desc": "熄屏时间",
+                    "dataType": {
+                        "type": "number"
+                    }
+                }
+            ]
+        },
+        {
+            "identifier": "expansion:execute",
+            "name": "自定义协议",
+            "desc": "自定义协议",
+            "method": "things.action.exec.expansion:execute",
+            "inputData": [
+                {
+                    "identifier": "json",
+                    "name": "自定义json",
+                    "desc": "自定义json",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "outputData": [
+                {
+                    "identifier": "json",
+                    "name": "自定义json",
+                    "desc": "自定义json",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    ],
+    "functionBlocks": [
+        {
+            "functionBlockId": "system",
+            "functionBlockName": "设备系统",
+            "functionBlockDesc": "设备系统。包括设备重启，恢复出厂，重置密码"
+        },
+        {
+            "functionBlockId": "authorize",
+            "functionBlockName": "设备授权信息",
+            "functionBlockDesc": "设备授权相关信息。包括设备是否注册、激活、注销或锁定(解除锁定)"
+        },
+        {
+            "functionBlockId": "upgrade",
+            "functionBlockName": "固件升级",
+            "functionBlockDesc": "固件升级，固件升级、固件升级进度"
+        },
+        {
+            "functionBlockId": "log",
+            "functionBlockName": "日志参数",
+            "functionBlockDesc": "日志参数。日志上报"
+        },
+        {
+            "functionBlockId": "device",
+            "functionBlockName": "设备信息",
+            "functionBlockDesc": "设备信息"
+        },
+        {
+            "functionBlockId": "expansion",
+            "functionBlockName": "拓展模块",
+            "functionBlockDesc": "拓展模块，参数为自定义json"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+﻿{
+    "SecurityHeaderSettings": {
+        "Enable": true,
+        "Headers": {
+            "XFrameOptions": "SAMEORIGIN",
+            "XContentTypeOptions": "nosniff",
+            "ReferrerPolicy": "same-origin",
+            "PermissionsPolicy": "geolocation, midi, camera, usb=(), magnetometer, fullscreen, animations, payment, picture-in-picture, accelerometer, xr, autoplay, microphone, gyroscope",
+            "SameSite": "strict",
+            "XXSSProtection": "1; mode=block",
+            "ContentSecurityPolicy": "object-src 'self'",
+            "XPagination": "x-pagination: {'PageCount':100,'TotalItemCount':1000,'PageNumber':1,'PageSize':10,'HasPreviousPage':false,'HasNextPage':true,'IsFirstPage':true,'IsLastPage':false,'FirstItemOnPage':1,'LastItemOnPage':10}",
+            "AcceptLanguage": "zh,zh-CN;q=1,zh-TW;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "XRealIP": "$remote_addr",
+            "REMOTEHOST": "$remote_addr",
+            "XForwardedFor": "$proxy_add_x_forwarded_for",
+            "XForwardedHost": "$server_name",
+            "XCSRFTOKEN": "token",
+            "CacheControl": "no-cache",
+            "Pragme": "no-cache",
+            "Expires": 0,
+            "HSTS": "max-age=31536000; includeSubDomains; preload",
+            "HPKP": "pin-sha256='base64=='; max-age=90; includeSubdomains; report-uri='https://127.0.0.1:8101'",
+            "CookieOptions": "Secure; HttpOnly; SameSite=strict",
+            "XDownloadOptions": "noopen",
+            "XPermittedCrossDomainPolicies": "master-only"
+        }
+    }
+}

@@ -1,0 +1,110 @@
+﻿rm -rf bin/ obj/ .nuget/
+dotnet nuget locals all --clear #清空缓存
+
+dotnet restore --no-cache --force #严格还原
+
+dotnet list package --include-transitive --format json #检测dll依赖版本
+
+dotnet publish -r linux-x64 --self-contained -c Release
+G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\gatesvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\aiotsvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\casvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\devicesvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\mediasvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net10.0\
+
+dotnet publish -r linux-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained false
+
+dotnet publish -r linux-x64 -c Release -p:PublishAot=true
+
+self-contained .NET 运行时随应用程序一同发布
+PublishReadyToRun 以 ReadyToRun (R2R) 格式编译应用程序集
+PublishSingleFile 将应用打包到特定于平台的单个文件可执行文件中
+PublishTrimmed 在发布自包含的可执行文件时，剪裁未使用的库以减小应用的部署大小
+
+# 构建并运行镜像
+docker build --no-cache -t dotnet-10-ubuntu .
+
+# 构建镜像
+docker build -t systemsvc .
+
+# 运行容器并进入调试shell
+docker run -it --entrypoint /bin/bash systemsvc
+
+# 在容器内验证.NET库
+dotnet --info
+ls -la $DOTNET_ROOT
+find $DOTNET_ROOT -name "libhostfxr.so"
+
+docker run -d \
+  -p 8080:8080 -p 8081:8081 -p 9001:9001 \
+  --ulimit nofile=65535:65535 \
+  --cpus=1 \
+  --memory=2G \
+  -v ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro \
+  -v ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro \
+  -v /etc/localtime:/etc/localtime:ro \
+  --name systemsvc \
+  your-image-name
+
+# 进入容器验证 OS 和 .NET 版本
+docker run --rm dotnet-8-ubuntu sh -c 'cat /etc/os-release | grep "Ubuntu"; dotnet --version'
+# 预期输出：
+# NAME="Ubuntu 22.04.3 LTS"
+# 8.0.4
+
+# 在 Dockerfile 中添加：
+RUN wget https://packages.microsoft.com/keys/microsoft.asc -O- | gpg --dearmor > /usr/share/keyrings/microsoft.asc.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.asc.gpg] https://packages.microsoft.com/ubuntu/$(lsb_release -cs)/prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnet.list
+
+
+dotnet tool install --global dotnet-sonarscanner
+
+dotnet sonarscanner begin /k:"Maxvision.Robot" /d:sonar.host.url="http://172.100.61.40:9000"  /d:sonar.token="sqp_9a2a23df3a917a691a844a641787048bb3415303" /d:sonar.scanner.scanAll=false
+
+dotnet sonarscanner begin /k:"cleanrobot" /d:sonar.host.url="http://172.100.61.40:9000"  /d:sonar.token="sqp_9a2a23df3a917a691a844a641787048bb3415303" /d:sonar.scanner.scanAll=false /d:sonar.verbose=true /d:sonar.dotnet.excludeTestProjects=false
+
+dotnet build -v detailed --no-incremental Maxvision.Robot.sln
+
+dotnet sonarscanner end /d:sonar.token="sqp_9a2a23df3a917a691a844a641787048bb3415303"
+
+dotnet tool install --global garnet-server
+dotnet tool run garnet-server 或者dotnet run garnet-server
+garnet-server --port 6379
+docker run --name garnet -p 6379:6379 --ulimit memlock=-1 ghcr.io/microsoft/garnet
+wget https://raw.githubusercontent.com/microsoft/garnet/main/docker-compose.yml
+docker compose up -d
+git clone https://github.com/microsoft/garnet.git
+cd garnet && dotnet build -c Release
+
+new GarnetServer(args).Start() //Nuget嵌入
+garnet-server --tls \
+  --cert-file-name server.pfx \
+  --cert-password "maxvision83849888" \
+  --client-certificate-required #启用TLS使用.pfx证书
+garnet-server --auth Password --password "strong_password" #启用密码认证
+
+dnx dotnet-execute "Guid.NewGuid()" --prerelease
+dnx dotnet-execute "Guid.CreateVersion7()" --prerelease
+dapr run \
+  --app-id my-frontend \
+  --components-path ./components \
+  --app-port 5000 \
+  dotnet run
+
+  ./dotnet-install.sh --channel 10.0 --version 10.0.100-rc.2.25502.107 --install-dir .dotnet
+
+rtty https://172.100.61.40:5913
+mqtt http://172.100.61.40:18083/#/login
+nginx目录 /etc/nginx/
+配置30101转发到30501
+配置10006转发到40101
+
+Get-Content d:\Trae\appsettings.json | ConvertFrom-Json

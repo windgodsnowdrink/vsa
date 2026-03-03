@@ -1,0 +1,9 @@
+﻿{
+    "sdk": {
+        "version": "8.0.416",
+        "rollForward": "latestFeature",
+        "allowPrerelease": true,
+        "paths": [ ".dotnet", "$host$" ],
+        "errorMessage": "he required .NET SDK wasn't found. Please run ./install.sh to install it."
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "runtimeIdentifier": "win-x64",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  },
+  "dependencies": {
+    "Microsoft.CodeAnalysis.CSharp": "4.10.0",
+    "Microsoft.CodeAnalysis.Common": "4.10.0",
+    "System.CommandLine": "2.0.0",
+    "Microsoft.Extensions.DependencyInjection": "8.0.0"
+  },
+  "sdk": "Microsoft.NET.Sdk"
+}

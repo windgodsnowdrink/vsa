@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "RougamoIntegration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5003",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "RougamoIntegration-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5003",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Configuration": "10.0.0",
+    "System.Collections.Concurrent": "10.0.0",
+    "System.Diagnostics.DiagnosticSource": "10.0.0",
+    "System.Reflection": "10.0.0",
+    "Rougamo": "2.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.dll",
+      "**/*.json",
+      "**/*.config"
+    ],
+    "exclude": [
+      "**/*.pdb",
+      "**/*.xml"
+    ]
+  },
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "deterministic": true,
+    "strict": true
+  },
+  "aop": {
+    "rougamo": {
+      "enabled": true,
+      "options": {
+        "cacheEnabled": true,
+        "performanceMonitorEnabled": true,
+        "transactionEnabled": true,
+        "pluginInterceptorEnabled": true
+      }
+    }
+  }
+}

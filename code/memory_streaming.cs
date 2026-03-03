@@ -1,0 +1,141 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.IO.RecyclableMemoryStream@3.0.0
+#:package System.Threading.Channels@8.0.0
+#:package MemoryPack@2.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Runtime.CompilerServices;
+using Microsoft.IO;
+using System.Threading.Channels;
+using System.Buffers;
+using MemoryPack;
+
+[SkipLocalsInit]
+public sealed class MemoryStreamingService : IAsyncDisposable
+{
+    private readonly RecyclableMemoryStreamManager _memoryManager;
+    private readonly Channel<(RecyclableMemoryStream, TaskCompletionSource>)> _streamChannel;
+    private readonly CancellationTokenSource _cts;
+    private readonly ObjectPool<RecyclableMemoryStream> _streamPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public MemoryStreamingService()
+    {
+        _memoryManager = new RecyclableMemoryStreamManager(new RecyclableMemoryStreamManager.Options
+        {
+            BlockSize = 4096,
+            LargeBufferMultiple = 1024 * 1024,
+            MaximumBufferSize = 8 * 1024 * 1024,
+            UseExponentialLargeBuffer = true
+        });
+        
+        _streamPool = new DefaultObjectPool<RecyclableMemoryStream>(
+            new RecyclableMemoryStreamPooledPolicy(_memoryManager), 
+            Environment.ProcessorCount * 2);
+        
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _cts = new CancellationTokenSource();
+        
+        _streamChannel = Channel.CreateBounded<(RecyclableMemoryStream, TaskCompletionSource)>(
+            new BoundedChannelOptions(10_000)
+            {
+                SingleReader = true,
+                AllowSynchronousContinuations = true,
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
+        
+        _ = Task.Run(ProcessStreamsAsync);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async ValueTask<RecyclableMemoryStream> RentStreamAsync()
+    {
+        using var latencyToken = _latencyOptimizer.BeginOperation();
+        var tcs = new TaskCompletionSource();
+        var stream = _streamPool.Get();
+        await _streamChannel.Writer.WriteAsync((stream, tcs), _cts.Token);
+        await tcs.Task;
+        return stream;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public void ReturnStream(RecyclableMemoryStream stream)
+    {
+        _streamPool.Return(stream);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessStreamsAsync()
+    {
+        await foreach (var (stream, tcs) in _streamChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            try
+            {
+                // 实时数据处理逻辑
+                await ProcessStreamDataAsync(stream);
+                tcs.SetResult();
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessStreamDataAsync(RecyclableMemoryStream stream)
+    {
+        // 使用MemoryPack进行零拷贝处理
+        var data = MemoryPackSerializer.Deserialize<StreamData>(stream.GetReadOnlyMemory());
+        // ... 实时数据处理逻辑
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _streamChannel.Writer.Complete();
+        await _streamChannel.Reader.Completion;
+    }
+}
+
+[MemoryPackable]
+[StructLayout(LayoutKind.Sequential, Pack = 64)]
+public partial record StreamData(
+    string Id,
+    ReadOnlyMemory<byte> Payload,
+    DateTimeOffset Timestamp);
+
+[SkipLocalsInit]
+internal sealed class RecyclableMemoryStreamPooledPolicy : PooledObjectPolicy<RecyclableMemoryStream>
+{
+    private readonly RecyclableMemoryStreamManager _manager;
+
+    public RecyclableMemoryStreamPooledPolicy(RecyclableMemoryStreamManager manager)
+    {
+        _manager = manager;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override RecyclableMemoryStream Create() => 
+        _manager.GetStream(Guid.NewGuid().ToString());
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override bool Return(RecyclableMemoryStream obj)
+    {
+        obj.Position = 0;
+        obj.SetLength(0);
+        return true;
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<MemoryStreamingService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Memory Streaming Service");
+app.Run();

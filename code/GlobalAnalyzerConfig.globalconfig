@@ -1,0 +1,17 @@
+# 全局分析器配置
+is_global = true
+
+# Roslynator 配置
+roslynator.RCS1036 = error:Remove_empty_line_between_single-line_accessors
+roslynator.RCS1090 = error:Call_AddRange_instead_of_Add
+
+# SonarAnalyzer 配置
+dotnet_diagnostic.S109.severity = error:Magic_numbers_should_not_be_used
+dotnet_diagnostic.S125.severity = warning:Sections_of_code_should_not_be_commented_out
+
+# StyleCop 配置
+dotnet_diagnostic.SA1200.severity = error:Using_directives_must_be_placed_correctly
+dotnet_diagnostic.SA1633.severity = warning:File_must_have_header
+
+# SerilogAnalyzer 配置
+dotnet_diagnostic.SL999.severity = warning:Template_should_be_compile_time_constant

@@ -1,0 +1,70 @@
+{
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ],
+    "optimizationLevel": "Release",
+    "warningLevel": 4,
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "langVersion": "preview",
+    "outputType": "Exe"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "9.0.0",
+    "Scrutor": "4.0.0",
+    "Microsoft.Extensions.Logging": "9.0.0"
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "outputPath": "../bin/Release/net10.0/win-x64/publish",
+    "define": [
+      "RELEASE"
+    ],
+    "allowUnsafeBlocks": false,
+    "xmlDoc": true,
+    "debugType": "portable"
+  },
+  "publishOptions": {
+    "include": [],
+    "exclude": [
+      "**/*.settting.json",
+      "**/*.run.json"
+    ]
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.Threading.ThreadPool.MinThreads": 2,
+      "System.Threading.ThreadPool.MaxThreads": 16
+    }
+  },
+  "packOptions": {
+    "summary": "UI generator with Scrutor examples, demonstrating decorator pattern, assembly scanning, and service registration",
+    "authors": ["UI Team"],
+    "owners": ["UI Team"],
+    "tags": [
+      "UI",
+      "Scrutor",
+      "DependencyInjection",
+      "DecoratorPattern",
+      "AOT"
+    ],
+    "projectUrl": "https://github.com/ui-skill",
+    "licenseUrl": "https://github.com/ui-skill/blob/main/LICENSE",
+    "requireLicenseAcceptance": false
+  }
+}

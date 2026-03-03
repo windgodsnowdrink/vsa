@@ -1,0 +1,219 @@
+#:sdk Microsoft.NET.Sdk
+#:package System.IO.Compression.Brotli@7.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.IO.Compression;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+/// <summary>
+/// Brotli压缩配置选项
+/// </summary>
+public sealed class BrotliCompressionOptions
+{
+    /// <summary>
+    /// 压缩质量级别(0-11)，值越大压缩率越高但速度越慢
+    /// </summary>
+    public int QualityLevel { get; set; } = 4;
+
+    /// <summary>
+    /// 滑动窗口大小(10-24)，值越大压缩率越高但内存占用越大
+    /// </summary>
+    public int WindowSize { get; set; } = 22;
+
+    /// <summary>
+    /// 最大输入大小限制(默认10MB)，防止压缩炸弹攻击
+    /// </summary>
+    public int MaxInputSize { get; set; } = 10 * 1024 * 1024;
+
+    /// <summary>
+    /// 是否启用自适应压缩质量
+    /// </summary>
+    public bool EnableAdaptiveQuality { get; set; } = true;
+
+    /// <summary>
+    /// 压缩/解压缩操作超时时间
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
+/// <summary>
+/// 消息压缩器接口
+/// </summary>
+public interface IMessageCompressor
+{
+    /// <summary>
+    /// 压缩输入数据
+    /// </summary>
+    /// <param name="input">待压缩的数据</param>
+    /// <returns>压缩后的数据</returns>
+    ReadOnlySpan<byte> Compress(ReadOnlySpan<byte> input);
+
+    /// <summary>
+    /// 解压缩输入数据
+    /// </summary>
+    /// <param name="input">待解压的数据</param>
+    /// <returns>解压后的原始数据</returns>
+    ReadOnlySpan<byte> Decompress(ReadOnlySpan<byte> input);
+}
+
+/// <summary>
+/// 基于Brotli算法的消息压缩器实现
+/// </summary>
+public sealed class BrotliMessageCompressor : IMessageCompressor, IDisposable
+{
+    // Brotli编码器实例
+    private readonly BrotliEncoder _encoder;
+    // Brotli解码器实例
+    private readonly BrotliDecoder _decoder;
+    // 内存池用于高效内存管理
+    private readonly MemoryPool<byte> _memoryPool;
+    // 日志记录器
+    private readonly ILogger<BrotliMessageCompressor> _logger;
+    // 指标跟踪器
+    private readonly IMetricsTracker _metrics;
+    // 熔断器实例，用于故障处理
+    private readonly CircuitBreaker _circuitBreaker;
+
+    public BrotliMessageCompressor(
+        IOptionsMonitor<BrotliCompressionOptions> options,
+        ILogger<BrotliMessageCompressor> logger,
+        IMetricsTracker metrics)
+    {
+        var opts = options.CurrentValue;
+        _encoder = new BrotliEncoder(opts.QualityLevel, opts.WindowSize);
+        _decoder = new BrotliDecoder();
+        _memoryPool = MemoryPool<byte>.Shared;
+        _logger = logger;
+        _metrics = metrics;
+        _circuitBreaker = new CircuitBreaker(
+            maxFailures: 3,
+            resetTimeout: TimeSpan.FromSeconds(30));
+
+        options.OnChange(opts => _encoder = new BrotliEncoder(opts.QualityLevel, opts.WindowSize));
+    }
+
+    /// <summary>
+/// 压缩输入数据
+/// </summary>
+/// <param name="input">待压缩的数据</param>
+/// <returns>压缩后的数据</returns>
+/// <exception cref="InvalidOperationException">压缩失败时抛出</exception>
+public ReadOnlySpan<byte> Compress(ReadOnlySpan<byte> input)
+{
+    // 计算最大可能的压缩后长度
+    int maxLength = BrotliEncoder.GetMaxCompressedLength(input.Length);
+    // 从内存池租用缓冲区
+    byte[] buffer = _arrayPool.Rent(maxLength);
+    
+    try
+    {
+        // 尝试压缩数据
+        if (_encoder.TryCompress(input, buffer.AsSpan(), out int bytesWritten))
+        {
+            // 返回压缩后的数据(仅实际使用的部分)
+            return buffer.AsSpan(0, bytesWritten);
+        }
+        throw new InvalidOperationException("Brotli compression failed");
+    }
+    finally
+    {
+        // 确保缓冲区归还到内存池
+        _arrayPool.Return(buffer);
+    }
+}
+
+    public ReadOnlySpan<byte> Decompress(ReadOnlySpan<byte> input)
+    {
+        byte[] buffer = _arrayPool.Rent(4096);
+        var output = new MemoryStream();
+        
+        try
+        {
+            var status = BrotliDecoder.Decompress(input, buffer, out int bytesConsumed, out int bytesWritten);
+            
+            while (status == OperationStatus.Done || status == OperationStatus.NeedMoreData)
+            {
+                output.Write(buffer, 0, bytesWritten);
+                
+                if (status == OperationStatus.Done || bytesConsumed == input.Length)
+                    break;
+                
+                input = input.Slice(bytesConsumed);
+                status = BrotliDecoder.Decompress(input, buffer, out bytesConsumed, out bytesWritten);
+            }
+            
+            if (status != OperationStatus.Done)
+                throw new InvalidOperationException("Brotli decompression failed");
+            
+            return output.ToArray();
+        }
+        finally
+        {
+            _arrayPool.Return(buffer);
+            output.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        _encoder.Dispose();
+        _decoder.Dispose();
+    }
+}
+
+/// <summary>
+/// Brotli压缩的依赖注入扩展方法
+/// </summary>
+public static class BrotliCompressionExtensions
+{
+    /// <summary>
+    /// 添加Brotli压缩服务到DI容器
+    /// </summary>
+    /// <param name="services">服务集合</param>
+    /// <param name="configure">可选配置回调</param>
+    /// <returns>服务集合</returns>
+    public static IServiceCollection AddBrotliCompression(this IServiceCollection services, Action<BrotliCompressionOptions>? configure = null)
+    {
+        // 配置选项并验证
+        services.AddOptions<BrotliCompressionOptions>()
+            .Configure(configure ?? (opts => { }))
+            .ValidateDataAnnotations();
+
+        // 注册压缩器、指标跟踪器和健康检查
+        services.AddSingleton<IMessageCompressor, BrotliMessageCompressor>();
+        services.AddSingleton<IMetricsTracker, PrometheusMetricsTracker>();
+        services.AddHealthChecks().AddCheck<BrotliCompressionHealthCheck>("brotli-compression");
+
+        return services;
+    }
+}
+
+// 使用示例
+public static class Program
+{
+    public static void Main()
+    {
+        var services = new ServiceCollection();
+        services.AddBrotliCompression(opts => 
+        {
+            opts.QualityLevel = 5;
+            opts.WindowSize = 24;
+        });
+        
+        var provider = services.BuildServiceProvider();
+        var compressor = provider.GetRequiredService<IMessageCompressor>();
+        
+        byte[] originalData = System.Text.Encoding.UTF8.GetBytes("这是一条需要压缩的测试消息");
+        var compressed = compressor.Compress(originalData);
+        var decompressed = compressor.Decompress(compressed);
+        
+        Console.WriteLine($"原始大小: {originalData.Length} 字节");
+        Console.WriteLine($"压缩后大小: {compressed.Length} 字节");
+        Console.WriteLine($"解压后大小: {decompressed.Length} 字节");
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "profiles": {
+    "Generate Code": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --output ./output --namespace MyProject.Generators",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SOURCEGENERATOR_OUTPUT_PATH": "./output"
+      }
+    },
+    "Generate Template": {
+      "commandName": "Project",
+      "commandLineArgs": "template generate --name MyTemplate --output ./templates",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Process Attributes": {
+      "commandName": "Project",
+      "commandLineArgs": "attributes process --assembly ./bin/Debug/net10.0/MyProject.dll",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Reflection Info": {
+      "commandName": "Project",
+      "commandLineArgs": "reflection generate --assembly ./bin/Debug/net10.0/MyProject.dll --output ./reflection-info",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Analyze Code": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze --project ./MyProject.csproj",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "template list",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Validate Template": {
+      "commandName": "Project",
+      "commandLineArgs": "template validate --path ./templates/MyTemplate.tmpl",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Incremental": {
+      "commandName": "Project",
+      "commandLineArgs": "generate incremental --project ./MyProject.csproj",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "commonOptions": {
+    "verbose": false,
+    "debug": false,
+    "timeout": 30000,
+    "retries": 3
+  },
+  "compilationOptions": {
+    "optimize": true,
+    "debugSymbols": false,
+    "warningsAsErrors": false
+  }
+}

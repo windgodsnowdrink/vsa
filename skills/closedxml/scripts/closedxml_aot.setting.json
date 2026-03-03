@@ -1,0 +1,36 @@
+{
+  "AppSettings": {
+    "ApplicationName": "ClosedXML AOT Processor",
+    "Version": "1.0.0",
+    "Description": "高性能ClosedXML AOT处理引擎"
+  },
+  "ExcelSettings": {
+    "MaxRowCount": 1000000,
+    "MaxColumnCount": 16384,
+    "EnableMemoryOptimization": true,
+    "EnableParallelProcessing": true,
+    "BufferSize": 65536,
+    "TempFileLocation": "./temp"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ClosedXML.AOT": "Information"
+    }
+  },
+  "Performance": {
+    "EnableCaching": true,
+    "CacheSize": 100,
+    "CacheDuration": 300,
+    "EnableProfiling": false,
+    "EnableMetrics": true
+  },
+  "Security": {
+    "AllowRemoteFiles": false,
+    "ValidateFileIntegrity": true,
+    "MaxFileSize": 52428800,
+    "AllowedExtensions": [".xlsx", ".xlsm"]
+  }
+}

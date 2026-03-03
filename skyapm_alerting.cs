@@ -1,0 +1,39 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package SkyAPM.Agent.AspNetCore@1.6.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Threading.Channels;
+
+public class SmartAlertEngine
+{
+    private readonly Channel<AlertEvent> _channel;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+
+    public SmartAlertEngine()
+    {
+        _channel = Channel.CreateBounded<AlertEvent>(10000);
+        _memoryPool = new DefaultObjectPool<Memory<byte>>(
+            new MemoryPooledObjectPolicy(), 1000);
+    }
+
+    public async Task RunAsync()
+    {
+        using var memory = _memoryPool.Get();
+        
+        while (await _channel.Reader.WaitToReadAsync())
+        {
+            while (_channel.Reader.TryRead(out var alert))
+            {
+                // 动态阈值计算逻辑
+                if (alert.Value > CalculateDynamicThreshold())
+                {
+                    TriggerAlert(alert);
+                }
+            }
+        }
+    }
+}

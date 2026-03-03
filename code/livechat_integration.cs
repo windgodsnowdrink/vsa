@@ -1,0 +1,200 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package LiveChatSDK@11.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:package Microsoft.AspNetCore.SignalR@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using LiveChatSDK;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. 高性能流媒体处理器
+[SkipLocalsInit]
+public sealed class LiveStreamProcessor : IAsyncDisposable
+{
+    private readonly Channel<MediaFrame> _videoChannel;
+    private readonly Channel<AudioFrame> _audioChannel;
+    private readonly ThreadLocal<Span<byte>> _videoBuffer;
+    private readonly ThreadLocal<Span<byte>> _audioBuffer;
+    private readonly ObjectPool<LiveChatSession> _sessionPool;
+    private readonly CancellationTokenSource _cts = new();
+
+    public LiveStreamProcessor()
+    {
+        _videoChannel = Channel.CreateBounded<MediaFrame>(new BoundedChannelOptions(1000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true
+        });
+        
+        _audioChannel = Channel.CreateBounded<AudioFrame>(new BoundedChannelOptions(1000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true
+        });
+
+        _videoBuffer = new(() => stackalloc byte[1920 * 1080 * 4]); // 1080p帧缓冲区
+        _audioBuffer = new(() => stackalloc byte[48000 * 2 * 2]); // 48kHz, 16bit, 立体声
+
+        _sessionPool = new DefaultObjectPool<LiveChatSession>(
+            new LiveChatSessionPooledPolicy(), 4);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessVideoAsync(ReadOnlyMemory<byte> frameData, int width, int height)
+    {
+        using var memory = MemoryPool<byte>.Shared.Rent(frameData.Length);
+        frameData.CopyTo(memory.Memory);
+        
+        await _videoChannel.Writer.WriteAsync(new MediaFrame(
+            memory.Memory,
+            width,
+            height,
+            DateTimeOffset.UtcNow));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessAudioAsync(ReadOnlyMemory<byte> audioData, int sampleRate, int channels)
+    {
+        using var memory = MemoryPool<byte>.Shared.Rent(audioData.Length);
+        audioData.CopyTo(memory.Memory);
+        
+        await _audioChannel.Writer.WriteAsync(new AudioFrame(
+            memory.Memory,
+            sampleRate,
+            channels,
+            DateTimeOffset.UtcNow));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _cts.CancelAsync();
+        _videoChannel.Writer.Complete();
+        _audioChannel.Writer.Complete();
+    }
+}
+
+// 2. SignalR Hub集成
+public sealed class LiveChatHub : Hub
+{
+    private readonly LiveStreamProcessor _processor;
+    private readonly ILogger<LiveChatHub> _logger;
+
+    public LiveChatHub(LiveStreamProcessor processor, ILogger<LiveChatHub> logger)
+    {
+        _processor = processor;
+        _logger = logger;
+    }
+
+    public async Task SendVideoFrame(byte[] frameData, int width, int height)
+    {
+        try
+        {
+            await _processor.ProcessVideoAsync(frameData, width, height);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "视频帧处理失败");
+            throw new HubException("视频处理错误", ex);
+        }
+    }
+
+    public async Task SendAudioFrame(byte[] audioData, int sampleRate, int channels)
+    {
+        try
+        {
+            await _processor.ProcessAudioAsync(audioData, sampleRate, channels);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "音频帧处理失败");
+            throw new HubException("音频处理错误", ex);
+        }
+    }
+}
+
+// 3. 主程序集成
+var builder = WebApplication.CreateBuilder();
+
+// 配置SignalR
+builder.Services.AddSignalR(options =>
+{
+    options.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+    options.StreamBufferCapacity = 1024;
+});
+
+// 注册流处理器
+builder.Services.AddSingleton<LiveStreamProcessor>();
+builder.Services.AddHostedService<LiveStreamBackgroundService>();
+
+var app = builder.Build();
+app.MapHub<LiveChatHub>("/livechat");
+app.Run();
+
+// 4. 后台服务处理流媒体
+public class LiveStreamBackgroundService : BackgroundService
+{
+    private readonly LiveStreamProcessor _processor;
+    private readonly ILogger<LiveStreamBackgroundService> _logger;
+
+    public LiveStreamBackgroundService(
+        LiveStreamProcessor processor, 
+        ILogger<LiveStreamBackgroundService> logger)
+    {
+        _processor = processor;
+        _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await ProcessStreamsAsync(stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // 正常退出
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "流媒体处理异常");
+                await Task.Delay(1000, stoppingToken);
+            }
+        }
+    }
+
+    private async Task ProcessStreamsAsync(CancellationToken ct)
+    {
+        await Task.WhenAll(
+            ProcessVideoStreamAsync(ct),
+            ProcessAudioStreamAsync(ct));
+    }
+
+    private async Task ProcessVideoStreamAsync(CancellationToken ct)
+    {
+        await foreach (var frame in _processor.VideoFrames.ReadAllAsync(ct))
+        {
+            using var session = _processor.GetSession();
+            await session.SendVideoFrameAsync(frame.Data, frame.Width, frame.Height, ct);
+        }
+    }
+
+    private async Task ProcessAudioStreamAsync(CancellationToken ct)
+    {
+        await foreach (var frame in _processor.AudioFrames.ReadAllAsync(ct))
+        {
+            using var session = _processor.GetSession();
+            await session.SendAudioFrameAsync(frame.Data, frame.SampleRate, frame.Channels, ct);
+        }
+    }
+}

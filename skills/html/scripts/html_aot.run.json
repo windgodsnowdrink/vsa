@@ -1,0 +1,168 @@
+{
+  "version": "1.0.0",
+  "profiles": {
+    "Parse HTML": {
+      "commandName": "Project",
+      "commandLineArgs": "parse",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_CACHE_SIZE": "100",
+        "HTML_TIMEOUT": "30",
+        "HTML_ENABLE_DETAILED_LOGGING": "false",
+        "HTML_MAX_DOCUMENT_SIZE": "10485760",
+        "HTML_ENABLE_JAVASCRIPT": "false",
+        "HTML_ENABLE_CSS": "false",
+        "HTML_ENABLE_IMAGES": "false"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "nativeDebugging": false
+    },
+    "Sanitize HTML": {
+      "commandName": "Project",
+      "commandLineArgs": "sanitize",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_TIMEOUT": "30"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Extract Content": {
+      "commandName": "Project",
+      "commandLineArgs": "extract",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_TIMEOUT": "30"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Scrape Website": {
+      "commandName": "Project",
+      "commandLineArgs": "scrape",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_TIMEOUT": "60",
+        "HTML_MAX_DOCUMENT_SIZE": "20971520"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Validate HTML": {
+      "commandName": "Project",
+      "commandLineArgs": "validate",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_TIMEOUT": "30"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Minify HTML": {
+      "commandName": "Project",
+      "commandLineArgs": "minify",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TieredCompilation": "0",
+        "DOTNET_ReadyToRun": "0",
+        "DOTNET_GCServer": "1",
+        "HTML_ENABLE_CACHE": "true",
+        "HTML_TIMEOUT": "30"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Show Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Show Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "Publish AOT": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    }
+  },
+  "compilationOptions": {
+    "buildCommand": "dotnet build -c Release",
+    "publishCommand": "dotnet publish -c Release -r win-x64 --self-contained true /p:PublishAot=true /p:TrimMode=partial",
+    "runCommand": "dotnet run -c Release",
+    "testCommand": "dotnet test -c Release",
+    "cleanCommand": "dotnet clean"
+  },
+  "debugOptions": {
+    "enableLogging": true,
+    "logLevel": "Information",
+    "logFile": "html_aot.log",
+    "enableMetrics": true,
+    "metricsFile": "html_aot.metrics.json",
+    "enablePerformanceCounters": true,
+    "enableMemoryProfiling": false,
+    "enableThreadProfiling": false
+  },
+  "performanceOptions": {
+    "enableTailCallOptimization": true,
+    "enableLoopUnrolling": true,
+    "enableInlineArrayOptimizations": true,
+    "enableVectorization": true,
+    "enableMemoryOptimizations": true,
+    "enableStringOptimizations": true,
+    "enableReflectionOptimizations": true
+  },
+  "memoryOptions": {
+    "enableMemoryPooling": true,
+    "enableBufferPooling": true,
+    "enableObjectPooling": true,
+    "maxPoolSize": 1000000,
+    "bufferPoolSize": 65536,
+    "objectPoolSize": 100000
+  }
+}

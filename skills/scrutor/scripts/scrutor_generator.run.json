@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Generate Dependency Injection": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --output \"..\\generated\\DependencyInjection.cs\" --namespace \"Scrutor.Generated\" --class \"DependencyInjection\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Service Collection": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --output \"..\\generated\\ServiceCollection.cs\" --namespace \"Scrutor.Generated\" --class \"ServiceCollectionConfig\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Web Application": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --output \"..\\generated\\WebApplication.cs\" --namespace \"Scrutor.Generated\" --class \"WebApplicationConfig\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "template list",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

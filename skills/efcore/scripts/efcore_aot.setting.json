@@ -1,0 +1,10 @@
+{
+  "EFCore": {
+    "ConnectionString": "InMemoryDatabase=efcore-aot-db",
+    "ProviderType": "InMemory",
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "QueryTimeoutSeconds": 30,
+    "BatchSize": 100
+  }
+}

@@ -1,0 +1,48 @@
+# Craftsman AOT Agent Skill - Craftsman AOT高性能执行工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10 AOT架构的高性能Craftsman执行工具，提供高效、可靠的Craftsman操作执行功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# Application Scenarios:
+# - 代码生成
+# - 项目构建
+# - 应用部署
+# - 自动化测试
+# - 批量处理
+# - CI/CD集成
+# - 微服务管理
+# - 基础设施管理
+# Activation Conditions: 当需要Craftsman执行功能时激活
+# Main Features:
+# - 支持多种操作类型（generate、build、deploy、test等）
+# - 支持批量执行多个Craftsman操作
+# - 内置缓存机制，提高重复操作执行速度
+# - 提供详细的状态监控信息
+# - 支持命令行使用
+# - 支持配置文件和代码配置
+# Performance Features:
+# - .NET 10 AOT编译，提供原生性能
+# - 减少启动时间和内存占用
+# - 异步编程，提高并发处理能力
+# - 内存优化，减少内存占用
+# - 高效算法，提高执行速度
+# Technical Features:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，支持IoC容器
+# - 选项模式，支持灵活的配置管理
+# - 异步编程，支持非阻塞操作
+# - 日志记录，提供详细的执行信息
+# - 命令行接口，支持脚本化使用
+# - 批量处理，提高执行效率
+# - 缓存机制，减少重复计算
+# AOT Compilation:
+# - PublishAot=true
+# - InvariantGlobalization=true
+# - EnableCompilationRelaxations=true
+# - PublishReadyToRun=true

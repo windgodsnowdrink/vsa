@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "sdk": "10.0.0",
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "environment": {
+    "development": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "POOLED_ENABLE_MEMORY_POOLING": "true",
+      "POOLED_ENABLE_ZERO_ALLOCATION": "true",
+      "POOLED_ENABLE_THREAD_LOCAL_STORAGE": "true",
+      "POOLED_MEMORY_POOL_SIZE": "1024",
+      "POOLED_THREAD_LOCAL_CACHE_SIZE": "256",
+      "POOLED_DEFAULT_INITIAL_CAPACITY": "16",
+      "POOLED_MAXIMUM_POOL_SIZE": "1024",
+      "POOLED_ENABLE_STRICT_MODE": "false",
+      "POOLED_ENABLE_AUTO_CLEAR": "true",
+      "POOLED_CLEAR_INTERVAL": "5000",
+      "POOLED_ENABLE_PERFORMANCE_METRICS": "true"
+    },
+    "production": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOG_LEVEL": "Warning",
+      "POOLED_ENABLE_MEMORY_POOLING": "true",
+      "POOLED_ENABLE_ZERO_ALLOCATION": "true",
+      "POOLED_ENABLE_THREAD_LOCAL_STORAGE": "true",
+      "POOLED_MEMORY_POOL_SIZE": "2048",
+      "POOLED_THREAD_LOCAL_CACHE_SIZE": "512",
+      "POOLED_DEFAULT_INITIAL_CAPACITY": "32",
+      "POOLED_MAXIMUM_POOL_SIZE": "2048",
+      "POOLED_ENABLE_STRICT_MODE": "true",
+      "POOLED_ENABLE_AUTO_CLEAR": "true",
+      "POOLED_CLEAR_INTERVAL": "10000",
+      "POOLED_ENABLE_PERFORMANCE_METRICS": "true"
+    }
+  },
+  "deployment": {
+    "aot": {
+      "enabled": true,
+      "publishProfiles": {
+        "win-x64": {
+          "command": "dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/win-x64/publish"
+        },
+        "linux-x64": {
+          "command": "dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/linux-x64/publish"
+        },
+        "osx-x64": {
+          "command": "dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/osx-x64/publish"
+        }
+      }
+    },
+    "container": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "buildArgs": {
+        "SDK_VERSION": "10.0",
+        "RUNTIME_VERSION": "10.0"
+      },
+      "tags": [
+        "collections-pooled-integration:latest",
+        "collections-pooled-integration:{version}"
+      ]
+    }
+  },
+  "performance": {
+    "optimizations": {
+      "memoryPooling": true,
+      "zeroAllocation": true,
+      "threadLocalStorage": true,
+      "parallelExecution": true
+    },
+    "limits": {
+      "maxMemoryPoolSize": 2048,
+      "maxThreadLocalCacheSize": 512,
+      "maxConcurrentOperations": 1000,
+      "maxPooledObjects": 10000
+    }
+  },
+  "security": {
+    "sandbox": {
+      "enabled": true,
+      "restrictedDirectories": [
+        "../",
+        "/etc/",
+        "/sys/",
+        "/proc/"
+      ],
+      "allowedDirectories": [
+        "./temp/",
+        "./logs/"
+      ]
+    },
+    "permissions": {
+      "allowFileAccess": true,
+      "allowNetworkAccess": false,
+      "allowReflection": true,
+      "allowDynamicCode": false
+    }
+  },
+  "logging": {
+    "providers": [
+      "Console",
+      "Debug",
+      "EventLog"
+    ],
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Pooled.Collections": "Debug"
+    },
+    "fileLogging": {
+      "enabled": true,
+      "path": "logs/collections-pooled-integration.log",
+      "maxFileSize": "10MB",
+      "maxRetainedFiles": 5
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "enabled": true,
+      "endpoint": "/health",
+      "interval": "30s"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "collectionInterval": "10s",
+      "counters": [
+        "pooled.collections.created.count",
+        "pooled.collections.returned.count",
+        "pooled.collections.active.count",
+        "pooled.collections.memory.usage"
+      ],
+      "histograms": [
+        "pooled.collections.operation.time.ms",
+        "pooled.collections.pool.size"
+      ]
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        "Jaeger",
+        "Zipkin"
+      ]
+    }
+  }
+}
+

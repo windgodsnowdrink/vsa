@@ -1,0 +1,172 @@
+{
+  "runtime": {
+    "framework": "net10.0",
+    "aot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release"
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "VLC_PLUGIN_PATH": "%ProgramFiles%\\VideoLAN\\VLC\\plugins",
+    "VLC_LIB_PATH": "%ProgramFiles%\\VideoLAN\\VLC",
+    "LIBVLCSharp_LOG_LEVEL": "INFO",
+    "LIBVLCSharp_CACHE_DIR": "%LOCALAPPDATA%\\LibVLCSharp\\Cache",
+    "LIBVLCSharp_VIDEO_CACHE_SIZE": "3000",
+    "LIBVLCSharp_AUDIO_CACHE_SIZE": "2000",
+    "LIBVLCSharp_NETWORK_CACHE_SIZE": "1000"
+  },
+  "memory": {
+    "initial": 256,
+    "maximum": 1024
+  },
+  "timeouts": {
+    "command": 300000,
+    "play": 300000,
+    "record": 600000,
+    "stream": 600000,
+    "convert": 600000,
+    "info": 30000,
+    "listOperation": 10000,
+    "benchmark": 300000
+  },
+  "profiles": {
+    "play": {
+      "command": "play",
+      "description": "播放媒体文件",
+      "arguments": [],
+      "environmentVariables": {
+        "LIBVLCSharp_VIDEO_CACHE_SIZE": "5000",
+        "LIBVLCSharp_AUDIO_CACHE_SIZE": "3000"
+      },
+      "timeouts": {
+        "command": 300000
+      },
+      "memory": {
+        "maximum": 512
+      }
+    },
+    "record": {
+      "command": "record",
+      "description": "录制媒体文件",
+      "arguments": [],
+      "environmentVariables": {
+        "LIBVLCSharp_VIDEO_CACHE_SIZE": "2000",
+        "LIBVLCSharp_AUDIO_CACHE_SIZE": "1000"
+      },
+      "timeouts": {
+        "command": 600000
+      },
+      "memory": {
+        "maximum": 768
+      }
+    },
+    "stream": {
+      "command": "stream",
+      "description": "流媒体播放",
+      "arguments": [],
+      "environmentVariables": {
+        "LIBVLCSharp_NETWORK_CACHE_SIZE": "5000",
+        "LIBVLCSharp_VIDEO_CACHE_SIZE": "3000"
+      },
+      "timeouts": {
+        "command": 600000
+      },
+      "memory": {
+        "maximum": 768
+      }
+    },
+    "convert": {
+      "command": "convert",
+      "description": "转换媒体格式",
+      "arguments": [],
+      "environmentVariables": {
+        "LIBVLCSharp_VIDEO_CACHE_SIZE": "1000",
+        "LIBVLCSharp_AUDIO_CACHE_SIZE": "1000"
+      },
+      "timeouts": {
+        "command": 600000
+      },
+      "memory": {
+        "maximum": 1024
+      }
+    },
+    "info": {
+      "command": "info",
+      "description": "获取媒体信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      },
+      "memory": {
+        "maximum": 256
+      }
+    },
+    "list-codecs": {
+      "command": "list-codecs",
+      "description": "列出支持的编解码器",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 10000
+      },
+      "memory": {
+        "maximum": 256
+      }
+    },
+    "list-filters": {
+      "command": "list-filters",
+      "description": "列出支持的过滤器",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 10000
+      },
+      "memory": {
+        "maximum": 256
+      }
+    },
+    "benchmark": {
+      "command": "benchmark",
+      "description": "运行性能基准测试",
+      "arguments": [],
+      "environmentVariables": {
+        "LIBVLCSharp_VIDEO_CACHE_SIZE": "1000",
+        "LIBVLCSharp_AUDIO_CACHE_SIZE": "1000",
+        "LIBVLCSharp_NETWORK_CACHE_SIZE": "1000"
+      },
+      "timeouts": {
+        "command": 300000
+      },
+      "memory": {
+        "maximum": 512
+      }
+    },
+    "help": {
+      "command": "help",
+      "description": "显示帮助信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 5000
+      },
+      "memory": {
+        "maximum": 128
+      }
+    }
+  },
+  "logging": {
+    "level": "Information",
+    "format": "json"
+  },
+  "errorHandling": {
+    "showStackTrace": false,
+    "exitOnError": true
+  },
+  "network": {
+    "timeoutMs": 30000,
+    "retryCount": 3,
+    "retryDelayMs": 1000
+  }
+}

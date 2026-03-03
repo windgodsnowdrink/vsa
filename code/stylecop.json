@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "companyName": "My Company",
+      "copyrightText": "Copyright (c) {companyName}. All rights reserved.",
+      "documentInterfaces": false,
+      "documentExposedElements": true,
+      "documentInternalElements": false
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "outsideNamespace"
+    }
+  }
+}

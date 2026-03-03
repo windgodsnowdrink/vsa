@@ -1,0 +1,57 @@
+{
+  "TodoRepositorySettings": {
+    "StorageType": "FileSystem",
+    "StoragePath": "./data/todos",
+    "AutoBackup": true,
+    "BackupInterval": "01:00:00",
+    "BackupRetentionDays": 7,
+    "EnableWriteAheadLogging": true,
+    "EnableCompression": true,
+    "EnableMemoryMappedFiles": true,
+    "CacheSettings": {
+      "CacheEnabled": true,
+      "CacheExpirationMinutes": 30,
+      "SlidingExpiration": true,
+      "MaxCacheItems": 1000,
+      "EnableDistributedCache": false
+    },
+    "OptimizationSettings": {
+      "EnableSpanOptimization": true,
+      "EnableMemoryPooling": true,
+      "EnableCacheLineAlignment": true,
+      "EnableParallelProcessing": true,
+      "MaxConcurrentReads": 10,
+      "MaxConcurrentWrites": 3
+    },
+    "FileSettings": {
+      "BufferSize": 65536,
+      "UseAsyncIO": true,
+      "EnableFileLocking": true,
+      "FileLockTimeout": "00:00:05",
+      "FlushInterval": "00:00:30",
+      "MaxFileSizeMB": 100
+    },
+    "DatabaseSettings": {
+      "ConnectionString": "",
+      "EnableConnectionPooling": true,
+      "MaxPoolSize": 100,
+      "CommandTimeout": "00:01:00",
+      "EnableReadWriteSplit": false
+    },
+    "LoggingSettings": {
+      "LogOperations": true,
+      "LogPerformance": true,
+      "LogErrors": true,
+      "EnableDebugLogging": false,
+      "LogQueryDetails": false
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "VSA.TodoSystem.Repository": "Debug",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

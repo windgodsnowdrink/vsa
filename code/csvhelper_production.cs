@@ -1,0 +1,127 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package CsvHelper@30.0.1
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.Extensions.ObjectPool;
+
+[SkipLocalsInit]
+public sealed class CsvProcessingService : IAsyncDisposable
+{
+    private readonly Channel<CsvOperation> _operationChannel;
+    private readonly ObjectPool<MemoryStream> _streamPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly CancellationTokenSource _cts;
+
+    public CsvProcessingService()
+    {
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _cts = new CancellationTokenSource();
+        
+        _operationChannel = Channel.CreateBounded<CsvOperation>(
+            new BoundedChannelOptions(10_000)
+            {
+                SingleReader = true,
+                AllowSynchronousContinuations = true,
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
+        
+        _streamPool = new DefaultObjectPool<MemoryStream>(
+            new MemoryStreamPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+        
+        _ = Task.Run(ProcessOperationsAsync);
+    }
+
+    // CSV导出功能（高性能批量导出）
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ExportCsvAsync<T>(IEnumerable<T> data, string filePath, Action<CsvConfiguration>? configure = null)
+    {
+        var operation = new CsvOperation(data, filePath, configure);
+        await _operationChannel.Writer.WriteAsync(operation, _cts.Token);
+    }
+
+    // CSV导入功能（流式处理）
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async IAsyncEnumerable<T> ImportCsvAsync<T>(string filePath, Action<CsvConfiguration>? configure = null) where T : class
+    {
+        using var reader = new StreamReader(filePath);
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture);
+        configure?.Invoke(config);
+        
+        using var csv = new CsvReader(reader, config);
+        await foreach (var record in csv.GetRecordsAsync<T>())
+        {
+            yield return record;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessOperationsAsync()
+    {
+        await foreach (var operation in _operationChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            using var latencyToken = _latencyOptimizer.BeginOperation();
+            var stream = _streamPool.Get();
+            try
+            {
+                await ProcessCsvExport(stream, operation);
+                await WriteToFileAsync(stream, operation.FilePath);
+            }
+            finally
+            {
+                _streamPool.Return(stream);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessCsvExport(MemoryStream stream, CsvOperation operation)
+    {
+        using var writer = new StreamWriter(stream, leaveOpen: true);
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture);
+        operation.Configure?.Invoke(config);
+        
+        using var csv = new CsvWriter(writer, config);
+        await csv.WriteRecordsAsync(operation.Data);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task WriteToFileAsync(MemoryStream stream, string filePath)
+    {
+        using var fileStream = new FileStream(
+            filePath, 
+            FileMode.Create, 
+            FileAccess.Write, 
+            FileShare.None, 
+            bufferSize: 4096, 
+            useAsync: true);
+        
+        await stream.CopyToAsync(fileStream);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _operationChannel.Writer.Complete();
+        await _operationChannel.Reader.Completion;
+    }
+}
+
+internal record CsvOperation(IEnumerable<object> Data, string FilePath, Action<CsvConfiguration>? Configure);
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<CsvProcessingService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "CSV Processing Service");
+app.Run();

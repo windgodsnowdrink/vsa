@@ -1,0 +1,148 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.IO.RecyclableMemoryStream@3.0.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Runtime.CompilerServices;
+using Microsoft.IO;
+using System.Threading.Channels;
+using System.Buffers;
+
+[SkipLocalsInit]
+public sealed class SseStreamingService : IAsyncDisposable
+{
+    private readonly RecyclableMemoryStreamManager _memoryManager;
+    private readonly Channel<ReadOnlyMemory<byte>> _eventChannel;
+    private readonly CancellationTokenSource _cts;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly ObjectPool<RecyclableMemoryStream> _streamPool;
+
+    public SseStreamingService()
+    {
+        _memoryManager = new RecyclableMemoryStreamManager(new RecyclableMemoryStreamManager.Options
+        {
+            BlockSize = 4096,
+            LargeBufferMultiple = 1024 * 1024,
+            MaximumBufferSize = 8 * 1024 * 1024,
+            UseExponentialLargeBuffer = true
+        });
+        
+        _streamPool = new DefaultObjectPool<RecyclableMemoryStream>(
+            new RecyclableMemoryStreamPooledPolicy(_memoryManager), 
+            Environment.ProcessorCount * 2);
+        
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _cts = new CancellationTokenSource();
+        
+        _eventChannel = Channel.CreateBounded<ReadOnlyMemory<byte>>(
+            new BoundedChannelOptions(10_000)
+            {
+                SingleReader = true,
+                AllowSynchronousContinuations = true,
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
+        
+        _ = Task.Run(ProcessEventsAsync);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async ValueTask WriteEventAsync(string eventName, ReadOnlyMemory<byte> data)
+    {
+        using var latencyToken = _latencyOptimizer.BeginOperation();
+        var stream = _streamPool.Get();
+        try
+        {
+            // 构建SSE格式消息
+            stream.Write($"event: {eventName}\n"u8);
+            stream.Write($"data: "u8);
+            stream.Write(data.Span);
+            stream.Write("\n\n"u8);
+            
+            await _eventChannel.Writer.WriteAsync(stream.GetReadOnlyMemory(), _cts.Token);
+        }
+        finally
+        {
+            _streamPool.Return(stream);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessEventsAsync()
+    {
+        await foreach (var eventData in _eventChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            // 这里可以添加发送到客户端的逻辑
+            // 或者进一步处理事件数据
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async IAsyncEnumerable<ReadOnlyMemory<byte>> StreamEventsAsync(
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await foreach (var eventData in _eventChannel.Reader.ReadAllAsync(
+            CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token))
+        {
+            yield return eventData;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _eventChannel.Writer.Complete();
+        await _eventChannel.Reader.Completion;
+    }
+}
+
+[SkipLocalsInit]
+internal sealed class RecyclableMemoryStreamPooledPolicy : PooledObjectPolicy<RecyclableMemoryStream>
+{
+    private readonly RecyclableMemoryStreamManager _manager;
+
+    public RecyclableMemoryStreamPooledPolicy(RecyclableMemoryStreamManager manager)
+    {
+        _manager = manager;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override RecyclableMemoryStream Create() => 
+        _manager.GetStream(Guid.NewGuid().ToString());
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override bool Return(RecyclableMemoryStream obj)
+    {
+        obj.Position = 0;
+        obj.SetLength(0);
+        return true;
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<SseStreamingService>();
+
+var app = builder.Build();
+
+// SSE端点示例
+app.MapGet("/sse", async (SseStreamingService service, CancellationToken ct) =>
+{
+    var response = Results.Stream(
+        async stream =>
+        {
+            await foreach (var eventData in service.StreamEventsAsync(ct))
+            {
+                await stream.WriteAsync(eventData, ct);
+            }
+        },
+        "text/event-stream");
+    
+    return response;
+});
+
+app.MapGet("/", () => "SSE Streaming Service");
+app.Run();

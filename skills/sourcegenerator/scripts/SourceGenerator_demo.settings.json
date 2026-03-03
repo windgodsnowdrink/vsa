@@ -1,0 +1,33 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.Demo": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "Demo": {
+      "EnableDemoFeatures": true,
+      "OutputDirectory": "./generated-demo",
+      "CacheDirectory": "./cache-demo",
+      "NamespacePrefix": "Demo",
+      "GenerateSampleCode": true,
+      "GenerateComments": true,
+      "GenerateTests": false,
+      "EnableDebugMode": true,
+      "DemoMessage": "Hello from Source Generator Demo",
+      "MaxGeneratedFiles": 10,
+      "EnableParallelGeneration": false
+    }
+  }
+}

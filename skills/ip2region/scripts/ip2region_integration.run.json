@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ip2region_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\ip2region\scripts\ip2region_integration.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\ip2region\scripts\ip2region_integration.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

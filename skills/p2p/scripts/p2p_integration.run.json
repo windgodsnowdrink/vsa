@@ -1,0 +1,71 @@
+{
+  "command": "dotnet",
+  "args": ["run", "--project", "p2p_integration.cs"],
+  "env": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_LOG_LEVEL": "Information"
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true,
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  },
+  "dependencies": [
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Console",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Net.Sockets",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Net.Http",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Threading.Channels",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Text.Json",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Security.Cryptography",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Collections.Immutable",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Runtime.CompilerServices.Unsafe",
+      "version": "6.0.0"
+    },
+    {
+      "name": "System.Buffers",
+      "version": "4.5.1"
+    }
+  ],
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\p2p\\scripts",
+  "timeout": 30000
+}

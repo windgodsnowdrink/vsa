@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "compileOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "runtimeIdentifier": "win-x64"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "8.0.0",
+    "Microsoft.Extensions.Configuration": "8.0.0",
+    "Microsoft.Extensions.Configuration.Json": "8.0.0",
+    "System.CommandLine": "2.0.0",
+    "Scrutor": "4.2.2",
+    "System.Text.Json": "8.0.0"
+  },
+  "buildOptions": {
+    "outputPath": "bin",
+    "debugType": "portable",
+    "optimize": true
+  },
+  "runOptions": {
+    "workingDirectory": "scripts",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "SCRUTOR_CONFIG_PATH": "appsettings.json"
+    }
+  }
+}

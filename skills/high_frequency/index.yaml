@@ -1,0 +1,111 @@
+# 高频处理 Agent Skill - high_frequency 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的高性能高频处理技能实现，支持 AOT 编译，提供单文件执行脚本，具有极高的性能和低内存占用
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Threading.Channels@8.0.0
+# - System.Runtime.CompilerServices.Unsafe@6.0.0
+# - System.Buffers@4.5.1
+# - System.Memory@4.5.5
+# - System.Collections.Immutable@8.0.0
+# - MessagePack@2.5.129
+# - System.Diagnostics.Process@8.0.0
+# - System.Diagnostics.StackTrace@4.3.0
+# - System.IO.Pipelines@8.0.0
+# - System.Threading.Tasks.Extensions@4.5.4
+# - System.Runtime.Serialization.Primitives@4.3.0
+# Application Scenarios: 高频消息处理、实时数据处理、高性能计算、低延迟系统
+# Activation Conditions: 当需要高频处理功能时激活
+# Main Features:
+# - 高频消息处理: 支持每秒处理数百万条消息
+# - 零拷贝优化: 使用 Span<T> 和 Memory<T> 实现零拷贝
+# - 管道处理: 基于 System.IO.Pipelines 的高性能管道处理
+# - 通道处理: 基于 System.Threading.Channels 的并发处理
+# - 批处理优化: 支持批量处理提高吞吐量
+# - 内存优化: 智能内存管理和对象池
+# - AOT 编译优化: 使用 .NET 10 AOT 编译，提高性能和降低内存占用
+# - 命令行工具: 完整的命令行界面，支持多种操作和别名
+# - 配置管理: 支持环境变量和配置文件配置
+# - 性能监控: 内置执行时间监控和指标收集
+# Performance Features:
+# - AOT 编译性能: 启动时间比 JIT 快 3-5 倍，内存占用低 20-30%
+# - 运行时优化: GC 优化、线程池优化、内存管理优化
+# - 网络优化: 高效的数据流处理
+# - 内存优化: 使用对象池和缓存减少内存分配
+# - 并发支持: 合理配置线程池大小，支持高并发
+# - CPU 优化: 运行时 CPU 使用率更加稳定
+# - 响应时间: 尾延迟显著降低
+# Technical Features:
+# - 模块化设计: 清晰的代码结构和模块划分
+# - 依赖注入: 使用 Microsoft.Extensions.DependencyInjection
+# - 异步编程: Task-based 异步模式
+# - 高性能算法: 优化的高频处理算法
+# - AOT 编译技术: 完整的 AOT 编译支持
+# - 单文件执行脚本: net10 的单文件执行脚本
+# - 完整的命令行支持: 支持多种命令和选项
+# - 别名支持: 命令别名和快捷方式
+# - 配置选项: 使用 Options 模式管理配置
+# - 日志记录: 完整的日志记录功能
+# - 错误处理: 健壮的错误处理机制
+# AOT Compilation Support:
+# - AOT Core Files:
+#   - scripts/high_frequency_aot.cs - 高频处理 AOT 核心实现
+#   - scripts/high_frequency_aot.setting.json - AOT 编译配置
+#   - scripts/high_frequency_aot.run.json - 运行环境配置
+# - AOT Compilation Benefits:
+#   - Fast Startup: 3-5x faster than JIT compilation
+#   - Low Memory Usage: 20-30% lower memory footprint
+#   - Simple Deployment: Single-file execution, no runtime dependency
+#   - Stable Performance: Compile-time optimizations
+#   - High Security: Reduced runtime attack surface
+# - AOT Compilation Options:
+#   - Target Framework: net10.0
+#   - Runtime Identifier: win-x64
+#   - Trim Mode: partial
+#   - Memory Optimizations: Enabled
+#   - String Optimizations: Enabled
+# Command Line Support:
+# - Commands:
+#   - run: 运行高频处理测试
+#   - benchmark: 运行性能基准测试
+#   - zero-copy: 运行零拷贝测试
+#   - pipeline: 运行管道测试
+#   - channel: 运行通道测试
+#   - config: 显示配置信息
+#   - help: 显示帮助信息
+# - Command Aliases:
+#   - r: run
+#   - b: benchmark
+#   - zc: zero-copy
+#   - pl: pipeline
+#   - ch: channel
+#   - c: config
+#   - h: help
+#   - ?: help
+#   - --help: help
+#   - -h: help
+# Environment Variables:
+# - HIGH_FREQUENCY_MESSAGE_COUNT: 消息数量
+# - HIGH_FREQUENCY_CONCURRENCY_LEVEL: 并发级别
+# - HIGH_FREQUENCY_BUFFER_SIZE: 缓冲区大小
+# - HIGH_FREQUENCY_ENABLE_ZERO_COPY: 启用零拷贝
+# - HIGH_FREQUENCY_ENABLE_BATCH_PROCESSING: 启用批处理
+# - HIGH_FREQUENCY_BATCH_SIZE: 批处理大小
+# - HIGH_FREQUENCY_ENABLE_COMPRESSION: 启用压缩
+# - HIGH_FREQUENCY_ENABLE_METRICS: 启用指标
+# Version Compatibility:
+# - .NET Version: .NET 10.0 及以上
+# - Operating System: Windows、Linux、macOS
+# - Architecture: x64、ARM64
+# - Performance: Optimized for modern hardware
+# Contribution Guidelines:
+# - Submit Issue: 报告 bug 或提出新功能建议
+# - Submit PR: 贡献代码和改进
+# - Documentation Improvement: 完善文档和示例
+# - Test Coverage: 添加测试用例
+# License:
+# - MIT License

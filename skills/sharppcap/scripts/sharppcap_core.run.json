@@ -1,0 +1,49 @@
+{
+  "profiles": [
+    {
+      "name": "List Interfaces",
+      "commandName": "Project",
+      "commandLineArgs": "interfaces",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Capture Packets",
+      "commandName": "Project",
+      "commandLineArgs": "capture --interface {interface} --filter "tcp port 80" --output capture.pcap --duration 60",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Analyze Packets",
+      "commandName": "Project",
+      "commandLineArgs": "analyze --input capture.pcap --protocol tcp",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Filter Packets",
+      "commandName": "Project",
+      "commandLineArgs": "filter --input capture.pcap --expression tcp --output filtered.pcap",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Network Stats",
+      "commandName": "Project",
+      "commandLineArgs": "stats --interface {interface} --interval 1",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

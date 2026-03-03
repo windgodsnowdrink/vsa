@@ -1,0 +1,37 @@
+{
+  "UtilSettings": {
+    "EnableCache": true,
+    "CacheSize": 1000,
+    "DefaultTimeout": 30,
+    "EnableDetailedLogging": true,
+    "MaxRetryAttempts": 3,
+    "EnableCompression": true
+  },
+  "FileUtilSettings": {
+    "BufferSize": 8192,
+    "MaxFileSize": 104857600,
+    "EnableFileWatch": false,
+    "WatchInterval": 5000
+  },
+  "CryptoUtilSettings": {
+    "AesKeySize": 256,
+    "RsaKeySize": 2048,
+    "HashAlgorithm": "SHA256",
+    "KeyStoragePath": "keys/",
+    "EnableKeyRotation": false
+  },
+  "SerializationUtilSettings": {
+    "IndentJson": true,
+    "IgnoreNullValues": true,
+    "PropertyNamingPolicy": "CamelCase"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Util": "Debug"
+    }
+  },
+  "AllowedHosts": "*"
+}

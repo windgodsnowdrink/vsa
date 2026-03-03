@@ -1,0 +1,23 @@
+{
+  "Etcd": {
+    "Endpoints": [
+      "http://localhost:2379"
+    ],
+    "Username": null,
+    "Password": null,
+    "RequestTimeoutMs": 5000,
+    "ConnectTimeoutMs": 10000,
+    "MaxRetries": 3,
+    "EnableTls": false,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Etcd.AOT": "Information"
+    }
+  }
+}

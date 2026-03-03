@@ -1,0 +1,56 @@
+# EventFlow Agent Skill - EventFlow 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 实现的 EventFlow 技能，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# Application Scenarios:
+# - 微服务架构中的事件通信
+# - 事件驱动架构实现
+# - 领域驱动设计中的事件溯源
+# - 实时数据处理
+# - 消息队列集成
+# - 分布式系统状态同步
+# - 业务流程管理
+# - 监控与告警系统
+# - 数据分析与采集
+# - IoT 设备事件处理
+# Activation Conditions: 当需要 EventFlow 功能时激活
+# Main Features:
+# - 事件创建与管理
+# - 事件发布与订阅
+# - AOT 编译支持
+# - 命令行工具
+# - 多环境配置
+# - 可扩展的事件存储
+# - 可扩展的事件总线
+# - 详细日志记录
+# - 事件压缩与加密
+# Performance Features:
+# - AOT 编译：提前编译为本地代码，减少启动时间和内存占用
+# - 内存优化：高效的内存管理策略
+# - 异步设计：全异步 API，提高并发处理能力
+# - 性能监控：内置性能监控功能
+# - 事件压缩：减少网络传输和存储开销
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 配置管理
+# - 安全设计
+# - 可扩展架构
+# - 命令行界面
+# - AOT 支持
+# - 跨平台兼容
+# Runtime Features:
+# - .NET 10 AOT 编译
+# - 单文件执行
+# - 低内存占用
+# - 快速启动
+# - 高性能执行
+# - 跨平台支持

@@ -1,0 +1,144 @@
+using System.Diagnostics.Metrics;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
+
+public class ScalarApiOptions
+{
+    public string Title { get; set; } = "Scalar API";
+    public string Version { get; set; } = "v1";
+    public string JwtSecret { get; set; } = "your-256-bit-secret";
+    public string JwtIssuer { get; set; } = "scalar-api";
+    public string JwtAudience { get; set; } = "scalar-clients";
+    public int JwtExpireMinutes { get; set; } = 60;
+}
+
+public static class ScalarApiExtensions
+{
+    public static IServiceCollection AddScalarApi(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ScalarApiOptions>(configuration.GetSection("ScalarApi"));
+        
+        // JWT Authentication
+        var options = configuration.GetSection("ScalarApi").Get<ScalarApiOptions>();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(opts =>
+            {
+                opts.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = options.JwtIssuer,
+                    ValidAudience = options.JwtAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.JwtSecret))
+                };
+            });
+        
+        // Swagger
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc(options.Version, new OpenApiInfo { Title = options.Title, Version = options.Version });
+            
+            // JWT in Swagger
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header using the Bearer scheme",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
+        
+        // Metrics
+        var meter = new Meter("ScalarApi");
+        meter.CreateCounter<int>("scalar_requests", "requests", "Number of requests");
+        
+        return services;
+    }
+    
+    public static IApplicationBuilder UseScalarApi(this IApplicationBuilder app)
+    {
+        var options = app.ApplicationServices.GetRequiredService<IOptions<ScalarApiOptions>>().Value;
+        
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint($"/swagger/{options.Version}/swagger.json", $"{options.Title} {options.Version}");
+        });
+        
+        app.UseAuthentication();
+        app.UseAuthorization();
+        
+        return app;
+    }
+}
+
+[ApiController]
+[Route("api/[controller]")]
+public class ScalarController : ControllerBase
+{
+    private readonly ILogger<ScalarController> _logger;
+    private readonly Counter<int> _requestCounter;
+    
+    public ScalarController(ILogger<ScalarController> logger, IMeterFactory meterFactory)
+    {
+        _logger = logger;
+        _requestCounter = meterFactory.Create("ScalarApi").CreateCounter<int>("scalar_requests");
+    }
+    
+    [HttpGet]
+    public IActionResult Get()
+    {
+        _requestCounter.Add(1);
+        return Ok(new { message = "Scalar API is running" });
+    }
+    
+    [HttpPost("process")]
+    [Authorize]
+    public async Task<IActionResult> Process([FromBody] ScalarRequest request)
+    {
+        _requestCounter.Add(1);
+        // Processing logic here
+        return Ok(new { status = "processed" });
+    }
+}
+
+public class ScalarRequest
+{
+    public string Data { get; set; }
+}
+
+// Usage example in Program.cs:
+/*
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScalarApi(builder.Configuration);
+
+var app = builder.Build();
+
+app.UseScalarApi();
+
+app.MapControllers();
+
+app.Run();
+*/

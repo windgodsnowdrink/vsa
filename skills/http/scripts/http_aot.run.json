@@ -1,0 +1,71 @@
+{
+  "profiles": {
+    "http_aot": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_TC_QuickJit": "1",
+        "DOTNET_TieredCompilation": "1"
+      }
+    },
+    "http_aot_get": {
+      "commandName": "Project",
+      "commandLineArgs": "get https://example.com",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "http_aot_post": {
+      "commandName": "Project",
+      "commandLineArgs": "post https://example.com {\"name\": \"test\", \"value\": 123}",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "http_aot_benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark https://example.com 100",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2FLOWCONTROL_WINDOWSIZE": "1048576"
+      }
+    },
+    "http_aot_proxy": {
+      "commandName": "Project",
+      "commandLineArgs": "proxy https://example.com http://localhost:8080",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "http_aot_timeout": {
+      "commandName": "Project",
+      "commandLineArgs": "timeout https://example.com 1",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "http_aot_circuit": {
+      "commandName": "Project",
+      "commandLineArgs": "circuit https://example.com",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "http_aot_config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\http\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

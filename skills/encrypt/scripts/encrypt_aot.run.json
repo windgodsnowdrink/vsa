@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "encrypt_aot": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "--help"
+    },
+    "encrypt_aot_encrypt": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "encrypt \"Hello World\""
+    },
+    "encrypt_aot_genkey": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "genkey AES-GCM 256"
+    },
+    "encrypt_aot_genhash": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "genhash \"Hello World\" SHA256"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+# encrypt Agent Skill - 加密技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的加密技能，支持 AOT 编译，提供高性能加密功能
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# 应用场景:
+# - 数据加密和解密
+# - 密钥生成和管理
+# - 哈希计算和验证
+# - 安全通信
+# - 数据完整性保护
+# - 高性能加密需求
+# 激活条件:
+# - 需要加密功能时激活
+# - 需要 AOT 编译的高性能加密时激活
+# 主要功能:
+# - 支持多种加密算法（AES-GCM、RSA等）
+# - 密钥生成和管理
+# - 哈希计算和验证
+# - AOT 编译支持
+# - 高性能设计
+# 性能特性:
+# - AOT 编译优化
+# - 内存优化
+# - 并发支持
+# - 快速启动
+# 技术特性:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 可扩展架构
+# - Options 配置模式
+# - 日志记录支持
+# AOT 特性:
+# - 支持 PublishAot=true
+# - 不变全球化支持
+# - 编译优化
+# - ReadyToRun 支持

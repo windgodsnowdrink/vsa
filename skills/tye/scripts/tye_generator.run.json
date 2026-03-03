@@ -1,0 +1,90 @@
+{
+  "runtime": {
+    "working_directory": ".",
+    "output_directory": "./output/generator",
+    "environment_variables": [
+      {
+        "name": "DOTNET_ENVIRONMENT",
+        "value": "Development",
+        "description": ".NET环境"
+      },
+      {
+        "name": "DOTNET_CLI_TELEMETRY_OPTOUT",
+        "value": "1",
+        "description": "禁用.NET CLI遥测"
+      },
+      {
+        "name": "SCRUTOR_EXAMPLES_ENABLED",
+        "value": "1",
+        "description": "启用Scrutor示例"
+      },
+      {
+        "name": "LOG_LEVEL",
+        "value": "Information",
+        "description": "日志级别"
+      }
+    ],
+    "command_line_arguments": [],
+    "error_output_path": "./logs/generator_error.log",
+    "standard_output_path": "./logs/generator_output.log",
+    "process_priority": "Normal"
+  },
+  "profiles": {
+    "default": {
+      "environment_variables": [],
+      "command_line_arguments": [],
+      "description": "默认配置"
+    },
+    "verbose": {
+      "environment_variables": [
+        {
+          "name": "LOG_LEVEL",
+          "value": "Debug"
+        }
+      ],
+      "command_line_arguments": [],
+      "description": "详细输出配置"
+    },
+    "minimal": {
+      "environment_variables": [
+        {
+          "name": "LOG_LEVEL",
+          "value": "Warning"
+        }
+      ],
+      "command_line_arguments": [],
+      "description": "最小化输出配置"
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "log_level": "Information",
+    "log_files": [
+      {
+        "path": "./logs/scrutor-examples-{date}.log",
+        "roll_over": "Daily",
+        "file_size_limit": "5MB",
+        "retained_file_count_limit": 3
+      }
+    ],
+    "console_logging": true,
+    "json_output": false,
+    "include_scopes": false,
+    "include_exception_details": false
+  },
+  "performance": {
+    "gc_settings": {
+      "server_gc": true,
+      "concurrent_gc": true,
+      "gc_latency_mode": "Interactive"
+    },
+    "thread_pool": {
+      "min_threads": 5,
+      "max_threads": 50
+    }
+  },
+  "security": {
+    "enable_telemetry": false,
+    "enable_crash_reporting": false
+  }
+}

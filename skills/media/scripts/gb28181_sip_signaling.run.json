@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "gb28181_sip_signaling",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\media\scripts\gb28181_sip_signaling.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\media\scripts\gb28181_sip_signaling.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

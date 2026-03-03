@@ -1,0 +1,39 @@
+# Amplication Agent Skill - 代码生成工具集成
+# 版本: 1.0.0
+# 作者: VSA Architecture Team
+# 描述: 基于Amplication的代码生成工具集成，支持自动化API生成、数据库设计和前端代码生成
+# 技能类型: 开发工具
+# 依赖:
+# - System.Net.Http.Json@8.0.0
+# - Microsoft.Extensions.Http@8.0.0
+# - System.Text.Json@8.0.0
+# 适用场景: 快速API开发、数据库设计、前端代码生成、微服务架构、低代码平台
+# 激活条件: 需要自动化代码生成或API开发时激活
+# 主要功能:
+# - Amplication项目集成
+# - API自动生成
+# - 数据库设计与迁移
+# - 前端代码生成
+# - 微服务架构支持
+# - 插件系统集成
+# - CI/CD流水线生成
+# - 代码质量检查
+# 性能特性:
+# - 异步API调用
+# - 批量代码生成
+# - 内存优化设计
+# - 并行处理支持
+# 技术特性:
+# - 基于.NET 10的最新特性
+# - 支持多种数据库（MongoDB、PostgreSQL、MySQL等）
+# - 支持REST API和GraphQL
+# - 支持多种前端框架（React、Angular、Vue等）
+# - 插件系统架构
+# - 可扩展的代码生成模板
+# 设计模式:
+# - 工厂模式
+# - 策略模式
+# - 模板方法模式
+# - 观察者模式
+# - 插件架构
+# - 命令模式

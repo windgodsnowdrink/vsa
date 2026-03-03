@@ -1,0 +1,94 @@
+# Plugin Agent Skill - Plugin 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的插件技能实现，支持 AOT 编译，提供高性能的插件系统和动态加载能力
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Natasha@3.0.0
+# - Rougamo@2.0.0
+# - System.Reflection.MetadataLoadContext@10.0.0
+# - System.Composition@10.0.0
+# - System.IO.Pipelines@10.0.0
+# - System.Threading.Tasks.Dataflow@10.0.0
+# Application Scenarios: 插件系统开发、动态代码生成、AOP 拦截、模块化应用架构
+# Activation Conditions: 当需要插件系统或动态加载能力时激活
+# Main Features:
+# - 插件动态加载和卸载
+# - 插件依赖管理
+# - 插件生命周期管理
+# - 插件间通信
+# - 动态代码生成（基于 Natasha）
+# - AOP 拦截（基于 Rougamo）
+# - 插件版本控制
+# - 插件隔离和沙箱
+# - 插件热更新
+# - 插件元数据管理
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# - 缓存机制
+# - 零拷贝技术
+# - 线程本地缓存
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - LINQ 优化
+# - 错误处理与重试机制
+# - 状态管理
+# - 管道处理模式
+# AOT Compilation:
+# - PublishAot: true
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - TrimMode: partial
+# - Optimize: true
+# - EnableCompilationRelaxations: true
+# - EnableEnhancedNgen: true
+# Target Framework:
+# - net10.0
+# Scripts:
+# - name: "PluginLoadContext.cs"
+#   description: "插件加载上下文实现，提供动态插件加载能力"
+# - name: "plugin_service.cs"
+#   description: "插件服务实现，提供插件生命周期管理和通信能力"
+# - name: "natasha_integration.cs"
+#   description: "Natasha 集成，提供动态代码生成能力"
+# - name: "rougamo_integration.cs"
+#   description: "Rougamo 集成，提供 AOP 拦截能力"
+# Reference:
+# - README.md: 详细文档，包含核心组件说明、配置选项和使用方法
+# - examples.md: 使用示例，包含基本用法、高级配置、性能优化等场景
+# Configuration:
+# - Each script has corresponding .setting.json and .run.json files
+# - Supports environment-specific configurations
+# - Supports AOT compilation options
+# - Supports plugin system configuration
+# Monitoring:
+# - Built-in metrics collection
+# - Health check endpoints
+# - Error logging and tracing
+# - Performance monitoring
+# Deployment:
+# - Self-contained deployment
+# - AOT compilation support
+# - Cross-platform support (Windows, Linux, macOS)
+# - Containerization support
+# Security:
+# - Input validation
+# - Error handling
+# - Resource management
+# Scalability:
+# - Dynamic configuration
+# - Performance tuning
+# - Memory management
+# Reliability:
+# - Fault tolerance
+# - Error handling
+# - Retry mechanisms

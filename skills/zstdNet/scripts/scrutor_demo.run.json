@@ -1,0 +1,53 @@
+{
+  "commandName": "Project",
+  "workingDirectory": "$(ProjectDir)",
+  "launchBrowser": false,
+  "applicationUrl": "",
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_LOG_LEVEL": "Information",
+    "SCRUTOR_DEMO_ENABLE_CACHING": "true",
+    "SCRUTOR_DEMO_ENABLE_PERFORMANCE_MONITORING": "true"
+  },
+  "commandLineArgs": "",
+  "dotnetRunMessages": true,
+  "hotReload": true,
+  "nativeDebugging": false,
+  "profiles": {
+    "Default": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "BasicDemo": {
+      "commandName": "Project",
+      "commandLineArgs": "--basic",
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "DecoratorDemo": {
+      "commandName": "Project",
+      "commandLineArgs": "--decorator",
+      "environmentVariables": {
+        "SCRUTOR_DEMO_ENABLE_CACHING": "true",
+        "SCRUTOR_DEMO_ENABLE_PERFORMANCE_MONITORING": "true",
+        "SCRUTOR_DEMO_ENABLE_RETRY": "true"
+      }
+    },
+    "AutoRegisterDemo": {
+      "commandName": "Project",
+      "commandLineArgs": "--auto-register",
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Debug"
+      }
+    },
+    "AdvancedDemo": {
+      "commandName": "Project",
+      "commandLineArgs": "--advanced",
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  }
+}

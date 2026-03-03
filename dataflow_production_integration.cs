@@ -1,0 +1,464 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package System.Threading.Tasks.Dataflow@6.0.0
+#:package Microsoft.Extensions.Hosting@8.0.0
+#:property LangVersion=preview
+#:property Nullable=enable
+
+using System.Threading.Tasks.Dataflow;
+using System.Buffers;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+/// <summary>
+/// Dataflow消息记录类型
+/// </summary>
+public record DataflowMessage(byte[] Payload, DateTimeOffset Timestamp);
+
+/// <summary>
+/// Dataflow配置选项
+/// </summary>
+public class DataflowOptions
+{
+    public int BatchSize { get; set; } = 100;
+    public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+}
+
+/// <summary>
+/// Dataflow处理器接口
+/// </summary>
+public interface IDataflowProcessor
+{
+    Task ProcessAsync(DataflowMessage message, CancellationToken cancellationToken = default);
+    Task CompleteAsync(CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Dataflow处理器实现
+/// </summary>
+public class DataflowProcessor : IDataflowProcessor, IAsyncDisposable
+{
+    private readonly BufferBlock<DataflowMessage> _bufferBlock;
+    private readonly TransformBlock<DataflowMessage, DataflowMessage> _transformBlock;
+    private readonly ActionBlock<DataflowMessage> _actionBlock;
+    private readonly BatchBlock<DataflowMessage> _batchBlock;
+    private readonly BroadcastBlock<DataflowMessage> _broadcastBlock;
+    private readonly JoinBlock<DataflowMessage, DataflowMessage> _joinBlock;
+    private readonly BatchedJoinBlock<DataflowMessage, DataflowMessage> _batchedJoinBlock;
+    private readonly WriteOnceBlock<DataflowMessage> _writeOnceBlock;
+    
+    private readonly DataflowLinkOptions _linkOptions;
+    private readonly DataflowOptions _options;
+    
+    public DataflowProcessor(IOptions<DataflowOptions> options)
+    {
+        _options = options.Value;
+        
+        // 初始化各种Block类型
+        _bufferBlock = new BufferBlock<DataflowMessage>();
+        
+        // TransformBlock使用Span零拷贝优化处理二进制数据
+        _transformBlock = new TransformBlock<DataflowMessage, DataflowMessage>(msg => 
+        {
+            // 使用Span<T>进行零拷贝处理
+            Span<byte> span = msg.Payload;
+            // 处理逻辑...
+            return msg;
+        }, new ExecutionDataflowBlockOptions 
+        { 
+            MaxDegreeOfParallelism = _options.MaxDegreeOfParallelism 
+        });
+        
+        _actionBlock = new ActionBlock<DataflowMessage>(msg => 
+        {
+            // 最终处理逻辑
+        }, new ExecutionDataflowBlockOptions 
+        { 
+            MaxDegreeOfParallelism = _options.MaxDegreeOfParallelism 
+        });
+        
+        // 批处理Block
+        _batchBlock = new BatchBlock<DataflowMessage>(_options.BatchSize);
+        
+        // 广播Block
+        _broadcastBlock = new BroadcastBlock<DataflowMessage>(msg => msg);
+        
+        // 连接Block
+        _joinBlock = new JoinBlock<DataflowMessage, DataflowMessage>();
+        
+        // 批量连接Block
+        _batchedJoinBlock = new BatchedJoinBlock<DataflowMessage, DataflowMessage>(_options.BatchSize);
+        
+        // 一次性写入Block
+        _writeOnceBlock = new WriteOnceBlock<DataflowMessage>(msg => msg);
+        
+        _linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+        
+        // 构建处理管道
+        _bufferBlock.LinkTo(_transformBlock, _linkOptions);
+        _transformBlock.LinkTo(_batchBlock, _linkOptions);
+        _batchBlock.LinkTo(_actionBlock, _linkOptions);
+    }
+    
+    public async Task ProcessAsync(DataflowMessage message, CancellationToken cancellationToken = default)
+    {
+        await _bufferBlock.SendAsync(message, cancellationToken);
+    }
+    
+    public async Task CompleteAsync(CancellationToken cancellationToken = default)
+    {
+        _bufferBlock.Complete();
+        await _actionBlock.Completion;
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await CompleteAsync();
+    }
+}
+
+/// <summary>
+/// 服务集合扩展方法
+/// </summary>
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddDataflowProcessor(this IServiceCollection services, Action<DataflowOptions> configure = null)
+    {
+        services.Configure(configure ?? (opt => {}));
+        services.AddSingleton<IDataflowProcessor, DataflowProcessor>();
+        services.AddHostedService<DataflowBackgroundService>();
+        return services;
+    }
+}
+
+/// <summary>
+/// Dataflow后台服务
+/// </summary>
+public class DataflowBackgroundService : BackgroundService
+{
+    private readonly IDataflowProcessor _processor;
+    
+    public DataflowBackgroundService(IDataflowProcessor processor)
+    {
+        _processor = processor;
+    }
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            // 模拟消息生产
+            var message = new DataflowMessage(
+                ArrayPool<byte>.Shared.Rent(1024), 
+                DateTimeOffset.UtcNow);
+                
+            await _processor.ProcessAsync(message, stoppingToken);
+            await Task.Delay(100, stoppingToken);
+        }
+        
+        await _processor.CompleteAsync(stoppingToken);
+    }
+}
+#:package System.Threading.Tasks.Dataflow@6.0.0
+#:package Microsoft.Extensions.Hosting@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace DataflowProductionIntegration
+{
+    public record DataflowMessage(int Id, ReadOnlyMemory<byte> Payload);
+
+    public class DataflowOptions
+    {
+        public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
+        public int BoundedCapacity { get; set; } = 1000;
+        public TimeSpan CompletionTimeout { get; set; } = TimeSpan.FromSeconds(30);
+    }
+
+    public interface IDataflowProcessor
+    {
+        Task ProcessAsync(DataflowMessage message);
+        Task CompleteAsync();
+    }
+
+    /// <summary>
+    /// Dataflow处理器实现类，演示多种Dataflow Block应用场景
+    /// 1. 事件发布/订阅模式
+    /// 2. 数据生产/消费模式
+    /// 3. 实时数据缓冲接收
+    /// 4. ETL链式处理
+    /// 5. 消息广播
+    /// 6. 批量数据处理
+    /// </summary>
+    // 1. 事件发布/订阅模式 - 使用BroadcastBlock
+    private readonly BroadcastBlock<EventMessage> _eventBroadcaster;
+    
+    // 2. 数据生产/消费模式 - 使用BufferBlock+ActionBlock
+    private readonly BufferBlock<DataItem> _dataBuffer;
+    private readonly ActionBlock<DataItem> _dataConsumer;
+    
+    // 3. 实时数据缓冲接收 - 使用BatchedJoinBlock
+    private readonly BatchedJoinBlock<SensorData, Alert> _sensorDataBuffer;
+    
+    // 4. ETL链式处理 - 使用TransformBlock链
+    private readonly TransformBlock<RawData, CleanData> _dataCleaner;
+    private readonly TransformBlock<CleanData, ProcessedData> _dataProcessor;
+    
+    // 5. 消息广播 - 使用WriteOnceBlock+JoinBlock
+    private readonly WriteOnceBlock<ConfigUpdate> _configUpdate;
+    private readonly JoinBlock<DataItem, ConfigUpdate> _joinedData;
+    
+    // 6. 批量数据处理 - 使用BatchBlock
+    private readonly BatchBlock<LogEntry> _logBatcher;
+    
+    public DataflowProcessor()
+    {
+        // 1. 初始化事件广播Block (最大并发度4，容量100)
+        _eventBroadcaster = new BroadcastBlock<EventMessage>(msg => msg,
+            new ExecutionDataflowBlockOptions { BoundedCapacity = 100, MaxDegreeOfParallelism = 4 });
+            
+        // 2. 初始化数据生产消费Block
+        _dataBuffer = new BufferBlock<DataItem>();
+        _dataConsumer = new ActionBlock<DataItem>(ProcessData,
+            new ExecutionDataflowBlockOptions { BoundedCapacity = 50 });
+            
+        // 3. 初始化传感器数据缓冲Block (每10条或1秒触发)
+        _sensorDataBuffer = new BatchedJoinBlock<SensorData, Alert>(10,
+            new GroupingDataflowBlockOptions { Greedy = false });
+            
+        // 4. 初始化ETL处理链
+        _dataCleaner = new TransformBlock<RawData, CleanData>(CleanData,
+            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 2 });
+        _dataProcessor = new TransformBlock<CleanData, ProcessedData>(ProcessData,
+            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4 });
+            
+        // 5. 初始化配置更新广播Block
+        _configUpdate = new WriteOnceBlock<ConfigUpdate>(null);
+        _joinedData = new JoinBlock<DataItem, ConfigUpdate>();
+            
+        // 6. 初始化日志批量处理Block (每100条或5秒触发)
+        _logBatcher = new BatchBlock<LogEntry>(100,
+            new GroupingDataflowBlockOptions { Greedy = false });
+            
+        // 连接各Block形成处理管道
+        LinkBlocks();
+    }
+    
+    private void LinkBlocks()
+    {
+        // 1. 事件广播Block连接多个订阅者
+        _eventBroadcaster.LinkTo(new ActionBlock<EventMessage>(HandleEvent1));
+        _eventBroadcaster.LinkTo(new ActionBlock<EventMessage>(HandleEvent2));
+        
+        // 2. 数据Buffer连接到消费者
+        _dataBuffer.LinkTo(_dataConsumer);
+        
+        // 3. 传感器数据缓冲Block连接处理器
+        _sensorDataBuffer.LinkTo(new ActionBlock<Tuple<IList<SensorData>, IList<Alert>>>(ProcessBatch));
+        
+        // 4. ETL处理链连接
+        _dataCleaner.LinkTo(_dataProcessor);
+        _dataProcessor.LinkTo(new ActionBlock<ProcessedData>(SaveData));
+        
+        // 5. 配置更新广播连接
+        _configUpdate.LinkTo(_joinedData.Target2);
+        
+        // 6. 日志批量处理Block连接
+        _logBatcher.LinkTo(new ActionBlock<LogEntry[]>(ProcessLogBatch));
+    }
+    
+    /// <summary>
+    /// Dataflow高级应用场景扩展
+    /// 7. 分布式系统消息处理
+    /// 8. 流式数据处理管道
+    /// 9. 机器学习特征工程
+    /// </summary>
+    // 7. 分布式消息处理 - 使用BufferBlock+Redis/MQ
+    private readonly BufferBlock<DistributedMessage> _distributedInbox;
+    private readonly ActionBlock<DistributedMessage> _distributedProcessor;
+    
+    // 8. 流式数据处理 - 使用TransformManyBlock+Window
+    private readonly TransformManyBlock<StreamEvent, ProcessedEvent> _streamProcessor;
+    
+    // 9. 机器学习特征工程 - 使用BatchBlock+TransformBlock
+    private readonly BatchBlock<MLFeature> _featureBatcher;
+    private readonly TransformBlock<MLFeature[], FeatureVector> _featureTransformer;
+    
+    public DataflowProcessor()
+    {
+        // 7. 初始化分布式消息处理Block (使用Redis Pub/Sub)
+        _distributedInbox = new BufferBlock<DistributedMessage>(
+            new ExecutionDataflowBlockOptions { BoundedCapacity = 1000 });
+        _distributedProcessor = new ActionBlock<DistributedMessage>(ProcessDistributedMessage,
+            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 8 });
+            
+        // 8. 初始化流式处理Block (滑动窗口大小100，步长10)
+        _streamProcessor = new TransformManyBlock<StreamEvent, ProcessedEvent>(ProcessStreamWindow,
+            new ExecutionDataflowBlockOptions { BoundedCapacity = 500 });
+            
+        // 9. 初始化特征工程Block (批量大小50，零拷贝优化)
+        _featureBatcher = new BatchBlock<MLFeature>(50);
+        _featureTransformer = new TransformBlock<MLFeature[], FeatureVector>(features =>
+        {
+            var span = features.AsSpan();
+            return TransformFeatures(span);
+        }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 4 });
+            
+        // 连接新增的Block
+        LinkAdvancedBlocks();
+    }
+    
+    private void LinkAdvancedBlocks()
+    {
+        // 7. 分布式消息处理管道
+        _distributedInbox.LinkTo(_distributedProcessor);
+        
+        // 8. 流式处理管道连接
+        _streamProcessor.LinkTo(new ActionBlock<ProcessedEvent>(SaveProcessedEvent));
+        
+        // 9. 特征工程管道连接
+        _featureBatcher.LinkTo(_featureTransformer);
+        _featureTransformer.LinkTo(new ActionBlock<FeatureVector>(TrainModel));
+    }
+    
+    public class DataflowProcessor : IDataflowProcessor, IAsyncDisposable
+    {
+        private readonly TransformBlock<DataflowMessage, DataflowMessage> _processorBlock;
+        private readonly ActionBlock<DataflowMessage> _finalizerBlock;
+        private readonly ILogger<DataflowProcessor> _logger;
+
+        public DataflowProcessor(DataflowOptions options, ILogger<DataflowProcessor> logger)
+        {
+            _logger = logger;
+
+            // 处理块 - 使用Span零拷贝优化
+            _processorBlock = new TransformBlock<DataflowMessage, DataflowMessage>(
+                transform: msg =>
+                {
+                    // 使用Span处理二进制数据
+                    var span = msg.Payload.Span;
+                    // 模拟处理逻辑
+                    for (int i = 0; i < span.Length; i++)
+                        span[i] = (byte)(span[i] ^ 0xFF);
+                    
+                    return msg with { Id = msg.Id + 1 };
+                },
+                new ExecutionDataflowBlockOptions
+                {
+                    MaxDegreeOfParallelism = options.MaxDegreeOfParallelism,
+                    BoundedCapacity = options.BoundedCapacity
+                });
+
+            // 最终处理块
+            _finalizerBlock = new ActionBlock<DataflowMessage>(
+                action: processedMsg =>
+                {
+                    _logger.LogInformation("Processed message {Id} with {Length} bytes", 
+                        processedMsg.Id, processedMsg.Payload.Length);
+                },
+                new ExecutionDataflowBlockOptions
+                {
+                    MaxDegreeOfParallelism = 1,
+                    BoundedCapacity = options.BoundedCapacity
+                });
+
+            // 链接数据流块
+            _processorBlock.LinkTo(_finalizerBlock, new DataflowLinkOptions { PropagateCompletion = true });
+        }
+
+        public async Task ProcessAsync(DataflowMessage message)
+        {
+            if (!await _processorBlock.SendAsync(message))
+                throw new InvalidOperationException("Failed to process message - pipeline full");
+        }
+
+        public async Task CompleteAsync()
+        {
+            _processorBlock.Complete();
+            await _finalizerBlock.Completion;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await CompleteAsync();
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddDataflowProcessing(this IServiceCollection services, 
+            Action<DataflowOptions> configure)
+        {
+            services.Configure(configure);
+            services.AddSingleton<IDataflowProcessor, DataflowProcessor>();
+            services.AddHostedService<DataflowBackgroundService>();
+            return services;
+        }
+    }
+
+    public class DataflowBackgroundService : BackgroundService
+    {
+        private readonly IDataflowProcessor _processor;
+        private readonly ILogger<DataflowBackgroundService> _logger;
+
+        public DataflowBackgroundService(
+            IDataflowProcessor processor, 
+            ILogger<DataflowBackgroundService> logger)
+        {
+            _processor = processor;
+            _logger = logger;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Dataflow processing service started");
+            
+            try
+            {
+                // 模拟消息生产
+                var random = new Random();
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    var buffer = new byte[1024];
+                    random.NextBytes(buffer);
+                    
+                    await _processor.ProcessAsync(new DataflowMessage(
+                        Id: random.Next(), 
+                        Payload: buffer));
+                    
+                    await Task.Delay(100, stoppingToken);
+                }
+            }
+            finally
+            {
+                await _processor.CompleteAsync();
+                _logger.LogInformation("Dataflow processing service stopped");
+            }
+        }
+    }
+
+    public class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLogging(configure => configure.AddConsole());
+            
+            services.AddDataflowProcessing(options =>
+            {
+                options.MaxDegreeOfParallelism = Environment.ProcessorCount * 2;
+                options.BoundedCapacity = 5000;
+                options.CompletionTimeout = TimeSpan.FromSeconds(60);
+            });
+        }
+    }
+}

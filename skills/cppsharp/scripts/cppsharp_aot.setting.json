@@ -1,0 +1,54 @@
+{
+  "AppSettings": {
+    "ApplicationName": "CppSharp AOT Generator",
+    "Version": "1.0.0",
+    "Description": "高性能C++和C#交互绑定生成器"
+  },
+  "CppSharp": {
+    "InputPath": "",
+    "OutputPath": "",
+    "GenerateDebugInfo": false,
+    "Namespace": "CppSharp.Generated",
+    "GenerateAsyncWrappers": true,
+    "GenerateEventWrappers": true,
+    "EnableOperatorOverloading": true,
+    "EnableNullableReferenceTypes": true,
+    "EnableSourceLink": false,
+    "EnableDocumentation": true
+  },
+  "ParserSettings": {
+    "EnableMacros": true,
+    "EnableTemplates": true,
+    "EnableNamespaces": true,
+    "EnableTypeAliases": true,
+    "MaxRecursionDepth": 10,
+    "IncludePaths": [],
+    "DefineMacros": []
+  },
+  "GeneratorSettings": {
+    "GenerateProperties": true,
+    "GenerateMethods": true,
+    "GenerateFields": true,
+    "GenerateEvents": true,
+    "GenerateOperators": true,
+    "GenerateConstructors": true,
+    "GenerateDestructors": true,
+    "GenerateConversionOperators": true,
+    "GenerateExtensionMethods": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "CppSharp.AOT": "Information"
+    }
+  },
+  "Performance": {
+    "EnableCaching": true,
+    "CacheDuration": 3600,
+    "MaxCacheSize": 1000,
+    "EnableParallelProcessing": true,
+    "MaxDegreeOfParallelism": 4
+  }
+}

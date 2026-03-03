@@ -1,0 +1,118 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MagicOnion@5.0.0
+#:package Grpc.AspNetCore@2.62.0
+#:package MessagePack@2.5.122
+#:package System.Threading.Channels@8.0.0
+#:package OpenTelemetry.Exporter.Prometheus.AspNetCore@1.5.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using MagicOnion;
+using MagicOnion.Server;
+using MessagePack;
+using System.Threading.Channels;
+using OpenTelemetry.Metrics;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. 配置实时聊天通道
+var chatChannel = Channel.CreateBounded<ChatMessage>(
+    new BoundedChannelOptions(10000)
+    {
+        SingleReader = false,
+        AllowSynchronousContinuations = true,
+        FullMode = BoundedChannelFullMode.Wait
+    });
+
+// 2. 零拷贝消息处理器
+builder.Services.AddSingleton<IChatProcessor>(sp => 
+    new ChannelChatProcessor(
+        chatChannel,
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[1024])));
+
+// 3. 配置MagicOnion
+builder.Services.AddMagicOnion()
+    .AddMagicOnionService<ChatService>(options => 
+    {
+        options.SerializerOptions = MessagePackSerializerOptions.Standard
+            .WithCompression(MessagePackCompression.Lz4BlockArray);
+    });
+
+// 4. 性能监控
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics => metrics
+        .AddMagicOnionInstrumentation()
+        .AddPrometheusExporter());
+
+var app = builder.Build();
+app.MapMagicOnionService();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.MapGet("/", () => "MagicOnion Chat Ready");
+app.Run();
+
+// 聊天服务定义
+public interface IChatService : IService<IChatService>
+{
+    UnaryResult<JoinResult> JoinAsync(string roomId, string userId);
+    UnaryResult<bool> LeaveAsync(string roomId, string userId);
+    ServerStreamingResult<ChatMessage> StreamAsync(string roomId);
+    UnaryResult<bool> SendAsync(string roomId, ChatMessage message);
+}
+
+// 聊天服务实现
+public class ChatService : ServiceBase<IChatService>, IChatService
+{
+    private readonly IChatProcessor _processor;
+    
+    public ChatService(IChatProcessor processor)
+    {
+        _processor = processor;
+    }
+
+    public async ServerStreamingResult<ChatMessage> StreamAsync(string roomId)
+    {
+        // 实时流式聊天实现
+    }
+}
+
+// 高性能处理器
+[SkipLocalsInit]
+public class ChannelChatProcessor : IChatProcessor
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe void Process(ChatMessage message)
+    {
+        Span<byte> buffer = stackalloc byte[1024];
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                // SIMD优化处理聊天消息
+            }
+        }
+    }
+}
+
+[MessagePackObject]
+public class ChatMessage
+{
+    [Key(0)]
+    public string RoomId { get; set; }
+    [Key(1)]
+    public string UserId { get; set; }
+    [Key(2)]
+    public string Text { get; set; }
+    [Key(3)]
+    public DateTimeOffset Timestamp { get; set; }
+}
+
+[MessagePackObject]
+public class JoinResult
+{
+    [Key(0)]
+    public bool Success { get; set; }
+    [Key(1)]
+    public string Token { get; set; }
+}

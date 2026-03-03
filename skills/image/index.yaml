@@ -1,0 +1,49 @@
+# Image Agent Skill - 图像处理技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的图像处理技能实现，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Text.Json@8.0.0
+# - System.Text.RegularExpressions@4.3.1
+# - System.Collections.Immutable@8.0.0
+# - Microsoft.Extensions.Caching.Memory@10.0.0
+# - Microsoft.Extensions.Http@10.0.0
+# - SixLabors.ImageSharp@3.0.0
+# - SixLabors.ImageSharp.Drawing@3.0.0
+# - SixLabors.Fonts@3.0.0
+# Application Scenarios: 图像处理相关功能
+# Activation Conditions: 当需要图像处理功能时激活
+# Main Features:
+# - 图像大小调整
+# - 图像格式转换
+# - 图像裁剪
+# - 图像旋转
+# - 图像翻转
+# - 添加水印
+# - 应用滤镜
+# - 获取图像元数据
+# - 图像优化
+# - 批量处理
+# - 基准测试
+# Performance Features:
+# - AOT 编译优化
+# - 单文件发布
+# - 内存使用优化
+# - 并发处理支持
+# - 缓存机制
+# - 并行处理
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 单文件执行
+# - 自包含部署
+# - 支持多种图像格式
+# - 命令行界面
+# - 错误处理和日志记录
+# - 配置选项
