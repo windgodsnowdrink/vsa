@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package WolverineFx@4.2.0
 #:package WolverineFx.Marten@4.2.0
 #:package WolverineFx.RDBMS@4.2.0
@@ -160,7 +160,7 @@ public class MediatorMessageHandlerAdapter<TRequest> : IMessageHandler<TRequest>
 // mediator.Send =>	bus.InvokeAsync<TResponse>(message)
 
 // 用属性标记让 Wolverine 自动发现（推荐）
-// Wolverine 通过 约定（实现 IMessageHandler<…> 接口）或 属性（[WolverineHandler]）来发现处理器。下面示例展示 属性方式——这跟在 MediatR 中标记 IRequestHandler 完全没有冲突。
+// Wolverine 通过 约定（实现 IMessageHandler<…> 接口）或 属性（[WolverineHandler]）来发现处理器.下面示例展示 属性方式——这跟在 MediatR 中标记 IRequestHandler 完全没有冲突.
 // 1️⃣ Command（或者 Query）——纯 POCO（record 最简洁）
 public record CreateOrder(Guid OrderId, string Customer) : IMessage<Guid>;
 
@@ -192,7 +192,7 @@ namespace Contracts.Commands
     // Contracts/Commands/CreateOrder.cs
     using Mediator;
     /// <summary>
-    /// 创建订单的命令。返回 OrderId (Guid) 给调用方。
+    /// 创建订单的命令.返回 OrderId (Guid) 给调用方.
     /// </summary>
     public sealed record CreateOrder(Guid OrderId, string Customer) : IRequest<Guid>;
 }
@@ -202,7 +202,7 @@ namespace Contracts.Queries
     // Contracts/Queries/GetOrder.cs
     using Mediator;
     /// <summary>
-    /// 根据订单 Id 查询订单详情。返回 OrderDto。
+    /// 根据订单 Id 查询订单详情.返回 OrderDto.
     /// </summary>
     public sealed record GetOrder(Guid OrderId) : IRequest<OrderDto>;
 }
@@ -214,7 +214,7 @@ namespace Application.Handlers{
     using Contracts.Models;
 
     /// <summary>
-    /// 业务实现：把订单写入 DB 并返回 Id。
+    /// 业务实现：把订单写入 DB 并返回 Id.
     /// </summary>
     public sealed class CreateOrderHandler : IHandler<CreateOrder, Guid>
     {
@@ -269,7 +269,7 @@ namespace Infrastructure
 
     /// <summary>
     /// 当 Wolverine 收到实现了 Mediator.Abstractions.IRequest<TResponse> 的消息时，
-    /// 使用 DI 解析对应的 IHandler<TRequest,TResponse> 并执行。
+    /// 使用 DI 解析对应的 IHandler<TRequest,TResponse> 并执行.
     /// </summary>
     public sealed class WolverineMediatorAdapter<TRequest, TResponse> : IMessageHandler<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
@@ -289,7 +289,7 @@ namespace Infrastructure
 
     /// <summary>
     /// 对于不返回值的 IRequest（即 Mediator.Abstractions.IRequest）
-    /// 通过同样的方式找到 IHandler<TRequest> 并调用。
+    /// 通过同样的方式找到 IHandler<TRequest> 并调用.
     /// </summary>
     public sealed class WolverineMediatorAdapter<TRequest> : IMessageHandler<TRequest>
         where TRequest : IRequest

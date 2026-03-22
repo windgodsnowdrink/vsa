@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package WolverineFx@4.2.0
 #:package WolverineFx.Marten@4.2.0
 #:package WolverineFx.RDBMS@4.2.0
@@ -67,7 +67,7 @@ builder.Host.UseWolverine(opts =>
 
     // 3️⃣ 开启 Outbox（本地事务 + 可靠投递）
     // 开启 Outbox 以实现 BFF 本地事务 + 下游命令原子提交
-    // 并在 BindDeviceCommand、UnbindDeviceCommand 等调用前后使用同一 DbContext/IDbConnection，确保业务 DB 与 Outbox DB 同时提交。
+    // 并在 BindDeviceCommand、UnbindDeviceCommand 等调用前后使用同一 DbContext/IDbConnection，确保业务 DB 与 Outbox DB 同时提交.
     opts.EnableOutbox();
 
     // 4️⃣ 设置重试/超时策略（防止死循环）
@@ -89,10 +89,10 @@ builder.Host.UseWolverine(opts =>
     // 为调试打开日志
     opts.Services.AddLogging(logging => logging.AddConsole());
 
-    //  Grafana/Prometheus、Jaeger 集成，监控每一步延迟、Saga 成功率。
+    //  Grafana/Prometheus、Jaeger 集成，监控每一步延迟、Saga 成功率.
     opts.EnableOpenTelemetry();
 
-    // 把 protobuf‑net 设为默认序列化方式，UseProtobufNet()会自动为所有实现了 ProtoContract（即 pbnet 生成的类）注册序列化器。发送方和接收方只要引用同一套 Contracts NuGet，消息即可无缝兼容
+    // 把 protobuf‑net 设为默认序列化方式，UseProtobufNet()会自动为所有实现了 ProtoContract（即 pbnet 生成的类）注册序列化器.发送方和接收方只要引用同一套 Contracts NuGet，消息即可无缝兼容
     // opts.UseProtobufNet();
 
     // -------------------------------------------------
@@ -113,10 +113,10 @@ builder.Host.UseWolverine(opts =>
         m.RetainMessages               = false;
 
         // ⑤ “自动转发”规则——把任意已发布的 UserDeviceSaved 推送到 MQTT
-        //    注意：这里的规则是针对 **本地总线**（InMemory/Db）上的消息。
+        //    注意：这里的规则是针对 **本地总线**（InMemory/Db）上的消息.
         //    当业务服务调用 `bus.PublishAsync(new UserDeviceSaved(...))`，
         //    Wolverine 会在内部先保存到 Outbox，然后依据下面的 Forward
-        //    把消息发送到 MQTT。
+        //    把消息发送到 MQTT.
         m.Forward<UserDeviceSaved>(msg =>
         {
             // 生成主题：devices/{UserId}/{DeviceId}/saved
@@ -178,7 +178,7 @@ app.MapHub<DeviceHub>("/deviceHub");
 
 app.Run();
 
-// BFF 同时是 Saga 发起者（持有 StartBindDeviceSaga），不要再单独订阅 UserDeviceSaved，否则会出现 两次完成（一次在 Saga、一次在 BFF 的普通 handler）导致冲突。只保留 Saga 中的 Handle(UserDeviceSaved) 即可。
+// BFF 同时是 Saga 发起者（持有 StartBindDeviceSaga），不要再单独订阅 UserDeviceSaved，否则会出现 两次完成（一次在 Saga、一次在 BFF 的普通 handler）导致冲突.只保留 Saga 中的 Handle(UserDeviceSaved) 即可.
 // BFF 只做 通知（不参与 Saga），可以另外写一个普通的 MessageHandler
 // builder.Services.AddSignalR(); 
 public class UserDeviceSavedNotifier
@@ -214,8 +214,8 @@ public class UserDeviceSavedNotifier
 
         // ---- MQTT 推送给外部订阅者 ----------
         // 这里我们不直接使用 MQTT 客户端，而是让 Wolverine 把消息 *再* 发布到
-        // MQTT 传输层。只要在下面的配置里声明 “将此消息映射到 MQTT 主题”，
-        // 发送到 bus 的同一条消息会自动被转发。
+        // MQTT 传输层.只要在下面的配置里声明 “将此消息映射到 MQTT 主题”，
+        // 发送到 bus 的同一条消息会自动被转发.
         await bus.PublishAsync(@event);   // 已经在这里调用，后面会被 MQTT 发送
     }
 }
@@ -261,7 +261,7 @@ namespace Bff.Api.Controllers
 
             // 2️⃣ 这里直接返回 202（Accepted），后端通过事件 / SSE / WebSocket 把进度推给前端
             //    如果想同步阻塞，可改为 await _bus.InvokeAsync<BindDeviceSagaResult>(new GetSagaResult(sagaId));
-            // Saga 可能涉及 多个异步子事务（检查设备、检查用户、绑定、保存关联），在真实生产环境里往往需要 几百毫秒到几秒；返回 202 + 状态轮询 或 WebSocket 推送 更友好。
+            // Saga 可能涉及 多个异步子事务（检查设备、检查用户、绑定、保存关联），在真实生产环境里往往需要 几百毫秒到几秒；返回 202 + 状态轮询 或 WebSocket 推送 更友好.
             // 如果业务对时效要求极高，可以把 await _bus.InvokeAsync<BindDeviceSagaResult> 包装成 同步 调用（内部仍走 Saga）
             return Accepted(new { CorrelationId = sagaId });
         }
@@ -288,12 +288,12 @@ namespace Bff.Api.Controllers
     public record BindRequest(Guid DeviceId, Guid UserId);
 }
 
-// ① 幂等性	所有 Command / Event 必须带 全局唯一 CorrelationId（也可以是 SagaId + StepId）<br>下游服务在处理前先 SELECT … WHERE CorrelationId = @id，若已处理直接返回成功。<br>在数据库层面可以建立唯一键 (DeviceId, UserId, CorrelationId)。
-// ② 补偿不再触发业务	给 业务事件 加上 DomainEvent.Source = "Business"，而 补偿事件 加上 Source = "Compensation"，在业务侧的 Handler 中 过滤 Source == "Compensation"，这样补偿产生的 DeviceBoundToUser 不会再次走绑定流程。
-// ③ 限制补偿的重试次数	在 Wolverine 中使用 opts.Policies.OnException<Exception>(ex => ex.Retry(3).Wait(200))，或在 Saga 状态里记录 CompensationAttempts 并在超过阈值后 标记为不可恢复、发送告警。
-// ④ 超时 & 回退	为每一步 设置明确的 Timeout（如 5s），若超时直接进入 Failed 并走补偿。补偿也要有 单独 Timeout，超时后记录 CompensationTimeout 并发送 告警事件（如 CompensationFailedEvent)。
-// ⑤ 补偿的幂等层	对每个补偿操作（UnbindDeviceCommand、CompensateUserDevice）同样要求 Idempotent，并在下游服务用 补偿日志表（CompensationLog）记录已执行的补偿 CorrelationId + Step. 再次收到相同补偿时直接返回成功。
-// ⑥ 状态机分离	业务状态（BusinessStep） 与 补偿状态（CompensatingStep） 使用两个独立的枚举，Saga 只在 Failed → Compensating → Compensated 之间切换，避免在 Compensating 阶段仍然执行业务分支。
+// ① 幂等性	所有 Command / Event 必须带 全局唯一 CorrelationId（也可以是 SagaId + StepId）<br>下游服务在处理前先 SELECT … WHERE CorrelationId = @id，若已处理直接返回成功.<br>在数据库层面可以建立唯一键 (DeviceId, UserId, CorrelationId).
+// ② 补偿不再触发业务	给 业务事件 加上 DomainEvent.Source = "Business"，而 补偿事件 加上 Source = "Compensation"，在业务侧的 Handler 中 过滤 Source == "Compensation"，这样补偿产生的 DeviceBoundToUser 不会再次走绑定流程.
+// ③ 限制补偿的重试次数	在 Wolverine 中使用 opts.Policies.OnException<Exception>(ex => ex.Retry(3).Wait(200))，或在 Saga 状态里记录 CompensationAttempts 并在超过阈值后 标记为不可恢复、发送告警.
+// ④ 超时 & 回退	为每一步 设置明确的 Timeout（如 5s），若超时直接进入 Failed 并走补偿.补偿也要有 单独 Timeout，超时后记录 CompensationTimeout 并发送 告警事件（如 CompensationFailedEvent).
+// ⑤ 补偿的幂等层	对每个补偿操作（UnbindDeviceCommand、CompensateUserDevice）同样要求 Idempotent，并在下游服务用 补偿日志表（CompensationLog）记录已执行的补偿 CorrelationId + Step. 再次收到相同补偿时直接返回成功.
+// ⑥ 状态机分离	业务状态（BusinessStep） 与 补偿状态（CompensatingStep） 使用两个独立的枚举，Saga 只在 Failed → Compensating → Compensated 之间切换，避免在 Compensating 阶段仍然执行业务分支.
 // BindDeviceSaga.cs
 namespace Bff.Api.Services
 {
@@ -369,10 +369,10 @@ namespace Bff.Api.Services
             await SaveChangesAsync();
 
             // --------- 步骤 4：确认关联表已保存 ----------
-            // 我们约定：DeviceBoundToUser 事件会被 ComponentB 处理并写库。
-            // 为了让 Saga 等待它完成，可以订阅一个 ACK 事件（或轮询查询）。
-            // 这里演示「轮询」方式（生产可改为 ACK 事件）。
-            // 事件 ACK（替代轮询）:BFF 可以订阅 UserDeviceSaved（自定义事件），在 Handle(UserDeviceSaved) 中 CompleteSaga，消除轮询延迟。
+            // 我们约定：DeviceBoundToUser 事件会被 ComponentB 处理并写库.
+            // 为了让 Saga 等待它完成，可以订阅一个 ACK 事件（或轮询查询）.
+            // 这里演示「轮询」方式（生产可改为 ACK 事件）.
+            // 事件 ACK（替代轮询）:BFF 可以订阅 UserDeviceSaved（自定义事件），在 Handle(UserDeviceSaved) 中 CompleteSaga，消除轮询延迟.
             var timeout = TimeSpan.FromSeconds(5);
             var deadline = DateTimeOffset.UtcNow.Add(timeout);
             while (DateTimeOffset.UtcNow < deadline)
@@ -783,8 +783,8 @@ namespace Bff.Api.Services
 
 常见错误 & 防坑指南
 错误情形	可能原因	解决办法
-Saga 永远不结束	UserDeviceSaved 未携带正确的 CorrelationId 或者 PublishAsync 没走 Outbox（事务未提交）	① 确认 StartBindDeviceSaga 生成的 CorrelationId 正确传递到 BindDeviceCommand 与 UserDeviceSaved；② 检查 opts.EnableOutbox() 是否打开，await bus.PublishAsync 是否在同一个 DI / IMessageBus 实例中调用。
-收到多条同样的 ACK	业务服务重试导致同一个 UserDeviceSaved 被多次发布	在消费端（Handle(UserDeviceSaved)) 用 if (State.IsCompleted) return; 或者 if (State.CurrentStep >= BindDeviceStep.DeviceSaved) return; 防止重复处理。
-超时补偿被误触发	UserDeviceSaved 在 timeout 到达前已投递，但 Saga 已完成，UserDeviceSavedTimeout 仍在队列中，被错误地当作超时处理	在 Handle(UserDeviceSavedTimeout) 中首行加 if (State.IsCompleted) return;，或者使用 await bus.ScheduleSendMessageIn<UserDeviceSavedTimeout>(…, timeout, opt => opt.CorrelateById(state => state.Id)); 让 Wolverine 自动把超时消息与 Saga 关联，Saga 完成后自动 取消 计划任务（Wolverine 会在 MarkCompletedAsync 时撤销同 Id 的延迟消息）。
+Saga 永远不结束	UserDeviceSaved 未携带正确的 CorrelationId 或者 PublishAsync 没走 Outbox（事务未提交）	① 确认 StartBindDeviceSaga 生成的 CorrelationId 正确传递到 BindDeviceCommand 与 UserDeviceSaved；② 检查 opts.EnableOutbox() 是否打开，await bus.PublishAsync 是否在同一个 DI / IMessageBus 实例中调用.
+收到多条同样的 ACK	业务服务重试导致同一个 UserDeviceSaved 被多次发布	在消费端（Handle(UserDeviceSaved)) 用 if (State.IsCompleted) return; 或者 if (State.CurrentStep >= BindDeviceStep.DeviceSaved) return; 防止重复处理.
+超时补偿被误触发	UserDeviceSaved 在 timeout 到达前已投递，但 Saga 已完成，UserDeviceSavedTimeout 仍在队列中，被错误地当作超时处理	在 Handle(UserDeviceSavedTimeout) 中首行加 if (State.IsCompleted) return;，或者使用 await bus.ScheduleSendMessageIn<UserDeviceSavedTimeout>(…, timeout, opt => opt.CorrelateById(state => state.Id)); 让 Wolverine 自动把超时消息与 Saga 关联，Saga 完成后自动 取消 计划任务（Wolverine 会在 MarkCompletedAsync 时撤销同 Id 的延迟消息）.
 找不到 State.Id	SagaState 没有实现 IStatefulSaga（或 Id 并未映射为主键）	确保 BindDeviceSagaState 继承自 SagaState 并定义 public Guid Id { get; set; }，并在 DbContext 中配置 builder.HasKey(x => x.Id);
-事件发不出去	消息总线使用的是 InMemory，但微服务部署在不同进程/容器里	替换 opts.Transports.InMemory() 为 opts.Transports.RabbitMq(...)、Kafka, 或者使用 Redis Streams（opts.Transports.Redis(...)）实现跨进程投递。
+事件发不出去	消息总线使用的是 InMemory，但微服务部署在不同进程/容器里	替换 opts.Transports.InMemory() 为 opts.Transports.RabbitMq(...)、Kafka, 或者使用 Redis Streams（opts.Transports.Redis(...)）实现跨进程投递.

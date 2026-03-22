@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package Mediator.Abstractions@3.0.1
 #:package Mediator.SourceGenerator@3.0.1
 #:package PublicTransit@8.5.2
@@ -66,7 +66,7 @@ app.MapPost(
     async (IBus bus, string city, int temperature) =>
     {
         await bus.Publish(new WeatherUpdated(city, temperature));
-        return Results.Ok($"已发布{city}的天气更新。");
+        return Results.Ok($"已发布{city}的天气更新.");
     }
 );
 

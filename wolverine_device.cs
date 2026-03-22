@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package WolverineFx@4.2.0
 #:package WolverineFx.Marten@4.2.0
 #:package WolverineFx.RDBMS@4.2.0
@@ -39,7 +39,7 @@ using Wolverine;
 using Wolverine.Configuration;
 using Contracts.Messages;
 
-// 在 Device、UserDevice 表均加上唯一约束 (DeviceId, UserId, CorrelationId)，并在 Handler 中捕获唯一冲突异常后直接返回成功。
+// 在 Device、UserDevice 表均加上唯一约束 (DeviceId, UserId, CorrelationId)，并在 Handler 中捕获唯一冲突异常后直接返回成功.
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 // 只需要把 Wolverine 加进来，默认使用 *InMemoryTransport*（同进程）
@@ -64,7 +64,7 @@ builder.Host.UseWolverine(opts =>
     // 让所有 Handler 自动发现（包括跨程序集）
     opts.IncludeAssembly(typeof(IDeviceService).Assembly); // 自己的
 
-    //  Grafana/Prometheus、Jaeger 集成，监控每一步延迟、Saga 成功率。
+    //  Grafana/Prometheus、Jaeger 集成，监控每一步延迟、Saga 成功率.
     opts.EnableOpenTelemetry();
 });
 

@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk
+﻿#:sdk Microsoft.NET.Sdk
 #:package ZstdSharp@0.8.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
@@ -773,9 +773,9 @@ namespace ZstdNet
         private static async Task TestBasicCompression(IZstdCompressionService service)
         {
             // 测试字符串压缩
-            var testString = "这是一个测试字符串，用于测试 Zstd 压缩算法的性能和效果。" +
+            var testString = "这是一个测试字符串，用于测试 Zstd 压缩算法的性能和效果." +
                             "Zstd 是一种高性能的压缩算法，由 Facebook 开发，" +
-                            "它提供了出色的压缩率和压缩/解压缩速度。";
+                            "它提供了出色的压缩率和压缩/解压缩速度.";
             
             Console.WriteLine($"原始字符串长度: {testString.Length}");
             
@@ -851,7 +851,7 @@ namespace ZstdNet
                 using var writer = new StreamWriter(testFilePath);
                 for (int i = 0; i < 10000; i++)
                 {
-                    await writer.WriteLineAsync($"这是测试行 {i}: 这是一些测试数据，用于测试文件压缩性能。");
+                    await writer.WriteLineAsync($"这是测试行 {i}: 这是一些测试数据，用于测试文件压缩性能.");
                 }
                 await writer.FlushAsync();
                 

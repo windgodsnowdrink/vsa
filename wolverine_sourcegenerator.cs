@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package WolverineFx@4.2.0
 #:package WolverineFx.Marten@4.2.0
 #:package WolverineFx.RDBMS@4.2.0
@@ -34,7 +34,7 @@
 #:property GenerateJsonSourceGeneration=true
 
 //只写一次 业务意图（比如一个 [MessageContract] 标记的 interface），
-// 编译时自动生成 record、属性、MessageBus 扩展方法，以及 Saga 状态（如果需要）。
+// 编译时自动生成 record、属性、MessageBus 扩展方法，以及 Saga 状态（如果需要）.
 // 生成的代码全部放在 obj/Generated，不需要手动编辑
 
 
@@ -178,7 +178,7 @@ namespace Contracts.Messages
     [MessageContract]                     // <-- 关键特性，Generator 会读取
     public interface IDeviceMessages
     {
-        // 约定：在同一个 interface 里 方法名即为 Message 名称（PascalCase）。Method 参数会自动映射到 record 的属性，返回类型会被当作 Response（如果返回 void 则只生成 Event）
+        // 约定：在同一个 interface 里 方法名即为 Message 名称（PascalCase）.Method 参数会自动映射到 record 的属性，返回类型会被当作 Response（如果返回 void 则只生成 Event）
         // -------- 1️⃣ 请求/响应 ----------
         BindDeviceCommand Bind(Guid DeviceId, Guid UserId);
         BindDeviceResponse BindResult(Guid DeviceId, Guid UserId, bool Success, string? Error);
@@ -217,7 +217,7 @@ dotnet tool install -g protobuf-net.Tools
 
 // # 编译 .proto → C#
 dotnet pbnet compile -i Contracts/Protos/*.proto -o Contracts/Generated/Protos.cs
-// pbnet 会把 string 映射为 string，我们在业务代码里约定把 Guid 用 Guid.Parse(string) 转换。
+// pbnet 会把 string 映射为 string，我们在业务代码里约定把 Guid 用 Guid.Parse(string) 转换.
 
 // GitHub Actions 示例
 // 触发条件：Contracts 项目代码改动时，自动编译并发布到 GitHub Packages

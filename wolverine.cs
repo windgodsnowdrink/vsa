@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package Wolverine@1.0.0
 #:package Microsoft.EntityFrameworkCore.Sqlite@8.0.0
 #:property LangVersion=preview
@@ -235,14 +235,14 @@ public class PoolingManager
 
 /*
 如何运行此示例：
-1. 确保已安装 .NET 10 SDK。
+1. 确保已安装 .NET 10 SDK.
 2. 在 appsettings.json 中配置数据库连接字符串，例如：
 {
   "ConnectionStrings": {
     "DefaultConnection": "Data Source=Todo.db"
   }
 }
-3. 打开命令行或终端，导航到包含此文件的目录。
+3. 打开命令行或终端，导航到包含此文件的目录.
 4. 运行应用程序：dotnet run
 5. 使用 HTTP 客户端（如 Postman）测试 API：
    - 创建待办事项：POST /todos，请求体：{ "Title": "学习 Wolverine" }

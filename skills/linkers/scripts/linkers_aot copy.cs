@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk
+﻿#:sdk Microsoft.NET.Sdk
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Caching.Memory@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
@@ -543,7 +543,7 @@ namespace LinkersAot
                 result.AppendLine($"生成状态: 完成");
                 result.AppendLine($"生成时间: {DateTime.Now}");
                 result.AppendLine();
-                result.AppendLine("注意: 这是一个模拟实现，实际绑定代码需要根据原生库的具体接口生成。");
+                result.AppendLine("注意: 这是一个模拟实现，实际绑定代码需要根据原生库的具体接口生成.");
 
                 _logger.LogInformation($"原生库绑定生成完成: {nativeLibPath} -> {outputPath}");
                 return result.ToString();

@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+ï»¿#:sdk Microsoft.NET.Sdk.Web
 #:sdk Aspire.AppHost.Sdk@9.4.2
 #:package Aspire.Hosting.AppHost@9.4.2
 #:package Microsoft.Extensions.Hosting@10.0.0-rc.1.25451.107
@@ -97,9 +97,9 @@ builder.WebHost.ConfigureKestrel(options =>
 ConfigurationManager configuration = builder.Configuration;
 IWebHostEnvironment environment = builder.Environment;
 
-builder.Logging.ClearProviders();               // Ö»±£ÁôÏÂÃæµÄ ConsoleProvider£¬±ÜÃâ¸ÉÈÅ
-builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Trace);                   // Ê¹ÓÃÑÕÉ«»¯µÄ¿ØÖÆÌ¨ÈÕÖ¾
-builder.Logging.SetMinimumLevel(LogLevel.Trace); // ÉèÎª Trace£¬×îÏ¸Á£¶È
+builder.Logging.ClearProviders();               // åªä¿ç•™ä¸‹é¢çš„ ConsoleProviderï¼Œé¿å…å¹²æ‰°
+builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Trace);                   // ä½¿ç”¨é¢œè‰²åŒ–çš„æ§åˆ¶å°æ—¥å¿—
+builder.Logging.SetMinimumLevel(LogLevel.Trace); // è®¾ä¸º Traceï¼Œæœ€ç»†ç²’åº¦
 builder.Logging.AddFilter("Microsoft.Extensions.Http", LogLevel.Trace);
 builder.Logging.AddFilter("Microsoft.Extensions.ServiceDiscovery", LogLevel.Trace);
 builder.Logging.AddFilter("Microsoft.Extensions.Resilience", LogLevel.Trace);
@@ -137,7 +137,7 @@ builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 // });
 
-// ²âÊÔMCP
+// æµ‹è¯•MCP
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
@@ -184,7 +184,7 @@ namespace App
 {
     public partial class Program;
 
-    // 1. »ù´¡ÅäÖÃÑ¡ÏîÀà - Êı¾İ¿âÅäÖÃ
+    // 1. åŸºç¡€é…ç½®é€‰é¡¹ç±» - æ•°æ®åº“é…ç½®
     public class DatabaseOptions
     {
         public const string SectionName = "Database";
@@ -221,7 +221,7 @@ namespace App
         public List<string> RetryableErrorCodes { get; set; } = new List<string>();
     }
 
-    // 2. ·şÎñÅäÖÃÑ¡ÏîÀà - ÓÊ¼ş·şÎñÅäÖÃ
+    // 2. æœåŠ¡é…ç½®é€‰é¡¹ç±» - é‚®ä»¶æœåŠ¡é…ç½®
     public class EmailServiceOptions
     {
         public const string SectionName = "EmailService";
@@ -259,7 +259,7 @@ namespace App
         public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(5);
     }
 
-    // 3. »º´æÅäÖÃÑ¡ÏîÀà
+    // 3. ç¼“å­˜é…ç½®é€‰é¡¹ç±»
     public class CacheOptions
     {
         public const string SectionName = "Cache";
@@ -308,7 +308,7 @@ namespace App
         public TimeSpan ExpirationScanFrequency { get; set; } = TimeSpan.FromMinutes(1);
     }
 
-    // 4. °²È«ÅäÖÃÑ¡ÏîÀà
+    // 4. å®‰å…¨é…ç½®é€‰é¡¹ç±»
     public class SecurityOptions
     {
         public const string SectionName = "Security";
@@ -360,12 +360,12 @@ namespace App
         public TimeSpan RetryAfter { get; set; } = TimeSpan.FromMinutes(5);
     }
 
-    // 5. ×Ô¶¨ÒåÑéÖ¤ÊôĞÔ - Éú²ú»·¾³ÌØÓĞÑéÖ¤
+    // 5. è‡ªå®šä¹‰éªŒè¯å±æ€§ - ç”Ÿäº§ç¯å¢ƒç‰¹æœ‰éªŒè¯
     public class RequiredIfNotProductionAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            // ÔÚ·ÇÉú²ú»·¾³ÖĞ£¬Ä³Ğ©ÅäÖÃÊÇ±ØĞèµÄ
+            // åœ¨éç”Ÿäº§ç¯å¢ƒä¸­ï¼ŒæŸäº›é…ç½®æ˜¯å¿…éœ€çš„
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (environment != "Production" && value == null)
             {
@@ -376,7 +376,7 @@ namespace App
         }
     }
 
-    // 6. ÅäÖÃ°ó¶¨ºó´¦ÀíÆ÷
+    // 6. é…ç½®ç»‘å®šåå¤„ç†å™¨
     public interface IConfigureOptions<T> where T : class, new()
     {
         void Configure(T options);
@@ -396,17 +396,17 @@ namespace App
 
         public void Configure(DatabaseOptions options)
         {
-            // ´ÓÅäÖÃ°ó¶¨ºóµÄºó´¦ÀíÂß¼­
+            // ä»é…ç½®ç»‘å®šåçš„åå¤„ç†é€»è¾‘
             if (string.IsNullOrEmpty(options.ConnectionString))
             {
                 options.ConnectionString = GetDefaultConnectionString();
             }
 
-            // ÉèÖÃ»·¾³ÌØ¶¨µÄÄ¬ÈÏÖµ
+            // è®¾ç½®ç¯å¢ƒç‰¹å®šçš„é»˜è®¤å€¼
             var environment = _configuration.GetValue<string>("Environment", "Development");
             if (environment == "Development")
             {
-                options.RetryCount = 0; // ¿ª·¢»·¾³²»ĞèÒªÖØÊÔ
+                options.RetryCount = 0; // å¼€å‘ç¯å¢ƒä¸éœ€è¦é‡è¯•
                 options.EnableRetryOnFailure = false;
             }
 
@@ -415,7 +415,7 @@ namespace App
 
         public void Validate(DatabaseOptions options)
         {
-            // ×Ô¶¨Òå¸´ÔÓÑéÖ¤Âß¼­
+            // è‡ªå®šä¹‰å¤æ‚éªŒè¯é€»è¾‘
             if (options.RetryCount > 0 && !options.EnableRetryOnFailure)
             {
                 throw new InvalidOperationException("RetryOptions cannot be configured when retry is disabled");
@@ -433,7 +433,7 @@ namespace App
         }
     }
 
-    // 7. ÅäÖÃ±ä¸ü¼àÌıÆ÷ - ¼à¿ØÅäÖÃ±ä»¯
+    // 7. é…ç½®å˜æ›´ç›‘å¬å™¨ - ç›‘æ§é…ç½®å˜åŒ–
     public class ConfigurationChangeListener<T> : IOptionsChangeTokenSource<T> where T : class, new()
     {
         private readonly IConfiguration _configuration;
@@ -453,7 +453,7 @@ namespace App
         }
     }
 
-    // 8. ÅäÖÃ·şÎñ¹ÜÀíÆ÷ - Éú²ú»·¾³ÅäÖÃ¹ÜÀí
+    // 8. é…ç½®æœåŠ¡ç®¡ç†å™¨ - ç”Ÿäº§ç¯å¢ƒé…ç½®ç®¡ç†
     public class ConfigurationServiceManager
     {
         private readonly IOptionsMonitor<DatabaseOptions> _databaseOptions;
@@ -475,23 +475,23 @@ namespace App
             _securityOptions = securityOptions;
             _logger = logger;
 
-            #region ÅäÖÃ±ä¸ü¼à¿Ø
+            #region é…ç½®å˜æ›´ç›‘æ§
 
-            // ¼à¿ØÊı¾İ¿âÅäÖÃ±ä»¯
+            // ç›‘æ§æ•°æ®åº“é…ç½®å˜åŒ–
             _databaseOptions.OnChange(options =>
             {
                 _logger.LogWarning("Database configuration changed at {Timestamp}", DateTime.UtcNow);
                 HandleDatabaseConfigurationChange(options);
             });
 
-            // ¼à¿ØÓÊ¼ş·şÎñÅäÖÃ±ä»¯
+            // ç›‘æ§é‚®ä»¶æœåŠ¡é…ç½®å˜åŒ–
             _emailOptions.OnChange(options =>
             {
                 _logger.LogWarning("Email service configuration changed at {Timestamp}", DateTime.UtcNow);
                 HandleEmailConfigurationChange(options);
             });
 
-            // ¼à¿Ø»º´æÅäÖÃ±ä»¯
+            // ç›‘æ§ç¼“å­˜é…ç½®å˜åŒ–
             _cacheOptions.OnChange(options =>
             {
                 _logger.LogWarning("Cache configuration changed at {Timestamp}", DateTime.UtcNow);
@@ -537,7 +537,7 @@ namespace App
                                       "RetryCount={RetryCount}, MaxPoolSize={MaxPoolSize}",
                                       options.ConnectionTimeout, options.RetryCount, options.MaxPoolSize);
 
-                // ÔÚÕâÀï¿ÉÒÔÖ´ĞĞÁ¬½Ó³ØË¢ĞÂ¡¢ÖØĞÂ³õÊ¼»¯Êı¾İ¿âÁ¬½ÓµÈ²Ù×÷
+                // åœ¨è¿™é‡Œå¯ä»¥æ‰§è¡Œè¿æ¥æ± åˆ·æ–°ã€é‡æ–°åˆå§‹åŒ–æ•°æ®åº“è¿æ¥ç­‰æ“ä½œ
             }
             catch (Exception ex)
             {
@@ -552,7 +552,7 @@ namespace App
                 _logger.LogInformation("Email service options changed: Host={SmtpHost}, Port={SmtpPort}, " +
                                       "EnableSsl={EnableSsl}", options.SmtpHost, options.SmtpPort, options.EnableSsl);
 
-                // ÔÚÕâÀï¿ÉÒÔÖØĞÂÅäÖÃÓÊ¼ş¿Í»§¶Ë¡¢Ë¢ĞÂÁ¬½ÓµÈ
+                // åœ¨è¿™é‡Œå¯ä»¥é‡æ–°é…ç½®é‚®ä»¶å®¢æˆ·ç«¯ã€åˆ·æ–°è¿æ¥ç­‰
             }
             catch (Exception ex)
             {
@@ -567,7 +567,7 @@ namespace App
                 _logger.LogInformation("Cache options changed: Type={CacheType}, DefaultExpiration={DefaultExpirationSeconds}s",
                                       options.CacheType, options.DefaultExpirationSeconds);
 
-                // ÔÚÕâÀï¿ÉÒÔÖØ½¨»º´æÊµÀı¡¢ÇåÀí»º´æµÈ
+                // åœ¨è¿™é‡Œå¯ä»¥é‡å»ºç¼“å­˜å®ä¾‹ã€æ¸…ç†ç¼“å­˜ç­‰
             }
             catch (Exception ex)
             {
@@ -576,7 +576,7 @@ namespace App
         }
 
         /// <summary>
-        /// ÑéÖ¤ËùÓĞ¹Ø¼üÅäÖÃÑ¡Ïî
+        /// éªŒè¯æ‰€æœ‰å…³é”®é…ç½®é€‰é¡¹
         /// </summary>
         public ConfigurationValidationResult ValidateAllConfigurations()
         {
@@ -643,7 +643,7 @@ namespace App
         public string[] Errors { get; set; } = new string[0];
     }
 
-    // 9. ÅäÖÃ¹¤³§Ä£Ê½ - ¶¯Ì¬ÅäÖÃ´´½¨
+    // 9. é…ç½®å·¥å‚æ¨¡å¼ - åŠ¨æ€é…ç½®åˆ›å»º
     public interface IConfigurationFactory<T> where T : class, new()
     {
         T CreateConfiguration();
@@ -704,7 +704,7 @@ namespace App
         }
     }
 
-    // 10. ÌØÊâ»·¾³ÅäÖÃÌá¹©³ÌĞò
+    // 10. ç‰¹æ®Šç¯å¢ƒé…ç½®æä¾›ç¨‹åº
     public class EnvironmentSpecificConfigurationProvider<T> where T : class, new()
     {
         private readonly IConfiguration _configuration;
@@ -721,11 +721,11 @@ namespace App
             var options = new T();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
-            // ´ÓÌØ¶¨»·¾³µÄÅäÖÃ½Ú°ó¶¨
+            // ä»ç‰¹å®šç¯å¢ƒçš„é…ç½®èŠ‚ç»‘å®š
             var sectionName = $"{typeof(T).Name}:{environment}";
             _configuration.GetSection(sectionName).Bind(options);
 
-            // ÔÙ´ÓÄ¬ÈÏÅäÖÃ½Ú°ó¶¨£¨ÓÅÏÈ¼¶½ÏµÍ£©
+            // å†ä»é»˜è®¤é…ç½®èŠ‚ç»‘å®šï¼ˆä¼˜å…ˆçº§è¾ƒä½ï¼‰
             var defaultSectionName = typeof(T).Name;
             _configuration.GetSection(defaultSectionName).Bind(options);
 
@@ -734,7 +734,7 @@ namespace App
         }
     }
 
-    // 11. ÅäÖÃ¼ÓÃÜ½âÃÜ·şÎñ
+    // 11. é…ç½®åŠ å¯†è§£å¯†æœåŠ¡
     public interface IConfigurationEncryptionService
     {
         string DecryptValue(string encryptedValue);
@@ -758,11 +758,11 @@ namespace App
 
             try
             {
-                // Êµ¼ÊÊµÏÖÓ¦¸Ãµ÷ÓÃ¼ÓÃÜ·şÎñ
-                // ÕâÀïÄ£Äâ½âÃÜÂß¼­
+                // å®é™…å®ç°åº”è¯¥è°ƒç”¨åŠ å¯†æœåŠ¡
+                // è¿™é‡Œæ¨¡æ‹Ÿè§£å¯†é€»è¾‘
                 if (encryptedValue.StartsWith("enc:"))
                 {
-                    var decrypted = encryptedValue.Substring(4); // ¼òµ¥Ä£Äâ½âÃÜ
+                    var decrypted = encryptedValue.Substring(4); // ç®€å•æ¨¡æ‹Ÿè§£å¯†
                     _logger.LogDebug("Decrypted configuration value");
                     return decrypted;
                 }
@@ -781,8 +781,8 @@ namespace App
             if (string.IsNullOrEmpty(plainValue))
                 return plainValue;
 
-            // Êµ¼ÊÊµÏÖÓ¦¸Ãµ÷ÓÃ¼ÓÃÜ·şÎñ
-            return $"enc:{plainValue}"; // ¼òµ¥Ä£Äâ¼ÓÃÜ
+            // å®é™…å®ç°åº”è¯¥è°ƒç”¨åŠ å¯†æœåŠ¡
+            return $"enc:{plainValue}"; // ç®€å•æ¨¡æ‹ŸåŠ å¯†
         }
 
         public bool TryDecryptConfiguration<T>(T options, out T decryptedOptions) where T : class, new()
@@ -827,7 +827,7 @@ namespace App
         }
     }
 
-    // 12. ÅäÖÃÒÀÀµÑéÖ¤·şÎñ
+    // 12. é…ç½®ä¾èµ–éªŒè¯æœåŠ¡
     public class ConfigurationDependencyValidator
     {
         private readonly IOptionsMonitor<DatabaseOptions> _databaseOptions;
@@ -848,7 +848,7 @@ namespace App
         }
 
         /// <summary>
-        /// ÑéÖ¤ÅäÖÃÒÀÀµÏî¹ØÏµ
+        /// éªŒè¯é…ç½®ä¾èµ–é¡¹å…³ç³»
         /// </summary>
         public ConfigurationValidationResult ValidateDependencies()
         {
@@ -859,7 +859,7 @@ namespace App
                 var dbOptions = _databaseOptions.CurrentValue;
                 var cacheOptions = _cacheOptions.CurrentValue;
 
-                // ÑéÖ¤Êı¾İ¿âºÍ»º´æÅäÖÃµÄÒÀÀµ¹ØÏµ
+                // éªŒè¯æ•°æ®åº“å’Œç¼“å­˜é…ç½®çš„ä¾èµ–å…³ç³»
                 if (cacheOptions.CacheType == CacheType.Redis &&
                     string.IsNullOrEmpty(cacheOptions.Redis.ConnectionString))
                 {
@@ -892,7 +892,7 @@ namespace App
         }
     }
 
-    // 13. ÅäÖÃÄ£¿é»¯¹ÜÀí·şÎñ
+    // 13. é…ç½®æ¨¡å—åŒ–ç®¡ç†æœåŠ¡
     [OptionsValidator]
     public partial class EmailOptionsValidator : IValidateOptions<EmailServiceOptions>
     {
@@ -903,7 +903,7 @@ namespace App
     {
     }
 
-    // 14. ÅäÖÃ½¡¿µ¼ì²é·şÎñ
+    // 14. é…ç½®å¥åº·æ£€æŸ¥æœåŠ¡
     public class ConfigurationHealthCheck : IHealthCheck
     {
         private readonly IOptionsMonitor<DatabaseOptions> _databaseOptions;
@@ -929,7 +929,7 @@ namespace App
                 var dbOptions = _databaseOptions.CurrentValue;
                 var emailOptions = _emailOptions.CurrentValue;
 
-                // Ö´ĞĞ»ù±¾ÅäÖÃÑéÖ¤
+                // æ‰§è¡ŒåŸºæœ¬é…ç½®éªŒè¯
                 if (string.IsNullOrEmpty(dbOptions.ConnectionString))
                 {
                     return Task.FromResult(HealthCheckResult.Degraded("Database connection string is missing"));
@@ -954,7 +954,7 @@ namespace App
         }
     }
 
-    // 15. ÅäÖÃÊ¹ÓÃÑİÊ¾·şÎñ
+    // 15. é…ç½®ä½¿ç”¨æ¼”ç¤ºæœåŠ¡
     public class ConfigurationDemoService
     {
         private readonly IOptions<DatabaseOptions> _databaseOptions;
@@ -981,23 +981,23 @@ namespace App
         }
 
         /// <summary>
-        /// ÑİÊ¾²»Í¬Ñ¡Ïî·ÃÎÊÄ£Ê½µÄÊ¹ÓÃ
+        /// æ¼”ç¤ºä¸åŒé€‰é¡¹è®¿é—®æ¨¡å¼çš„ä½¿ç”¨
         /// </summary>
         public void DemonstrateConfigurationAccess()
         {
             Console.WriteLine("1. Configuration Access Patterns:");
 
-            // IOptions - µ¥Àı£¬ÅäÖÃÆô¶¯Ê±°ó¶¨£¬Ó¦ÓÃÉúÃüÖÜÆÚ²»±ä
+            // IOptions - å•ä¾‹ï¼Œé…ç½®å¯åŠ¨æ—¶ç»‘å®šï¼Œåº”ç”¨ç”Ÿå‘½å‘¨æœŸä¸å˜
             var dbOptions = _databaseOptions.Value;
             Console.WriteLine($"   Database ConnectionString: {dbOptions.ConnectionString}");
             Console.WriteLine($"   Database CommandTimeout: {dbOptions.CommandTimeout}");
 
-            // IOptionsSnapshot - ×÷ÓÃÓòµ¥Àı£¬Ã¿´ÎÇëÇó¶¼»áÖØĞÂ¼ÆËã
+            // IOptionsSnapshot - ä½œç”¨åŸŸå•ä¾‹ï¼Œæ¯æ¬¡è¯·æ±‚éƒ½ä¼šé‡æ–°è®¡ç®—
             var emailOptions = _emailOptions.Value;
             Console.WriteLine($"   Email SMTP Host: {emailOptions.SmtpHost}");
             Console.WriteLine($"   Email SSL Enabled: {emailOptions.EnableSsl}");
 
-            // IOptionsMonitor - µ¥Àı£¬ÅäÖÃ±ä¸üÊ±»á´¥·¢»Øµ÷
+            // IOptionsMonitor - å•ä¾‹ï¼Œé…ç½®å˜æ›´æ—¶ä¼šè§¦å‘å›è°ƒ
             var cacheOptions = _cacheOptions.CurrentValue;
             if (_cacheOptions is IOptionsSnapshot<CacheOptions> cacheSnapshot)
             {
@@ -1007,13 +1007,13 @@ namespace App
         }
 
         /// <summary>
-        /// ÑİÊ¾ÅäÖÃÑéÖ¤
+        /// æ¼”ç¤ºé…ç½®éªŒè¯
         /// </summary>
         public ConfigurationValidationResult DemonstrateConfigurationValidation()
         {
             Console.WriteLine("\n2. Configuration Validation Demo:");
 
-            // ºó´¦ÀíÅäÖÃ
+            // åå¤„ç†é…ç½®
             var dbOptions = _databaseOptions.Value;
             _dbOptionsSetup.Configure(dbOptions);
 
@@ -1035,7 +1035,7 @@ namespace App
         }
 
         /// <summary>
-        /// ÑİÊ¾¼ÓÃÜÅäÖÃ´¦Àí
+        /// æ¼”ç¤ºåŠ å¯†é…ç½®å¤„ç†
         /// </summary>
         public void DemonstrateEncryptedConfiguration()
         {
@@ -1044,43 +1044,43 @@ namespace App
             var emailOptions = _emailOptions.Value;
             Console.WriteLine($"   Original email password: {emailOptions.Password}");
 
-            // Ä£Äâ¼ÓÃÜÖµ
+            // æ¨¡æ‹ŸåŠ å¯†å€¼
             if (emailOptions.Password?.StartsWith("enc:") == true)
             {
                 var decryptedPassword = _encryptionService.DecryptValue(emailOptions.Password);
                 Console.WriteLine($"   Decrypted email password: {decryptedPassword}");
             }
 
-            // ¼ÓÃÜĞÂÖµ
+            // åŠ å¯†æ–°å€¼
             var encryptedValue = _encryptionService.EncryptValue("new-super-secret-password");
             Console.WriteLine($"   Encrypted sample value: {encryptedValue}");
         }
 
         /// <summary>
-        /// ÑİÊ¾ÅäÖÃ±ä¸ü¼à¿Ø
+        /// æ¼”ç¤ºé…ç½®å˜æ›´ç›‘æ§
         /// </summary>
         public void DemonstrateConfigurationMonitoring()
         {
             Console.WriteLine("\n4. Configuration Change Monitoring Demo:");
 
-            // Õâ¸öÑİÊ¾ĞèÒªÍâ²¿´¥·¢ÅäÖÃ±ä¸ü²ÅÄÜ¿´µ½Ğ§¹û
+            // è¿™ä¸ªæ¼”ç¤ºéœ€è¦å¤–éƒ¨è§¦å‘é…ç½®å˜æ›´æ‰èƒ½çœ‹åˆ°æ•ˆæœ
             Console.WriteLine("   Configuration change monitoring is active");
             Console.WriteLine("   Any configuration changes will be logged");
         }
     }
 
-    // 16. ÅäÖÃÆô¶¯ÑéÖ¤À©Õ¹
+    // 16. é…ç½®å¯åŠ¨éªŒè¯æ‰©å±•
     public static class ConfigurationValidationExtensions
     {
         /// <summary>
-        /// Ìí¼ÓÅäÖÃÑéÖ¤µ½·şÎñÈİÆ÷
+        /// æ·»åŠ é…ç½®éªŒè¯åˆ°æœåŠ¡å®¹å™¨
         /// </summary>
         public static IServiceCollection AddConfigurationValidation(this IServiceCollection services)
         {
             services.AddSingleton<ConfigurationServiceManager>();
             services.AddSingleton<ConfigurationDependencyValidator>();
 
-            // Ìí¼Ó½¡¿µ¼ì²é
+            // æ·»åŠ å¥åº·æ£€æŸ¥
             services.AddHealthChecks()
                 .AddCheck<ConfigurationHealthCheck>("configuration-health", tags: new[] { "configuration" });
 
@@ -1088,7 +1088,7 @@ namespace App
         }
 
         /// <summary>
-        /// ÑéÖ¤¹Ø¼üÅäÖÃÆô¶¯Ê±µÄÓĞĞ§ĞÔ
+        /// éªŒè¯å…³é”®é…ç½®å¯åŠ¨æ—¶çš„æœ‰æ•ˆæ€§
         /// </summary>
         public static IServiceProvider ValidateConfigurations(this IServiceProvider serviceProvider)
         {
@@ -1123,7 +1123,7 @@ namespace App
         }
     }
 
-    // 17. ³ÌĞòÆô¶¯ÅäÖÃÀà
+    // 17. ç¨‹åºå¯åŠ¨é…ç½®ç±»
     public class Program
     {
         public static async Task Main(string[] args)
@@ -1134,12 +1134,12 @@ namespace App
             Console.WriteLine("=============================================");
             Console.WriteLine();
 
-            #region ÅäÖÃ·şÎñ
+            #region é…ç½®æœåŠ¡
 
-            // ´´½¨Ê¾ÀıÅäÖÃÎÄ¼ş
+            // åˆ›å»ºç¤ºä¾‹é…ç½®æ–‡ä»¶
             CreateSampleConfiguration(builder.Configuration);
 
-            // ÅäÖÃÑ¡Ïî·şÎñ
+            // é…ç½®é€‰é¡¹æœåŠ¡
             builder.Services.Configure<DatabaseOptions>(
                 builder.Configuration.GetSection(DatabaseOptions.SectionName));
 
@@ -1154,27 +1154,27 @@ namespace App
 
             #endregion
 
-            #region ÅäÖÃÑéÖ¤·şÎñ
+            #region é…ç½®éªŒè¯æœåŠ¡
 
-            // Ìí¼ÓÅäÖÃÑéÖ¤
+            // æ·»åŠ é…ç½®éªŒè¯
             builder.Services.AddConfigurationValidation();
 
-            // Ìí¼Ó×Ô¶¨ÒåÅäÖÃºó´¦Àí·şÎñ
+            // æ·»åŠ è‡ªå®šä¹‰é…ç½®åå¤„ç†æœåŠ¡
             builder.Services.AddSingleton<DatabaseOptionsSetup>();
 
-            // Ìí¼Ó¼ÓÃÜ·şÎñ
+            // æ·»åŠ åŠ å¯†æœåŠ¡
             builder.Services.AddSingleton<IConfigurationEncryptionService, ConfigurationEncryptionService>();
 
-            // Ìí¼ÓÑİÊ¾·şÎñ
+            // æ·»åŠ æ¼”ç¤ºæœåŠ¡
             builder.Services.AddTransient<ConfigurationDemoService>();
 
             #endregion
 
             var host = builder.Build();
 
-            #region ÑİÊ¾¸÷ÖÖÅäÖÃ¹¦ÄÜ
+            #region æ¼”ç¤ºå„ç§é…ç½®åŠŸèƒ½
 
-            // Æô¶¯ÅäÖÃÑéÖ¤
+            // å¯åŠ¨é…ç½®éªŒè¯
             host.ValidateConfigurations();
 
             var demoService = host.Services.GetRequiredService<ConfigurationDemoService>();
@@ -1182,19 +1182,19 @@ namespace App
             Console.WriteLine("Demonstrating Microsoft.Extensions.Options production usage:");
             Console.WriteLine();
 
-            // ÑİÊ¾ÅäÖÃ·ÃÎÊÄ£Ê½
+            // æ¼”ç¤ºé…ç½®è®¿é—®æ¨¡å¼
             demoService.DemonstrateConfigurationAccess();
 
-            // ÑİÊ¾ÅäÖÃÑéÖ¤
+            // æ¼”ç¤ºé…ç½®éªŒè¯
             demoService.DemonstrateConfigurationValidation();
 
-            // ÑİÊ¾¼ÓÃÜÅäÖÃ´¦Àí
+            // æ¼”ç¤ºåŠ å¯†é…ç½®å¤„ç†
             demoService.DemonstrateEncryptedConfiguration();
 
-            // ÑİÊ¾ÅäÖÃ¼à¿Ø
+            // æ¼”ç¤ºé…ç½®ç›‘æ§
             demoService.DemonstrateConfigurationMonitoring();
 
-            // Ä£ÄâÅäÖÃÊ¹ÓÃ³¡¾°
+            // æ¨¡æ‹Ÿé…ç½®ä½¿ç”¨åœºæ™¯
             await SimulateConfigurationUsage(host.Services);
 
             #endregion
@@ -1206,11 +1206,11 @@ namespace App
 
         private static void CreateSampleConfiguration(IConfiguration configuration)
         {
-            // ÔÚÊµ¼ÊÓ¦ÓÃÖĞ£¬ÕâĞ©ÅäÖÃÍ¨³£À´×ÔÎÄ¼ş»ò»·¾³±äÁ¿
-            // ÕâÀïÄ£ÄâÅäÖÃÖµµÄÉèÖÃ
+            // åœ¨å®é™…åº”ç”¨ä¸­ï¼Œè¿™äº›é…ç½®é€šå¸¸æ¥è‡ªæ–‡ä»¶æˆ–ç¯å¢ƒå˜é‡
+            // è¿™é‡Œæ¨¡æ‹Ÿé…ç½®å€¼çš„è®¾ç½®
             var configDict = new Dictionary<string, string>
             {
-                // Êı¾İ¿âÅäÖÃ
+                // æ•°æ®åº“é…ç½®
                 ["Database:ConnectionString"] = "Server=localhost;Database=MyProductionDB;User=appuser;",
                 ["Database:CommandTimeout"] = "60",
                 ["Database:MaxPoolSize"] = "50",
@@ -1219,7 +1219,7 @@ namespace App
                 ["Database:RetryOptions:InitialDelaySeconds"] = "2",
                 ["Database:RetryOptions:MaxDelaySeconds"] = "30",
 
-                // ÓÊ¼ş·şÎñÅäÖÃ
+                // é‚®ä»¶æœåŠ¡é…ç½®
                 ["EmailService:SmtpHost"] = "smtp.company.com",
                 ["EmailService:SmtpPort"] = "587",
                 ["EmailService:Username"] = "noreply@company.com",
@@ -1227,19 +1227,19 @@ namespace App
                 ["EmailService:SenderEmail"] = "noreply@company.com",
                 ["EmailService:SenderName"] = "My Company",
 
-                // »º´æÅäÖÃ
+                // ç¼“å­˜é…ç½®
                 ["Cache:CacheType"] = "Redis",
                 ["Cache:Redis:ConnectionString"] = "localhost:6379",
                 ["Cache:Redis:DatabaseNumber"] = "1",
 
-                // °²È«ÅäÖÃ
+                // å®‰å…¨é…ç½®
                 ["Security:Jwt:Issuer"] = "https://mycompany.com",
                 ["Security:Jwt:Audience"] = "https://myapp.mycompany.com",
                 ["Security:Jwt:SecretKey"] = "enc:very-long-secret-key-here",
                 ["Security:Jwt:ExpiryDays"] = "30"
             };
 
-            // Ä£ÄâÅäÖÃ°ó¶¨
+            // æ¨¡æ‹Ÿé…ç½®ç»‘å®š
             foreach (var kvp in configDict)
             {
                 Environment.SetEnvironmentVariable(kvp.Key.Replace(":", "__"), kvp.Value);
@@ -1256,7 +1256,7 @@ namespace App
 
             try
             {
-                // Ä£Äâ¶à´ÎÊ¹ÓÃÅäÖÃ - Õ¹Ê¾IOptionsMonitorµÄÊµÊ±ĞÔ
+                // æ¨¡æ‹Ÿå¤šæ¬¡ä½¿ç”¨é…ç½® - å±•ç¤ºIOptionsMonitorçš„å®æ—¶æ€§
                 for (int i = 0; i < 3; i++)
                 {
                     var dbOptions = dbConfigMonitor.CurrentValue;
@@ -1275,14 +1275,14 @@ namespace App
         }
     }
 
-    // ºËĞÄÑ¡Ïî½Ó¿ÚÀàĞÍ
-    // IOptions<T> - µ¥Àı£¬ÅäÖÃÆô¶¯Ê±°ó¶¨
-    // IOptionsSnapshot<T> - ×÷ÓÃÓòµ¥Àı£¬Ã¿´ÎÇëÇóÖØĞÂ¼ÆËã
-    // IOptionsMonitor<T> - µ¥Àı£¬Ö§³ÖÅäÖÃ±ä¸üÍ¨Öª
-    // IOptionsFactory<T> - ÅäÖÃÑ¡Ïî¹¤³§
-    // IOptionsChangeTokenSource<T> - ÅäÖÃ±ä¸üÁîÅÆÔ´
+    // æ ¸å¿ƒé€‰é¡¹æ¥å£ç±»å‹
+    // IOptions<T> - å•ä¾‹ï¼Œé…ç½®å¯åŠ¨æ—¶ç»‘å®š
+    // IOptionsSnapshot<T> - ä½œç”¨åŸŸå•ä¾‹ï¼Œæ¯æ¬¡è¯·æ±‚é‡æ–°è®¡ç®—
+    // IOptionsMonitor<T> - å•ä¾‹ï¼Œæ”¯æŒé…ç½®å˜æ›´é€šçŸ¥
+    // IOptionsFactory<T> - é…ç½®é€‰é¡¹å·¥å‚
+    // IOptionsChangeTokenSource<T> - é…ç½®å˜æ›´ä»¤ç‰Œæº
 
-    // ÅäÖÃÑéÖ¤×î¼ÑÊµ¼ù
+    // é…ç½®éªŒè¯æœ€ä½³å®è·µ
     public class DatabaseOptions
     {
         // using System.ComponentModel.DataAnnotations;
@@ -1294,7 +1294,7 @@ namespace App
         public int CommandTimeout { get; set; } = 30;
 
 
-        // ÅäÖÃ±ä¸ü¼à¿Ø
+        // é…ç½®å˜æ›´ç›‘æ§
         _optionsMonitor.OnChange(options =>
         {
             _logger.LogWarning("Configuration changed at {Timestamp}", DateTime.UtcNow);
@@ -1303,20 +1303,20 @@ namespace App
 
     }
 
-// Éú²ú»·¾³ÅäÖÃÊ¹ÓÃÄ£Ê½
-// IOptions - ¾²Ì¬ÅäÖÃ£º
-// ÊÊÓÃÓÚÆô¶¯ºó²»»á¸Ä±äµÄÅäÖÃ£¬ÈçÓ¦ÓÃ°æ±¾¡¢¾²Ì¬¶ËµãµÈ¡£
-// IOptionsSnapshot - ÇëÇó¼¶ÅäÖÃ£º
-// ÊÊÓÃÓÚÃ¿´ÎÇëÇó¶¼ĞèÒª¶ÀÁ¢ÊµÀıµÄÅäÖÃ£¬ÈçÓÃ»§ÌØ¶¨ÅäÖÃ¡£
-// IOptionsMonitor - ¶¯Ì¬ÅäÖÃ£º
-// ÊÊÓÃÓÚĞèÒªÏìÓ¦ÅäÖÃ±ä¸üµÄ³¡¾°£¬ÈçÊı¾İ¿âÁ¬½Ó×Ö·û´®¡¢»º´æ²ßÂÔµÈ¡£
+// ç”Ÿäº§ç¯å¢ƒé…ç½®ä½¿ç”¨æ¨¡å¼
+// IOptions - é™æ€é…ç½®ï¼š
+// é€‚ç”¨äºå¯åŠ¨åä¸ä¼šæ”¹å˜çš„é…ç½®ï¼Œå¦‚åº”ç”¨ç‰ˆæœ¬ã€é™æ€ç«¯ç‚¹ç­‰.
+// IOptionsSnapshot - è¯·æ±‚çº§é…ç½®ï¼š
+// é€‚ç”¨äºæ¯æ¬¡è¯·æ±‚éƒ½éœ€è¦ç‹¬ç«‹å®ä¾‹çš„é…ç½®ï¼Œå¦‚ç”¨æˆ·ç‰¹å®šé…ç½®.
+// IOptionsMonitor - åŠ¨æ€é…ç½®ï¼š
+// é€‚ç”¨äºéœ€è¦å“åº”é…ç½®å˜æ›´çš„åœºæ™¯ï¼Œå¦‚æ•°æ®åº“è¿æ¥å­—ç¬¦ä¸²ã€ç¼“å­˜ç­–ç•¥ç­‰.
 
-    //ÅäÖÃºó´¦ÀíºÍÀ©Õ¹
+    //é…ç½®åå¤„ç†å’Œæ‰©å±•
     public class DatabaseOptionsSetup : IConfigureOptions<DatabaseOptions>
     {
         public void Configure(DatabaseOptions options)
         {
-            // ÅäÖÃ°ó¶¨ºóµÄºó´¦ÀíÂß¼­
+            // é…ç½®ç»‘å®šåçš„åå¤„ç†é€»è¾‘
             if (string.IsNullOrEmpty(options.ConnectionString))
             {
                 options.ConnectionString = GetDefaultConnectionString();
@@ -1325,11 +1325,11 @@ namespace App
 
         public void Validate(DatabaseOptions options)
         {
-            // ¸´ÔÓÒµÎñ¹æÔòÑéÖ¤
+            // å¤æ‚ä¸šåŠ¡è§„åˆ™éªŒè¯
         }
     }
 
-    // »·¾³ÌØ¶¨ÅäÖÃ
+    // ç¯å¢ƒç‰¹å®šé…ç½®
     public class EnvironmentSpecificConfigurationProvider<T> where T : class, new()
     {
         public T GetConfigurationForEnvironment()
@@ -1337,7 +1337,7 @@ namespace App
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var options = new T();
 
-            // ÓÅÏÈ¼¶£º»·¾³ÌØ¶¨ÅäÖÃ > Ä¬ÈÏÅäÖÃ
+            // ä¼˜å…ˆçº§ï¼šç¯å¢ƒç‰¹å®šé…ç½® > é»˜è®¤é…ç½®
             _configuration.GetSection($"{typeof(T).Name}:{environment}").Bind(options);
             _configuration.GetSection(typeof(T).Name).Bind(options);
 
@@ -1345,33 +1345,33 @@ namespace App
          }
     }
 
-    //  °²È«ÅäÖÃ´¦Àí
+    //  å®‰å…¨é…ç½®å¤„ç†
     public interface IConfigurationEncryptionService
     {
         string DecryptValue(string encryptedValue);
         string EncryptValue(string plainValue);
     }
-    // ±ÜÃâÔÚÅäÖÃÖĞ´æ´¢Ã÷ÎÄÃô¸ĞĞÅÏ¢
-    // Ê¹ÓÃ¼ÓÃÜ·şÎñ´¦ÀíÁ¬½Ó×Ö·û´®¡¢APIÃÜÔ¿µÈÃô¸ĞÊı¾İ
+    // é¿å…åœ¨é…ç½®ä¸­å­˜å‚¨æ˜æ–‡æ•æ„Ÿä¿¡æ¯
+    // ä½¿ç”¨åŠ å¯†æœåŠ¡å¤„ç†è¿æ¥å­—ç¬¦ä¸²ã€APIå¯†é’¥ç­‰æ•æ„Ÿæ•°æ®
 
-    // ÅäÖÃÒÀÀµÑéÖ¤
+    // é…ç½®ä¾èµ–éªŒè¯
     public class ConfigurationDependencyValidator
     {
         public ConfigurationValidationResult ValidateDependencies()
         {
-            // ÑéÖ¤ÅäÖÃÏîÖ®¼äµÄÒÀÀµ¹ØÏµ
-            // È·±£Ïà¹ØµÄÅäÖÃÏî±£³ÖÒ»ÖÂĞÔ
+            // éªŒè¯é…ç½®é¡¹ä¹‹é—´çš„ä¾èµ–å…³ç³»
+            // ç¡®ä¿ç›¸å…³çš„é…ç½®é¡¹ä¿æŒä¸€è‡´æ€§
         }
     }
 
-    // Æô¶¯Ê±ÅäÖÃÑéÖ¤
+    // å¯åŠ¨æ—¶é…ç½®éªŒè¯
     public static IServiceProvider ValidateConfigurations(this IServiceProvider serviceProvider)
     {
-    // Ó¦ÓÃÆô¶¯Ê±ÑéÖ¤¹Ø¼üÅäÖÃµÄÍêÕûĞÔ
-    // ·ÀÖ¹ÅäÖÃ´íÎóµ¼ÖÂÓ¦ÓÃÆô¶¯Ê§°Ü
+    // åº”ç”¨å¯åŠ¨æ—¶éªŒè¯å…³é”®é…ç½®çš„å®Œæ•´æ€§
+    // é˜²æ­¢é…ç½®é”™è¯¯å¯¼è‡´åº”ç”¨å¯åŠ¨å¤±è´¥
     }
 
-    // ½¡¿µ¼ì²é¼¯³É
+    // å¥åº·æ£€æŸ¥é›†æˆ
     services.AddHealthChecks().AddCheck<ConfigurationHealthCheck>("configuration-health");
 
     public class ConfigurationHealthCheck : IHealthCheck
@@ -1379,11 +1379,11 @@ namespace App
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
-            // ¶¨ÆÚ¼ì²éÅäÖÃµÄÓĞĞ§ĞÔºÍ·şÎñÄÜÁ¦
+            // å®šæœŸæ£€æŸ¥é…ç½®çš„æœ‰æ•ˆæ€§å’ŒæœåŠ¡èƒ½åŠ›
         }
     }
 
-    // ÍÆ¼öµÄÅäÖÃ½á¹¹
+    // æ¨èçš„é…ç½®ç»“æ„
     string cfg = """
     {
       "Database": {
@@ -1400,16 +1400,16 @@ namespace App
     }
     """
 
-    // Éú²ú»·¾³ÌØÊâ´¦Àí
-    // ÅäÖÃÈÈÖØÔØ£ºÖ§³ÖÔËĞĞÊ±ÅäÖÃ¸üĞÂ
-    // Ãô¸ĞĞÅÏ¢¼ÓÃÜ£º·ÀÖ¹ÅäÖÃĞ¹Â¶
-    // »·¾³¸ôÀë£º²»Í¬»·¾³Ê¹ÓÃ²»Í¬ÅäÖÃ
-    // ÒÀÀµÑéÖ¤£ºÈ·±£ÅäÖÃÏîµÄÒ»ÖÂĞÔ
-    // ½¡¿µ¼ì²é£º¼à¿ØÅäÖÃ¿ÉÓÃĞÔ
+    // ç”Ÿäº§ç¯å¢ƒç‰¹æ®Šå¤„ç†
+    // é…ç½®çƒ­é‡è½½ï¼šæ”¯æŒè¿è¡Œæ—¶é…ç½®æ›´æ–°
+    // æ•æ„Ÿä¿¡æ¯åŠ å¯†ï¼šé˜²æ­¢é…ç½®æ³„éœ²
+    // ç¯å¢ƒéš”ç¦»ï¼šä¸åŒç¯å¢ƒä½¿ç”¨ä¸åŒé…ç½®
+    // ä¾èµ–éªŒè¯ï¼šç¡®ä¿é…ç½®é¡¹çš„ä¸€è‡´æ€§
+    // å¥åº·æ£€æŸ¥ï¼šç›‘æ§é…ç½®å¯ç”¨æ€§
 
-    // ÅäÖÃ·ÃÎÊÉúÃüÖÜÆÚ
-    // ½Ó¿Ú	ÉúÃüÖÜÆÚ	±ä¸üÍ¨Öª	Ê¹ÓÃ³¡¾°
-    // IOptions<T>	µ¥Àı	²»Ö§³Ö	¾²Ì¬ÅäÖÃ
-    // IOptionsSnapshot<T>	×÷ÓÃÓò	²»Ö§³Ö	ÇëÇó¼¶ÅäÖÃ
-    // IOptionsMonitor<T>	µ¥Àı	Ö§³Ö	¶¯Ì¬ÅäÖÃ
+    // é…ç½®è®¿é—®ç”Ÿå‘½å‘¨æœŸ
+    // æ¥å£	ç”Ÿå‘½å‘¨æœŸ	å˜æ›´é€šçŸ¥	ä½¿ç”¨åœºæ™¯
+    // IOptions<T>	å•ä¾‹	ä¸æ”¯æŒ	é™æ€é…ç½®
+    // IOptionsSnapshot<T>	ä½œç”¨åŸŸ	ä¸æ”¯æŒ	è¯·æ±‚çº§é…ç½®
+    // IOptionsMonitor<T>	å•ä¾‹	æ”¯æŒ	åŠ¨æ€é…ç½®
 }

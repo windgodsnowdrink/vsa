@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk
+﻿#:sdk Microsoft.NET.Sdk
 #:package jieba.NET@0.37.0
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Caching.Memory@10.0.0
@@ -236,7 +236,7 @@ namespace JiebaAot
 
         public async Task RunBenchmarkAsync()
         {
-            var testText = "这是一个测试文本，用于测试分词性能。这是一个较长的测试文本，包含多个句子和词汇。";
+            var testText = "这是一个测试文本，用于测试分词性能.这是一个较长的测试文本，包含多个句子和词汇.";
             var iterations = 10000;
 
             _logger.LogInformation("开始性能基准测试...");

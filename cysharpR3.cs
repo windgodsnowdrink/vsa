@@ -1,65 +1,65 @@
-
+ï»¿
 using System;
-//´ú±íÒ»ÌõÃüÁîÊı¾İ
+//ä»£è¡¨ä¸€æ¡å‘½ä»¤æ•°æ®
 public class CommandData
 {
-    // ÓÃÓÚ±êÊ¶ÃüÁîµÄ¿ªÊ¼±êÊ¾
+    // ç”¨äºæ ‡è¯†å‘½ä»¤çš„å¼€å§‹æ ‡ç¤º
     public string StartInstruction { get; set; }
-    // Ê¹ÓÃÃ¶¾ÙÀàĞÍÀ´±êÊ¶²»Í¬ÀàĞÍµÄÃüÁî£¬Ìá¸ß´úÂë¿É¶ÁĞÔºÍÎ¬»¤ĞÔ
+    // ä½¿ç”¨æšä¸¾ç±»å‹æ¥æ ‡è¯†ä¸åŒç±»å‹çš„å‘½ä»¤ï¼Œæé«˜ä»£ç å¯è¯»æ€§å’Œç»´æŠ¤æ€§
     public CommandType CommandType { get; set; }
-    // ±íÊ¾ÃüÁîÊı¾İ³¤¶È
+    // è¡¨ç¤ºå‘½ä»¤æ•°æ®é•¿åº¦
     public int Length { get; set; }
-    // ´æ´¢Êµ¼ÊµÄÃüÁîÊı¾İ£¬Ê¹ÓÃ byte[] ´æ´¢£¬ÒÔÖ§³ÖÊı¾İ¸ñÊ½µÄÁé»îĞÔºÍ¶ş½øÖÆ´«Êä
+    // å­˜å‚¨å®é™…çš„å‘½ä»¤æ•°æ®ï¼Œä½¿ç”¨ byte[] å­˜å‚¨ï¼Œä»¥æ”¯æŒæ•°æ®æ ¼å¼çš„çµæ´»æ€§å’ŒäºŒè¿›åˆ¶ä¼ è¾“
     public byte[] Data { get; set; }
-    // ÓÃÓÚ´æ´¢Ğ£ÑéÖµ
+    // ç”¨äºå­˜å‚¨æ ¡éªŒå€¼
     public string CheckValue { get; set; } // 
-    // ÓÃÓÚ´æ´¢ÃüÁîÖ´ĞĞµÄ½á¹û
+    // ç”¨äºå­˜å‚¨å‘½ä»¤æ‰§è¡Œçš„ç»“æœ
     public string Result { get; set; }
 
-    // ·¢ËÍ»Ø¸´±êÊ¶
-    // ·¢ËÍÊ±¼ä±íÊ¾
-    // Éè±¸±àºÅ±êÊ¶
+    // å‘é€å›å¤æ ‡è¯†
+    // å‘é€æ—¶é—´è¡¨ç¤º
+    // è®¾å¤‡ç¼–å·æ ‡è¯†
 
-    // Ã¶¾ÙÀàĞÍ£¬ÓÃÓÚ±êÊ¶²»Í¬µÄÃüÁîÀàĞÍ
+    // æšä¸¾ç±»å‹ï¼Œç”¨äºæ ‡è¯†ä¸åŒçš„å‘½ä»¤ç±»å‹
     public enum CommandType
     {
         Start = 1,
         GetData = 2,
         SetPara = 3,
-        // ...ÆäËûÃüÁîÀàĞÍ
+        // ...å…¶ä»–å‘½ä»¤ç±»å‹
     }
 }
 
-// ÓÃÓÚÃèÊöÃüÁîÊı¾İÖĞµÄµ¥¸öÖ¸±êĞÅÏ¢
+// ç”¨äºæè¿°å‘½ä»¤æ•°æ®ä¸­çš„å•ä¸ªæŒ‡æ ‡ä¿¡æ¯
 public class DataModel
 {
-    public string Name { get; set; } // Ö¸±êÃû³Æ
-    public string Unit { get; set; } // µ¥Î» 
-    public float? MinValue { get; set; } // ×îĞ¡Öµ
-    public float? MaxValue { get; set; } // ×î´óÖµ
-    public DataType ValueType { get; set; } // Êı¾İÀàĞÍ
-    public string Description { get; set; } // ËµÃ÷
-    public byte ValueLength { get; set; } // Öµ³¤¶È
+    public string Name { get; set; } // æŒ‡æ ‡åç§°
+    public string Unit { get; set; } // å•ä½ 
+    public float? MinValue { get; set; } // æœ€å°å€¼
+    public float? MaxValue { get; set; } // æœ€å¤§å€¼
+    public DataType ValueType { get; set; } // æ•°æ®ç±»å‹
+    public string Description { get; set; } // è¯´æ˜
+    public byte ValueLength { get; set; } // å€¼é•¿åº¦
 
-    // Ö¸±êID
-    // ÊÇ·ñ±ØÌî
-    //Ä¬ÈÏÖµ
+    // æŒ‡æ ‡ID
+    // æ˜¯å¦å¿…å¡«
+    //é»˜è®¤å€¼
 
     public enum DataType
     {
         Float,
         Int,
         Bool,
-        // ...ÆäËûÊı¾İÀàĞÍ
+        // ...å…¶ä»–æ•°æ®ç±»å‹
     }
 }
 
-// ÊµÏÖÒ»¸öÃüÁî¶ÓÁĞ£¬ÓÃÓÚ¹ÜÀí´ı·¢ËÍµÄÃüÁîÊı¾İ
+// å®ç°ä¸€ä¸ªå‘½ä»¤é˜Ÿåˆ—ï¼Œç”¨äºç®¡ç†å¾…å‘é€çš„å‘½ä»¤æ•°æ®
 public class CommandQueue
 {
-    // ´æ´¢´ı·¢ËÍµÄÃüÁîÊı¾İ
+    // å­˜å‚¨å¾…å‘é€çš„å‘½ä»¤æ•°æ®
     private readonly List<CommandData> _queue = new List<CommandData>();
-    // ÓÃÓÚÏò¶ÓÁĞÖĞÌí¼ÓÒ»ÌõÃüÁîÊı¾İ
+    // ç”¨äºå‘é˜Ÿåˆ—ä¸­æ·»åŠ ä¸€æ¡å‘½ä»¤æ•°æ®
     public void Enqueue(CommandData commandData)
     {
         lock (_queue)
@@ -67,10 +67,10 @@ public class CommandQueue
             _queue.Add(commandData);
         }
     }
-    // ´Ó¶ÓÁĞµÄÊ×²¿È¡³öÒ»ÌõÃüÁîÊı¾İ
+    // ä»é˜Ÿåˆ—çš„é¦–éƒ¨å–å‡ºä¸€æ¡å‘½ä»¤æ•°æ®
     public CommandData Dequeue()
     {
-        lock (_queue)//±£Ïß³Ì°²È«£¬±ÜÃâ²¢·¢·ÃÎÊµ¼ÖÂµÄÊı¾İ²»Ò»ÖÂ
+        lock (_queue)//ä¿çº¿ç¨‹å®‰å…¨ï¼Œé¿å…å¹¶å‘è®¿é—®å¯¼è‡´çš„æ•°æ®ä¸ä¸€è‡´
         {
             if (_queue.Count > 0)
             {
@@ -79,11 +79,11 @@ public class CommandQueue
             return null;
         }
     }
-    // ·µ»Ø¶ÓÁĞÖĞµÄÃüÁîÊı¾İÊıÁ¿
+    // è¿”å›é˜Ÿåˆ—ä¸­çš„å‘½ä»¤æ•°æ®æ•°é‡
     public int Count => _queue.Count;
 }
 var commandQueue = new CommandQueue();
-var commandData = new CommandData(); // ... ³õÊ¼»¯ commandData Êı¾İ
+var commandData = new CommandData(); // ... åˆå§‹åŒ– commandData æ•°æ®
 commandQueue.Enqueue(commandData);
 var dequeueCommand = commandQueue.Dequeue();
 
@@ -91,23 +91,23 @@ using Cysharp.R3.MessagePipe;
 
 public class DataGenerator : IAsyncDisposable
 {
-    // Êı¾İÉú³ÉÂß¼­
+    // æ•°æ®ç”Ÿæˆé€»è¾‘
     public async ValueTask GenerateDataAsync()
     {
         while (true)
         {
-            // Ä£ÄâÉú³ÉÊı¾İ ...
+            // æ¨¡æ‹Ÿç”Ÿæˆæ•°æ® ...
             var data = /*  Data Generation Logic  */ ;
 
-            // ·¢ËÍÊı¾İµ½ MessagePipe Í¨µÀ
+            // å‘é€æ•°æ®åˆ° MessagePipe é€šé“
             await _pipe.SendAsync(data);
 
-            //  µÈ´ıÒ»¶¨Ê±¼äÔÙÉú³ÉÊı¾İ
+            //  ç­‰å¾…ä¸€å®šæ—¶é—´å†ç”Ÿæˆæ•°æ®
             await Task.Delay(1000);
         }
     }
 
-    // MessagePipe Í¨µÀÓÃÓÚ·¢ËÍÊı¾İ
+    // MessagePipe é€šé“ç”¨äºå‘é€æ•°æ®
     private readonly MessagePipe<DataModel> _pipe;
 
     public DataGenerator()
@@ -115,14 +115,14 @@ public class DataGenerator : IAsyncDisposable
         _pipe = new MessagePipe<DataModel>();
     }
 
-    public ValueTask DisposeAsync() => _pipe.DisposeAsync(); // ÊµÏÖÒì²½ÊÍ·Å
+    public ValueTask DisposeAsync() => _pipe.DisposeAsync(); // å®ç°å¼‚æ­¥é‡Šæ”¾
 }
 
 using Cysharp.R3.MessagePipe;
 
 public class DataConsumer : IAsyncDisposable
 {
-    private readonly CommandDataConverter _converter = new CommandDataConverter(); // Ê¹ÓÃÊı¾İ×ª»»Æ÷
+    private readonly CommandDataConverter _converter = new CommandDataConverter(); // ä½¿ç”¨æ•°æ®è½¬æ¢å™¨
     private readonly IServiceProvider _serviceProvider;
 
     public DataConsumer(IServiceProvider serviceProvider)
@@ -132,19 +132,19 @@ public class DataConsumer : IAsyncDisposable
 
     public async ValueTask StartAsync()
     {
-        await _pipe.ReceiveAsync(HandleData); // ¶©ÔÄ½ÓÊÕÊı¾İ
+        await _pipe.ReceiveAsync(HandleData); // è®¢é˜…æ¥æ”¶æ•°æ®
     }
 
     private async ValueTask HandleData(DataModel data)
     {
-        // ... ´¦ÀíÊı¾İ ...
+        // ... å¤„ç†æ•°æ® ...
 
-        // Ê¹ÓÃ×ª»»Æ÷½«Êı¾İÄ£ĞÍ×ª»»ÎªÃüÁîÊı¾İ
+        // ä½¿ç”¨è½¬æ¢å™¨å°†æ•°æ®æ¨¡å‹è½¬æ¢ä¸ºå‘½ä»¤æ•°æ®
         var commandData = _converter.Convert(data);
 
-        // ½«ÃüÁîÊı¾İ´æ´¢µ½¶ÓÁĞ...
+        // å°†å‘½ä»¤æ•°æ®å­˜å‚¨åˆ°é˜Ÿåˆ—...
 
-        // ÔÚÕâÀïĞèÒªµ÷ÓÃÍâ²¿·şÎñ½øĞĞ´¦Àí...
+        // åœ¨è¿™é‡Œéœ€è¦è°ƒç”¨å¤–éƒ¨æœåŠ¡è¿›è¡Œå¤„ç†...
 
     }
 
@@ -155,13 +155,13 @@ public class DataConsumer : IAsyncDisposable
         _pipe = pipe;
     }
 
-    public ValueTask DisposeAsync() => _pipe.DisposeAsync(); // ÊµÏÖÒì²½ÊÍ·Å
+    public ValueTask DisposeAsync() => _pipe.DisposeAsync(); // å®ç°å¼‚æ­¥é‡Šæ”¾
 
 }
 
 public class CommandSender
 {
-    private readonly IServiceProvider _serviceProvider; // ´Ë´¦ÓÃÓÚ×¢ÈëÊı¾İ´¦Àí×é¼ş
+    private readonly IServiceProvider _serviceProvider; // æ­¤å¤„ç”¨äºæ³¨å…¥æ•°æ®å¤„ç†ç»„ä»¶
 
 
     public CommandSender(IServiceProvider serviceProvider)
@@ -172,20 +172,20 @@ public class CommandSender
 
     public async ValueTask SendCommandAsync(CommandData commandData)
     {
-        // Ê¹ÓÃ ¹Ì¶¨µÄ´®¿ÚÃû³Æ¡¢¶Ë¿ÚºÅ¡¢²¨ÌØÂÊµÈĞÅÏ¢£¬¿ªÆôÁ¬½Ó
+        // ä½¿ç”¨ å›ºå®šçš„ä¸²å£åç§°ã€ç«¯å£å·ã€æ³¢ç‰¹ç‡ç­‰ä¿¡æ¯ï¼Œå¼€å¯è¿æ¥
         var serialPort = new SerialPort("COM1", 9600);
         serialPort.ReadTimeout = 1000;
         serialPort.Open();
 
         try
         {
-            // ½«ÃüÁîÊı¾İ·¢ËÍµ½´®¿Ú
+            // å°†å‘½ä»¤æ•°æ®å‘é€åˆ°ä¸²å£
             serialPort.WriteLine(commandData);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Send command failed: {ex.Message}");
-            // ´¦ÀíÒì³£Çé¿ö
+            // å¤„ç†å¼‚å¸¸æƒ…å†µ
         }
         finally
         {
@@ -198,11 +198,11 @@ using System;
 
 public class CommandData
 {
-    // ... ÆäËûÊôĞÔÍ¬ÉÏ ...
+    // ... å…¶ä»–å±æ€§åŒä¸Š ...
 
     public string CalculateCheckValue()
     {
-        // ²ÉÓÃÒì»ò·½·¨¼ÆËãĞ£ÑéÖµ
+        // é‡‡ç”¨å¼‚æˆ–æ–¹æ³•è®¡ç®—æ ¡éªŒå€¼
         byte xorValue = 0;
         foreach (byte b in this.Data)
         {
@@ -221,11 +221,11 @@ public class CommandData
 using Cysharp.R3.MessagePipe;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks; // ÒıÈëÏß³ÌÒì²½²Ù×÷
+using System.Threading.Tasks; // å¼•å…¥çº¿ç¨‹å¼‚æ­¥æ“ä½œ
 
 public class CommandResponseBuilder
 {
-    private readonly IServiceProvider _serviceProvider; // Ê¹ÓÃ DI »ñÈ¡·şÎñµÄÊµÀı
+    private readonly IServiceProvider _serviceProvider; // ä½¿ç”¨ DI è·å–æœåŠ¡çš„å®ä¾‹
 
     public CommandResponseBuilder(IServiceProvider serviceProvider)
     {
@@ -234,34 +234,34 @@ public class CommandResponseBuilder
 
     public async Task<ResponseDTO> BuildResponseAsync(CommandData commandData)
     {
-        // 1. Ğ£ÑéÃüÁîÊı¾İ
+        // 1. æ ¡éªŒå‘½ä»¤æ•°æ®
         if (!commandData.ValidateCheckValue(commandData.CheckValue))
         {
             return new ResponseDTO { Status = "CheckValueFailed" };
         }
 
-        // 2. ´¦ÀíÃüÁîÊı¾İ£¬¸ù¾İÄÚ²¿Âß¼­Éú³ÉÏìÓ¦Êı¾İ
-        // ÀıÈç: ½«ÃüÁîÊı¾İ½âÎöµ½ DataModel£¬È»ºó»ñÈ¡¶ÔÓ¦µÄĞÅÏ¢
-        DataModel dataModel = /* ...½âÎöÊı¾İ»ñÈ¡¶ÔÓ¦ĞÅÏ¢    */;
+        // 2. å¤„ç†å‘½ä»¤æ•°æ®ï¼Œæ ¹æ®å†…éƒ¨é€»è¾‘ç”Ÿæˆå“åº”æ•°æ®
+        // ä¾‹å¦‚: å°†å‘½ä»¤æ•°æ®è§£æåˆ° DataModelï¼Œç„¶åè·å–å¯¹åº”çš„ä¿¡æ¯
+        DataModel dataModel = /* ...è§£ææ•°æ®è·å–å¯¹åº”ä¿¡æ¯    */;
 
 
-        // 3. ´´½¨ÏìÓ¦DTO¶ÔÏó
+        // 3. åˆ›å»ºå“åº”DTOå¯¹è±¡
         ResponseDTO responseDTO = new ResponseDTO
         {
             Status = "Success",
-            // ... ÆäËûÏìÓ¦Êı¾İ
-            Data = dataModel // ½«´¦ÀíºóµÄÊı¾İÌî³äµ½ DTO
+            // ... å…¶ä»–å“åº”æ•°æ®
+            Data = dataModel // å°†å¤„ç†åçš„æ•°æ®å¡«å……åˆ° DTO
         };
 
         return responseDTO;
     }
 
-    // ¶¨Òå DTO ½á¹¹Ìå
+    // å®šä¹‰ DTO ç»“æ„ä½“
     public class ResponseDTO
     {
         public string Status { get; set; }
         public DataModel Data { get; set; }
-        // ...ÆäËûÏìÓ¦Êı¾İÊôĞÔ... 
+        // ...å…¶ä»–å“åº”æ•°æ®å±æ€§... 
     }
 }
 
@@ -269,7 +269,7 @@ using Cysharp.R3.Pipe;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-// ... ÆäËû¿â
+// ... å…¶ä»–åº“
 
 public class CommandResponseBuilder : IHostedService
 {
@@ -297,28 +297,28 @@ public class CommandResponseBuilder : IHostedService
     {
         try
         {
-            // 1. ¼ÓÃÜºÍĞ£ÑéÃüÁîÊı¾İ (È·±£°²È«´«Êä)
+            // 1. åŠ å¯†å’Œæ ¡éªŒå‘½ä»¤æ•°æ® (ç¡®ä¿å®‰å…¨ä¼ è¾“)
             commandData.Data = EncryptData(commandData.Data);
             commandData.CheckValue = commandData.CalculateCheckValue();
 
-            // 2. Ğ£ÑéÃüÁîÊı¾İ
+            // 2. æ ¡éªŒå‘½ä»¤æ•°æ®
             if (!commandData.ValidateCheckValue(commandData.CheckValue))
             {
                 Console.WriteLine("Command data validation failed!");
                 return;
             }
-            // 3. ´¦ÀíÃüÁîÊı¾İ£¬¸ù¾İÄÚ²¿Âß¼­Éú³ÉÏìÓ¦Êı¾İ    
-            DataModel dataModel = /* ...½âÎöÊı¾İ»ñÈ¡¶ÔÓ¦ĞÅÏ¢    */;
+            // 3. å¤„ç†å‘½ä»¤æ•°æ®ï¼Œæ ¹æ®å†…éƒ¨é€»è¾‘ç”Ÿæˆå“åº”æ•°æ®    
+            DataModel dataModel = /* ...è§£ææ•°æ®è·å–å¯¹åº”ä¿¡æ¯    */;
 
-            // 4. Éú³ÉÏìÓ¦DTO£¬²¢·¢ËÍµ½ÁíÒ»¸öPipe
+            // 4. ç”Ÿæˆå“åº”DTOï¼Œå¹¶å‘é€åˆ°å¦ä¸€ä¸ªPipe
             ResponseDTO responseDTO = new ResponseDTO
             {
                 Status = "Success",
                 Data = dataModel
             };
-            responseDTO.Data = EncryptData(responseDTO.Data); // ¼ÓÃÜÏìÓ¦Êı¾İ
+            responseDTO.Data = EncryptData(responseDTO.Data); // åŠ å¯†å“åº”æ•°æ®
 
-            Pipe<ResponseDTO> _responsePipe = _serviceProvider.GetRequiredService<Pipe<ResponseDTO>>(); // Í¨¹ı DI »ñÈ¡ÏìÓ¦¹ÜµÀ
+            Pipe<ResponseDTO> _responsePipe = _serviceProvider.GetRequiredService<Pipe<ResponseDTO>>(); // é€šè¿‡ DI è·å–å“åº”ç®¡é“
             await _responsePipe.SendAsync(responseDTO);
         }
         catch (Exception ex)
@@ -327,7 +327,7 @@ public class CommandResponseBuilder : IHostedService
         }
     }
 
-    // ... ¼ÓÃÜÂß¼­ºÍ DI ÅäÖÃ ...
+    // ... åŠ å¯†é€»è¾‘å’Œ DI é…ç½® ...
 }
 
 
@@ -337,7 +337,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Text;
 
-// ... ÆäËû´úÂë ...
+// ... å…¶ä»–ä»£ç  ...
 
 public class CommandHandler
 {
@@ -369,9 +369,9 @@ public class CommandHandler
 
         try
         {
-            string message = await reader.ReadLineAsync(); // ¶ÁÈ¡ÃüÁîÊı¾İ
+            string message = await reader.ReadLineAsync(); // è¯»å–å‘½ä»¤æ•°æ®
 
-            // ... ´¦ÀíÃüÁîÊı¾İ ...
+            // ... å¤„ç†å‘½ä»¤æ•°æ® ...
             Console.WriteLine($"Received command from client: {message}");
 
             writer.WriteLine("Command received successfully.");
@@ -392,7 +392,7 @@ public class CommandHandler
 
 using Cysharp.R3.MessagePipe; 
 
-// ... ÆäËû´úÂë
+// ... å…¶ä»–ä»£ç 
 
 public class CommandHandler
 {
@@ -411,10 +411,10 @@ public class CommandHandler
 
     public async Task StartAsync()
     {
-        // ¶©ÔÄÃüÁî
+        // è®¢é˜…å‘½ä»¤
         _commandPipe.ReceiveAsync(async commandData =>
         {
-            // ... ÒµÎñÂß¼­Ğ£Ñé
+            // ... ä¸šåŠ¡é€»è¾‘æ ¡éªŒ
 
             if (commandData.ValidateCheckValue(commandData.CheckValue) == false)
             {
@@ -422,7 +422,7 @@ public class CommandHandler
                 return;
             }
 
-            // ... ¸ù¾İ CommandType Ö´ĞĞ²»Í¬µÄ¹¦ÄÜ
+            // ... æ ¹æ® CommandType æ‰§è¡Œä¸åŒçš„åŠŸèƒ½
             await DoCommand(commandData); //
             if (Success)
             {
@@ -431,9 +431,9 @@ public class CommandHandler
         }).Forget();
     }
 
-    private async Task DoCommand(CommandData commandData) // ... ÄãµÄÃüÁî´¦ÀíÂß¼­ ...
+    private async Task DoCommand(CommandData commandData) // ... ä½ çš„å‘½ä»¤å¤„ç†é€»è¾‘ ...
     {
-        // ... ¸ù¾İ CommandType Ö´ĞĞ²»Í¬Âß¼­ 
+        // ... æ ¹æ® CommandType æ‰§è¡Œä¸åŒé€»è¾‘ 
     }
 
 }
@@ -460,19 +460,19 @@ public class QueryHandler : IHostedService
 
     private async Task handleSuccessEvent(SuccessEvent eventData)
     {
-        // ... ´¦Àí³É¹¦ÊÂ¼ş
+        // ... å¤„ç†æˆåŠŸäº‹ä»¶
     }
 
     private async Task handleErrorEvent(ErrorEvent errorData)
     {
-        // ... ´¦Àí´íÎóÊÂ¼ş
+        // ... å¤„ç†é”™è¯¯äº‹ä»¶
     }
 }
 
 using System;
 using StackExchange.Redis;
 
-// ... ÆäËû´úÂë ...
+// ... å…¶ä»–ä»£ç  ...
 
 public class DataStore
 {
@@ -487,38 +487,38 @@ public class DataStore
 
     public async Task StoreData(string key, string value)
     {
-        // Ê¹ÓÃRedis´æ´¢Êı¾İ
+        // ä½¿ç”¨Rediså­˜å‚¨æ•°æ®
         var db = _redis.GetDatabase();
         await db.StringSetAsync(key, value);
 
-        // Í¬²½»º´æÊı¾İ
+        // åŒæ­¥ç¼“å­˜æ•°æ®
         _cache.Set(key, value);
     }
 
     public async Task<string> GetData(string key)
     {
-        // ÏÈ´Ó»º´æÖĞ¶ÁÈ¡Êı¾İ
+        // å…ˆä»ç¼“å­˜ä¸­è¯»å–æ•°æ®
         if (_cache.TryGetValue(key, out var value))
         {
             return value;
         }
 
-        // ´ÓRedisÊı¾İ¿â¶ÁÈ¡Êı¾İ
+        // ä»Redisæ•°æ®åº“è¯»å–æ•°æ®
         var db = _redis.GetDatabase();
         var redisValue = await db.StringGetAsync(key);
 
-        // ½«Êı¾İ·ÅÈë»º´æ
+        // å°†æ•°æ®æ”¾å…¥ç¼“å­˜
         _cache.Set(key, redisValue);
         return redisValue;
     }
 
-    // ... ÆäËû´æ´¢ºÍ²éÑ¯·½·¨
+    // ... å…¶ä»–å­˜å‚¨å’ŒæŸ¥è¯¢æ–¹æ³•
 }
 
 
 public class CommandHandler
 {
-    // ... ÆäËû´úÂë ...
+    // ... å…¶ä»–ä»£ç  ...
     private readonly DataStore _dataStore;
 
     public CommandHandler(IMessagePipe<CommandData> commandPipe,
@@ -532,9 +532,9 @@ public class CommandHandler
 
     private async Task DoCommand(CommandData commandData)
     {
-        // ... ÒµÎñÂß¼­ ...
+        // ... ä¸šåŠ¡é€»è¾‘ ...
 
-        // ½«½âÎöµÄ½á¹ûÉèÖÃÎª¼üÖµ¶Ô´æÈëÊı¾İ¿â
+        // å°†è§£æçš„ç»“æœè®¾ç½®ä¸ºé”®å€¼å¯¹å­˜å…¥æ•°æ®åº“
         await _dataStore.StoreData($"command_{commandData.Id}", commandData.Data);
     }
 }
@@ -575,28 +575,28 @@ public static class ZLoggerOutputExtensions
     }
 }
 
-// ... ÆäËû´úÂë ...
+// ... å…¶ä»–ä»£ç  ...
 
 
 public class CommandHandler
 {
-    // ... ÆäËû´úÂë ...
+    // ... å…¶ä»–ä»£ç  ...
     public async Task DoCommand(CommandData commandData)
     {
 
 
         try
         {
-            // ... ÒµÎñÂß¼­ ...
+            // ... ä¸šåŠ¡é€»è¾‘ ...
             Log.Information("Command '{CommandId}' executed successfully!", commandData.CommandId); // Write success log in Serilog
             await StoreData();
-            // ... ÆäËû²Ù×÷ ...
+            // ... å…¶ä»–æ“ä½œ ...
         }
         catch (Exception ex)
         {
             // Write error log in Serilog
             Log.Warning(ex, "An error occured while executing command '{CommandId}'!", commandData.CommandId);
-            // ... ´¦Àí´íÎóÂß¼­ ...
+            // ... å¤„ç†é”™è¯¯é€»è¾‘ ...
         }
     }
 
@@ -604,7 +604,7 @@ public class CommandHandler
     private async Task StoreData()
     {
         Log.Information("Storing data..."); // Log storing data
-        await _dataStore.StoreData(commandData.Key, commandData.Data);  // ... ÆäËû´úÂë ...
+        await _dataStore.StoreData(commandData.Key, commandData.Data);  // ... å…¶ä»–ä»£ç  ...
     }
 }
 
@@ -619,9 +619,9 @@ public class DataParser
 
     public DataStruct Parse(byte[] data)
     {
-        // ... ½âÎöÊı¾İµÄÂß¼­ ...
+        // ... è§£ææ•°æ®çš„é€»è¾‘ ...
 
-        // Ê¾Àı£º½âÎö int32 ±äÁ¿
+        // ç¤ºä¾‹ï¼šè§£æ int32 å˜é‡
         int offset = 0;
         int value = 0;
         if (_isBigEndian)
@@ -633,17 +633,17 @@ public class DataParser
             value = BitConverter.ToInt32(data, offset, Endianness.LittleEndian);
         }
 
-        // ... ½âÎöÆäËûÊı¾İÀàĞÍ£¬ÀıÈç:  uint16, float32, string...
+        // ... è§£æå…¶ä»–æ•°æ®ç±»å‹ï¼Œä¾‹å¦‚:  uint16, float32, string...
 
         return new DataStruct
         {
-            IntValue = value, // ... ÆäËû×Ö¶Î ... };
+            IntValue = value, // ... å…¶ä»–å­—æ®µ ... };
         }
 }
 
 
 
-    // ... ÆäËû´úÂë ... 
+    // ... å…¶ä»–ä»£ç  ... 
 
     public class CommandHandler
     {
@@ -657,7 +657,7 @@ public class DataParser
         public async Task DoCommand(CommandData commandData)
         {
             // ... 
-            // ½âÎöÊı¾İ
+            // è§£ææ•°æ®
             var dataStruct = _dataParser.Parse(commandData.Data);
 
             // ... 
@@ -687,12 +687,12 @@ public class DataParser
         }
     }
 
-    //byteÊı×é×ª»»Îª16½øÖÆ×Ö·û´®
+    //byteæ•°ç»„è½¬æ¢ä¸º16è¿›åˆ¶å­—ç¬¦ä¸²
     byte[] data = { 0x12, 0x34, 0x56, 0x78 };
     string hex = ByteUtil.ByteArrayToHexString(data);
-    Console.WriteLine(hex); // Êä³ö: 12345678
+    Console.WriteLine(hex); // è¾“å‡º: 12345678
 
-// 16½øÖÆ×Ö·û´®×ª»»ÎªbyteÊı×é
+// 16è¿›åˆ¶å­—ç¬¦ä¸²è½¬æ¢ä¸ºbyteæ•°ç»„
 string hexString = "12345678";
     byte[] convertedData = ByteUtil.HexStringToByteArray(hexString);
 
@@ -702,7 +702,7 @@ using Serilog; // Use Serilog for logging
 
 public class CommandHandlerManager
 {
-    private readonly TaskScheduler _taskScheduler = TaskScheduler.Default; // ×Ô¶¨ÒåÈÎÎñµ÷¶È³ÌĞò
+    private readonly TaskScheduler _taskScheduler = TaskScheduler.Default; // è‡ªå®šä¹‰ä»»åŠ¡è°ƒåº¦ç¨‹åº
 
     public async Task ProcessCommandAsync(CommandData commandData)
     {
@@ -711,7 +711,7 @@ public class CommandHandlerManager
         {
             try
             {
-                var commandHandler = // ...  ´´½¨CommandHandler ¶ÔÏó...
+                var commandHandler = // ...  åˆ›å»ºCommandHandler å¯¹è±¡...
 
                 commandHandler.DoCommand(commandData); // Execute command logic here
             }
@@ -721,12 +721,12 @@ public class CommandHandlerManager
                 Log.Error(ex, "Error processing command {CommandId}: {Message}",
                     commandData.CommandId, ex.Message);
 
-                // ... »òÕß´¦ÀíÒì³££¬ÀıÈç: ¼ÇÂ¼µ½Êı¾İ¿â£¬·¢ËÍÓÊ¼şÍ¨ÖªµÈ...
+                // ... æˆ–è€…å¤„ç†å¼‚å¸¸ï¼Œä¾‹å¦‚: è®°å½•åˆ°æ•°æ®åº“ï¼Œå‘é€é‚®ä»¶é€šçŸ¥ç­‰...
             }
         }, _taskScheduler);
     }
 }
-//ÆäËû´úÂë
+//å…¶ä»–ä»£ç 
 
 
 using System;
@@ -747,21 +747,21 @@ public class EchartDataGenerator
 
     public EchartsOptions GenerateEchartsData()
     {
-        var startTime = DateTime.UtcNow.Subtract(_timeSpan); // »ñÈ¡Ê±¼ä¶Î¿ªÊ¼Ê±¼ä
-        var endTime = DateTime.UtcNow; // »ñÈ¡µ±Ç°Ê±¼ä
+        var startTime = DateTime.UtcNow.Subtract(_timeSpan); // è·å–æ—¶é—´æ®µå¼€å§‹æ—¶é—´
+        var endTime = DateTime.UtcNow; // è·å–å½“å‰æ—¶é—´
 
 
-        // ¶ÁÈ¡Êı¾İ 
+        // è¯»å–æ•°æ® 
         var dataPoints = _dataRepository.GetData(startTime, endTime);
 
-        // ¹¹½¨EchartsÊı¾İ
+        // æ„å»ºEchartsæ•°æ®
         var option = new EchartsOptions();
         option.xAxis = new List<ECharts.xAxis>
         {
             new ECharts.xAxis
             {
                 type = "time",
-                // ... ÆäËûÅäÖÃ
+                // ... å…¶ä»–é…ç½®
             }
         };
 
@@ -770,20 +770,20 @@ public class EchartDataGenerator
             new ECharts.yAxis
             {
                 type = "value", 
-                // ... ÆäËûÅäÖÃ
+                // ... å…¶ä»–é…ç½®
             }
         };
 
         option.series = new List<ECharts.Series>
-        { // ¹¹½¨Êı¾İÏµÁĞ
+        { // æ„å»ºæ•°æ®ç³»åˆ—
             new ECharts.Series
             {
-                name = "Ö¸±ê",
+                name = "æŒ‡æ ‡",
                 type = "line",
                 data = dataPoints.Select(dp => new
                 {
-                    x = dp.Timestamp, // ½«Ê±¼ä´Á´æÈëxÖáÊı¾İ
-                    y = dp.Value     // ½«Ö¸±êÖµ´æÈëyÖáÊı¾İ 
+                    x = dp.Timestamp, // å°†æ—¶é—´æˆ³å­˜å…¥xè½´æ•°æ®
+                    y = dp.Value     // å°†æŒ‡æ ‡å€¼å­˜å…¥yè½´æ•°æ® 
                 }).ToArray()
             }
         };
@@ -807,19 +807,19 @@ namespace SignalRDemo
 
         public async Task SendSingleRequest(DateTime startTime, DateTime endTime)
         {
-            // »ñÈ¡Êı¾İ¶ÎÄÚµÄÊı¾İ
+            // è·å–æ•°æ®æ®µå†…çš„æ•°æ®
             var dataPoints = GetRelevantData(startTime, endTime);
 
-            // ¹ã²¥Êı¾İ
+            // å¹¿æ’­æ•°æ®
             await Clients.All.SendAsync("ReceiveDataPoints", dataPoints);
         }
 
         public async Task StartStream(Action<DataPoint> onNewData)
         {
-            // ÊµÏÖÁ÷Ê½ÍÆËÍÂß¼­£¬ 
-            // ´Ë´¦Ê¾Àı¼ò»¯£¬¼ÙÉèÓĞÍâ²¿ÊÂ¼ş´¥·¢Êı¾İ¸üĞÂ
+            // å®ç°æµå¼æ¨é€é€»è¾‘ï¼Œ 
+            // æ­¤å¤„ç¤ºä¾‹ç®€åŒ–ï¼Œå‡è®¾æœ‰å¤–éƒ¨äº‹ä»¶è§¦å‘æ•°æ®æ›´æ–°
             var newPoint = new DataPoint() { Timestamp = DateTime.UtcNow, Value = 42 };
-            onNewData(newPoint); // ½«ĞÂÊı¾İµ÷ÓÃ onNewData ·½·¨
+            onNewData(newPoint); // å°†æ–°æ•°æ®è°ƒç”¨ onNewData æ–¹æ³•
         }
     }
 }
@@ -829,14 +829,14 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 connection.on("ReceiveDataPoints", function(data) {
-    // Êı¾İ´¦ÀíÂß¼­
+    // æ•°æ®å¤„ç†é€»è¾‘
     console.log("Received data:", data);
 });
 
 connection.start();
 
 
-// ÔÚÄãµÄ Maui Ó¦ÓÃ³ÌĞòÖĞ
+// åœ¨ä½ çš„ Maui åº”ç”¨ç¨‹åºä¸­
 using Microsoft.Maui.Layouts;
 using Microsoft.Maui.Controls;
 
@@ -854,8 +854,8 @@ public class MainPage : ContentPage
     }
 }
 
-// ÔÚÄãµÄ Blazor WASM ÏîÄ¿ÖĞ
-// ... µ¼Èë±ØÒªµÄ SignalR 
+// åœ¨ä½ çš„ Blazor WASM é¡¹ç›®ä¸­
+// ... å¯¼å…¥å¿…è¦çš„ SignalR 
 @page "/index" 
 
 <div>
@@ -874,8 +874,8 @@ protected override async void OnInitialized()
 
     connection.On("ReceiveDataPoints", (List<DataPoint> data) =>
     {
-        // ½«½ÓÊÕµ½µÄÊı¾İ¸³Óè echarts Êı¾İÔ´
-        GenerateEcharts(data); // ... Ê¹ÓÃÄãµÄÂß¼­Éú³É echarts Êı¾İÔ´  
+        // å°†æ¥æ”¶åˆ°çš„æ•°æ®èµ‹äºˆ echarts æ•°æ®æº
+        GenerateEcharts(data); // ... ä½¿ç”¨ä½ çš„é€»è¾‘ç”Ÿæˆ echarts æ•°æ®æº  
     });
 
     await connection.StartAsync();
@@ -883,11 +883,11 @@ protected override async void OnInitialized()
 
 private void GenerateEcharts(List<DataPoint> data)
 {
-    // Ê¹ÓÃ echarts ¿âÉú³ÉÍ¼±í
-    // ÔÚ echartContainer ÔªËØÖĞäÖÈ¾Í¼±í
+    // ä½¿ç”¨ echarts åº“ç”Ÿæˆå›¾è¡¨
+    // åœ¨ echartContainer å…ƒç´ ä¸­æ¸²æŸ“å›¾è¡¨
 }
 
-// ¶¨Òå gRPC ·şÎñÆõÔ¼£¨·şÎñ¶Ë£©
+// å®šä¹‰ gRPC æœåŠ¡å¥‘çº¦ï¼ˆæœåŠ¡ç«¯ï¼‰
 
 public interface IDataStreamingService
 {
@@ -897,7 +897,7 @@ public interface IDataStreamingService
 
 public class DataStreamingService : IDataStreamingService
 {
-    private readonly IDataRepository _dataRepository; // Êı¾İÔ´
+    private readonly IDataRepository _dataRepository; // æ•°æ®æº
 
     public DataStreamingService(IDataRepository dataRepository)
     {
@@ -911,7 +911,7 @@ public class DataStreamingService : IDataStreamingService
     }
 }
 
-// ¶¨Òå gRPC ·şÎñÆõÔ¼£¨¿Í»§¶Ë£©
+// å®šä¹‰ gRPC æœåŠ¡å¥‘çº¦ï¼ˆå®¢æˆ·ç«¯ï¼‰
 public class DataPoint
 {
     public DateTime Timestamp { get; set; }
@@ -920,15 +920,15 @@ public class DataPoint
 
 public class Period
 {
-    public int Interval { get; set; } // ÀıÈç: 1000 ºÁÃë = 1 Ãë
+    public int Interval { get; set; } // ä¾‹å¦‚: 1000 æ¯«ç§’ = 1 ç§’
 }
 
-// ·şÎñ¶Ë¶ËÅäÖÃ
+// æœåŠ¡ç«¯ç«¯é…ç½®
 public Startup
 {
     public void ConfigureServices(IServiceCollection services)
 {
-    // ... ÆäËû·şÎñÅäÖÃ
+    // ... å…¶ä»–æœåŠ¡é…ç½®
 
     var builder = services.AddMagicOnion();
     builder.UseEndpoint("http://localhost:5001");
@@ -936,7 +936,7 @@ public Startup
 } 
 
 
-// ÒÀÀµ MagicOnion JavaScript ¿â
+// ä¾èµ– MagicOnion JavaScript åº“
 
 const MagicOnionClient = require('magic-onion');
 
@@ -945,17 +945,17 @@ const service = GrpcService.create(IDataStreamingService);
 
 service.GetDataStream(new Period({ interval: 1000 })).subscribe(data => {
     console.log("Received data:", data);
-    // ¸üĞÂÍ¼±í
+    // æ›´æ–°å›¾è¡¨
 });
 
 
-// ÃüÁî½Ó¿Ú
+// å‘½ä»¤æ¥å£
 public interface ICommand
 {
     void Execute();
 }
 
-// ÃüÁî¾ßÌåÊµÏÖ
+// å‘½ä»¤å…·ä½“å®ç°
 public class AddCommand : ICommand
 {
     private readonly int _value;
@@ -967,12 +967,12 @@ public class AddCommand : ICommand
 
     public void Execute()
     {
-        // Ó¦ÓÃÂß¼­: ½« _value Ìí¼Óµ½Ä³¸öÖµ»òÊı¾İ½á¹¹ÖĞ
+        // åº”ç”¨é€»è¾‘: å°† _value æ·»åŠ åˆ°æŸä¸ªå€¼æˆ–æ•°æ®ç»“æ„ä¸­
         Console.WriteLine($"Adding {_value} to the data.");
     }
 }
 
-// ÃüÁî¾ßÌåÊµÏÖ
+// å‘½ä»¤å…·ä½“å®ç°
 public class SubtractCommand : ICommand
 {
     private readonly int _value;
@@ -984,12 +984,12 @@ public class SubtractCommand : ICommand
 
     public void Execute()
     {
-        // Ó¦ÓÃÂß¼­: ½« _value ´ÓÄ³¸öÖµ»òÊı¾İ½á¹¹ÖĞ¼õÈ¥
+        // åº”ç”¨é€»è¾‘: å°† _value ä»æŸä¸ªå€¼æˆ–æ•°æ®ç»“æ„ä¸­å‡å»
         Console.WriteLine($"Subtracting {_value} from the data.");
     }
 }
 
-// ÃüÁî½ÓÊÕÕß (¸ºÔğÖ´ĞĞÃüÁî)
+// å‘½ä»¤æ¥æ”¶è€… (è´Ÿè´£æ‰§è¡Œå‘½ä»¤)
 public class CommandReceiver
 {
     public void ExecuteCommand(ICommand command)
@@ -998,7 +998,7 @@ public class CommandReceiver
     }
 }
 
-// ÃüÁî½âÎö³ÌĞò
+// å‘½ä»¤è§£æç¨‹åº
 public class CommandParser
 {
     private readonly CommandReceiver _commandReceiver;
@@ -1010,7 +1010,7 @@ public class CommandParser
 
     public void ParseCommand(string commandString)
     {
-        // ½âÎöÃüÁî×Ö·û´®£¬ÀıÈç: "ADD 5" or "SUBTRACT 3"
+        // è§£æå‘½ä»¤å­—ç¬¦ä¸²ï¼Œä¾‹å¦‚: "ADD 5" or "SUBTRACT 3"
         var parts = commandString.Split(' ');
 
         if (parts.Length == 2 && parts[0] == "ADD")
@@ -1032,7 +1032,7 @@ public class CommandParser
     }
 }
 
-// Ê¹ÓÃ
+// ä½¿ç”¨
 public class Program
 {
     public static void Main(string[] args)
@@ -1046,17 +1046,17 @@ public class Program
 }
 
 
-// ÃüÁî
+// å‘½ä»¤
 public class CreateItemCommand
 {
     public string Name { get; set; }
     public decimal Price { get; set; }
 }
 
-// ÃüÁî´¦ÀíÆ÷ - ´¦ÀíÃüÁî²¢¸üĞÂÊı¾İ
+// å‘½ä»¤å¤„ç†å™¨ - å¤„ç†å‘½ä»¤å¹¶æ›´æ–°æ•°æ®
 public class ItemCommandHandler
 {
-    private readonly IItemRepository _itemRepository; // Êı¾İ´æ´¢
+    private readonly IItemRepository _itemRepository; // æ•°æ®å­˜å‚¨
 
     public ItemCommandHandler(IItemRepository itemRepository)
     {
@@ -1070,17 +1070,17 @@ public class ItemCommandHandler
             Name = command.Name,
             Price = command.Price
         };
-        _itemRepository.Add(newItem); // ½«ĞÂÏîÌí¼Óµ½Êı¾İÔ´
+        _itemRepository.Add(newItem); // å°†æ–°é¡¹æ·»åŠ åˆ°æ•°æ®æº
     }
 }
 
-// ²éÑ¯ - »ñÈ¡ÌØ¶¨Êı¾İ
+// æŸ¥è¯¢ - è·å–ç‰¹å®šæ•°æ®
 public interface IItemQuery
 {
-    Task<Item> GetItemByIdAsync(int id); // Ê¾Àı
+    Task<Item> GetItemByIdAsync(int id); // ç¤ºä¾‹
 }
 
-// ²éÑ¯´¦ÀíÆ÷
+// æŸ¥è¯¢å¤„ç†å™¨
 public class ItemQueryHandler : IItemQuery
 {
     private readonly IItemRepository _itemRepository;
@@ -1097,37 +1097,37 @@ public class ItemQueryHandler : IItemQuery
 }
 
 
-// ½Ó¿Ú¶¨Òå
+// æ¥å£å®šä¹‰
 public interface IEmailNotifier
 {
     void SendEmail(string to, string subject, string body);
 }
 
-// ²ßÂÔÊµÏÖ - Ê¹ÓÃSMTP
+// ç­–ç•¥å®ç° - ä½¿ç”¨SMTP
 public class SmtpEmailNotifier : IEmailNotifier
 {
     public void SendEmail(string to, string subject, string body)
     {
-        // ·¢ËÍÓÊ¼şÂß¼­ (¿ÉÒÔÊ¹ÓÃµÚÈı·½¿â£¬ÀıÈç Mail Kit »ò SendGrid)
+        // å‘é€é‚®ä»¶é€»è¾‘ (å¯ä»¥ä½¿ç”¨ç¬¬ä¸‰æ–¹åº“ï¼Œä¾‹å¦‚ Mail Kit æˆ– SendGrid)
         Console.WriteLine($"Sending email to {to}");
         Console.WriteLine($"Subject: {subject}");
         Console.WriteLine($"Body: {body}");
     }
 }
 
-// ²ßÂÔÊµÏÖ - Ê¹ÓÃµÚÈı·½ÓÊ¼ş·şÎñ
+// ç­–ç•¥å®ç° - ä½¿ç”¨ç¬¬ä¸‰æ–¹é‚®ä»¶æœåŠ¡
 public class ThirdPartyEmailNotifier : IEmailNotifier
 {
     public void SendEmail(string to, string subject, string body)
     {
-        // ·¢ËÍÓÊ¼şÂß¼­ (Ê¹ÓÃµÚÈı·½ÓÊ¼ş·şÎñAPI)
+        // å‘é€é‚®ä»¶é€»è¾‘ (ä½¿ç”¨ç¬¬ä¸‰æ–¹é‚®ä»¶æœåŠ¡API)
         Console.WriteLine($"Sending email via third party service to {to}");
         Console.WriteLine($"Subject: {subject}");
         Console.WriteLine($"Body: {body}");
     }
 }
 
-// ²ßÂÔ¹¤³§Àà
+// ç­–ç•¥å·¥å‚ç±»
 public class EmailNotifierFactory
 {
     public IEmailNotifier GetNotifier(string type)
@@ -1144,19 +1144,19 @@ public class EmailNotifierFactory
     }
 }
 
-// Ê¹ÓÃ²ßÂÔÄ£Ê½
+// ä½¿ç”¨ç­–ç•¥æ¨¡å¼
 public class OrderService
 {
     private readonly IEmailNotifier _emailNotifier;
 
     public OrderService(EmailNotifierFactory emailNotifierFactory)
     {
-        _emailNotifier = emailNotifierFactory.GetNotifier("ThirdParty"); // Ê¹ÓÃµÚÈı·½µÄÓÊ¼ş·şÎñ
+        _emailNotifier = emailNotifierFactory.GetNotifier("ThirdParty"); // ä½¿ç”¨ç¬¬ä¸‰æ–¹çš„é‚®ä»¶æœåŠ¡
     }
 
     public void PlaceOrder(Order order)
     {
-        // ´¦Àí¶©µ¥Âß¼­
+        // å¤„ç†è®¢å•é€»è¾‘
 
         _emailNotifier.SendEmail("customer@example.com", "Order Confirmed", $"Your order {order.Id} has been placed.");
     }
@@ -1167,12 +1167,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Seq;
-using Serilog.Sinks.File; // ÓÃÓÚ±¾µØ JSON ÎÄ¼ş´æ´¢
+using Serilog.Sinks.File; // ç”¨äºæœ¬åœ° JSON æ–‡ä»¶å­˜å‚¨
 using ZLogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Serilog ÈÕÖ¾ÅäÖÃ -  SeSEQ Ô¶³Ì´æ´¢
+// Serilog æ—¥å¿—é…ç½® -  SeSEQ è¿œç¨‹å­˜å‚¨
 builder.Services.AddLogging(loggingBuilder =>
 {
     loggingBuilder.AddSerilog(dispose: true,
@@ -1180,11 +1180,11 @@ builder.Services.AddLogging(loggingBuilder =>
             .WriteTo.Seq("http://your-seq-server:5341"))
 });
 
-// Serilog ÈÕÖ¾ÅäÖÃ -  ±¾µØJSONÎÄ¼ş´æ´¢
-// ÉèÖÃ±¾µØÎÄ¼ş´æ´¢Â·¾¶
+// Serilog æ—¥å¿—é…ç½® -  æœ¬åœ°JSONæ–‡ä»¶å­˜å‚¨
+// è®¾ç½®æœ¬åœ°æ–‡ä»¶å­˜å‚¨è·¯å¾„
 var logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "application.log");
 
-// ÅäÖÃ Serilog ÈÕÖ¾Êä³öµ½±¾µØ JSON ÎÄ¼ş
+// é…ç½® Serilog æ—¥å¿—è¾“å‡ºåˆ°æœ¬åœ° JSON æ–‡ä»¶
 builder.Host.UseSerilog((context, services, configuration) =>
 {
     configuration
@@ -1196,7 +1196,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
 });
 
 
-// ZLogger ÈÕÖ¾ÅäÖÃ
+// ZLogger æ—¥å¿—é…ç½®
 builder.Services.AddZlogger(config =>
 {
     config.LogPath = logFilePath;
@@ -1204,11 +1204,11 @@ builder.Services.AddZlogger(config =>
 
 var app = builder.Build();
 
-// ... ÆäËüÓ¦ÓÃ³ÌĞò´úÂë ...
+// ... å…¶å®ƒåº”ç”¨ç¨‹åºä»£ç  ...
 
-// Ê¾ÀıÈÕÖ¾Êä³ö
-app.Logger.LogInformation("Ó¦ÓÃ³ÌĞòÆô¶¯³É¹¦");
-ZLogger.Debug("ÕâÊÇÒ»¸öÀ´×ÔZLoggerµÄµ÷ÊÔÈÕÖ¾");
+// ç¤ºä¾‹æ—¥å¿—è¾“å‡º
+app.Logger.LogInformation("åº”ç”¨ç¨‹åºå¯åŠ¨æˆåŠŸ");
+ZLogger.Debug("è¿™æ˜¯ä¸€ä¸ªæ¥è‡ªZLoggerçš„è°ƒè¯•æ—¥å¿—");
 
 app.Run();
 
@@ -1222,17 +1222,17 @@ public class Startup
     {
         services.AddEasyCaching(options =>
         {
-            // ÔÚ´ËÅäÖÃ±¾µØÄÚ´æ»º´æ
+            // åœ¨æ­¤é…ç½®æœ¬åœ°å†…å­˜ç¼“å­˜
             options.UseLocalRedis(lrd =>
             {
                 lrd.CacheProviderName = "localMemCache";
             });
 
-            // ÉèÖÃ»º´æÃûÇ°×º (¿ÉÑ¡) 
+            // è®¾ç½®ç¼“å­˜åå‰ç¼€ (å¯é€‰) 
             options.CacheNamePrefix = "MyCache_";
         });
 
-        // ... ÆäËû·şÎñ×¢²á
+        // ... å…¶ä»–æœåŠ¡æ³¨å†Œ
 
     }
 }
@@ -1256,24 +1256,24 @@ public class ProductController : ControllerBase
             return Ok(cachedProduct);
         }
 
-        // ´ÓÊı¾İ¿â»òÆäËûÊı¾İÔ´»ñÈ¡²úÆ·Êı¾İ
+        // ä»æ•°æ®åº“æˆ–å…¶ä»–æ•°æ®æºè·å–äº§å“æ•°æ®
         var product = await GetProductFromSourceAsync(productId);
 
-        // ½«²úÆ·Êı¾İ»º´æÆğÀ´
-        _cache.Set(productId.ToString(), product, TimeSpan.FromMinutes(5)); // ÉèÖÃ»º´æ¹ıÆÚÊ±¼äÎª 5 ·ÖÖÓ
+        // å°†äº§å“æ•°æ®ç¼“å­˜èµ·æ¥
+        _cache.Set(productId.ToString(), product, TimeSpan.FromMinutes(5)); // è®¾ç½®ç¼“å­˜è¿‡æœŸæ—¶é—´ä¸º 5 åˆ†é’Ÿ
 
         return Ok(product);
     }
 
     private async Task<Product> GetProductFromSourceAsync(int productId)
     {
-        // ... Êı¾İ·ÃÎÊÂß¼­ ...
+        // ... æ•°æ®è®¿é—®é€»è¾‘ ...
     }
 }
 
 
 using Microsoft.AspNetCore.SignalR;
-// ... ÆäËûÒıÓÃ
+// ... å…¶ä»–å¼•ç”¨
 using EasyCaching.Serialization.MessagePack;
 using Microsoft.AspNetCore.SignalR.Protocols.MessagePack;
 
@@ -1288,7 +1288,7 @@ public class ChartHub : Hub
 
 @page "/chart"
 
-<h1>Í¼±í</h1>
+<h1>å›¾è¡¨</h1>
 
 <div id="chartContainer" style="width: 600px; height: 400px;"></div>
 
@@ -1302,7 +1302,7 @@ protected override async Task OnInitializedAsync()
 {
     hubConnection = new HubConnectionBuilder()
         .WithUrl(NavigationManager.ToAbsoluteUri("/chartHub"))
-        .AddMessagePackProtocol() // Ö¸¶¨Ê¹ÓÃ MessagePack Ğ­Òé
+        .AddMessagePackProtocol() // æŒ‡å®šä½¿ç”¨ MessagePack åè®®
 
         .Build();
 
@@ -1319,18 +1319,18 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (firstRender)
     {
-        // ÔÚÒ³ÃæäÖÈ¾Íê³Éºó³õÊ¼»¯ Chart
+        // åœ¨é¡µé¢æ¸²æŸ“å®Œæˆååˆå§‹åŒ– Chart
         await LoadChartData();
     }
 }
 
 private async Task LoadChartData()
 {
-    // »ñÈ¡Êı¾İ (Ä£ÄâÊı¾İ)
+    // è·å–æ•°æ® (æ¨¡æ‹Ÿæ•°æ®)
 
     _data = new ChartData
     {
-        // ... Êı¾İ½á¹¹ ...
+        // ... æ•°æ®ç»“æ„ ...
     };
 
     UpdateChart();
@@ -1338,14 +1338,14 @@ private async Task LoadChartData()
 
 private void UpdateChart()
 {
-    // ... Ê¹ÓÃ _data ´´½¨ Chart ¶ÔÏó ...
+    // ... ä½¿ç”¨ _data åˆ›å»º Chart å¯¹è±¡ ...
 
 }
 } 
 
 public class ChartData
 {
-    // ... ÊôĞÔ¶¨Òå ...
+    // ... å±æ€§å®šä¹‰ ...
 }
 
 using MessagePack;
@@ -1384,10 +1384,10 @@ public class ExampleHelper
 
         var serializer = new PersonSerializer(LoggerFactory.Create(builder => builder.AddConsole()));
 
-        // ĞòÁĞ»¯
+        // åºåˆ—åŒ–
         var serializedData = serializer.Serialize(person);
 
-        // ·´ĞòÁĞ»¯
+        // ååºåˆ—åŒ–
         var deserializedPerson = serializer.Deserialize(serializedData);
 
         Console.WriteLine($"Deserialized Person: {deserializedPerson.Name} {deserializedPerson.Age} {deserializedPerson.City}");
@@ -1410,21 +1410,21 @@ public class MessagePackExample
     {
         var person = new Person { Name = "John Doe", Age = 30, City = "New York" };
 
-        // ĞòÁĞ»¯
+        // åºåˆ—åŒ–
         byte[] serialized = MessagePackSerializer.Serialize(person, StandardResolver.Default);
 
-        // Êä³öĞòÁĞ»¯ºóµÄÊı¾İ (¶ş½øÖÆĞÎÊ½)
+        // è¾“å‡ºåºåˆ—åŒ–åçš„æ•°æ® (äºŒè¿›åˆ¶å½¢å¼)
         Console.WriteLine("Serialized Data: ");
         foreach (byte b in serialized)
         {
-            Console.Write($" {b:X2}"); // Ê¹ÓÃÊ®Áù½øÖÆÊä³ö
+            Console.Write($" {b:X2}"); // ä½¿ç”¨åå…­è¿›åˆ¶è¾“å‡º
         }
         Console.WriteLine();
 
-        // ·´ĞòÁĞ»¯
+        // ååºåˆ—åŒ–
         var deserializedPerson = MessagePackSerializer.Deserialize<Person>(serialized, StandardResolver.Default);
 
-        // ´òÓ¡·´ĞòÁĞ»¯ºóµÄ¶ÔÏó
+        // æ‰“å°ååºåˆ—åŒ–åçš„å¯¹è±¡
         Console.WriteLine($"Deserialized Person: {deserializedPerson.Name}, {deserializedPerson.Age}, {deserializedPerson.City}");
 
         Console.ReadKey();
@@ -1463,12 +1463,12 @@ public class MyService : IService
 
 public record CreateUserCommand(string FirstName, string LastName, string Email, Ulid Id)
 {
-    // ... ÆäËûÊôĞÔ ...
+    // ... å…¶ä»–å±æ€§ ...
 }
 
 public record GetUserQuery(Guid UserId, Ulid CorrelationId)
 {
-    // ... ÆäËûÊôĞÔ ...
+    // ... å…¶ä»–å±æ€§ ...
 }
 
 
@@ -1487,13 +1487,13 @@ public class CommandHandlerDecorator<TCommand> : IRequestHandler<TCommand, Ulid>
 
     public async Task<Ulid> Handle(TCommand request, CancellationToken cancellationToken)
     {
-        // Ìí¼ÓÒ»¸ö Ulid µ½ÄãµÄÃüÁî£¬Èç¹ûËüÃ»ÓĞ
-        // È»ºóµ÷ÓÃ IRequestHandler
+        // æ·»åŠ ä¸€ä¸ª Ulid åˆ°ä½ çš„å‘½ä»¤ï¼Œå¦‚æœå®ƒæ²¡æœ‰
+        // ç„¶åè°ƒç”¨ IRequestHandler
         request.Id = _ulidGenerator.GenerateNewULID();
 
         await _handler.Handle(request, cancellationToken);
 
-        // ·µ»Ø´¦Àí½á¹ûµÄ Ulid
+        // è¿”å›å¤„ç†ç»“æœçš„ Ulid
         return request.Id;
     }
 }
@@ -1507,10 +1507,10 @@ public class MappingConfig
     {
         TypeAdapterConfig.GlobalSettings.Scan(s =>
         {
-            s.ScanFromAssemblyContaining<UserDTO>();  //  ²éÕÒ UserDTO ËùÔÚµÄ³ÌĞò¼¯ »ñÈ¡Ó³Éä¹ØÏµ
+            s.ScanFromAssemblyContaining<UserDTO>();  //  æŸ¥æ‰¾ UserDTO æ‰€åœ¨çš„ç¨‹åºé›† è·å–æ˜ å°„å…³ç³»
             s.CompileAdapters(options =>
             {
-                options.AddProfile<UserMappingProfile>(); // ×·¼ÓÄãµÄ custom Ó³Éä¹æÔò
+                options.AddProfile<UserMappingProfile>(); // è¿½åŠ ä½ çš„ custom æ˜ å°„è§„åˆ™
             });
         });
 
@@ -1522,14 +1522,14 @@ public class UserMappingProfile : ITypeAdapterConfig
 {
     public void Configure()
     {
-        TypeAdapter.Adapt<User, UserDTO>() // ÓÃ»§µ½ DTO Ó³Éä
+        TypeAdapter.Adapt<User, UserDTO>() // ç”¨æˆ·åˆ° DTO æ˜ å°„
 
             .Map(dest => dest.FirstName, source => source.FirstName)
             .Map(dest => dest.LastName, source => source.LastName)
             .Map(dest => dest.Email, source => source.Email);
 
-        TypeAdapter.Adapt<UserDTO, User>() // DTO µ½ÓÃ»§Ó³Éä
-            .Map(dest => dest.Id, source => 1) // ÉèÖÃ ID 
+        TypeAdapter.Adapt<UserDTO, User>() // DTO åˆ°ç”¨æˆ·æ˜ å°„
+            .Map(dest => dest.Id, source => 1) // è®¾ç½® ID 
             .Map(dest => dest.FirstName, source => source.FirstName)
             .Map(dest => dest.LastName, source => source.LastName)
             .Map(dest => dest.Email, source => source.Email);
@@ -1562,7 +1562,7 @@ public class User
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
 {
-    private readonly IUserRepository _userRepository; // ÄãµÄÊı¾İ¿â²Ù×÷½Ó¿Ú
+    private readonly IUserRepository _userRepository; // ä½ çš„æ•°æ®åº“æ“ä½œæ¥å£
 
     public CreateUserCommandHandler(IUserRepository userRepository)
     {
@@ -1579,7 +1579,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
         };
 
         _userRepository.Add(user);
-        // ... ±£´æµ½Êı¾İ¿â ...
+        // ... ä¿å­˜åˆ°æ•°æ®åº“ ...
 
         return user.Id;
     }
@@ -1607,7 +1607,7 @@ public class DependencyInjectionConfig : IStartup
         services.AddMediatR(typeof(CreateUserCommandHandler).Assembly);
 
 
-        services.AddScoped<IUserRepository, UserRepository>();  // ×¢²áÄãµÄ²Ö´¢½Ó¿ÚÊµÏÖ
+        services.AddScoped<IUserRepository, UserRepository>();  // æ³¨å†Œä½ çš„ä»“å‚¨æ¥å£å®ç°
         services.AddScoped<IMediator, Mediator>();
         services.AddScoped<CreateUserCommandHandler>();
         services.AddScoped<GetUserQueryHandler>();
@@ -1633,7 +1633,7 @@ public class UserController : ControllerBase
     }
 
 
-    // ... ÆäËû¿ØÖÆÆ÷·½·¨ ...
+    // ... å…¶ä»–æ§åˆ¶å™¨æ–¹æ³• ...
 }
 
 
@@ -1686,7 +1686,7 @@ public class DependencyInjectionConfig : IStartup
             options.UseInMemoryDatabase("InMemoryDb");
         });
         services.AddScoped<IUserRepository, UserInMemoryRepository>();
-        // ... ÆäËû×¢²á
+        // ... å…¶ä»–æ³¨å†Œ
     }
 }
 
@@ -1738,7 +1738,7 @@ public class ProductController : ControllerBase
 
         if (product == null)
         {
-            return NotFound(); // Èç¹û²úÆ·²»´æÔÚ
+            return NotFound(); // å¦‚æœäº§å“ä¸å­˜åœ¨
         }
 
         return Ok(product);
@@ -1758,7 +1758,7 @@ using System.Text;
 
 public class AesEncryption
 {
-    private readonly string _key = "YourStrongSecretKeyHere"; // Ìæ»»³ÉÄúµÄÕæÊµÃØÔ¿ 
+    private readonly string _key = "YourStrongSecretKeyHere"; // æ›¿æ¢æˆæ‚¨çš„çœŸå®ç§˜é’¥ 
 
     public string Encrypt(string data)
     {
@@ -1832,7 +1832,7 @@ public class Sha256Hasher
 var aes = new AesEncryption();
 
 string encryptString = aes.Encrypt("Secret Information");
-string decryptString = aes.Decrypt(encryptString); // ½âÃÜ
+string decryptString = aes.Decrypt(encryptString); // è§£å¯†
 
 string textToSend = "Hello, Serial Port!";
 string hash = Sha256Hasher.CalculateHash(textToSend);
@@ -1854,7 +1854,7 @@ public class Program
             )
             .CreateLogger();
 
-        // ÔÚÄúµÄÓ¦ÓÃ³ÌĞòÖĞ¼ÇÂ¼ÈÕÖ¾ĞÅÏ¢
+        // åœ¨æ‚¨çš„åº”ç”¨ç¨‹åºä¸­è®°å½•æ—¥å¿—ä¿¡æ¯
         Log.Information("Hello, world!");
     }
 }
@@ -1897,15 +1897,15 @@ using Bogus;
 var deviceCommandFaker = new DeviceCommandFaker();
 var commands = deviceCommandFaker.GenerateDeviceCommands(10);
 
-// ÏÖÔÚÄú¿ÉÒÔÊ¹ÓÃ `commands` ÁĞ±íÄ£ÄâÉè±¸ÃüÁîÊı¾İ;
+// ç°åœ¨æ‚¨å¯ä»¥ä½¿ç”¨ `commands` åˆ—è¡¨æ¨¡æ‹Ÿè®¾å¤‡å‘½ä»¤æ•°æ®;
 
-// Éè±¸ÃüÁîÄ£ĞÍ
+// è®¾å¤‡å‘½ä»¤æ¨¡å‹
 public enum CommandType
 {
     Read = 1,
     Write = 2,
     Control = 3,
-    // Ìí¼ÓÆäËûÃüÁîÀàĞÍ
+    // æ·»åŠ å…¶ä»–å‘½ä»¤ç±»å‹
 }
 
 using Cysharp.R3;
@@ -1920,18 +1920,18 @@ public class MyViewModel : IStateful, ICanReactiveLife
 
     public void OnInit()
     {
-        // ÔÚ ViewModel ³õÊ¼»¯Ê±Ö´ĞĞ²Ù×÷
-        R3.Logger.Log("MyViewModel ³õÊ¼»¯ÁË");
+        // åœ¨ ViewModel åˆå§‹åŒ–æ—¶æ‰§è¡Œæ“ä½œ
+        R3.Logger.Log("MyViewModel åˆå§‹åŒ–äº†");
     }
 
     public void OnDestroy()
     {
-        // ÔÚ ViewModel Ïú»ÙÊ±Ö´ĞĞ²Ù×÷
-        R3.Logger.Log("MyViewModel Ïú»ÙÁË");
+        // åœ¨ ViewModel é”€æ¯æ—¶æ‰§è¡Œæ“ä½œ
+        R3.Logger.Log("MyViewModel é”€æ¯äº†");
     }
     public void DoSomething()
     {
-        Message = "Something Happened!"; // Ä£ÄâÊı¾İ¸üĞÂ²Ù×÷
+        Message = "Something Happened!"; // æ¨¡æ‹Ÿæ•°æ®æ›´æ–°æ“ä½œ
     }
 }
 
@@ -1950,8 +1950,8 @@ public class MyView : BindableClass<MyViewModel>
     }
 
     private void OnValidate()
-    { // Ê¹ÓÃR3½øĞĞ×Ô¶¯Êı¾İ°ó¶¨
-        // ViewModel µÄÊı¾İ±ä»¯»á×Ô¶¯¸üĞÂµ½ View ÖĞ 
+    { // ä½¿ç”¨R3è¿›è¡Œè‡ªåŠ¨æ•°æ®ç»‘å®š
+        // ViewModel çš„æ•°æ®å˜åŒ–ä¼šè‡ªåŠ¨æ›´æ–°åˆ° View ä¸­ 
     }
 }
 
@@ -1962,7 +1962,7 @@ public class App
 {
     public void Run()
     {
-        StartWindow = R3.Window(new MyView()); // ÏÔÊ¾Ò³Ãæ
+        StartWindow = R3.Window(new MyView()); // æ˜¾ç¤ºé¡µé¢
     }
     public Window StartWindow { get; set; }
 }
@@ -2008,7 +2008,7 @@ public class MyViewModel : IStateful
 
     private void OnMessageReceived(MyMessage message)
     {
-        // ´¦Àí½ÓÊÕµ½µÄÏûÏ¢
+        // å¤„ç†æ¥æ”¶åˆ°çš„æ¶ˆæ¯
         Console.WriteLine($"Received message: {message.Payload}");
     }
 }
@@ -2030,24 +2030,24 @@ public class AnotherViewModel : IStateful
 }
 
 
-// ¶¨Òå gRPC µÄ·şÎñ½Ó¿Ú
+// å®šä¹‰ gRPC çš„æœåŠ¡æ¥å£
 public interface IWebSocketService
 {
     [ServerStreaming]
     IAsyncEnumerable<string> SubscribeMessages();
 }
 
-// ¶¨Òå gRPC  ·şÎñÊµÏÖ
+// å®šä¹‰ gRPC  æœåŠ¡å®ç°
 public class WebSocketServiceImpl : IWebSocketService
 {
     public async IAsyncEnumerable<string> SubscribeMessages()
     {
-        // »ñÈ¡WebSocket Á¬½Ó 
-        // ÕâÀïĞèÒª¸ù¾İÄú¾ßÌåµÄ WebSocket ÇÅ½Ó·½°¸À´»ñÈ¡ WebSocket Á¬½Ó¡£ 
+        // è·å–WebSocket è¿æ¥ 
+        // è¿™é‡Œéœ€è¦æ ¹æ®æ‚¨å…·ä½“çš„ WebSocket æ¡¥æ¥æ–¹æ¡ˆæ¥è·å– WebSocket è¿æ¥. 
         var webSocketConnnection = GetWebSocketConnection(); // 
 
-        // ´Ó WebSocket Á¬½Ó¶ÁÈ¡Êı¾İ
-        // ´Ë´¦ĞèÒª¸ù¾İÄúÊ¹ÓÃµÄ WebSocket ¿âÀ´ÊµÏÖ¶ÁÈ¡Êı¾İµÄÂß¼­¡£ 
+        // ä» WebSocket è¿æ¥è¯»å–æ•°æ®
+        // æ­¤å¤„éœ€è¦æ ¹æ®æ‚¨ä½¿ç”¨çš„ WebSocket åº“æ¥å®ç°è¯»å–æ•°æ®çš„é€»è¾‘. 
         await foreach (var message in webSocketConnnection.Receive())
         {
             yield return message;
@@ -2057,11 +2057,11 @@ public class WebSocketServiceImpl : IWebSocketService
 
 
 // Create a gRPC channel and create a proxy to the Grpc service
-var channel = GrpcChannel.ForAddress("±¾µØ·şÎñµØÖ·");
+var channel = GrpcChannel.ForAddress("æœ¬åœ°æœåŠ¡åœ°å€");
 var service = new Grpc.Net.Client.WebSocketService.WebSocketServiceClient(channel);
 
 
-// Ê¹ÓÃ grpc-web ·¢ËÍÏûÏ¢
+// ä½¿ç”¨ grpc-web å‘é€æ¶ˆæ¯
 var messageRequest = new MessageRequest() { Payload = "Hello" };
 var response = service.SendMessage(messageRequest);
 
@@ -2073,15 +2073,15 @@ using System.Net.Sockets;
 public class TcpConnectionManager
 {
     private readonly ConcurrentDictionary<Guid, TcpConnection> _connections = new ConcurrentDictionary<Guid, TcpConnection>();
-    // ¿ÉÒÔ¸ù¾İĞèÒªµ÷ÕûÁ¬½Ó³ØµÄ´óĞ¡
+    // å¯ä»¥æ ¹æ®éœ€è¦è°ƒæ•´è¿æ¥æ± çš„å¤§å°
     private const int MaxConnections = 10;
 
     public TcpConnection GetConnection(string serverAddress, int port)
     {
-        // Ê¹ÓÃ Guid Éú³ÉÎ¨Ò»±êÊ¶·û
+        // ä½¿ç”¨ Guid ç”Ÿæˆå”¯ä¸€æ ‡è¯†ç¬¦
         var connectionId = Guid.NewGuid();
 
-        // ´ÓÁ¬½Ó³Ø»ñÈ¡Á¬½Ó£¬Èç¹ûÂúÁËÔò´´½¨Ò»¸öĞÂµÄÁ¬½Ó
+        // ä»è¿æ¥æ± è·å–è¿æ¥ï¼Œå¦‚æœæ»¡äº†åˆ™åˆ›å»ºä¸€ä¸ªæ–°çš„è¿æ¥
         lock (_connections)
         {
             if (_connections.Count >= MaxConnections)
@@ -2098,11 +2098,11 @@ public class TcpConnectionManager
 
     public void ReleaseConnection(Guid connectionId)
     {
-        // ÊÍ·ÅÁ¬½Ó
+        // é‡Šæ”¾è¿æ¥
         _connections.TryRemove(connectionId, out _);
     }
 
-    // ½ø³ÌÍË³öÊ±ÇåÀíÁ¬½Ó³Ø
+    // è¿›ç¨‹é€€å‡ºæ—¶æ¸…ç†è¿æ¥æ± 
     public void Dispose()
     {
         foreach (var connection in _connections.Values)
@@ -2130,7 +2130,7 @@ public class TcpConnection : IDisposable
 }
 
 
-// »ìÏıËã·¨
+// æ··æ·†ç®—æ³•
 string generateConfuse(string token, long timestamp)
 {
     string confuseStr = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{token}{timestamp}"));
@@ -2138,7 +2138,7 @@ string generateConfuse(string token, long timestamp)
     return confuseStr[..^5];
 }
 
-// ¼ÓÃÜ
+// åŠ å¯†
 string EncryptWithRSA(string publicKey, string content)
 {
     using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
@@ -2147,8 +2147,8 @@ string EncryptWithRSA(string publicKey, string content)
     return BytesToHexString(rsa.Encrypt(Encoding.UTF8.GetBytes(content), false));
 }
 
-#pragma warning disable CS8321 // ÒÑÉùÃ÷±¾µØº¯Êı£¬µ«´ÓÎ´Ê¹ÓÃ¹ı
-// ½âÃÜ
+#pragma warning disable CS8321 // å·²å£°æ˜æœ¬åœ°å‡½æ•°ï¼Œä½†ä»æœªä½¿ç”¨è¿‡
+// è§£å¯†
 string DecryptWithRSA(string privateKey, string content)
 {
     byte[] encryptedData = HexStringToBytes(content);
@@ -2157,9 +2157,9 @@ string DecryptWithRSA(string privateKey, string content)
 
     return Encoding.UTF8.GetString(rsa.Decrypt(encryptedData, false));
 }
-#pragma warning restore CS8321 // ÒÑÉùÃ÷±¾µØº¯Êı£¬µ«´ÓÎ´Ê¹ÓÃ¹ı
+#pragma warning restore CS8321 // å·²å£°æ˜æœ¬åœ°å‡½æ•°ï¼Œä½†ä»æœªä½¿ç”¨è¿‡
 
-// ×Ö½Ú×ªĞ¡Ğ´Ê®Áù½øÖÆ
+// å­—èŠ‚è½¬å°å†™åå…­è¿›åˆ¶
 string BytesToHexString(byte[] bytes)
 {
     StringBuilder hexString = new StringBuilder();
@@ -2171,14 +2171,14 @@ string BytesToHexString(byte[] bytes)
     return hexString.ToString();
 }
 
-// Ê®Áù½øÖÆ×ª×Ö½Ú
+// åå…­è¿›åˆ¶è½¬å­—èŠ‚
 byte[] HexStringToBytes(string hexString)
 {
     ArgumentNullException.ThrowIfNull(hexString);
 
     if (hexString.Length % 2 != 0)
     {
-        throw new ArgumentException("¶ş½øÖÆÃÜÔ¿²»ÄÜÓĞÆæÊıÎ»Êı");
+        throw new ArgumentException("äºŒè¿›åˆ¶å¯†é’¥ä¸èƒ½æœ‰å¥‡æ•°ä½æ•°");
     }
 
     byte[] data = new byte[hexString.Length / 2];
@@ -2191,7 +2191,7 @@ byte[] HexStringToBytes(string hexString)
     return data;
 }
 
-// »ñÈ¡¹«Ô¿ºÍË½Ô¿
+// è·å–å…¬é’¥å’Œç§é’¥
 (string publicKey, string privateKey) GetKeyPair()
 {
     using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048);

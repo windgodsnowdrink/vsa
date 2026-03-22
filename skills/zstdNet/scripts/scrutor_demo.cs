@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk
+﻿#:sdk Microsoft.NET.Sdk
 #:package ZstdSharp@0.8.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Scrutor@4.2.2
@@ -446,7 +446,7 @@ namespace ZstdNet.ScrutorDemo
             var compressionService = serviceProvider.GetRequiredService<ICompressionService>();
             
             // 测试压缩功能
-            var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试 Scrutor 的基本用法。重复测试数据以获得更好的压缩效果。这是测试数据，用于测试 Scrutor 的基本用法。重复测试数据以获得更好的压缩效果。");
+            var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试 Scrutor 的基本用法.重复测试数据以获得更好的压缩效果.这是测试数据，用于测试 Scrutor 的基本用法.重复测试数据以获得更好的压缩效果.");
             Console.WriteLine($"原始数据大小: {testData.Length} 字节");
             
             var compressedData = compressionService.Compress(testData);
@@ -491,7 +491,7 @@ namespace ZstdNet.ScrutorDemo
             var compressionService = serviceProvider.GetRequiredService<ICompressionService>();
             
             // 测试压缩功能（第一次压缩，应该会执行完整的压缩流程）
-            var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试装饰器模式。装饰器模式可以为服务添加额外的功能，而不需要修改原始服务的代码。");
+            var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试装饰器模式.装饰器模式可以为服务添加额外的功能，而不需要修改原始服务的代码.");
             Console.WriteLine($"\n第一次压缩测试:");
             
             var compressedData1 = compressionService.Compress(testData);
@@ -547,7 +547,7 @@ namespace ZstdNet.ScrutorDemo
             if (compressionService != null)
             {
                 Console.WriteLine("\n测试自动注册的压缩服务:");
-                var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试自动注册功能。");
+                var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试自动注册功能.");
                 var compressedData = compressionService.Compress(testData);
                 Console.WriteLine($"压缩成功，压缩率: {(double)compressedData.Length / testData.Length:P2}");
             }
@@ -614,7 +614,7 @@ namespace ZstdNet.ScrutorDemo
             {
                 Console.WriteLine("\n测试高级压缩服务:");
                 
-                var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试高级压缩服务。高级压缩服务支持指定压缩级别和使用字典压缩。");
+                var testData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试高级压缩服务.高级压缩服务支持指定压缩级别和使用字典压缩.");
                 
                 // 测试不同压缩级别
                 for (int level = 1; level <= 5; level += 2)
@@ -624,7 +624,7 @@ namespace ZstdNet.ScrutorDemo
                 }
                 
                 // 测试字典压缩
-                var dictionaryData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试高级压缩服务。");
+                var dictionaryData = System.Text.Encoding.UTF8.GetBytes("这是测试数据，用于测试高级压缩服务.");
                 var compressedWithDict = advancedService.CompressWithDictionary(testData, dictionaryData);
                 var compressedWithoutDict = advancedService.Compress(testData);
                 

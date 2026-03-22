@@ -1,4 +1,4 @@
-#:sdk Microsoft.NET.Sdk.Web
+﻿#:sdk Microsoft.NET.Sdk.Web
 #:package Microsoft.EntityFrameworkCore@9.0.8
 #:package Microsoft.EntityFrameworkCore.SqlServer@9.0.8
 #:package Microsoft.EntityFrameworkCore.Tools@9.0.8
@@ -15,13 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 using System.Text.Json;
 
-// 多租户支�?
+// 澶氱鎴锋敮鎸?
 public interface ITenantProvider
 {
     string GetCurrentTenantId();
 }
 
-// 审计日志接口
+// 瀹¤鏃ュ織鎺ュ彛
 public interface IAuditableEntity
 {
     DateTime CreatedAt { get; set; }
@@ -30,7 +30,7 @@ public interface IAuditableEntity
     string? UpdatedBy { get; set; }
 }
 
-// 软删除接�?
+// 杞垹闄ゆ帴鍙?
 public interface ISoftDelete
 {
     bool IsDeleted { get; set; }
@@ -38,13 +38,13 @@ public interface ISoftDelete
     string? DeletedBy { get; set; }
 }
 
-// 加密数据接口
+// 鍔犲瘑鏁版嵁鎺ュ彛
 public interface IEncryptedEntity
 {
     string EncryptedData { get; set; }
 }
 
-// 数据库上下文
+// 鏁版嵁搴撲笂涓嬫枃
 public class AppDbContext : DbContext
 {
     private readonly ITenantProvider _tenantProvider;
@@ -61,7 +61,7 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // 全局查询过滤�?- 多租�?
+        // 鍏ㄥ眬鏌ヨ杩囨护鍣?- 澶氱鎴?
         foreach (var entityType in modelBuilder.Model.GetEntityTypes()
             .Where(e => typeof(ITenantEntity).IsAssignableFrom(e.ClrType)))
         {
@@ -69,7 +69,7 @@ public class AppDbContext : DbContext
                 .HasQueryFilter(e => EF.Property<string>(e, "TenantId") == _tenantProvider.GetCurrentTenantId());
         }
 
-        // 全局查询过滤�?- 软删�?
+        // 鍏ㄥ眬鏌ヨ杩囨护鍣?- 杞垹闄?
         foreach (var entityType in modelBuilder.Model.GetEntityTypes()
             .Where(e => typeof(ISoftDelete).IsAssignableFrom(e.ClrType)))
         {
@@ -82,12 +82,12 @@ public class AppDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // 审计日志处理
+        // 瀹¤鏃ュ織澶勭悊
         var entries = ChangeTracker.Entries()
             .Where(e => e.Entity is IAuditableEntity && 
                 (e.State == EntityState.Added || e.State == EntityState.Modified));
 
-        var currentUserId = "system"; // 从ClaimsPrincipal获取实际用户ID
+        var currentUserId = "system"; // 浠嶤laimsPrincipal鑾峰彇瀹為檯鐢ㄦ埛ID
         var now = DateTime.UtcNow;
 
         foreach (var entry in entries)
@@ -105,7 +105,7 @@ public class AppDbContext : DbContext
             }
         }
 
-        // 软删除处�?
+        // 杞垹闄ゅ鐞?
         var softDeleteEntries = ChangeTracker.Entries()
             .Where(e => e.Entity is ISoftDelete && e.State == EntityState.Deleted);
 
@@ -118,21 +118,21 @@ public class AppDbContext : DbContext
             entity.DeletedBy = currentUserId;
         }
 
-        // 加密数据处理
+        // 鍔犲瘑鏁版嵁澶勭悊
         var encryptedEntries = ChangeTracker.Entries()
             .Where(e => e.Entity is IEncryptedEntity);
 
         foreach (var entry in encryptedEntries)
         {
             var entity = (IEncryptedEntity)entry.Entity;
-            // 这里实现加密逻辑
+            // 杩欓噷瀹炵幇鍔犲瘑閫昏緫
             // entity.EncryptedData = Encrypt(entity.EncryptedData);
         }
 
         return await base.SaveChangesAsync(cancellationToken);
     }
 
-    // 缓存仓储实现
+    // 缂撳瓨浠撳偍瀹炵幇
     public class CachedRepository<T> where T : class
     {
         private readonly AppDbContext _context;
@@ -164,23 +164,23 @@ public class AppDbContext : DbContext
         }
     }
 
-    // 分库分表策略
+    // 鍒嗗簱鍒嗚〃绛栫暐
     public class ShardingStrategy
     {
         public string GetDatabaseName(string tenantId) => $"Database_{tenantId}";
         public string GetTableName(Type entityType, DateTime date) => $"{entityType.Name}_{date:yyyyMM}";
     }
 
-    // 数据快照
+    // 鏁版嵁蹇収
     public class EntitySnapshot<T> where T : class
     {
         public string SerializedData { get; set; }
         public DateTime SnapshotTime { get; set; }
     }
 
-    // 数据归档服务
+    // 鏁版嵁褰掓.鏈嶅姟
     /// <summary>
-    /// 数据归档服务，实现生产级数据归档功能
+    /// 鏁版嵁褰掓.鏈嶅姟锛屽疄鐜扮敓浜х骇鏁版嵁褰掓.鍔熻兘
     /// </summary>
     public class ArchivingService : IArchivingService
     {
@@ -364,7 +364,7 @@ public class AppDbContext : DbContext
         }
     }
 
-    // 数据备份服务
+    // 鏁版嵁澶囦唤鏈嶅姟
     public class BackupService : IBackupService
     {
         private readonly AppDbContext _dbContext;
@@ -399,7 +399,7 @@ public class AppDbContext : DbContext
                 await using var memoryStream = new MemoryStream();
                 await using var writer = new BinaryWriter(memoryStream);
                 
-                // 备份所有表数据
+                // 澶囦唤鎵€鏈夎〃鏁版嵁
                 foreach (var entityType in _dbContext.Model.GetEntityTypes())
                 {
                     var tableName = entityType.GetTableName();
@@ -417,7 +417,7 @@ public class AppDbContext : DbContext
                     }
                 }
                 
-                // 压缩和加密备份文�?
+                // 鍘嬬缉鍜屽姞瀵嗗浠芥枃浠?
                 memoryStream.Position = 0;
                 var encryptedFile = await CompressAndEncryptBackupAsync(memoryStream, backupFile, ct);
                 
@@ -446,7 +446,7 @@ public class AppDbContext : DbContext
                 await using var memoryStream = new MemoryStream();
                 await using var writer = new BinaryWriter(memoryStream);
                 
-                // 备份变更数据
+                // 澶囦唤鍙樻洿鏁版嵁
                 foreach (var entityType in _dbContext.Model.GetEntityTypes())
                 {
                     var tableName = entityType.GetTableName();
@@ -465,7 +465,7 @@ public class AppDbContext : DbContext
                     }
                 }
                 
-                // 压缩和加密备份文�?
+                // 鍘嬬缉鍜屽姞瀵嗗浠芥枃浠?
                 memoryStream.Position = 0;
                 var encryptedFile = await CompressAndEncryptBackupAsync(memoryStream, backupFile, ct);
                 
@@ -489,14 +489,14 @@ public class AppDbContext : DbContext
             
             try
             {
-                // 验证备份文件完整�?
+                // 楠岃瘉澶囦唤鏂囦欢瀹屾暣鎬?
                 if (!await VerifyBackupIntegrityAsync(backupFile, ct))
                     throw new InvalidOperationException("Backup file integrity check failed");
                 
-                // 解密和解压备份文�?
+                // 瑙ｅ瘑鍜岃В鍘嬪浠芥枃浠?
                 await using var decryptedStream = await DecryptAndDecompressBackupAsync(backupFile, ct);
                 
-                // 恢复数据
+                // 鎭㈠鏁版嵁
                 using var reader = new BinaryReader(decryptedStream);
                 
                 while (decryptedStream.Position < decryptedStream.Length)
@@ -507,7 +507,7 @@ public class AppDbContext : DbContext
                     for (int i = 0; i < count; i++)
                     {
                         var json = reader.ReadString();
-                        // 反序列化并保存实�?
+                        // 鍙嶅簭鍒楀寲骞朵繚瀛樺疄浣?
                     }
                 }
                 
@@ -526,22 +526,22 @@ public class AppDbContext : DbContext
     
         private async Task<string> CompressAndEncryptBackupAsync(Stream backupData, string backupPath, CancellationToken ct)
         {
-            // 实现压缩和加密逻辑
+            // 瀹炵幇鍘嬬缉鍜屽姞瀵嗛€昏緫
         }
     
         private async Task<bool> VerifyBackupIntegrityAsync(string backupFile, CancellationToken ct)
         {
-            // 实现备份完整性检�?
+            // 瀹炵幇澶囦唤瀹屾暣鎬ф鏌?
         }
     
         private async Task ScheduleBackupJobsAsync()
         {
-            // 实现备份计划调度
+            // 瀹炵幇澶囦唤璁″垝璋冨害
         }
     }
 }
 
-// DI扩展方法
+// DI鎵╁睍鏂规硶
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddEfCore9Services(this IServiceCollection services, string connectionString)
@@ -553,14 +553,14 @@ public static class ServiceCollectionExtensions
                 sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(30), null);
             });
             
-            // 禁用线程安全检查以提高性能
+            // 绂佺敤绾跨▼瀹夊叏妫€鏌ヤ互鎻愰珮鎬ц兘
             options.EnableThreadSafetyChecks(false);
         });
 
-        // 注册缓存仓储
+        // 娉ㄥ唽缂撳瓨浠撳偍
         services.AddScoped(typeof(CachedRepository<>));
         
-        // 注册其他服务
+        // 娉ㄥ唽鍏朵粬鏈嶅姟
         services.AddScoped<ShardingStrategy>();
         services.AddScoped<ArchivingService>();
         services.AddScoped<BackupService>();
@@ -583,14 +583,14 @@ public class SnapshotService : ISnapshotService
         
         try
         {
-            // 快照存储逻辑
+            // 蹇収瀛樺偍閫昏緫
             var snapshotFile = Path.Combine(_options.Value.StoragePath, $"{snapshotName}_{DateTime.UtcNow:yyyyMMddHHmmss}.snap");
             
-            // 快照数据序列化和保护
+            // 蹇収鏁版嵁搴忓垪鍖栧拰淇濇姢
             await using var memoryStream = new MemoryStream();
             await using var writer = new BinaryWriter(memoryStream);
             
-            // 快照恢复点实�?
+            // 蹇収鎭㈠鐐瑰疄鐜?
             foreach (var entityType in _dbContext.Model.GetEntityTypes())
             {
                 var entities = await _dbContext.Set(entityType.ClrType).ToListAsync(ct);
@@ -599,7 +599,7 @@ public class SnapshotService : ISnapshotService
                 writer.Write(protectedData);
             }
             
-            // 存储快照到本�?云存�?
+            // 瀛樺偍蹇収鍒版湰鍦?浜戝瓨鍌?
             memoryStream.Position = 0;
             await using var fileStream = File.Create(snapshotFile);
             await memoryStream.CopyToAsync(fileStream, ct);
@@ -622,16 +622,16 @@ public class SnapshotService : ISnapshotService
         
         try
         {
-            // 从快照恢复逻辑
+            // 浠庡揩鐓ф仮澶嶉€昏緫
             await using var fileStream = File.OpenRead(snapshotFile);
             using var reader = new BinaryReader(fileStream);
             
-            // 恢复数据库状�?
+            // 鎭㈠鏁版嵁搴撶姸鎬?
             while (fileStream.Position < fileStream.Length)
             {
                 var protectedData = reader.ReadString();
                 var json = _dataProtector.Unprotect(protectedData);
-                // 反序列化并恢复实�?
+                // 鍙嶅簭鍒楀寲骞舵仮澶嶅疄浣?
             }
             
             await transaction.CommitAsync(ct);
@@ -653,17 +653,17 @@ public class ShardingStrategy : IShardingStrategy
     
     public string GetShardKey(object entity)
     {
-        // 实现基于实体属性的分片键计算逻辑
+        // 瀹炵幇鍩轰簬瀹炰綋灞炴€х殑鍒嗙墖閿绠楅€昏緫
         return entity switch
         {
-            // 分片规则实现
+            // 鍒嗙墖瑙勫垯瀹炵幇
             _ => "default"
         };
     }
     
     public string GetConnectionString(string shardKey)
     {
-        // 实现基于分片键的连接字符串选择逻辑
+        // 瀹炵幇鍩轰簬鍒嗙墖閿殑杩炴帴瀛楃涓查€夋嫨閫昏緫
         return _options.Value.ConnectionStrings.TryGetValue(shardKey, out var connStr) 
             ? connStr 
             : _options.Value.DefaultConnectionString;
