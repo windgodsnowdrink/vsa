@@ -97,6 +97,44 @@ message.Contents.Add(
         File.ReadAllBytes("receipts/1brc.png"),
         "image/png"));
 
-var response = await chatClient.GetResponseAsync([message]);
+// var response = await chatClient.GetResponseAsync([message]);
 
-Console.WriteLine(response.Text);
+// Console.WriteLine(response.Text);
+
+var response = await chatClient.GetResponseAsync<Receipt>(
+    [message],
+    new ChatOptions { Temperature = 0 });
+
+if (response.Result is { } receipt)
+{
+    Console.WriteLine(
+        $"\nExtracted {receipt.Items.Count} line items:");
+
+    foreach (var item in receipt.Items)
+    {
+        Console.WriteLine(
+            $"  {item.Group} - " +
+            $"  {item.Name} - " +
+            $"Default Data: {item.DefaultJIT} - {item.DefaultAOT}" +
+            $"10K Stations: {item.Stations10KJIT} - {item.Stations10KAOT}" + 
+            $"  {item.Language} - " +
+            $"  {item.Runtime} - ");
+    }
+}
+
+public class Receipt
+{
+    public List<LineItem> Items { get; set; } = [];
+}
+
+public class LineItem
+{
+    public string Group { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public decimal DefaultJIT { get; set; }
+    public decimal DefaultAOT { get; set; }
+    public decimal Stations10KJIT { get; set; }
+    public decimal Stations10KAOT { get; set; }
+    public string Language { get; set; } = string.Empty;
+    public string Runtime { get; set; } = string.Empty;
+}
