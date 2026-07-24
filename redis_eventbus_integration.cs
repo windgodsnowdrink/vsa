@@ -3,7 +3,7 @@
 #:package Microsoft.Extensions.DependencyInjection@8.0.0
 #:package Microsoft.Extensions.Options@8.0.0
 #:package Polly@8.2.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property PublishAot=true // 启用AOT编译
 #:property InvariantGlobalization true // AOT需要设置全球化不变

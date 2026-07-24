@@ -4,7 +4,7 @@
 #:package Microsoft.EntityFrameworkCore.Tools@9.0.8
 #:package Microsoft.Extensions.Caching.Memory@8.0.8
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property PublishAot=true
 #:property InvariantGlobalization=true

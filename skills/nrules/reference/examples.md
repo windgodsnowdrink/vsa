@@ -19,7 +19,7 @@
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Microsoft.Extensions.Options@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -183,7 +183,7 @@ public class Program
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Microsoft.Extensions.Options@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -329,7 +329,7 @@ public class Program
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package System.Threading.Channels@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -491,7 +491,7 @@ public class Program
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -622,7 +622,7 @@ public class Program
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -764,7 +764,7 @@ public class Program
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

@@ -86,7 +86,7 @@ dotnet run --configuration Release
 
 # 使用 AOT 编译运行基准测试
 dotnet publish -c Release -r win-x64 --self-contained -p:PublishAot=true
-dotnet bin/Release/net10.0/win-x64/publish/MyBenchmark.exe
+dotnet bin/Release/net11.0/win-x64/publish/MyBenchmark.exe
 ```
 
 ## 导航地图

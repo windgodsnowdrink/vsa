@@ -37,7 +37,7 @@
 #:package Microsoft.Extensions.VectorData.Abstractions@9.0.0-preview.1.25078.1
 #:package Microsoft.SemanticKernel.Connectors.InMemory@1.40.0-preview
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

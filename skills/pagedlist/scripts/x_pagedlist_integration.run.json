@@ -16,7 +16,7 @@
         "tfm": {
           "type": "string",
           "description": "目标框架",
-          "default": "net10.0"
+          "default": "net11.0"
         },
         "framework": {
           "type": "object",
@@ -262,7 +262,7 @@
   "default": {
     "version": "1.0",
     "runtimeOptions": {
-      "tfm": "net10.0",
+      "tfm": "net11.0",
       "framework": {
         "name": "Microsoft.NETCore.App",
         "version": "10.0.0"

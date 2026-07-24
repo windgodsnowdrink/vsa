@@ -3,7 +3,7 @@
 #:package System.Threading.Channels@8.0.0
 #:package MessagePack@2.5.122
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 using MagicOnion.Server;
 using System.Threading.Channels;

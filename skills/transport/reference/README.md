@@ -174,7 +174,7 @@ services.Scan(scan => scan
 {
   "compilation": {
     "options": {
-      "TargetFramework": "net10.0",
+      "TargetFramework": "net11.0",
       "PublishAot": true,
       "TrimMode": "partial",
       "SelfContained": true,
@@ -198,7 +198,7 @@ services.Scan(scan => scan
 {
   "compilation": {
     "options": {
-      "TargetFramework": "net10.0",
+      "TargetFramework": "net11.0",
       "PublishAot": true,
       "TrimMode": "partial"
     },

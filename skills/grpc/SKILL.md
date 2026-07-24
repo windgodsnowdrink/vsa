@@ -204,7 +204,7 @@ set DOTNET_ENVIRONMENT=Production
 ### AOT 编译配置
 
 通过 `scripts/grpc_aot.setting.json` 文件配置 AOT 编译选项：
-- 目标框架：net10.0
+- 目标框架：net11.0
 - 运行时标识符：win-x64
 - 裁剪模式：partial
 - 内存优化：启用

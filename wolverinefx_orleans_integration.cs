@@ -2,7 +2,7 @@
 #:package Microsoft.Orleans.Core@3.7.2
 #:package Microsoft.Orleans.OrleansRuntime@3.7.2
 #:package System.Threading.Channels@7.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using Wolverine;

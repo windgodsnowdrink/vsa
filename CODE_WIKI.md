@@ -37,7 +37,7 @@ VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直
 
 | 特性 | 说明 |
 |------|------|
-| 目标框架 | `net10.0` |
+| 目标框架 | `net11.0` |
 | 语言版本 | C# preview |
 | 可为空引用类型 | 全局启用 (`Nullable=enable`) |
 | 隐式 Using | 全局启用 (`ImplicitUsings=enable`) |
@@ -823,7 +823,7 @@ VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直
 |------|------|
 | [GoProgram.cs](file:///workspace/csp/GoProgram.cs) | Go 风格并发程序入口 |
 | [WorkerFlowProgram.cs](file:///workspace/csp/WorkerFlowProgram.cs) | 工作流并发程序 |
-| [Goroutine.csproj](file:///workspace/csp/Goroutine.csproj) | 项目文件 (net10.0) |
+| [Goroutine.csproj](file:///workspace/csp/Goroutine.csproj) | 项目文件 (net11.0) |
 
 **核心概念**：
 - `chan<T>` - 类型化通道（类似 Go channel）

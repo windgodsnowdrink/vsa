@@ -8,7 +8,7 @@
 #:package MySqlConnector@2.3.5
 #:package Npgsql@8.0.3
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

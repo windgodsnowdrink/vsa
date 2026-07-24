@@ -11,7 +11,7 @@
 #:package Prometheus.Client@6.0.0 
 #:package ModelContextProtocol@0.4.1-preview.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

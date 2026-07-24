@@ -52,7 +52,7 @@ PagedList 是一个基于 .NET 10 的高性能分页解决方案，专为 .NET �
 #:package X.PagedList@8.4.0
 #:package X.PagedList.Mvc.Core@8.4.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -352,7 +352,7 @@ builder.Services.Configure<PagedListOptions>(options =>
 dotnet publish -c Release -r win-x64 --self-contained true
 
 # 运行应用
-./bin/Release/net10.0/win-x64/publish/YourApp.exe
+./bin/Release/net11.0/win-x64/publish/YourApp.exe
 ```
 
 ### 2. AOT 编译部署
@@ -362,7 +362,7 @@ dotnet publish -c Release -r win-x64 --self-contained true
 dotnet publish -c Release -r win-x64 --self-contained true /p:PublishAot=true /p:ReadyToRun=true /p:TieredCompilation=true /p:TrimMode=partial /p:Optimize=true
 
 # 运行应用
-./bin/Release/net10.0/win-x64/publish/YourApp.exe
+./bin/Release/net11.0/win-x64/publish/YourApp.exe
 ```
 
 ### 3. 容器化部署

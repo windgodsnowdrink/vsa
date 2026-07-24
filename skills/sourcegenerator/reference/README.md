@@ -169,7 +169,7 @@ public interface IGeneratorRegistry
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",
@@ -263,7 +263,7 @@ sourcegenerator_generator.exe scrutor-demo
 
 **示例**:
 ```bash
-sourcegenerator_core.exe generate-reflection --assembly ./bin/Debug/net10.0/MyProject.dll --output ./reflection-info.json
+sourcegenerator_core.exe generate-reflection --assembly ./bin/Debug/net11.0/MyProject.dll --output ./reflection-info.json
 ```
 
 #### `analyze`
@@ -585,7 +585,7 @@ export SOURCEGENERATOR_LOG_LEVEL=Debug
 
 ```bash
 dotnet build -c Debug
-dotnet debug ./bin/Debug/net10.0/sourcegenerator_core.dll generate --output ./output
+dotnet debug ./bin/Debug/net11.0/sourcegenerator_core.dll generate --output ./output
 ```
 
 3. **检查生成的代码**:

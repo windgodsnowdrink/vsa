@@ -4,7 +4,7 @@
 #:package Newtonsoft.Json@13.0.3
 #:package System.Drawing.Common@9.0.8
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

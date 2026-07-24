@@ -255,7 +255,7 @@ aot:
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "publishAot": true,
     "trimMode": "partial",

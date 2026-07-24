@@ -2,7 +2,7 @@
 #:package ImageProcessor@2.9.1
 #:package ImageProcessor.Plugins.WebP@1.2.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.IO;

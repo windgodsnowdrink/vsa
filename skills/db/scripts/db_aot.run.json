@@ -1,6 +1,6 @@
 {
   "$schema": "https://dot.net/v1/dotnet.run.schema.json",
-  "framework": "net10.0",
+  "framework": "net11.0",
   "options": {
     "PublishAot": true,
     "InvariantGlobalization": true,
@@ -21,7 +21,7 @@
     "Npgsql": "8.0.3"
   },
   "runtimeOptions": {
-    "tfm": "net10.0",
+    "tfm": "net11.0",
     "framework": {
       "name": "Microsoft.NETCore.App",
       "version": "10.0.0"

@@ -3,7 +3,7 @@
 #:package Ardalis.Specification.EntityFrameworkCore@6.1.0
 #:package System.Linq.Dynamic.Core@1.3.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

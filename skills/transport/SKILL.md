@@ -45,7 +45,7 @@ dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=
 2. **运行技能**
 
 ```bash
-./bin/Release/net10.0/win-x64/publish/transport_core.exe --help
+./bin/Release/net11.0/win-x64/publish/transport_core.exe --help
 ```
 
 ### 基本使用
@@ -411,7 +411,7 @@ dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=
 2. **运行**
 
 ```bash
-./bin/Release/net10.0/win-x64/publish/transport_core.exe http --url "https://api.example.com/data"
+./bin/Release/net11.0/win-x64/publish/transport_core.exe http --url "https://api.example.com/data"
 ```
 
 ### Docker 部署

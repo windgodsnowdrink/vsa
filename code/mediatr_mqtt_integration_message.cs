@@ -2,7 +2,7 @@
 #:package MQTTnet@4.1.5
 #:package MediatR@12.1.1
 #:package MediatR.Extensions.Microsoft.DependencyInjection@12.1.1
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

@@ -259,7 +259,7 @@ dotnet run -- scrutor <demo>
 
 编译配置文件 `*.setting.json` 包含以下主要选项：
 
-- **target_framework**：目标 .NET 框架版本（默认为 net10.0）
+- **target_framework**：目标 .NET 框架版本（默认为 net11.0）
 - **publish_aot**：是否启用 AOT 编译（默认为 true）
 - **trim_mode**：裁剪模式（默认为 partial）
 - **self_contained**：是否自包含发布（默认为 true）

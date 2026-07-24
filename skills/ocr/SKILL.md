@@ -117,7 +117,7 @@ dotnet publish --configuration Release --output ./publish --runtime win-x64 --se
 ## 版本信息
 
 - **技能版本**：1.0.0
-- **.NET 版本**：net10.0
+- **.NET 版本**：net11.0
 
 ## 许可证
 

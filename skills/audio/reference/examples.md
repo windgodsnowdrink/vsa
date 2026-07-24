@@ -10,7 +10,7 @@
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package NAudio@2.2.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -193,7 +193,7 @@ public class BasicAudioPlayer : IAudioPlayer
 #:package NAudio@2.2.1
 #:package NAudio.Lame@1.1.2
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -345,7 +345,7 @@ public class BasicAudioConverter : IAudioConverter
 #:package Microsoft.Extensions.Configuration.Json@10.0.0
 #:package Microsoft.CognitiveServices.Speech@1.37.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -491,7 +491,7 @@ public class AzureSpeechRecognizer : ISpeechRecognizer
 #:package Microsoft.CognitiveServices.Speech@1.37.0
 #:package NAudio.Wave@2.2.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -655,7 +655,7 @@ public class BasicAudioPlayer : IAudioPlayer
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package NAudio@2.2.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -917,7 +917,7 @@ public sealed class AotOptimizedAudioPlayer : IAudioPlayer
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     
@@ -962,15 +962,15 @@ dotnet publish -c Release -r linux-x64 --self-contained
 dotnet publish -c Release -r osx-x64 --self-contained
 
 # 运行 AOT 编译后的应用（Windows）
-./bin/Release/net10.0/win-x64/publish/AudioApp.exe
+./bin/Release/net11.0/win-x64/publish/AudioApp.exe
 
 # 运行 AOT 编译后的应用（Linux）
-chmod +x ./bin/Release/net10.0/linux-x64/publish/AudioApp
-./bin/Release/net10.0/linux-x64/publish/AudioApp
+chmod +x ./bin/Release/net11.0/linux-x64/publish/AudioApp
+./bin/Release/net11.0/linux-x64/publish/AudioApp
 
 # 运行 AOT 编译后的应用（macOS）
-chmod +x ./bin/Release/net10.0/osx-x64/publish/AudioApp
-./bin/Release/net10.0/osx-x64/publish/AudioApp
+chmod +x ./bin/Release/net11.0/osx-x64/publish/AudioApp
+./bin/Release/net11.0/osx-x64/publish/AudioApp
 ```
 
 ## 总结

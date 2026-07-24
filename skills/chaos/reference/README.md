@@ -151,7 +151,7 @@ chaos 是基于 .NET 10 构建的高性能混沌测试系统，为 .NET 开发�
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -193,7 +193,7 @@ Console.WriteLine($"结果消息: {result.Message}");
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Microsoft.Extensions.Aot@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

@@ -2,7 +2,7 @@
 #:package Microsoft.AspNetCore.SignalR.Client@8.0.0
 #:package Microsoft.AspNetCore.Components.Web@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Microsoft.AspNetCore.SignalR.Client;

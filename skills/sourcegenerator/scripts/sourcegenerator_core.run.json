@@ -19,7 +19,7 @@
     },
     "Process Attributes": {
       "commandName": "Project",
-      "commandLineArgs": "attributes process --assembly ./bin/Debug/net10.0/MyProject.dll",
+      "commandLineArgs": "attributes process --assembly ./bin/Debug/net11.0/MyProject.dll",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
@@ -27,7 +27,7 @@
     },
     "Generate Reflection Info": {
       "commandName": "Project",
-      "commandLineArgs": "reflection generate --assembly ./bin/Debug/net10.0/MyProject.dll --output ./reflection-info",
+      "commandLineArgs": "reflection generate --assembly ./bin/Debug/net11.0/MyProject.dll --output ./reflection-info",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

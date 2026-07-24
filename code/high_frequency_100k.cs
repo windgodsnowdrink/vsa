@@ -3,7 +3,7 @@
 #:package Dapper.AOT@0.1.0
 #:package StackExchange.Redis@2.7.121
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 // 十万级TPS架构 EFCore+Dapper+Redis分片+零拷贝

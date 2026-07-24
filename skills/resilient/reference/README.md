@@ -183,7 +183,7 @@ Resilient 技能完全支持 AOT (Ahead-of-Time) 编译，通过以下配置实�
 ```json
 {
   "compilation": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "trimMode": "partial",
     "readyToRun": true,

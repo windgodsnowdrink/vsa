@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package WeihanLi.Web.Extensions@2.1.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property ManagePackageVersionsCentrally=false
 #:property LangVersion=preview
 

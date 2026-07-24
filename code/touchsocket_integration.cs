@@ -2,7 +2,7 @@
 #:package TouchSocket.Core@2.1.0
 #:package TouchSocket.Sockets@2.1.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Microsoft.Extensions.DependencyInjection;

@@ -233,7 +233,7 @@ public interface ISshBatchService
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",
@@ -452,7 +452,7 @@ await sshService.CloseConnectionAsync(connection);
 
    ```bash
    dotnet build -c Debug
-   dotnet debug ./bin/Debug/net10.0/ssh_core.dll connect --host example.com --username user --password pass
+   dotnet debug ./bin/Debug/net11.0/ssh_core.dll connect --host example.com --username user --password pass
    ```
 
 ### 7.3 错误处理

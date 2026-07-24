@@ -249,7 +249,7 @@ await kafkaService.RunBenchmarkAsync("localhost:9092", "test-topic", 1000);
 
 | 配置项 | 类型 | 默认值 | 描述 |
 |--------|------|--------|------|
-| `runtime.framework` | 字符串 | `net10.0` | 运行时框架版本 |
+| `runtime.framework` | 字符串 | `net11.0` | 运行时框架版本 |
 | `runtime.aot` | 布尔值 | `true` | 是否启用 AOT 编译 |
 | `runtime.selfContained` | 布尔值 | `true` | 是否为自包含部署 |
 | `runtime.runtimeIdentifier` | 字符串 | `win-x64` | 运行时标识符 |
@@ -327,7 +327,7 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true
 
 | 配置项 | 值 | 描述 |
 |--------|-----|------|
-| `TargetFramework` | `net10.0` | 目标框架版本 |
+| `TargetFramework` | `net11.0` | 目标框架版本 |
 | `PublishAot` | `true` | 启用 AOT 编译 |
 | `SelfContained` | `true` | 自包含部署 |
 | `RuntimeIdentifier` | `win-x64` | 运行时标识符 |

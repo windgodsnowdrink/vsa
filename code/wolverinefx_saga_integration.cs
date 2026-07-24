@@ -3,7 +3,7 @@
 #:package WolverineFx.EntityFrameworkCore@1.10.0
 #:package Microsoft.EntityFrameworkCore@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 using Wolverine;
 using Wolverine.EntityFrameworkCore;

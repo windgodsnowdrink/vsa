@@ -3,7 +3,7 @@ version: 1.0.0
 description: UI技能，支持Web、桌面和移动应用的开发和部署
 
 compilation:
-  targetFramework: net10.0
+  targetFramework: net11.0
   publishAot: true
   trimMode: partial
   selfContained: true

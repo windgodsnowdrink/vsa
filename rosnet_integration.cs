@@ -4,7 +4,7 @@
 #:package Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.19.6
 #:package ROS.NET@1.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property DockerDefaultTargetOS Linux

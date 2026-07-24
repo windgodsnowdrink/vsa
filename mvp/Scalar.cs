@@ -13,7 +13,7 @@
 #:package Swashbuckle.AspNetCore.SwaggerUI@9.0.4
 #:package Scalar.AspNetCore@2.8.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

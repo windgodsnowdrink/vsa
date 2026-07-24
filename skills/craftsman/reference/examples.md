@@ -68,7 +68,7 @@ var result = await engine.ExecuteAsync(new Craftsman.AOT.CraftsmanInput
     Parameters = new Dictionary<string, string>
     {
         { "configuration", "release" },
-        { "target", "net10.0" }
+        { "target", "net11.0" }
     }
 });
 ```
@@ -82,7 +82,7 @@ var result = await engine.ExecuteAsync(new Craftsman.AOT.CraftsmanInput
 craftsman_aot.exe execute generate type=file name=output.txt content=Hello
 
 # 执行构建操作
-craftsman_aot.exe execute build configuration=release target=net10.0
+craftsman_aot.exe execute build configuration=release target=net11.0
 
 # 执行部署操作
 craftsman_aot.exe execute deploy environment=production

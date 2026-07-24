@@ -1,5 +1,5 @@
 #!/usr/bin/env dotnet
-#:sdk Microsoft.NET.Sdk.Web #:package MongoDB.Driver@2.28.0 #:package MongoDB.Bson@2.28.0 #:package Microsoft.Extensions.DependencyInjection@10.0.0 #:package Microsoft.Extensions.Logging@10.0.0 #:property LangVersion=preview #:property TargetFramework=net10.0 #:property Nullable=enable #:property ImplicitUsings=enable
+#:sdk Microsoft.NET.Sdk.Web #:package MongoDB.Driver@2.28.0 #:package MongoDB.Bson@2.28.0 #:package Microsoft.Extensions.DependencyInjection@10.0.0 #:package Microsoft.Extensions.Logging@10.0.0 #:property LangVersion=preview #:property TargetFramework=net11.0 #:property Nullable=enable #:property ImplicitUsings=enable
 
 using System;
 using System.Collections.Generic;

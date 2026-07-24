@@ -2,7 +2,7 @@
 #:package StackExchange.Redis@2.7.121
 #:package Microsoft.Data.Sqlite@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 using System.Threading.Channels;
 using StackExchange.Redis;

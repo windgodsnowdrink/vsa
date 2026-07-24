@@ -9,7 +9,7 @@
 #:package ChoETL.NETStandard@1.2.1.70
 #:package ChoETL.JSON.NETStandard@1.2.1.71
 #:package ChoETL.SQLite.Core@1.0.0.4
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using System.Threading.Channels;

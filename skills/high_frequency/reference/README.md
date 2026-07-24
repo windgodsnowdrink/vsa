@@ -220,7 +220,7 @@ dotnet publish -c Release -r osx-x64 --self-contained true /p:PublishAot=true /p
 
 ### 编译选项
 
-- **Target Framework**: net10.0
+- **Target Framework**: net11.0
 - **Runtime Identifier**: win-x64, linux-x64, osx-x64
 - **Trim Mode**: partial
 - **Publish Aot**: true

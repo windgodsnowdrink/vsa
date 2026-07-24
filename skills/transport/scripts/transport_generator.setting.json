@@ -1,7 +1,7 @@
 {
   "compilation": {
     "options": {
-      "TargetFramework": "net10.0",
+      "TargetFramework": "net11.0",
       "PublishAot": true,
       "TrimMode": "partial",
       "SelfContained": true,
@@ -25,7 +25,7 @@
   "build": {
     "configuration": "Release",
     "platform": "Any CPU",
-    "output_path": "bin/Release/net10.0/win-x64/publish",
+    "output_path": "bin/Release/net11.0/win-x64/publish",
     "publish_profile": "Default"
   },
   "debug": {

@@ -20,7 +20,7 @@ using System.Buffers;
 #:package LogCorner.EduSync.Speech.Command@latest
 #:package Microsoft.Extensions.ObjectPool@latest
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

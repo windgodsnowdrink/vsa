@@ -3,7 +3,7 @@
 #:package Aeron@1.40.0
 #:package ZeroFormatter@1.7.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 // 百万级TPS架构： 事件溯源+UDP传输+Aeron
 using System.Threading.Channels;

@@ -15,7 +15,7 @@
 #:package OllamaSharp@5.4.24
 #:package System.Text.Json@10.0.5
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=false

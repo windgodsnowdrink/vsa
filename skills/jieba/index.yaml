@@ -12,7 +12,7 @@ category: 中文处理
 # AOT架构信息
 aot:
   enabled: true
-  framework: net10.0
+  framework: net11.0
   self_contained: true
   runtime_identifier: win-x64
   optimization_level: Release

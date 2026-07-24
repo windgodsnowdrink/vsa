@@ -3,7 +3,7 @@
 #:package Dapper@2.0.123
 #:package Dapper.Contrib@2.0.123
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 public interface IReadOnly{entityName}Repository
 {

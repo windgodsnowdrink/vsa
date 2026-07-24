@@ -52,7 +52,7 @@
 # - EnableCompilationRelaxations: true
 # - EnableEnhancedNgen: true
 # Target Framework:
-# - net10.0
+# - net11.0
 # Scripts:
 # - name: "PluginLoadContext.cs"
 #   description: "插件加载上下文实现，提供动态插件加载能力"

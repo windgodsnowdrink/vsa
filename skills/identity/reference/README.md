@@ -157,7 +157,7 @@ identity_aot.exe help
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "trimMode": "partial",
     "runtimeIdentifier": "win-x64"

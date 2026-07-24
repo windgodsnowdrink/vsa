@@ -2,7 +2,7 @@
 #:package MediatR@12.1.1
 #:package Microsoft.EntityFrameworkCore@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;

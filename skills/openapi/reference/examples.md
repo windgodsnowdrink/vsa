@@ -20,7 +20,7 @@
 #:package Swashbuckle.AspNetCore@6.5.0
 #:package Microsoft.OpenApi@1.6.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -161,7 +161,7 @@ public class Program
 #:package Microsoft.OpenApi@1.6.0
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -355,7 +355,7 @@ public class Program
 #:package Microsoft.OpenApi@1.6.0
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -587,7 +587,7 @@ public class Program
 #:package Swashbuckle.AspNetCore@6.5.0
 #:package Microsoft.OpenApi@1.6.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -805,7 +805,7 @@ public class Program
 #:package Swashbuckle.AspNetCore@6.5.0
 #:package Microsoft.OpenApi@1.6.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -1036,7 +1036,7 @@ public class Program
 #:package Swashbuckle.AspNetCore@6.5.0
 #:package Microsoft.OpenApi@1.6.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

@@ -4,7 +4,7 @@
 #:package Microsoft.VisualStudio.Azure.Containers.Tools.Targets@1.22.1
 #:package Microsoft.EntityFrameworkCore.SqlServer@10.0.0-preview.6.25358.103
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property UserSecretsId=210f4926-30c7-45ca-a020-391f82b3b3a1

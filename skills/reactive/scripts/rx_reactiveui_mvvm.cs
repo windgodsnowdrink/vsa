@@ -7,7 +7,7 @@
 #:package System.Reactive@6.0.0
 #:package System.Threading.Channels@8.0.0
 #:package System.Runtime.CompilerServices.Unsafe@6.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

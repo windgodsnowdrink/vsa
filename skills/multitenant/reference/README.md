@@ -371,7 +371,7 @@ builder.Services.AddSingleton<ITenantResourceManager, CustomTenantResourceManage
    dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true
    
    # 运行编译后的应用
-   .\bin\Release\net10.0\win-x64\publish\multitenant_integration.exe
+   .\bin\Release\net11.0\win-x64\publish\multitenant_integration.exe
    ```
 
 3. **容器化部署**

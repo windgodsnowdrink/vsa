@@ -10,7 +10,7 @@
     }
   },
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "selfContained": true,
     "runtimeIdentifier": "win-x64",

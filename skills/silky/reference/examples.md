@@ -470,7 +470,7 @@ builder.Services.Configure<RegistryOptions>(options =>
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": true,
     "implicitUsings": true
@@ -496,7 +496,7 @@ dotnet publish ./services/UserService -c Release -r win-x64 --self-contained tru
 
 ```bash
 # 运行编译后的用户服务
-./services/UserService/bin/Release/net10.0/win-x64/publish/UserService.exe
+./services/UserService/bin/Release/net11.0/win-x64/publish/UserService.exe
 ```
 
 ### 示例 7：使用缓存提升性能

@@ -7,7 +7,7 @@
 #:package Google.Protobuf@3.26.1
 #:package System.Reflection.DispatchProxy@4.7.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

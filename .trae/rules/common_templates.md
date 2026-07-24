@@ -56,7 +56,7 @@ alwaysApply: false
 #:package Microsoft.EntityFrameworkCore.Tools@10.0.1
 #:package Microsoft.EntityFrameworkCore.Inmemory@10.0.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

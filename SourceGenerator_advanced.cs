@@ -3,7 +3,7 @@
 #:package Microsoft.CodeAnalysis.Analyzers@3.3.4
 #:package Roslynator.Analyzers@4.2.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

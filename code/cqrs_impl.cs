@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk
 #:package MediatR@12.1.1
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 // 查询实现
 public record Get{entityName}Query(int Id) : IRequest<{entityName}Dto>;

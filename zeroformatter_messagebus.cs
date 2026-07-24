@@ -3,7 +3,7 @@
 #:package Disruptor.Net@3.4.0
 #:package Microsoft.IO.RecyclableMemoryStream@2.3.2
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using System.Buffers;

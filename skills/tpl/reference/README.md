@@ -148,7 +148,7 @@ tpl_generator info
 - **trimMode**: 裁剪模式（partial）
 - **selfContained**: 自包含发布
 - **publishSingleFile**: 单文件发布
-- **targetFramework**: 目标框架（net10.0）
+- **targetFramework**: 目标框架（net11.0）
 
 ### 运行配置 (run.json)
 

@@ -80,7 +80,7 @@
     }
   },
   "runtimeOptions": {
-    "tfm": "net10.0",
+    "tfm": "net11.0",
     "framework": "Microsoft.NETCore.App",
     "configProperties": {
       "System.GC.Server": true,
@@ -158,9 +158,9 @@
     "publishReadyToRun": true,
     "publishTrimmed": true,
     "runtimeIdentifier": "win-x64",
-    "targetFramework": "net10.0",
-    "outputPath": "bin\\Release\\net10.0\\win-x64\\publish",
-    "publishDir": "bin\\Release\\net10.0\\win-x64\\publish"
+    "targetFramework": "net11.0",
+    "outputPath": "bin\\Release\\net11.0\\win-x64\\publish",
+    "publishDir": "bin\\Release\\net11.0\\win-x64\\publish"
   },
   "healthChecks": {
     "enabled": true,

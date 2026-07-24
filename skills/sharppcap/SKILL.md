@@ -149,7 +149,7 @@ public interface ICodeGeneratorService
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": true,
     "implicitUsings": true

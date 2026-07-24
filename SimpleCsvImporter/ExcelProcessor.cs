@@ -3,7 +3,7 @@
 #:package Pomelo.EntityFrameworkCore.MySql@9.0.0
 #:package Microsoft.EntityFrameworkCore@9.0.0
 #:package Microsoft.EntityFrameworkCore.Design@9.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

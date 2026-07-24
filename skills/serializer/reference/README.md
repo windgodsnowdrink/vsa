@@ -151,7 +151,7 @@ public interface ITemplateManager
 
 | 配置项 | 说明 | 默认值 |
 |--------|------|--------|
-| targetFramework | 目标框架 | net10.0 |
+| targetFramework | 目标框架 | net11.0 |
 | langVersion | C# 语言版本 | preview |
 | nullable | 可为空类型检查 | enable |
 | optimize | 优化级别 | true |
@@ -165,7 +165,7 @@ public interface ITemplateManager
 
 | 配置项 | 说明 | 默认值 |
 |--------|------|--------|
-| targetFramework | 目标框架 | net10.0 |
+| targetFramework | 目标框架 | net11.0 |
 | langVersion | C# 语言版本 | preview |
 | nullable | 可为空类型检查 | enable |
 | optimize | 优化级别 | true |

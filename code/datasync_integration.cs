@@ -3,7 +3,7 @@
 #:package Prometheus.Net.AspNetCore@8.0.0
 #:package Microsoft.AspNetCore.Authentication.JwtBearer@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 
@@ -301,7 +301,7 @@ public static class DataSyncExtensions
 #:package Microsoft.Azure.Mobile.Client@4.2.1
 #:package Microsoft.Azure.Mobile.Server@2.0.3
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

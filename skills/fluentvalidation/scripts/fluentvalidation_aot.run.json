@@ -46,7 +46,7 @@
   },
   "buildOptions": {
     "buildBeforeRun": true,
-    "outputPath": "bin\\Release\\net10.0",
+    "outputPath": "bin\\Release\\net11.0",
     "configuration": "Release",
     "publishProfile": "Default"
   },

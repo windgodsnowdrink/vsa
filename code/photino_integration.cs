@@ -11,7 +11,7 @@
 #:package Squirrel@2.0.0
 #:package OpenTelemetry@1.6.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

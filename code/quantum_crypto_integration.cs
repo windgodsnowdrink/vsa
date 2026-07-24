@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk
 #:package Microsoft.Quantum.Simulation.Core@0.28.0
 #:package System.Diagnostics.Metrics@8.0.0-preview.6.23329.7
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property LangVersion preview
 #:property Nullable enable
 

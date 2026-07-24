@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package StackExchange.Redis@2.7.18
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 
 using StackExchange.Redis;
 

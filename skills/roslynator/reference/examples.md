@@ -418,7 +418,7 @@ public class CustomRefactoringEngine : RefactoringEngine
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "publishAot": true,
     "trimMode": "partial",
@@ -443,7 +443,7 @@ public class CustomRefactoringEngine : RefactoringEngine
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "publishAot": true,
     "trimMode": "partial",

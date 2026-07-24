@@ -2,7 +2,7 @@
 #:package Grpc.AspNetCore@2.62.0
 #:package Google.Protobuf@3.25.1
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Grpc.Core;

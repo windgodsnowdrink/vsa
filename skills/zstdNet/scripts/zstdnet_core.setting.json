@@ -28,7 +28,7 @@
     }
   ],
   "framework": {
-    "targetFramework": "net10.0"
+    "targetFramework": "net11.0"
   },
   "buildOptions": {
     "outputType": "exe",

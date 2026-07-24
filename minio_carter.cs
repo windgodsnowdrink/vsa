@@ -2,7 +2,7 @@
 #:package Carter@7.0.0
 #:package Minio@7.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using Carter;

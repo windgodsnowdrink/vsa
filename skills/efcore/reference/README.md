@@ -111,7 +111,7 @@ public class EFCoreCommandResult
 ```json
 {
   "$schema": "https://dot.net/v1/dotnet.run.schema.json",
-  "framework": "net10.0",
+  "framework": "net11.0",
   "options": {
     "PublishAot": true,
     "InvariantGlobalization": true,

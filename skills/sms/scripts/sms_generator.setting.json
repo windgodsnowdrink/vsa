@@ -2,7 +2,7 @@
   "sdk": "Microsoft.NET.Sdk",
   "properties": {
     "LangVersion": "latest",
-    "TargetFramework": "net10.0",
+    "TargetFramework": "net11.0",
     "Nullable": "enable",
     "ImplicitUsings": "enable",
     "PublishAot": true,

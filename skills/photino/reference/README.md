@@ -64,7 +64,7 @@ Photino 技能是一个基于 Photino.NET 的跨平台桌面应用开发框架�
    在项目文件中添加以下配置：
    ```xml
    <PropertyGroup>
-     <TargetFramework>net10.0</TargetFramework>
+     <TargetFramework>net11.0</TargetFramework>
      <PublishAot>true</PublishAot>
      <ReadyToRun>true</ReadyToRun>
      <TieredCompilation>true</TieredCompilation>
@@ -366,7 +366,7 @@ FROM mcr.microsoft.com/dotnet/runtime:10.0
 
 WORKDIR /app
 
-COPY bin/Release/net10.0/linux-x64/publish/ .
+COPY bin/Release/net11.0/linux-x64/publish/ .
 
 ENTRYPOINT ["./PhotinoApp"]
 ```

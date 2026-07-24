@@ -4,7 +4,7 @@
 #:package Microsoft.EntityFrameworkCore.SqlServer@10.0.0-preview.4
 #:package Microsoft.AspNetCore.Mvc.NewtonsoftJson@10.0.0-preview.4
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property UserSecretsId=210f4926-30c7-45ca-a020-391f82b3b3a1

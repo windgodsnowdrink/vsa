@@ -41,7 +41,7 @@
 # - TieredCompilation: true
 # - Optimize: true
 # Target Framework:
-# - TargetFramework: net10.0
+# - TargetFramework: net11.0
 # Runtime Identifiers:
 # - win-x64
 # - linux-x64

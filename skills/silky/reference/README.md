@@ -129,7 +129,7 @@ Silky 技能基于 .NET 10 构建，采用 AOT 编译技术，提供高性能的
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": true,
     "implicitUsings": true

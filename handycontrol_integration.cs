@@ -3,7 +3,7 @@
 #:package Microsoft.Extensions.Localization@8.0.0
 #:package OpenTelemetry@1.7.0
 #:package System.Composition@7.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -119,7 +119,7 @@ public static class ServiceCollectionExtensions
 // });
 #:package Microsoft.Extensions.Options@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

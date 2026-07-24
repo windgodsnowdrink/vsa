@@ -55,7 +55,7 @@
 # - EnableCompilationRelaxations: true
 # - EnableEnhancedNgen: true
 # Target Framework:
-# - net10.0
+# - net11.0
 # Scripts:
 # - name: "photino_integration.cs"
 #   description: "Photino 集成功能，实现核心跨平台桌面应用能力，包括窗口管理、Web 集成、插件系统等"

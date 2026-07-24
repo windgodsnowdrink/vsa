@@ -6,7 +6,7 @@
 #:package Keycloak.Net@22.0.0
 #:package Microsoft.AspNetCore.Authentication.OpenIdConnect@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

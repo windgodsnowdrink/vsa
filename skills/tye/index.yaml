@@ -5,7 +5,7 @@ description: 基于 .NET 10 的传输层实现，支持多种传输协议和高�
 
 compilation:
   options:
-    target_framework: net10.0
+    target_framework: net11.0
     publish_aot: true
     trim_mode: partial
     self_contained: true
@@ -271,7 +271,7 @@ environment_variables:
 build:
   configuration: Release
   platform: Any CPU
-  output_path: bin/Release/net10.0/win-x64/publish
+  output_path: bin/Release/net11.0/win-x64/publish
   publish_profile: Default
 
 debug:

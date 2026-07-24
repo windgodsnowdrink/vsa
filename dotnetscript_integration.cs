@@ -2,7 +2,7 @@
 #:package Microsoft.CodeAnalysis.CSharp.Scripting@4.7.0
 #:package Microsoft.Extensions.DependencyModel@8.0.0-preview.3.23174.8
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 public sealed class ScriptOptions
 {
@@ -121,7 +121,7 @@ internal sealed class ScriptPooledPolicy : IPooledObjectPolicy<Script>
     public bool Return(Script obj) => obj.Reset();
 }
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

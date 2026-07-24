@@ -7,7 +7,7 @@
       "LOG_LEVEL": "Information"
     },
     "commandLineArgs": [],
-    "workingDirectory": "../bin/Release/net10.0/win-x64/publish",
+    "workingDirectory": "../bin/Release/net11.0/win-x64/publish",
     "applicationName": "ui_generator",
     "processName": "ui_generator.exe",
     "exitCodes": {

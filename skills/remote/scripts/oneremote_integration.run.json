@@ -14,7 +14,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
-        "DOTNET_TARGET_FRAMEWORK": "net10.0",
+        "DOTNET_TARGET_FRAMEWORK": "net11.0",
         "DOTNET_PUBLISH_AOT": "true",
         "DOTNET_TRIM_MODE": "partial",
         "DOTNET_READY_TO_RUN": "true",

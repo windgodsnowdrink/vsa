@@ -2,7 +2,7 @@
 #:package SkyAPM.Agent.AspNetCore@1.6.0
 #:package Serilog@3.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

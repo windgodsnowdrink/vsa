@@ -37,7 +37,7 @@
 #:package Whisper.net.Runtime@1.9.1-preview1
 #:package OllamaSharp@5.4.23
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

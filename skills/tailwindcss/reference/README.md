@@ -140,7 +140,7 @@ TailwindCSS 技能使用 AOT 编译技术，配置如下：
 - **TrimMode**：partial - 部分修剪未使用的代码
 - **SelfContained**：true - 自包含部署
 - **PublishSingleFile**：true - 发布为单文件应用
-- **TargetFramework**：net10.0 - 目标框架
+- **TargetFramework**：net11.0 - 目标框架
 
 ### 4.3 依赖项
 

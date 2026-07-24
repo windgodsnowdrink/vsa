@@ -2,7 +2,7 @@
 #:package Microsoft.Diagnostics.NETCore.Client@0.2.251801
 #:package System.Diagnostics.PerformanceCounter@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

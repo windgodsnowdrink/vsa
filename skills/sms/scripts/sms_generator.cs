@@ -5,7 +5,7 @@
 #:package Microsoft.Extensions.Logging.Console@10.0.0
 #:package System.CommandLine@2.0.0
 #:property LangVersion=latest
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

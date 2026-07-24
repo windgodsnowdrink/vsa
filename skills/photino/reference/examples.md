@@ -14,7 +14,7 @@
 #:package Photino.NET@2.0.0
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property PublishAot=true
 #:property ReadyToRun=true
 #:property TieredCompilation=true
@@ -858,7 +858,7 @@ dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishAot>true</PublishAot>

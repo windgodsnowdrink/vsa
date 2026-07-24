@@ -5,7 +5,7 @@
 #:package IGeekFan.AspNetCore.RapiDoc@0.0.8
 #:package IGeekFan.AspNetCore.Knife4jUI@0.0.16
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Microsoft.AspNetCore.Builder;

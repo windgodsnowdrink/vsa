@@ -2,7 +2,7 @@
 #:package MediatR@12.1.1
 #:package Grpc.AspNetCore@2.62.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using MediatR;

@@ -10,7 +10,7 @@
 #:package OpenTelemetry@1.8.0
 #:package System.Threading.Channels@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using Known;
 using Microsoft.Extensions.DependencyInjection;

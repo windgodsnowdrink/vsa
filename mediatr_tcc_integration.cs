@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package Dtmcli@2.6.0
 #:package MediatR@12.1.1
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using Dtmcli;

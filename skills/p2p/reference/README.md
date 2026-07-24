@@ -549,7 +549,7 @@ P2P 技能完全支持 .NET 10 的 AOT 编译，以提高启动速度和运行�
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <PublishAot>true</PublishAot>
     <ReadyToRun>true</ReadyToRun>
     <TieredCompilation>true</TieredCompilation>

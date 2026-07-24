@@ -272,7 +272,7 @@ RUN dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingl
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine
 WORKDIR /app
-COPY --from=build /app/bin/Release/net10.0/linux-x64/publish/ .
+COPY --from=build /app/bin/Release/net11.0/linux-x64/publish/ .
 
 ENV TWILIO_ACCOUNT_SID=your-twilio-account-sid
 ENV TWILIO_AUTH_TOKEN=your-twilio-auth-token

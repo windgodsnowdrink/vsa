@@ -3,7 +3,7 @@
 #:package Audit.NET.Sqlite@20.0.0
 #:package ZstdNet@1.4.5
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

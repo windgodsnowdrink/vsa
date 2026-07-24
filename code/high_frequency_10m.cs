@@ -6,7 +6,7 @@
 #:package Disruptor.Net@3.4.0
 #:package ZeroFormatter@1.7.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 // 亿级TPS架构：分布式日志+内存分层+零拷贝+LLVM IR优化

@@ -6,7 +6,7 @@
     "DOTNET_LOG_LEVEL": "Information"
   },
   "compilation": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "readyToRun": true,
     "tieredCompilation": true,
