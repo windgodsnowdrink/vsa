@@ -59,12 +59,12 @@
         <ApplicationInsightsVersion>3.0.0</ApplicationInsightsVersion>
         <CodeAnalysisVersion>5.3.0</CodeAnalysisVersion>
         <SkiaSharpVersion>3.119.2</SkiaSharpVersion>
-        <MassTransitVersion>8.5.8</MassTransitVersion>
+        <MassTransitVersion>8.5.10</MassTransitVersion>
         <AspNetCoreVersion>10.0.5</AspNetCoreVersion>
         <ComponentsVersion>10.0.5</ComponentsVersion>
         <OpenTelemetryVersion>1.15.0</OpenTelemetryVersion>
         <WolverineFxVersion>5.22.0</WolverineFxVersion>
-        <PollyVersion>8.6.6</PollyVersion>
+        <PollyVersion>8.7.0</PollyVersion>
         <EasyCachingVersion>1.9.2</EasyCachingVersion>
         <NSwagVersion>14.6.3</NSwagVersion>
         <SwashbuckleVersion>10.1.5</SwashbuckleVersion>
