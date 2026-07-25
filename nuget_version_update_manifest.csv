@@ -1,0 +1,464 @@
+PackageName,OldVersion,NewVersion,Notes
+Microsoft.NET.Test.Sdk,17.12.0,18.6.0,最新稳定版
+Microsoft.CodeAnalysis,4.13.0,5.6.0,最新稳定版
+Microsoft.CodeAnalysis.Common,4.13.0,5.6.0,最新稳定版
+Microsoft.CodeAnalysis.CSharp,4.13.0,5.6.0,最新稳定版
+Microsoft.AspNetCore.Authentication.JwtBearer,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Authorization,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Components,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Identity.EntityFrameworkCore,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.SignalR.Client,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.DataProtection,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.DataProtection.StackExchangeRedis,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Mvc.NewtonsoftJson,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.SignalR.StackExchangeRedis,9.0.7,10.0.9,随.NET 10升级
+Microsoft.FeatureManagement,3.5.0,4.0.0,最新稳定版
+Microsoft.FeatureManagement.AspNetCore,3.5.0,4.0.0,最新稳定版
+Microsoft.Identity.Web,2.18.0,3.0.0,最新稳定版
+Microsoft.IO.RecyclableMemoryStream,2.3.2,3.0.0,最新稳定版
+Microsoft.VisualStudio.Threading,17.10.48,17.12.0,最新稳定版
+Microsoft.VisualStudio.Azure.Containers.Tools.Targets,1.21.0,1.22.0,最新稳定版
+Google.Protobuf,3.28.0,3.35.1,最新稳定版
+Grpc.Net.Client,2.65.0,2.80.0,最新稳定版
+Grpc.Tools,2.65.0,2.81.0,最新稳定版
+StackExchange.Redis,2.7.0,3.0.17,最新稳定版(大版本升级)
+MongoDB.Driver,2.27.0,3.10.0,最新稳定版(大版本升级)
+RabbitMQ.Client,6.8.0,7.2.1,最新稳定版(大版本升级)
+MySqlConnector,2.3.0,2.6.1,最新稳定版
+MySql.Data,8.4.0,9.7.0,最新稳定版(大版本升级)
+Pomelo.EntityFrameworkCore.MySql,8.0.0,9.0.0,最新稳定版(大版本升级)
+AutoMapper,13.0.0,16.1.1,最新稳定版(大版本升级)
+Mapster,7.4.0,10.0.7,最新稳定版(大版本升级)
+FluentValidation,11.9.0,12.1.1,最新稳定版(大版本升级)
+FluentValidation.DependencyInjectionExtensions,11.9.0,12.1.1,最新稳定版(大版本升级)
+Humanizer,2.14.1,3.0.10,最新稳定版(大版本升级)
+Newtonsoft.Json,13.0.3,13.0.4,最新稳定版
+NodaTime,3.1.0,3.3.3,最新稳定版
+NPOI,2.7.0,2.8.0,最新稳定版
+RestSharp,111.0.0,114.0.0,最新稳定版
+Refit,7.0.0,13.1.0,最新稳定版(大版本升级)
+Scrutor,4.2.0,7.0.0,最新稳定版(大版本升级)
+SixLabors.ImageSharp,3.1.0,4.0.0,最新稳定版(大版本升级)
+Spectre.Console,0.49.0,0.57.1,最新稳定版
+System.Linq.Async,6.0.1,6.0.3,最新稳定版
+System.Reactive,6.0.0,7.0.0,最新稳定版(大版本升级)
+System.IdentityModel.Tokens.Jwt,7.5.0,8.19.2,最新稳定版(大版本升级)
+xunit,2.8.0,2.9.3,最新稳定版
+coverlet.collector,6.0.2,10.0.1,最新稳定版(大版本升级)
+MSTest.TestAdapter,3.4.0,4.3.0,最新稳定版(大版本升级)
+MSTest.TestFramework,3.4.0,4.3.0,最新稳定版(大版本升级)
+FakeItEasy,8.2.0,9.0.1,最新稳定版(大版本升级)
+KubernetesClient,14.0.0,19.0.2,最新稳定版(大版本升级)
+Castle.Core,5.1.1,5.2.1,最新稳定版
+BouncyCastle.Cryptography,2.3.0,2.6.2,最新稳定版
+MessagePack,2.5.0,3.1.8,最新稳定版(大版本升级)
+MQTTnet,4.3.0,5.2.0.1603,最新稳定版(大版本升级)
+HtmlSanitizer,8.0.0,9.0.892,最新稳定版(大版本升级)
+ClosedXML,0.102.0,0.105.0,最新稳定版
+NSwag.AspNetCore,14.0.0,14.7.1,最新稳定版
+Carter,8.0.0,10.0.0,最新稳定版(大版本升级)
+Finbuckle.MultiTenant,8.0.0,10.1.1,最新稳定版(大版本升级)
+Finbuckle.MultiTenant.AspNetCore,8.0.0,10.1.2,最新稳定版(大版本升级)
+Finbuckle.MultiTenant.EntityFrameworkCore,8.0.0,10.1.2,最新稳定版(大版本升级)
+OpenIddict,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.AspNetCore,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.EntityFrameworkCore,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.Server.AspNetCore,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.Validation.AspNetCore,5.0.0,7.6.0,最新稳定版(大版本升级)
+Yarp.ReverseProxy,2.1.0,2.3.0,最新稳定版
+Serilog.AspNetCore,4.0.0,7.0.0,最新稳定版(大版本升级)
+Serilog.Extensions.Hosting,5.0.0,7.0.0,最新稳定版(大版本升级)
+Serilog.Extensions.Logging,3.1.0,7.0.0,最新稳定版(大版本升级)
+Serilog.Sinks.Console,5.0.0,6.1.1,最新稳定版
+Serilog.Sinks.File,5.0.0,7.0.0,最新稳定版(大版本升级)
+Serilog.Sinks.Seq,8.0.0,9.1.0,最新稳定版(大版本升级)
+Serilog.Sinks.Async,1.5.0,2.0.0,最新稳定版
+Serilog.Exceptions,8.4.0,8.4.0,无变化
+Serilog.Enrichers.Environment,2.3.0,3.0.0,最新稳定版
+Serilog.Enrichers.Thread,3.1.0,4.0.0,最新稳定版
+Serilog.Enrichers.Span,3.1.0,4.0.0,最新稳定版
+Serilog.Enrichers.Process,2.0.0,3.0.0,最新稳定版
+Serilog.Settings.Configuration,3.4.0,7.0.0,最新稳定版(大版本升级)
+Serilog.Formatting.Compact,1.1.0,3.0.0,最新稳定版
+Serilog.Expressions,3.4.0,4.0.0,最新稳定版
+Dapr.Client,1.12.0,1.18.4,最新稳定版
+Dapr.AspNetCore,1.12.0,1.18.4,最新稳定版
+CommunityToolkit.Common,8.2.0,8.4.2,最新稳定版
+CommunityToolkit.Diagnostics,8.2.0,8.4.2,最新稳定版
+CommunityToolkit.HighPerformance,8.2.0,8.4.2,最新稳定版
+CommunityToolkit.Mvvm,8.2.0,8.4.2,最新稳定版
+Riok.Mapperly,3.5.0,4.3.1,最新稳定版(大版本升级)
+JetBrains.Annotations,2023.3.0,2026.2.0,最新稳定版
+LanguageExt.Core,4.4.0,4.4.9,最新稳定版
+Ardalis.Specification,8.0.0,9.3.1,最新稳定版(大版本升级)
+Ardalis.Specification.EntityFrameworkCore,8.0.0,9.3.1,最新稳定版(大版本升级)
+Asp.Versioning.Mvc,8.0.0,10.0.0,最新稳定版(大版本升级)
+Asp.Versioning.Mvc.ApiExplorer,8.0.0,10.0.0,最新稳定版(大版本升级)
+AspNetCore.HealthChecks.MySql,8.0.0,8.0.0,无变化
+AspNetCore.HealthChecks.Redis,8.0.0,8.0.0,无变化
+AspNetCore.HealthChecks.UI,8.0.0,8.0.0,无变化
+Hangfire.AspNetCore,1.8.14,1.8.23,最新稳定版
+Hangfire.Core,1.8.14,1.8.23,最新稳定版
+WolverineFx,3.0.0,6.22.0,最新稳定版(大版本升级)
+WolverineFx.RabbitMQ,3.0.0,6.21.0,最新稳定版(大版本升级)
+WolverineFx.Http,3.0.0,6.16.0,最新稳定版(大版本升级)
+WolverineFx.Marten,3.0.0,3.0.0,SKIP(未发布)
+SkiaSharp,2.88.0,4.150.1,最新稳定版(大版本升级)
+AutoMapper.Collection,9.0.0,10.0.0,最新稳定版(大版本升级)
+AutoMapper.Extensions.ExpressionMapping,6.0.0,7.0.0,最新稳定版
+QRCoder,1.4.0,1.6.0,最新稳定版
+libphonenumber-csharp,8.13.0,8.13.0,无变化
+NetEscapades.AspNetCore.SecurityHeaders,0.22.0,0.24.0,最新稳定版
+System.Drawing.Common,10.0.5,10.0.10,随.NET 10升级
+System.Configuration.ConfigurationManager,10.0.5,10.0.9,随.NET 10升级
+System.Diagnostics.EventLog,10.0.5,10.0.9,随.NET 10升级
+EasyCaching.Core,1.9.0,1.9.0,无变化
+EasyCaching.Redis,1.9.0,1.9.0,无变化
+EasyCaching.InMemory,1.9.0,1.9.0,无变化
+CSRedisCore,3.6.0,3.6.0,无变化
+FluentStorage,5.0.0,5.0.0,无变化
+Duende.IdentityModel,6.0.0,7.0.0,最新稳定版
+Duende.IdentityModel.OidcClient,6.0.0,7.0.0,最新稳定版
+Hellang.Middleware.ProblemDetails,6.5.0,6.5.0,无变化
+Lazy.Captcha.Core,2.0.0,2.0.0,无变化
+Magicodes.IE.Excel,2.7.0,2.7.0,无变化
+MiniExcel,1.31.0,1.35.0,最新稳定版
+MinVer,5.0.0,6.0.0,最新稳定版
+Npoi.Mapper,6.0.0,6.0.0,无变化
+PinYinConverterCore,1.0.0,1.0.0,无变化
+RestEase,1.6.0,1.6.0,无变化
+RestEase.HttpClientFactory,1.6.0,1.6.0,无变化
+RestEase.SourceGenerator,1.6.0,1.6.0,无变化
+Roslynator.Analyzers,4.12.0,4.14.0,最新稳定版
+SonarAnalyzer.CSharp,9.30.0,10.0.0,最新稳定版(大版本升级)
+SqlSugarCore,5.1.0,5.1.0,无变化
+StreamJsonRpc,2.18.0,2.18.0,无变化
+StyleCop.Analyzers,1.1.118,1.1.118,无变化
+Utf8Json,1.3.7,1.3.7,无变化
+Elastic.Channels,0.10.0,0.10.0,无变化
+Elastic.Ingest.Transport,0.10.0,0.10.0,无变化
+Elastic.Serilog.Sinks,0.10.0,0.10.0,无变化
+EmbedIO,3.5.0,3.5.0,无变化
+DynamicData,8.0.0,8.0.0,无变化
+Dotmim.Sync.MySql,0.9.0,0.9.0,无变化
+Oracle.ManagedDataAccess.Core,23.4.0,23.5.0,最新稳定版
+nacos-sdk-csharp,2.3.0,2.3.0,无变化
+nacos-sdk-csharp.AspNetCore,2.3.0,2.3.0,无变化
+AspNetCore.Scalar,1.1.0,1.1.0,无变化
+Automatonymous,5.0.0,SKIP,固定5.0.0
+Autofac.Core.NonPublicProperty,6.0.0,6.0.0,无变化
+Autofac.Extras.DynamicProxy,6.0.0,7.0.0,最新稳定版
+Autofac.Extensions.DependencyInjection,9.0.0,9.0.0,无变化
+Carter.Analyzers,8.0.0,10.0.0,最新稳定版(大版本升级)
+Carter.ResponseNegotiators.Newtonsoft,8.0.0,10.0.0,最新稳定版(大版本升级)
+Carter.SirenNegotiator,8.0.0,10.0.0,最新稳定版(大版本升级)
+Castle.Core.AsyncInterceptor,2.1.0,2.1.0,无变化
+Collections.Pooled,1.0.0,1.0.0,无变化
+Crc32.NET,1.2.0,1.2.0,无变化
+Dapper.AOT,1.0.0,1.0.0,无变化
+Dapper.Contrib,2.0.0,2.0.0,无变化
+Dapper.SimpleCRUD,2.3.0,2.3.0,无变化
+Dapper.SqlBuilder,2.0.0,2.0.0,无变化
+DapperExtensions,1.7.0,1.7.0,无变化
+Dapr.Actors,1.12.0,1.18.4,最新稳定版
+Dapr.Actors.Generators,1.12.0,1.18.4,最新稳定版
+Dapr.Actors.AspNetCore,1.12.0,1.18.4,最新稳定版
+Dapr.Protos,1.12.0,1.18.4,最新稳定版
+Dapr.Common,1.12.0,1.18.4,最新稳定版
+Dapr.Workflow,1.12.0,1.18.4,最新稳定版
+Dapr.Messaging,1.12.0,1.18.4,最新稳定版
+Dapr.Jobs,1.12.0,1.18.4,最新稳定版
+Dapr.PluggableComponents.Protos,1.12.0,1.18.4,最新稳定版
+Dapr.PluggableComponents,1.12.0,1.18.4,最新稳定版
+DistributedLock.Redis,1.0.0,1.0.0,无变化
+DotNetty.Transport,0.7.0,0.7.0,无变化
+Hangfire.EntityFrameworkCore,1.8.0,1.8.0,无变化
+Jab,0.10.0,0.10.0,无变化
+Mapster.Async,2.0.0,2.0.0,无变化
+Mapster.Core,1.2.0,1.2.0,无变化
+Mapster.DependencyInjection,1.0.0,1.0.0,无变化
+Mapster.EFCore,5.1.0,5.1.0,无变化
+Mapster.Immutable,1.1.0,1.1.0,无变化
+Mapster.JsonNet,1.0.0,1.0.0,无变化
+Facet,1.0.0,1.0.0,无变化
+Facet.Mapping,1.0.0,1.0.0,无变化
+Facet.Extensions,1.0.0,1.0.0,无变化
+Facet.Extensions.EFCore,1.0.0,1.0.0,无变化
+MassTransit.AspNetCore,8.5.10,SKIP,固定8.5.10
+MassTransit.Automatonymous,8.5.10,SKIP,固定8.5.10
+MassTransit.Extensions.DependencyInjection,8.5.10,SKIP,固定8.5.10
+MassTransit.Reactive,8.5.10,SKIP,固定8.5.10
+Mediator.SourceGenerator,2.1.0,SKIP,固定2.1.0
+Mediator.Abstractions,2.1.0,SKIP,固定2.1.0
+MediatR,12.4.0,12.5.0,固定12.5.0
+MediatR.Contracts,2.0.0,SKIP,固定2.0.0
+MediatR.Extensions.Autofac.DependencyInjection,7.0.0,SKIP,固定7.0.0
+MediatR.Extensions.FluentValidation.AspNetCore,5.0.0,SKIP,固定5.0.0
+MessagePack.Annotations,3.1.8,3.1.8,无变化
+MessagePackAnalyzer,3.1.8,3.1.8,无变化
+MessagePack.AspNetCoreMvcFormatter,3.1.8,3.1.8,无变化
+MessagePack.ImmutableCollection,3.1.8,3.1.8,无变化
+MessagePack.NodaTime,3.1.8,3.1.8,无变化
+MessagePack.Generator,3.1.8,3.1.8,无变化
+Microsoft.ApplicationInsights,2.22.0,2.22.0,无变化
+Microsoft.ApplicationInsights.AspNetCore,2.22.0,2.22.0,无变化
+Microsoft.AspNet.WebApi.Client,6.0.0,6.0.0,无变化
+Microsoft.AspNetCore.Components.WebAssembly.Server,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Components.Analyzers,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Components.Authorization,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Connections.Abstractions,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Cryptography.Internal,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Cryptography.KeyDerivation,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.DataProtection.Abstractions,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.DataProtection.Extensions,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.DataProtection.EntityFrameworkCore,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Hosting,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Http,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Http.Connections.Client,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Http.Connections.Common,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Http.Extensions,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.Metadata,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.OData,9.0.7,10.0.9,随.NET 10升级
+Microsoft.AspNetCore.SignalR.Protocols.MessagePack,9.0.7,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Analyzers,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Design,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.DynamicLinq,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.InMemory,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Proxies,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Relational,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Sqlite,10.0.5,10.0.9,随.NET 10升级
+Microsoft.EntityFrameworkCore.Tools,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ApiDescription.Server,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Caching.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Caching.Hybrid,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Caching.Memory,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Caching.StackExchangeRedis,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Configuration,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Configuration.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Configuration.Binder,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Configuration.Json,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Compliance.Redaction,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.DependencyInjection,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.DependencyInjection.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.DependencyModel,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Diagnostics.HealthChecks,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.FileProviders.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.FileProviders.Composite,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.FileProviders.Embedded,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.FileProviders.Physical,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Hosting.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Http,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Http.Diagnostics,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Http.Polly,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Http.Resilience,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Identity.Core,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Identity.Stores,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Localization,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Localization.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.Configuration,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.Console,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.Debug,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.EventLog,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.EventSource,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.ApplicationInsights,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ObjectPool,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ObjectPool.DependencyInjection,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Options,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Options.ConfigurationExtensions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Options.DataAnnotations,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Primitives,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Resilience,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ServiceDiscovery,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ServiceDiscovery.Abstractions,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ServiceDiscovery.Dns,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.ServiceDiscovery.Yarp,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.WebEncoders,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Identity.Client.Extensions.Msal,4.64.0,4.70.0,最新稳定版
+Microsoft.Identity.Web.Certificate,3.0.0,3.0.0,无变化
+Microsoft.Identity.Web.TokenCache,3.0.0,3.0.0,无变化
+Microsoft.Kiota.Abstractions,1.12.0,1.12.0,无变化
+Microsoft.NET.ILLink.Tasks,10.0.5,10.0.9,随.NET 10升级
+Microsoft.NET.StringTools,10.0.5,10.0.9,随.NET 10升级
+Microsoft.NETCore.Platforms,10.0.5,10.0.9,随.NET 10升级
+Microsoft.OpenApi.Readers,2.11.0,2.11.0,固定2.11.0
+Microsoft.Playwright.MSTest,1.44.0,1.50.0,最新稳定版
+Microsoft.VisualStudio.Threading.Analyzers,17.10.48,17.12.0,最新稳定版
+Microsoft.VisualStudio.Setup.Configuration.Interop,3.9.0,3.9.0,无变化
+MsgPack.Cli,1.0.0,1.0.0,无变化
+UUID.Serialization.MessagePack,1.0.0,1.0.0,无变化
+Ulid.MessagePack,1.0.0,1.0.0,无变化
+MagicOnion.Serialization.MessagePack,5.1.0,5.1.0,无变化
+MySql.Data.OpenTelemetry,1.0.0,1.0.0,无变化
+NETStandard.Library,2.0.3,2.0.3,无变化
+NSwag.ApiDescription.Client,14.0.0,14.7.1,最新稳定版
+NSwag.Generation.AspNetCore,14.0.0,14.7.1,最新稳定版
+NSwag.Annotations,14.0.0,14.7.1,最新稳定版
+OpenTelemetry.Api,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Api.ProviderBuilderExtensions,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Extensions,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Extensions.Hosting,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.OpenTelemetryProtocol,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.Console,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.Prometheus.AspNetCore,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.Prometheus.HttpListener,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.Zipkin,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Exporter.InMemory,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Extensions.Propagators,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.GrpcCore,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Http,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.EntityFrameworkCore,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Hangfire,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.AspNetCore,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Runtime,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Process,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.GrpcNetClient,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.StackExchangeRedis,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Quartz,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.Wcf,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.EventCounters,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.ElasticsearchClient,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Instrumentation.AWS,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.PersistentStorage.Abstractions,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.PersistentStorage.FileSystem,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.Azure,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.Container,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.Host,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.OperatingSystem,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.Process,1.15.0,1.16.0,最新稳定版
+OpenTelemetry.Resources.ProcessRuntime,1.15.0,1.16.0,最新稳定版
+Plugin.LocalNotification,10.0.0,10.0.0,无变化
+Polly.Contrib.WaitAndRetry,1.1.0,1.1.0,无变化
+Polly.Core,8.4.0,8.7.0,最新稳定版
+Polly.Extensions,8.4.0,8.7.0,最新稳定版
+Polly.RateLimiting,8.4.0,8.7.0,最新稳定版
+Portable.BouncyCastle,1.9.0,1.9.0,无变化
+PublicTransit,8.5.10,SKIP,固定8.5.10
+PublicTransit.Abstractions,8.5.10,SKIP,固定8.5.10
+PublicTransit.AmazonS3,8.5.10,SKIP,固定8.5.10
+PublicTransit.ActiveMQ,8.5.10,SKIP,固定8.5.10
+PublicTransit.Analyzers,8.5.10,SKIP,固定8.5.10
+PublicTransit.DapperIntegration,8.5.10,SKIP,固定8.5.10
+PublicTransit.EntityFrameworkCore,8.5.10,SKIP,固定8.5.10
+PublicTransit.EventHub,8.5.10,SKIP,固定8.5.10
+PublicTransit.Hangfire,8.5.10,SKIP,固定8.5.10
+PublicTransit.Kafka,8.5.10,SKIP,固定8.5.10
+PublicTransit.MessagePack,8.5.10,SKIP,固定8.5.10
+PublicTransit.MongoDb,8.5.10,SKIP,固定8.5.10
+PublicTransit.Marten,8.5.10,SKIP,固定8.5.10
+PublicTransit.Newtonsoft,8.5.10,SKIP,固定8.5.10
+PublicTransit.Quartz,8.5.10,SKIP,固定8.5.10
+PublicTransit.RabbitMQ,8.5.10,SKIP,固定8.5.10
+PublicTransit.Redis,8.5.10,SKIP,固定8.5.10
+PublicTransit.SignalR,8.5.10,SKIP,固定8.5.10
+PublicTransit.StateMachineVisualizer,8.5.10,SKIP,固定8.5.10
+PublicTransit.SqlTransport.SqlServer,8.5.10,SKIP,固定8.5.10
+PublicTransit.SqlTransport.PostgreSQL,8.5.10,SKIP,固定8.5.10
+PublicTransit.TestFramework,8.5.10,SKIP,固定8.5.10
+OpenIddict.Abstractions,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.EntityFrameworkCore.Models,5.0.0,7.6.0,最新稳定版(大版本升级)
+OpenIddict.Quartz,5.0.0,7.6.0,最新稳定版(大版本升级)
+Quartz.AspNetCore,3.8.0,3.18.2,最新稳定版
+Quartz.Extensions.DependencyInjection,3.8.0,3.18.2,最新稳定版
+Quartz.Extensions.Hosting,3.8.0,3.18.2,最新稳定版
+Refit.Newtonsoft.Json,7.0.0,13.1.0,最新稳定版(大版本升级)
+Resonance,1.0.0,1.0.0,SKIP(无变化)
+K4os.Compression.LZ4,1.3.0,1.3.0,无变化
+Resonance.LZ4,1.0.0,1.0.0,SKIP(无变化)
+Resonance.MessagePack,1.0.0,1.0.0,SKIP(无变化)
+Resonance.SignalR,1.0.0,1.0.0,SKIP(无变化)
+Resonance.WebRTC,1.0.0,1.0.0,SKIP(无变化)
+RestEase.SystemTextJson,1.6.0,1.6.0,无变化
+RestSharp.Serializers.NewtonsoftJson,111.0.0,114.0.0,最新稳定版
+RestSharp.Serializers.SystemTextJson,111.0.0,114.0.0,最新稳定版
+Scalar.AspNetCore.Swashbuckle,2.16.0,2.16.11,最新稳定版
+Seq.Extensions.Logging,6.0.0,8.0.0,最新稳定版
+Serilog.Sinks.Datadog.Logs,0.5.0,0.5.0,无变化
+Serilog.Sinks.EventLog,3.1.0,3.1.0,无变化
+Serilog.Sinks.Http,8.0.0,8.0.0,无变化
+Serilog.Sinks.MySQL,4.0.0,4.0.0,无变化
+Serilog.Sinks.OpenTelemetry,3.0.0,4.0.0,最新稳定版
+Serilog.Sinks.RollingFileAlternate,2.0.0,2.0.0,无变化
+Serilog.Sinks.SpectreConsole,1.0.0,2.0.0,最新稳定版
+Serilog.Sinks.Trace,3.0.0,3.0.0,无变化
+SerilogAnalyzer,0.15.0,0.15.0,无变化
+Serilog.Enrichers.Datadog.OpenTelemetry,1.0.0,1.0.0,无变化
+SkiaSharp.NativeAssets.Linux,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.Linux.NoDependencies,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.Win32,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.macOS,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.WebAssembly,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.Android,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.iOS,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.MacCatalyst,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.NanoServer,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.UWP,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.WinUI,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.Tizen,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.tvOS,2.88.0,4.150.1,最新稳定版(大版本升级)
+SkiaSharp.NativeAssets.watchOS,2.88.0,4.150.1,最新稳定版(大版本升级)
+SixLabors.ImageSharp.Web,3.1.0,4.0.0,最新稳定版(大版本升级)
+StackExchange.Redis.Extensions.Core,10.0.0,10.0.0,无变化
+StackExchange.Redis.Extensions.MsgPack,10.0.0,10.0.0,无变化
+StreamRpc,2.18.0,2.18.0,无变化
+StyleCop.Analyzers.Unstable,1.1.118,1.1.118,无变化
+System.Buffers,10.0.5,10.0.9,随.NET 10升级
+System.ComponentModel.Composition,10.0.5,10.0.9,随.NET 10升级
+System.ComponentModel.Composition.Registration,10.0.5,10.0.9,随.NET 10升级
+System.Data.Common,10.0.5,10.0.9,随.NET 10升级
+System.Formats.Asn1,10.0.5,10.0.9,随.NET 10升级
+System.Interactive.Async,6.0.0,7.0.0,最新稳定版(大版本升级)
+System.IO.Packaging,10.0.5,10.0.9,随.NET 10升级
+System.IO.Pipes,10.0.5,10.0.9,随.NET 10升级
+System.IO.Pipes.AccessControl,10.0.5,10.0.9,随.NET 10升级
+System.Linq.Async.Queryable,6.0.1,6.0.3,最新稳定版
+System.Linq.Dynamic.Core,1.3.0,1.4.0,最新稳定版
+System.Linq.Queryable,10.0.5,10.0.9,随.NET 10升级
+System.Memory,10.0.5,10.0.9,随.NET 10升级
+System.Net.Http,10.0.5,10.0.9,随.NET 10升级
+System.Net.Http.Json,10.0.5,10.0.9,随.NET 10升级
+System.Net.Security,10.0.5,10.0.9,随.NET 10升级
+System.Net.WebSockets.WebSocketProtocol,10.0.5,10.0.9,随.NET 10升级
+System.Numerics.Vectors,10.0.5,10.0.9,随.NET 10升级
+System.Reactive.Linq,6.0.0,7.0.0,最新稳定版(大版本升级)
+System.Reflection.Metadata,10.0.5,10.0.9,随.NET 10升级
+System.Reflection.MetadataLoadContext,10.0.5,10.0.9,随.NET 10升级
+System.Resources.Extensions,10.0.5,10.0.9,随.NET 10升级
+System.Security.AccessControl,10.0.5,10.0.9,随.NET 10升级
+System.ServiceModel.NetNamedPipe,10.0.5,10.0.9,随.NET 10升级
+System.Text.Encodings.Web,10.0.5,10.0.9,随.NET 10升级
+System.Text.RegularExpressions,10.0.5,10.0.9,随.NET 10升级
+System.Threading.AccessControl,10.0.5,10.0.9,随.NET 10升级
+System.Threading.Tasks.Dataflow,10.0.5,10.0.9,随.NET 10升级
+System.Threading.Tasks.Extensions,10.0.5,10.0.9,随.NET 10升级
+System.ValueTuple,10.0.5,10.0.9,随.NET 10升级
+TDengine.Connector,3.0.0,3.0.0,无变化
+WolverineFx.EntityFrameworkCore,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.FluentValidation,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.Http.FluentValidation,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.MessagePack,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.MQTT,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.RDBMS,3.0.0,3.0.0,SKIP(未发布)
+WolverineFx.Kafka,3.0.0,3.0.0,SKIP(未发布)
+xunit.runner.visualstudio,2.8.0,3.0.0,最新稳定版(大版本升级)
+zipkin4net,1.7.0,1.7.0,无变化
+zipkin4net.middleware.aspnetcore,1.7.0,1.7.0,无变化
+AWSSDK.Core,3.7.0,3.7.0,无变化
+AWSSDK.SQS,3.7.0,3.7.0,无变化
+Grafana.OpenTelemetry,1.0.0,1.0.0,无变化
+Grafana.OpenTelemetry.Base,1.0.0,1.0.0,无变化
+RabbitMQ.Client.OpenTelemetry,1.0.0,1.0.0,无变化
+IGeekFan.AspNetCore.Knife4jUI,2.0.0,2.0.0,无变化
+IGeekFan.AspNetCore.RapiDoc,2.0.0,2.0.0,无变化
+IGeekFan.AspNetCore.RapiDoc.Extra,2.0.0,2.0.0,无变化
+Magic.MediatR.Contracts,2.0.0,SKIP,固定2.0.0
+Microsoft.Extensions.ApiDescription.Client,10.0.5,10.0.9,随.NET 10升级
+Microsoft.Extensions.Logging.Debug,10.0.5,10.0.9,随.NET 10升级
+System.IO.Pipelines,10.0.5,10.0.9,随.NET 10升级
+System.Threading.Channels,10.0.5,10.0.9,随.NET 10升级
+Microsoft.IdentityModel.JsonWebTokens,7.5.0,8.19.2,最新稳定版(大版本升级)
+CsvHelper,31.0.0,33.0.0,最新稳定版
