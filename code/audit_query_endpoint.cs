@@ -2,7 +2,7 @@
 #:package FastEndpoints@6.1.0
 #:package Audit.NET.Sqlite@20.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using FastEndpoints;

@@ -81,7 +81,7 @@ Linkers 是基于 .NET 10 的高性能链接器系统，专为 .NET 开发者设
 ```json
 {
   "runtime": {
-    "framework": "net10.0",
+    "framework": "net11.0",
     "aot": true,
     "selfContained": true,
     "runtimeIdentifier": "win-x64",
@@ -117,7 +117,7 @@ Linkers 是基于 .NET 10 的高性能链接器系统，专为 .NET 开发者设
   "description": "基于AOT编译的链接器工具，用于程序集分析、优化和验证",
   "version": "1.0.0",
   "build": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "selfContained": true,
     "runtimeIdentifier": "win-x64",

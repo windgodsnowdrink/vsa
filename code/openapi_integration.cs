@@ -2,7 +2,7 @@
 #:package Swashbuckle.AspNetCore@6.5.0
 #:package Microsoft.OpenApi@1.6.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

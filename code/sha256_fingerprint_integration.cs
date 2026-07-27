@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk
 #:package Microsoft.Extensions.Options@8.0.0
 #:package System.Diagnostics.DiagnosticSource@8.0.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using System.Security.Cryptography;

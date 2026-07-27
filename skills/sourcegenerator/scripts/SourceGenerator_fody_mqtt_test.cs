@@ -1,5 +1,5 @@
 #!/usr/bin/env dotnet
-#:sdk Microsoft.NET.Sdk.Web #:package Fody@6.8.0 #:package MQTTnet@4.3.1 #:package xunit@2.6.0 #:package Moq@4.18.4 #:property LangVersion=preview #:property TargetFramework=net10.0 #:property Nullable=enable #:property ImplicitUsings=enable
+#:sdk Microsoft.NET.Sdk.Web #:package Fody@6.8.0 #:package MQTTnet@4.3.1 #:package xunit@2.6.0 #:package Moq@4.18.4 #:property LangVersion=preview #:property TargetFramework=net11.0 #:property Nullable=enable #:property ImplicitUsings=enable
 
 using System;
 using System.Text;

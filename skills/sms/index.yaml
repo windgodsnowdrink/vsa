@@ -4,7 +4,7 @@ author: NET专家
 description: 基于.NET 10的SMS技能，支持AOT编译，集成Twilio服务，提供发送、接收、模板、批量、调度和分析功能
 
 compilation:
-  targetFramework: net10.0
+  targetFramework: net11.0
   publishAot: true
   trimMode: partial
   selfContained: true

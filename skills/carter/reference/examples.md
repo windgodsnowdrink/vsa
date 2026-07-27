@@ -10,7 +10,7 @@
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Carter@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -66,7 +66,7 @@ await app.RunAsync();
 #:package Carter@8.0.0
 #:package Swashbuckle.AspNetCore@7.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -271,7 +271,7 @@ await app.RunAsync();
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Carter@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -382,7 +382,7 @@ await app.RunAsync();
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Carter@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -503,7 +503,7 @@ await app.RunAsync();
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Carter@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -643,7 +643,7 @@ await app.RunAsync();
 #:package Microsoft.EntityFrameworkCore@8.0.0
 #:package Microsoft.EntityFrameworkCore.InMemory@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;

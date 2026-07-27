@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package MediatR@12.1.1
 #:package System.Transactions@8.0.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using MediatR;

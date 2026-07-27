@@ -6,19 +6,19 @@ dotnet restore --no-cache --force #严格还原
 dotnet list package --include-transitive --format json #检测dll依赖版本
 
 dotnet publish -r linux-x64 --self-contained -c Release
-G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net10.0\
+G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\gatesvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\gatesvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\aiotsvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\aiotsvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\casvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\casvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\devicesvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\devicesvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\mediasvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\mediasvc\release\net11.0\
 
-dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net10.0\
+dotnet publish -r linux-x64 -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishTrimmed=false -p:InvariantGlobalization=false -p:PublishReadyToRun=true G:\WorkSpace\cleanrobot\artifacts\systemsvc\release\net11.0\
 
 dotnet publish -r linux-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true --self-contained false
 

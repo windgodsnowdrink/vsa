@@ -49,7 +49,7 @@
 # - EnableCompilationRelaxations: true
 # - EnableEnhancedNgen: true
 # Target Framework:
-# - net10.0
+# - net11.0
 # Scripts:
 # - name: "x_pagedlist_integration.cs"
 #   description: "PagedList 集成功能，实现核心分页功能，包括高性能分页查询、异步操作、缓存支持等"

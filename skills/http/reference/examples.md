@@ -137,7 +137,7 @@ public class Program
 #:package WebApiClientCore@3.1.0
 #:package WebApiClientCore.Extensions.DependencyInjection@3.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -224,7 +224,7 @@ public class User
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Microsoft.AspNetCore.Http.Abstractions@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -298,7 +298,7 @@ public class SecurityHeadersMiddleware
 #:package Microsoft.Extensions.DependencyInjection@10.0.0
 #:package Microsoft.Extensions.Logging@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -405,7 +405,7 @@ http_aot help
 #:package Microsoft.Extensions.Http.Polly@10.0.0
 #:package System.Text.Json@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -762,7 +762,7 @@ public class HttpService : IAsyncDisposable
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     
@@ -802,13 +802,13 @@ dotnet publish -c Release -r osx-x64 --self-contained
 
 ```bash
 # Windows
-./bin/Release/net10.0/win-x64/publish/HttpApp.exe
+./bin/Release/net11.0/win-x64/publish/HttpApp.exe
 
 # Linux
-./bin/Release/net10.0/linux-x64/publish/HttpApp
+./bin/Release/net11.0/linux-x64/publish/HttpApp
 
 # macOS
-./bin/Release/net10.0/osx-x64/publish/HttpApp
+./bin/Release/net11.0/osx-x64/publish/HttpApp
 ```
 
 ## 总结

@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk
 #:package Tamir.SharpSSH@1.1.1.13
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using System;

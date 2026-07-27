@@ -583,7 +583,7 @@ Scheduler 技能支持多种部署方式：
    FROM mcr.microsoft.com/dotnet/runtime-deps:10.0
    WORKDIR /app
    
-   COPY --from=build /app/bin/Release/net10.0/linux-x64/publish/ .
+   COPY --from=build /app/bin/Release/net11.0/linux-x64/publish/ .
    
    VOLUME ["/app/schedules", "/app/logs"]
    

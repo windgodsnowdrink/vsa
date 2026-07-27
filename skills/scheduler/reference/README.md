@@ -353,7 +353,7 @@ scheduler_generator generate --type service --output "SchedulerService.cs" --nam
 {
   "version": "1.0",
   "compileOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",
@@ -384,7 +384,7 @@ scheduler_generator generate --type service --output "SchedulerService.cs" --nam
 {
   "version": "1.0",
   "compileOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",

@@ -14,7 +14,7 @@
 #:property TargetFramework net8.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using OpenTelemetry;
 using OpenTelemetry.Metrics;

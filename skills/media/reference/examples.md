@@ -551,7 +551,7 @@ public class NATResult { public bool Success { get; set; } public string ErrorMe
 #:package Xabe.FFmpeg@6.0.2 
 #:package SIPSorcery@6.0.0 
 #:property LangVersion=preview 
-#:property TargetFramework=net10.0 
+#:property TargetFramework=net11.0 
 #:property Nullable=enable 
 #:property ImplicitUsings=enable 
 #:property PublishAot=true 

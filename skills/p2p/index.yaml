@@ -55,7 +55,7 @@
 # - EnableCompilationRelaxations: true
 # - EnableEnhancedNgen: true
 # Target Framework:
-# - net10.0
+# - net11.0
 # Scripts:
 # - name: "p2p_integration.cs"
 #   description: "P2P 集成功能，实现核心 P2P 网络通信，包括节点发现、连接管理、消息传递和文件共享"

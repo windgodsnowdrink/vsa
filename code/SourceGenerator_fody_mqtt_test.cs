@@ -4,7 +4,7 @@
 #:package xunit@2.6.0
 #:package Moq@4.18.4
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

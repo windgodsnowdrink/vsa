@@ -110,7 +110,7 @@ rabbitmq/
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <PublishAot>true</PublishAot>
     <TrimMode>partial</TrimMode>
     <ReadyToRun>true</ReadyToRun>
@@ -203,9 +203,9 @@ dotnet publish -c Release -r osx-x64 --self-contained true /p:PublishAot=true
 
 | RabbitMQ.Client 版本 | .NET 版本 | 兼容性 |
 |-------------------|----------|--------|
-| 6.8.1 | net10.0 | 完全兼容 |
-| 6.8.0 | net10.0 | 完全兼容 |
-| 6.7.0 | net10.0 | 部分兼容 |
+| 6.8.1 | net11.0 | 完全兼容 |
+| 6.8.0 | net11.0 | 完全兼容 |
+| 6.7.0 | net11.0 | 部分兼容 |
 | 6.6.0 | net8.0 | 完全兼容 |
 | 6.5.0 | net6.0 | 完全兼容 |
 

@@ -64,7 +64,7 @@ captcha是一个基于.NET 10的高性能验证码系统，专为.NET开发者�
 #:package SixLabors.ImageSharp@3.1.0
 #:package LazyCaptcha@2.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;

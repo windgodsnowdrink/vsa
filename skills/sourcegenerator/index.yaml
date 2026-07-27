@@ -4,7 +4,7 @@ author: NET专家
 description: 基于.NET 10的Source Generator技能，支持AOT编译，提供代码生成、模板生成、反射增强等功能
 
 compilation:
-  targetFramework: net10.0
+  targetFramework: net11.0
   publishAot: true
   trimMode: partial
   selfContained: true

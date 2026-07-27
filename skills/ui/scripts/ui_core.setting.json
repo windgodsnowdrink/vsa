@@ -1,6 +1,6 @@
 {
   "compilation": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "trimMode": "partial",
     "selfContained": true,
@@ -32,7 +32,7 @@
   },
   "buildOptions": {
     "emitEntryPoint": true,
-    "outputPath": "../bin/Release/net10.0/win-x64/publish",
+    "outputPath": "../bin/Release/net11.0/win-x64/publish",
     "define": [
       "RELEASE"
     ],
@@ -52,7 +52,7 @@
     ]
   },
   "runtimeOptions": {
-    "tfm": "net10.0",
+    "tfm": "net11.0",
     "framework": {
       "name": "Microsoft.NETCore.App",
       "version": "10.0.0"

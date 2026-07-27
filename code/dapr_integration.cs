@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package Dapr.AspNetCore@1.12.0
 #:package Dapr.Client@1.12.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Dapr.Client;

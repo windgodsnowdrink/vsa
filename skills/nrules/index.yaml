@@ -62,7 +62,7 @@ scripts:
   - name: "nrules_extensions.cs"
     description: "NRules 核心实现，包含规则引擎服务、规则仓储和规则会话等"
     type: "csharp"
-    targetFramework: "net10.0"
+    targetFramework: "net11.0"
     configFiles:
       - "nrules_extensions.setting.json"
       - "nrules_extensions.run.json"
@@ -86,7 +86,7 @@ performance:
 # 兼容性
 compatibility:
   dotnetVersions:
-    - "net10.0"
+    - "net11.0"
   operatingSystems:
     - "Windows"
     - "Linux"

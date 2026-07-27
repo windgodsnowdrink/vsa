@@ -3,7 +3,7 @@
     "description": "共振适配器脚本运行时配置",
     "version": "1.0.0",
     "sdk": "Microsoft.NET.Sdk.Web",
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",

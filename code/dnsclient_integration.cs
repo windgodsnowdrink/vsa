@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk
 #:package DnsClient@1.7.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using System;

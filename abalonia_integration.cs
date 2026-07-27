@@ -3,7 +3,7 @@
 # : package Avalonia.Desktop@11.3.1
 # : package Avalonia.Themes.Fluent@11.3.1
 # : property LangVersion=preview
-# : property TargetFramework=net10.0
+# : property TargetFramework=net11.0
 # : property Nullable=enable
 # : property ImplicitUsings=enable
 

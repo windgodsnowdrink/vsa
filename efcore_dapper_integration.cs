@@ -3,7 +3,7 @@
 #:package Dapper@2.1.28
 #:package Dapper.AOT@0.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

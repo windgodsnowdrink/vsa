@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk
 #:package CsvHelper@33.1.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

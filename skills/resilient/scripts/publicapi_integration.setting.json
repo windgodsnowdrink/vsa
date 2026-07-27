@@ -5,7 +5,7 @@
     "args": []
   },
   "compilation": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "trimMode": "partial",
     "readyToRun": true,

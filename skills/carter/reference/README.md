@@ -97,7 +97,7 @@ Carter是一个基于.NET 10的高性能、模块化API框架，为.NET开发者
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Carter@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;

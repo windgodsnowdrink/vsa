@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package K4os.Compression.LZ4@1.4.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.IO;

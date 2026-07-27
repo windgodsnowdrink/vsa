@@ -368,7 +368,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ui-app
-        path: ui/bin/Release/net10.0/linux-x64/publish/
+        path: ui/bin/Release/net11.0/linux-x64/publish/
 ```
 
 #### Azure DevOps
@@ -400,7 +400,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'ui/bin/Release/net10.0/linux-x64/publish/'
+    PathtoPublish: 'ui/bin/Release/net11.0/linux-x64/publish/'
     ArtifactName: 'ui-app'
 ```
 

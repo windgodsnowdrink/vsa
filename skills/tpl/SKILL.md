@@ -317,7 +317,7 @@ AOT 编译配置已在 `index.yaml` 文件中设置：
 
 ```yaml
 compilation:
-  target_framework: net10.0
+  target_framework: net11.0
   publish_aot: true
   trim_mode: partial
   self_contained: true

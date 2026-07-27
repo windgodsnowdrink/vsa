@@ -5,7 +5,7 @@
 #:package Accord.Audio@3.8.0  // FFT分析
 #:package Microsoft.CognitiveServices.Speech@1.32.1  // 语音识别
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 #:property PublishAot true

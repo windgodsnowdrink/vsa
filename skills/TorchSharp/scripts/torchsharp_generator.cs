@@ -6,7 +6,7 @@
 #:package System.Reflection.Metadata@7.0.0
 #:package System.Linq.Expressions@4.7.0
 #:property LangVersion=10.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

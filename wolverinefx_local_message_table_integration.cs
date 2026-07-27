@@ -2,7 +2,7 @@
 #:package WolverineFx@1.10.0
 #:package WolverineFx.EntityFrameworkCore@1.10.0
 #:package Microsoft.EntityFrameworkCore@8.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using Wolverine;

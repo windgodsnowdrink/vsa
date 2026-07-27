@@ -21,7 +21,7 @@
     "commandLineArgs": [],
     "executionMode": "console",
     "compilationMode": "aot",
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "language": "csharp"
   },
   "commands": {

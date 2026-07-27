@@ -6,7 +6,7 @@
 #:package System.Text.Json@4.7.2
 #:package System.Collections.Immutable@4.5.3
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

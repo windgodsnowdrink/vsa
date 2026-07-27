@@ -11,7 +11,7 @@
 // #:package Avalonia.Desktop@11.0.0
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -83,7 +83,7 @@ namespace BasicAvaloniaApp
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:package ReactiveUI.Fody@17.4.2
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -159,7 +159,7 @@ namespace DataBindingApp
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:package ReactiveUI@17.4.2
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -258,7 +258,7 @@ namespace MvvmApp
 // #:package Avalonia.Desktop@11.0.0
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -390,7 +390,7 @@ namespace CustomControlApp
 // #:package Avalonia.Desktop@11.0.0
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -487,7 +487,7 @@ namespace AotAvaloniaApp
 // #:package Avalonia.Desktop@11.0.0
 // #:package Avalonia.Themes.Fluent@11.0.0
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe
@@ -588,7 +588,7 @@ namespace ResponsiveLayoutApp
 // #:package Microsoft.Extensions.DependencyInjection@10.0.0
 // #:package Microsoft.Extensions.Logging@10.0.0
 // #:property LangVersion=preview
-// #:property TargetFramework=net10.0
+// #:property TargetFramework=net11.0
 // #:property Nullable=enable
 // #:property ImplicitUsings=enable
 // #:property OutputType=WinExe

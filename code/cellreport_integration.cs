@@ -2,13 +2,13 @@
 #:package CellReport.Core@1.5.0
 #:package Microsoft.Extensions.ObjectPool@7.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 #:package CellReport.Core@1.0.0
 #:package Microsoft.Extensions.ObjectPool@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using System.Text.Json;

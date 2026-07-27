@@ -5,7 +5,7 @@
 //#:package Microsoft.EntityFrameworkCore.InMemory@10.0.3
 //#:package Microsoft.EntityFrameworkCore.Sqlite@10.0.3
 //#:package Microsoft.Extensions.Caching.Memory@10.0.3
-//#:property TargetFramework=net10.0
+//#:property TargetFramework=net11.0
 //#:property RollForward=Major
 //#:property Nullable=enable
 //#:property ImplicitUsings=enable

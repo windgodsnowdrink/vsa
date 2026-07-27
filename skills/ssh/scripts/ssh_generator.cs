@@ -4,7 +4,7 @@
 #:package Scrutor@4.2.2
 #:package System.CommandLine@2.0.0
 #:package System.Text.Json@10.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property LangVersion=preview
 #:property Nullable=enable
 #:property ImplicitUsings=enable

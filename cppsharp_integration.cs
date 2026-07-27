@@ -4,7 +4,7 @@
 #:package Polly@8.3.1
 #:package System.Memory@4.5.5
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using System;

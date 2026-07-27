@@ -6,7 +6,7 @@
 #:package System.Collections.Concurrent@8.0.0
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property PublishAot=true
 #:property TrimMode=partial
 #:property EnableCompressionInSingleFile=true

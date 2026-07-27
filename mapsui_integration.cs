@@ -2,7 +2,7 @@
 #:package Mapsui@4.0.0
 #:package Mapsui.UI.Wpf@4.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package TxFileManager@1.5.0.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using System.IO;

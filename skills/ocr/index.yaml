@@ -65,7 +65,7 @@ scripts:
   - name: "ocr_extensions.cs"
     description: "OCR 核心实现，包含 OCR 服务、图像处理器和文本识别器等"
     type: "csharp"
-    targetFramework: "net10.0"
+    targetFramework: "net11.0"
     configFiles:
       - "ocr_extensions.setting.json"
       - "ocr_extensions.run.json"
@@ -89,7 +89,7 @@ performance:
 # 兼容性
 compatibility:
   dotnetVersions:
-    - "net10.0"
+    - "net11.0"
   operatingSystems:
     - "Windows"
     - "Linux"

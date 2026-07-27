@@ -160,7 +160,7 @@ Source Generator 技能支持 AOT 编译，通过以下配置实现：
 
 ```yaml
 compilation:
-  targetFramework: net10.0
+  targetFramework: net11.0
   publishAot: true
   trimMode: partial
   selfContained: true

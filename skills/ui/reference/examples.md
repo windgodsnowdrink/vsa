@@ -9,7 +9,7 @@
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -57,7 +57,7 @@ namespace UI.MinimalExample
 #:package Microsoft.Extensions.Configuration@9.0.0
 #:package Microsoft.Extensions.Configuration.Json@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -199,7 +199,7 @@ dotnet publish -c Release -r osx-x64 --self-contained true /p:PublishAot=true /p
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -323,7 +323,7 @@ namespace UI.Web.Basic
 #:package Microsoft.AspNetCore.SignalR@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -507,7 +507,7 @@ namespace UI.Web.Realtime
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -588,7 +588,7 @@ namespace UI.Desktop.Basic
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -711,7 +711,7 @@ namespace UI.Desktop.MultiWindow
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -811,7 +811,7 @@ namespace UI.Desktop.SystemIntegration
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -892,7 +892,7 @@ namespace UI.Mobile.Basic
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1026,7 +1026,7 @@ namespace UI.Mobile.TouchOptimization
 #:package Microsoft.Maui@9.0.0
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1149,7 +1149,7 @@ namespace UI.Mobile.HardwareAccess
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1269,7 +1269,7 @@ namespace UI.Theme.Basic
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1442,7 +1442,7 @@ namespace UI.Theme.Custom
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1623,7 +1623,7 @@ namespace UI.Localization.Basic
 #:package Microsoft.Extensions.Configuration@9.0.0
 #:package Microsoft.Extensions.Configuration.Json@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1793,7 +1793,7 @@ namespace UI.Localization.ResourceManagement
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -1948,7 +1948,7 @@ namespace UI.Performance.Basic
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -2133,7 +2133,7 @@ namespace UI.Performance.Optimization
 #:sdk Microsoft.NET.Sdk
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -2370,7 +2370,7 @@ namespace UI.Performance.MemoryOptimization
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -2651,7 +2651,7 @@ namespace UI.Accessibility.Basic
 #:package Microsoft.Extensions.DependencyInjection@9.0.0
 #:package Microsoft.Extensions.Logging@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -2870,7 +2870,7 @@ namespace UI.MultiPlatform
 #:package Microsoft.Extensions.Logging@9.0.0
 #:package System.Reflection@9.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -3080,7 +3080,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ui-app
-        path: ui/bin/Release/net10.0/linux-x64/publish/
+        path: ui/bin/Release/net11.0/linux-x64/publish/
 ```
 
 #### 9.3.2 Azure DevOps
@@ -3112,7 +3112,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'ui/bin/Release/net10.0/linux-x64/publish/'
+    PathtoPublish: 'ui/bin/Release/net11.0/linux-x64/publish/'
     ArtifactName: 'ui-app'
 ```
 

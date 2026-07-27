@@ -2,7 +2,7 @@
 #:package MassTransit@8.2.3
 #:package MQTTnet@4.1.4.436
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsights enable
 

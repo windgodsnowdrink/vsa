@@ -74,7 +74,7 @@ public static class AdvancedRabbitMQFeatures
     }
 }
 #:package RabbitMQ.Client@6.4.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using System;

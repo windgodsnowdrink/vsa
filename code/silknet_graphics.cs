@@ -3,7 +3,7 @@
 #:package Silk.NET.Maths@2.16.0
 #:package System.Numerics@4.7.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

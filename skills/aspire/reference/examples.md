@@ -11,7 +11,7 @@
 #:package Aspire.Hosting@8.0.0
 #:package Aspire.Dashboard@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -72,7 +72,7 @@ namespace Projects
 #:package Aspire.Hosting@8.0.0
 #:package Aspire.Dashboard@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -140,7 +140,7 @@ namespace Projects
 #:package Aspire.Hosting@8.0.0
 #:package Aspire.Dashboard@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -196,7 +196,7 @@ namespace Projects
 #:package Aspire.Hosting@8.0.0
 #:package Aspire.Dashboard@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -291,7 +291,7 @@ namespace Projects
 #:package Aspire.Hosting@8.0.0
 #:package Aspire.Dashboard@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -347,7 +347,7 @@ namespace Projects
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     
@@ -379,7 +379,7 @@ dotnet publish -c Release -r win-x64 --self-contained
 dotnet publish -c Release -r linux-x64 --self-contained
 
 # 运行 AOT 编译后的应用
-./bin/Release/net10.0/win-x64/publish/AspireApp.exe
+./bin/Release/net11.0/win-x64/publish/AspireApp.exe
 ```
 
 ### AOT 优化的服务配置
@@ -390,7 +390,7 @@ dotnet publish -c Release -r linux-x64 --self-contained
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Aspire.Hosting@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 
@@ -448,7 +448,7 @@ namespace Projects
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package Aspire.Hosting@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

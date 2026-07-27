@@ -79,7 +79,7 @@ LibVLCSharp 是基于 .NET 10 的高性能媒体处理系统，专为 .NET 开�
 ```json
 {
   "runtime": {
-    "framework": "net10.0",
+    "framework": "net11.0",
     "aot": true,
     "selfContained": true,
     "runtimeIdentifier": "win-x64",
@@ -114,7 +114,7 @@ LibVLCSharp 是基于 .NET 10 的高性能媒体处理系统，专为 .NET 开�
   "description": "基于LibVLCSharp的AOT编译媒体处理工具",
   "version": "1.0.0",
   "build": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "publishAot": true,
     "selfContained": true,
     "runtimeIdentifier": "win-x64",

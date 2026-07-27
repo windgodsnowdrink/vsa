@@ -283,7 +283,7 @@ aot:
   trim_mode: partial
   self_contained: true
   publish_single_file: true
-  target_framework: net10.0
+  target_framework: net11.0
 ```
 
 ### 5.2 编译为 AOT

@@ -6,7 +6,7 @@
 #:package System.Text.Json@10.0.0
 #:package System.Threading.Channels@8.0.0
 #:package System.IO.Pipelines@8.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property LangVersion=preview
 #:property Nullable=enable
 #:property ImplicitUsings=enable

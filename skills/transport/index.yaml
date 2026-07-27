@@ -10,7 +10,7 @@ compilation:
   trimMode: partial
   selfContained: true
   publishSingleFile: true
-  targetFramework: net10.0
+  targetFramework: net11.0
   langVersion: preview
   nullable: enable
   implicitUsings: enable

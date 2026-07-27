@@ -3,7 +3,7 @@
 #:package JT1078.Protocol@latest
 #:package JT809.Protocol@latest
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.Buffers;

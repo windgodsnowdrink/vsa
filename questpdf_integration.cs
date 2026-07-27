@@ -18,7 +18,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 public class QuestPdfOptions

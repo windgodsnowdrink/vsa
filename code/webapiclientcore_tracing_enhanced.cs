@@ -3,7 +3,7 @@
 #:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.6.0
 #:package System.Diagnostics.DiagnosticSource@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

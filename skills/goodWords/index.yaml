@@ -57,7 +57,7 @@
 #   - Stable Performance: Compile-time optimizations
 #   - High Security: Reduced runtime attack surface
 # - AOT Compilation Options:
-#   - Target Framework: net10.0
+#   - Target Framework: net11.0
 #   - Runtime Identifier: win-x64
 #   - Trim Mode: partial
 #   - Memory Optimizations: Enabled

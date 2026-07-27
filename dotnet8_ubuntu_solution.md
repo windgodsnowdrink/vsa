@@ -75,9 +75,9 @@ chmod +x AiotService.Host
 如果您希望长期使用服务器上的 .NET 10 环境，可以考虑将应用程序升级到 .NET 10。
 
 #### 步骤 1：更新项目文件
-将项目文件（.csproj）中的 TargetFramework 从 net8.0 更改为 net10.0：
+将项目文件（.csproj）中的 TargetFramework 从 net8.0 更改为 net11.0：
 ```xml
-<TargetFramework>net10.0</TargetFramework>
+<TargetFramework>net11.0</TargetFramework>
 ```
 
 #### 步骤 2：更新依赖项
@@ -93,7 +93,7 @@ dotnet build -c Release
 #### 步骤 4：发布并部署到服务器
 ```bash
 dotnet publish -c Release
-scp -r bin/Release/net10.0/publish/* user@server:/usr/local/etc/maxvision/wh_dev/03_aiot_service/
+scp -r bin/Release/net11.0/publish/* user@server:/usr/local/etc/maxvision/wh_dev/03_aiot_service/
 ```
 
 ## 推荐解决方案

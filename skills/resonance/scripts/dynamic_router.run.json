@@ -12,7 +12,7 @@
     "ENABLE_TELEMETRY": "true"
   },
   "runtimeOptions": {
-    "framework": "net10.0",
+    "framework": "net11.0",
     "arguments": [],
     "timeout": 30000,
     "redirectOutput": true,

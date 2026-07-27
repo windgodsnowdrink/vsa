@@ -7,7 +7,7 @@
 #:package System.IO.Abstractions@17.0.21
 #:package Newtonsoft.Json@13.0.3
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

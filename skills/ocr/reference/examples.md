@@ -19,7 +19,7 @@
 #:package Microsoft.Extensions.Options@10.0.0
 #:package System.Drawing.Common@8.0.6
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -240,7 +240,7 @@ public class Program
 #:package System.Drawing.Common@8.0.6
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -524,7 +524,7 @@ public class Program
 #:package System.Drawing.Common@8.0.6
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -775,7 +775,7 @@ public class Program
 #:package Microsoft.Extensions.Options@10.0.0
 #:package System.Drawing.Common@8.0.6
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -1020,7 +1020,7 @@ public class Program
 #:package Microsoft.Extensions.Options@10.0.0
 #:package System.Drawing.Common@8.0.6
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -1322,7 +1322,7 @@ public class Program
 #:package Microsoft.Extensions.Options@10.0.0
 #:package System.Drawing.Common@8.0.6
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

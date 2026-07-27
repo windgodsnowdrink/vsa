@@ -6,7 +6,7 @@
 #:package System.CommandLine@2.0.0
 #:package LiteDB@5.0.16
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishSingleFile=true

@@ -3,7 +3,7 @@
 #:package RabbitMQ.Client@6.7.0
 #:package System.Threading.Channels@8.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

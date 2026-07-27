@@ -11,7 +11,7 @@
 #:package OpenCVSharp4@4.9.0
 #:package OpenCVSharp4.runtime.win@4.9.0
 #:property LangVersion=10.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

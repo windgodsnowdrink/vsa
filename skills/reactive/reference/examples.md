@@ -301,7 +301,7 @@ public class Program
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <PublishAot>true</PublishAot>
     <TrimMode>partial</TrimMode>
     <ReadyToRun>true</ReadyToRun>

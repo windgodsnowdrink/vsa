@@ -244,7 +244,7 @@ scrutor_generator template list
 {
   "version": "1.0",
   "compileOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",
@@ -271,7 +271,7 @@ scrutor_generator template list
 {
   "version": "1.0",
   "compileOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": "enable",
     "implicitUsings": "enable",

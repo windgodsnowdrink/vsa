@@ -3,13 +3,13 @@
 #:package Microsoft.Data.Sqlite@8.0.0
 #:package LiteDB@5.0.17
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:package ChoETL@2.0.1
 #:package Microsoft.Extensions.Hosting@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

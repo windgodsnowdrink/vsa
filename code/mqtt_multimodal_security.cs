@@ -5,7 +5,7 @@
 #:package Microsoft.Azure.CognitiveServices.Vision.Face@2.8.0
 #:package Microsoft.ML@3.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk
 #:package LiquidState@8.0.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

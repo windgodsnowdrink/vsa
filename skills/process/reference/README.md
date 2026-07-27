@@ -314,7 +314,7 @@ ProcessX 完全支持 AOT 编译，可以通过以下配置启用：
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net10.0</TargetFramework>
+  <TargetFramework>net11.0</TargetFramework>
   <PublishAot>true</PublishAot>
   <TrimMode>partial</TrimMode>
   <ReadyToRun>true</ReadyToRun>

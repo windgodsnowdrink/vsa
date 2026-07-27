@@ -9,7 +9,7 @@
 #:package System.CommandLine@2.0.0
 #:package System.Text.Json@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -238,7 +238,7 @@ namespace SilkySkill
 
         private async Task CreateProjectFileAsync(string projectPath, string name, string type)
         {
-            var projectFileContent = $"<Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net10.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Silky.Core\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Http.Core\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Rpc\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Registry\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Swagger\" Version=\"3.3.0\" />\n  </ItemGroup>\n\n</Project>";
+            var projectFileContent = $"<Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net11.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Silky.Core\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Http.Core\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Rpc\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Registry\" Version=\"3.3.0\" />\n    <PackageReference Include=\"Silky.Swagger\" Version=\"3.3.0\" />\n  </ItemGroup>\n\n</Project>";
             
             var projectFilePath = Path.Combine(projectPath, $"{name}.csproj");
             await File.WriteAllTextAsync(projectFilePath, projectFileContent);

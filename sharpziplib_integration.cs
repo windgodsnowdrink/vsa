@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package SharpZipLib@1.4.2
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.IO;

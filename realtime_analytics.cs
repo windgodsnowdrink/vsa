@@ -2,7 +2,7 @@
 #:package System.Threading.Tasks.Dataflow@8.0.0
 #:package System.Numerics.Tensors@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 public class RealtimeAnalyticsEngine
 {

@@ -651,7 +651,7 @@ public class RedisCacheService : ICacheService
 #:package CanalSharp@2.0.0
 #:package System.Text.Json@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property PublishAot=true
 #:property TrimMode=Full
 #:property PublishReadyToRun=true

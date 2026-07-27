@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.WindowsDesktop
 #:package LOIC@2.0.0
 #:package System.IO.Ports@7.0.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property UseWPF true
 

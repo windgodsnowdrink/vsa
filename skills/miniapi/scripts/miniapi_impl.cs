@@ -7,7 +7,7 @@
 #:package Microsoft.AspNetCore.OpenApi@10.0.0
 #:package Swashbuckle.AspNetCore@6.4.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

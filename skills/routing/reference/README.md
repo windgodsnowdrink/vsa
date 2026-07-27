@@ -108,7 +108,7 @@ routing/
 
 | 配置项 | 类型 | 默认值 | 描述 | 文件位置 |
 |--------|------|--------|------|----------|
-| targetFramework | string | net10.0 | 目标 .NET 框架版本 | routing_core.setting.json |
+| targetFramework | string | net11.0 | 目标 .NET 框架版本 | routing_core.setting.json |
 | langVersion | string | preview | C# 语言版本 | routing_core.setting.json |
 | nullable | string | enable | 可空类型支持 | routing_core.setting.json |
 | implicitUsings | string | enable | 隐式 using 指令 | routing_core.setting.json |
@@ -122,7 +122,7 @@ routing/
 
 | 配置项 | 类型 | 默认值 | 描述 | 文件位置 |
 |--------|------|--------|------|----------|
-| targetFramework | string | net10.0 | 目标 .NET 框架版本 | routing_generator.setting.json |
+| targetFramework | string | net11.0 | 目标 .NET 框架版本 | routing_generator.setting.json |
 | langVersion | string | preview | C# 语言版本 | routing_generator.setting.json |
 | nullable | string | enable | 可空类型支持 | routing_generator.setting.json |
 | implicitUsings | string | enable | 隐式 using 指令 | routing_generator.setting.json |

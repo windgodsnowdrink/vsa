@@ -5,7 +5,7 @@
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package System.Buffers@4.5.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property PublishAot=true
 #:property TrimMode=partial
 #:property EnableCompressionInSingleFile=true

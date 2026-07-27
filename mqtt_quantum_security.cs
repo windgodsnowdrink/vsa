@@ -5,7 +5,7 @@
 #:package Microsoft.Azure.Devices.Provisioning.Client@2.0.0
 #:package PQCrypto-SIDH@3.4.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

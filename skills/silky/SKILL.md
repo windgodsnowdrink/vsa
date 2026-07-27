@@ -266,7 +266,7 @@ Silky 技能支持 AOT（Ahead-of-Time）编译，提供以下优势：
 ```json
 {
   "compilationOptions": {
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "langVersion": "preview",
     "nullable": true,
     "implicitUsings": true

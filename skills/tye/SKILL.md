@@ -44,7 +44,7 @@ Transport 技能是一个基于 .NET 10 的传输层实现，提供了多种高�
 
 | 配置项 | 值 | 说明 |
 |--------|-----|------|
-| TargetFramework | net10.0 | 目标框架 |
+| TargetFramework | net11.0 | 目标框架 |
 | PublishAot | true | AOT 编译 |
 | TrimMode | partial | 裁剪模式 |
 | SelfContained | true | 自包含部署 |
@@ -600,7 +600,7 @@ transport_generator [OPTIONS]
 {
   "compilation": {
     "options": {
-      "TargetFramework": "net10.0",
+      "TargetFramework": "net11.0",
       "PublishAot": true,
       "TrimMode": "partial",
       "SelfContained": true,
@@ -699,7 +699,7 @@ transport_generator [OPTIONS]
 {
   "compilation": {
     "options": {
-      "TargetFramework": "net10.0",
+      "TargetFramework": "net11.0",
       "PublishAot": true,
       "TrimMode": "partial",
       "SelfContained": true,
@@ -884,7 +884,7 @@ RUN dotnet publish -c Release -r win-x64 --self-contained
 # 构建运行镜像
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 WORKDIR /app
-COPY --from=build /app/bin/Release/net10.0/win-x64/publish .
+COPY --from=build /app/bin/Release/net11.0/win-x64/publish .
 
 # 设置环境变量
 ENV DOTNET_ENVIRONMENT=Production

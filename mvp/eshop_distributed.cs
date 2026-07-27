@@ -51,7 +51,7 @@
 #:package Microsoft.Extensions.ServiceDiscovery@9.5.0
 #:package Aspire.StackExchange.Redis.OutputCaching@9.5.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property RollForward=Major
 #:property Nullable=enable
 #:property ImplicitUsings=enable

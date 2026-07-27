@@ -1,7 +1,7 @@
 # :sdk Microsoft.NET.Sdk.Web
 # :package System.Diagnostics.Metrics@8.0.0
 # :property LangVersion=preview
-# :property TargetFramework=net10.0
+# :property TargetFramework=net11.0
 # :property Nullable=enable
 # :property ImplicitUsings=enable
 
@@ -26,7 +26,7 @@ public class PerformanceInterceptor : DbCommandInterceptor
     {
         if (eventData.Duration.TotalMilliseconds > _slowQueryThresholdMs)
         {
-            _logger.LogWarning("¼ì²âµ½Âý²éÑ¯£º{Duration}ºÁÃë - {CommandText}",
+            _logger.LogWarning("æ£€æµ‹åˆ°æ…¢æŸ¥è¯¢ï¼š{Duration}æ¯«ç§’ - {CommandText}",
                 eventData.Duration.TotalMilliseconds,
                 command.CommandText);
         }

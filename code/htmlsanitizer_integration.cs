@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk
 #:package HtmlSanitizer@8.0.645
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

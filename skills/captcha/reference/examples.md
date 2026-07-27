@@ -11,7 +11,7 @@
 #:package SixLabors.ImageSharp@3.1.0
 #:package LazyCaptcha@2.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -186,7 +186,7 @@ public class Program
 #:package Microsoft.Extensions.Aot@10.0.0
 #:package SixLabors.ImageSharp@3.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
@@ -414,7 +414,7 @@ public class Program
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package SixLabors.ImageSharp@3.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -557,7 +557,7 @@ public class Program
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package SixLabors.ImageSharp@3.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;
@@ -735,7 +735,7 @@ public class Program
 #:package Microsoft.Extensions.Logging@10.0.0
 #:package SixLabors.ImageSharp@3.1.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 using System;

@@ -3,7 +3,7 @@
 #:package Silky.Rpc@3.0.0
 #:package Microsoft.Maui.Controls@8.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using Microsoft.Maui;

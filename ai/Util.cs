@@ -69,7 +69,7 @@
 #:package System.Reactive.Async@6.0.0-alpha.18
 #:package Microsoft.AspNetCore.SpaServices.Extensions@8.0.6
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 #nullable enable

@@ -6,7 +6,7 @@
     "publishReadyToRun": true,
     "optimize": true,
     "langVersion": "preview",
-    "targetFramework": "net10.0",
+    "targetFramework": "net11.0",
     "nullable": "enable",
     "implicitUsings": "enable"
   },

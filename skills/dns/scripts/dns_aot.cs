@@ -5,7 +5,7 @@
 #:package Microsoft.Extensions.Options@10.0.0
 #:package System.Net.NameResolution@10.0.0
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

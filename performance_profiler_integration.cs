@@ -2,7 +2,7 @@
 #:package JetBrains.Profiler.Api@2023.2.0
 #:package DotTrace.CommandLineTools@2023.2.0
 #:package AntsPerformanceProfiler@10.0.0
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

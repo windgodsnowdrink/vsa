@@ -7,7 +7,7 @@
 #:package Docker.DotNet.BasicAuth@3.125.15
 #:package Docker.DotNet.X509@3.125.15
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true

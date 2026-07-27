@@ -114,7 +114,7 @@ public class DockerOptions
 ```json
 {
   "$schema": "https://dot.net/v1/dotnet.run.schema.json",
-  "framework": "net10.0",
+  "framework": "net11.0",
   "options": {
     "PublishAot": true,                   // 启用 AOT 编译
     "InvariantGlobalization": true,       // 启用不变全球化

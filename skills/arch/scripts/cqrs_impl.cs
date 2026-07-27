@@ -2,7 +2,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package MediatR@12.1.1
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using MediatR;

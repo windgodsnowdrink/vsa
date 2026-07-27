@@ -1296,7 +1296,7 @@ cd tpl/scripts
 dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishAot=true
 
 # 运行
-./bin/Release/net10.0/win-x64/publish/tpl_core.exe task --count 5
+./bin/Release/net11.0/win-x64/publish/tpl_core.exe task --count 5
 ```
 
 ### 9.2 Docker 部署

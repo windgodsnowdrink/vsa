@@ -5,7 +5,7 @@
 #:package NAudio@2.2.1
 #:package Accord.Math@3.8.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 #:property PublishAot true

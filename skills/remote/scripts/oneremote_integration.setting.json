@@ -20,7 +20,7 @@
     "EnableDebugLogging": false
   },
   "RuntimeOptions": {
-    "Tfm": "net10.0",
+    "Tfm": "net11.0",
     "PublishAot": true,
     "TrimMode": "partial",
     "ReadyToRun": true,

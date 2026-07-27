@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package SharpPcap@6.2.2
 #:package PacketDotNet@1.4.7
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 
 using System;

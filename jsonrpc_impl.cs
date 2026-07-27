@@ -2,7 +2,7 @@
 #:package StreamJsonRpc@2.16.33
 #:package Microsoft.VisualStudio.Threading@17.6.40
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 

@@ -1,7 +1,7 @@
 #:sdk Microsoft.NET.Sdk.Web
 #:package Dtmcli@2.6.0
 #:package WolverineFx@2.7.0
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 
 using Dtmcli;

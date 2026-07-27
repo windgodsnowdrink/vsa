@@ -5,7 +5,7 @@
 #:package Microsoft.CognitiveServices.Speech@1.32.1
 #:package Microsoft.ML@3.0.0
 #:property LangVersion preview
-#:property TargetFramework net10.0
+#:property TargetFramework net11.0
 #:property Nullable enable
 #:property ImplicitUsings enable
 

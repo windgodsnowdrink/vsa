@@ -307,7 +307,7 @@ public class AppConfig
 #:package Microsoft.Extensions.Caching.Memory@10.0.0
 #:package MessagePack@2.5.149
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property PublishAot=true
 #:property TrimMode=Full
 #:property PublishReadyToRun=true

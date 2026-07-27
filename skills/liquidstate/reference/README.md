@@ -355,7 +355,7 @@ liquidstate_aot.exe h
 | optimize | 是否启用优化 | true |
 | publish_trimmed | 是否裁剪未使用的代码 | true |
 | lang_version | C# 语言版本 | preview |
-| target_framework | 目标框架 | net10.0 |
+| target_framework | 目标框架 | net11.0 |
 | nullable | 是否启用可为空引用类型 | enable |
 | implicit_usings | 是否启用隐式 using 指令 | enable |
 
@@ -888,7 +888,7 @@ linkers_aot.exe h
 | optimize | 是否启用优化 | true |
 | publish_trimmed | 是否裁剪未使用的代码 | true |
 | lang_version | C# 语言版本 | preview |
-| target_framework | 目标框架 | net10.0 |
+| target_framework | 目标框架 | net11.0 |
 | nullable | 是否启用可为空引用类型 | enable |
 | implicit_usings | 是否启用隐式 using 指令 | enable |
 
@@ -1470,7 +1470,7 @@ litedb_aot.exe info --database <path>
 | optimize | 是否启用优化 | true |
 | publish_trimmed | 是否裁剪未使用的代码 | true |
 | lang_version | C# 语言版本 | preview |
-| target_framework | 目标框架 | net10.0 |
+| target_framework | 目标框架 | net11.0 |
 | nullable | 是否启用可为空引用类型 | enable |
 | implicit_usings | 是否启用隐式 using 指令 | enable |
 

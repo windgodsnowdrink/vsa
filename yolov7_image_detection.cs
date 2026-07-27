@@ -3,7 +3,7 @@
 #:package Microsoft.ML.OnnxRuntime.Gpu@1.15.1
 #:package SixLabors.ImageSharp@2.1.3
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 
 using System;
 using System.Collections.Generic;

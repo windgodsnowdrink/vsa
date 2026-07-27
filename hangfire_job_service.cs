@@ -4,7 +4,7 @@
 #:package NCrontab@3.3.1
 #:package StackExchange.Redis@2.6.116
 #:property LangVersion=preview
-#:property TargetFramework=net10.0
+#:property TargetFramework=net11.0
 #:property Nullable=enable
 #:property ImplicitUsings=enable
 #:property PublishAot=true
