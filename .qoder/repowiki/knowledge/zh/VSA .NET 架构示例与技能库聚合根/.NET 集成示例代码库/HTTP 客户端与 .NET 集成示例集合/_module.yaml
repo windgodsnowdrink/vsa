@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: integration_samples/http_clients
+title: HTTP 客户端与 .NET 集成示例集合
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to: []

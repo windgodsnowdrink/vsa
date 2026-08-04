@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: integration_samples/caching
+title: .NET 集成示例代码库
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to:
+    - path: plc_project

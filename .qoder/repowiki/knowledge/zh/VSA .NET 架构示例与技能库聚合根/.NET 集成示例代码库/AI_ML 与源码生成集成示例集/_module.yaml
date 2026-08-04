@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: integration_samples/ai_ml
+title: AI/ML 与源码生成集成示例集
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to: []

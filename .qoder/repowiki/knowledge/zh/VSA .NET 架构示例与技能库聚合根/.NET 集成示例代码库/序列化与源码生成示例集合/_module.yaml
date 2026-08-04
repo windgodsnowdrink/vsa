@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: integration_samples/serialization
+title: 序列化与源码生成示例集合
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to:
+    - path: mvp_project

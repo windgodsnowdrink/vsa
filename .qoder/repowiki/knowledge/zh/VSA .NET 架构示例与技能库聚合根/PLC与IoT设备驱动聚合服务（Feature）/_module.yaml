@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: plc_project
+title: PLC与IoT设备驱动聚合服务（Feature）
+scope:
+    - plc/
+source_files: []
+depends_on: []
+related_to:
+    - path: integration_samples/caching
+    - path: integration_samples/messaging_event_bus

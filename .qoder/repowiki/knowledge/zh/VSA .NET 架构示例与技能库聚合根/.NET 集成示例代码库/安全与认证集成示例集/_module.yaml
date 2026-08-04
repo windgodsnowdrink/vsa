@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: integration_samples/security_auth
+title: 安全与认证集成示例集
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to:
+    - path: integration_samples/ui_frameworks

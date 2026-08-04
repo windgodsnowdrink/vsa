@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: integration_samples/infrastructure
+title: .NET 集成示例与基础设施代码库
+scope:
+    - code/
+source_files: []
+depends_on: []
+related_to:
+    - path: integration_samples/monitoring_logging
