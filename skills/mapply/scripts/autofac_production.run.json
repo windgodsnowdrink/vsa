@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "autofac_production",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\mapply\scripts\autofac_production.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\mapply\scripts\autofac_production.setting.json"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SINGLE_FILE": "true",
+        "DOTNET_SELF_CONTAINED": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

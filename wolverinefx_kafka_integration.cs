@@ -1,0 +1,182 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Confluent.Kafka@2.3.0
+#:package WolverineFx@1.10.0
+#:package WolverineFx.Kafka@1.10.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using Confluent.Kafka;
+using Wolverine;
+using Wolverine.Kafka;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+
+public class KafkaEventBusOptions
+{
+    public string BootstrapServers { get; set; }
+    public string Topic { get; set; }
+    public string GroupId { get; set; }
+}
+
+public class KafkaEventBus<T> where T : IMessage
+{
+    private readonly IProducer<Null, byte[]> _producer;
+    private readonly IConsumer<Null, byte[]> _consumer;
+    private readonly Channel<T> _channel;
+    private readonly IMessageBus _bus;
+    private readonly KafkaEventBusOptions _options;
+
+    public KafkaEventBus(IMessageBus bus, IOptions<KafkaEventBusOptions> options)
+    {
+        _bus = bus;
+        _options = options.Value;
+        
+        var producerConfig = new ProducerConfig { BootstrapServers = _options.BootstrapServers };
+        var consumerConfig = new ConsumerConfig 
+        { 
+            BootstrapServers = _options.BootstrapServers,
+            GroupId = _options.GroupId,
+            AutoOffsetReset = AutoOffsetReset.Earliest
+        };
+        
+        _producer = new ProducerBuilder<Null, byte[]>(producerConfig).Build();
+        _consumer = new ConsumerBuilder<Null, byte[]>(consumerConfig).Build();
+        _channel = Channel.CreateUnbounded<T>();
+    }
+
+    public async Task Publish(T message, CancellationToken cancellationToken = default)
+    {
+        var kafkaMessage = new Message<Null, byte[]> 
+        { 
+            Value = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(message) 
+        };
+        await _producer.ProduceAsync(_options.Topic, kafkaMessage, cancellationToken);
+    }
+
+    public async Task StartConsuming(CancellationToken cancellationToken = default)
+    {
+        _consumer.Subscribe(_options.Topic);
+        
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                var consumeResult = _consumer.Consume(cancellationToken);
+                var message = System.Text.Json.JsonSerializer.Deserialize<T>(consumeResult.Message.Value);
+                await _bus.SendAsync(message, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+            }
+        }
+    }
+
+    // 使用Wolverine内置的重试策略
+    private async Task ProcessWithRetry(ConsumeResult<Null, byte[]> result, CancellationToken ct)
+    {
+        var message = JsonSerializer.Deserialize<T>(result.Message.Value);
+        await _bus.InvokeAsync(message, new DeliveryOptions().RetryLater(TimeSpan.FromSeconds(1)), ct);
+    }
+
+    // 添加配置验证
+    public class KafkaEventBusOptions : IValidatableObject
+    {
+        [Required] public string BootstrapServers { get; set; }
+        [Required] public string Topic { get; set; }
+        [Range(1, 100)] public int MaxRetryCount { get; set; } = 3;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext context)
+        {
+            if (!Topic.StartsWith("wolverine-"))
+                yield return new ValidationResult("Topic name must start with 'wolverine-'");
+        }
+    }
+
+    // 批量发布方法
+    public async Task PublishBatch(IEnumerable<T> messages, CancellationToken ct = default)
+    {
+        var batch = messages.Select(m => new Message<Null, byte[]> 
+        { 
+            Value = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(m)
+        });
+        
+        await _producer.ProduceAsync(_options.Topic, batch, ct);
+    }
+}
+
+public static class KafkaEventBusExtensions
+{
+    public static IServiceCollection AddKafkaEventBus<T>(this IServiceCollection services, Action<KafkaEventBusOptions> configure) 
+        where T : IMessage
+    {
+        services.Configure(configure);
+        services.AddSingleton<KafkaEventBus<T>>();
+        services.AddHostedService<KafkaEventBusBackgroundService<T>>();
+        
+        // 使用Wolverine内置的健康检查
+        services.AddHealthChecks()
+            .AddKafkaHealthCheck();
+            
+        return services;
+    }
+
+    public static WolverineOptions UseKafkaTransport(this WolverineOptions options, Action<KafkaEventBusOptions> configure)
+    {
+        var kafkaOptions = new KafkaEventBusOptions();
+        configure(kafkaOptions);
+        
+        return options.UseKafka(kafka =>
+        {
+            kafka.ConnectionString = kafkaOptions.BootstrapServers;
+            kafka.Topic = kafkaOptions.Topic;
+            kafka.GroupId = kafkaOptions.GroupId;
+            
+            // 配置Wolverine的重试策略
+            kafka.RetryPolicy = new ExponentialBackoffRetryPolicy(3, TimeSpan.FromSeconds(1));
+            
+            // 启用死信队列
+            kafka.DeadLetterQueue = $"{kafkaOptions.Topic}-deadletter";
+        });
+    }
+}
+
+public class KafkaEventBusBackgroundService<T> : BackgroundService where T : IMessage
+{
+    private readonly KafkaEventBus<T> _eventBus;
+
+    public KafkaEventBusBackgroundService(KafkaEventBus<T> eventBus)
+    {
+        _eventBus = eventBus;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _eventBus.StartConsuming(stoppingToken);
+    }
+}
+
+// 使用示例
+services.AddKafkaEventBus<MyMessage>(options => {
+    options.BootstrapServers = "localhost:9092";
+    options.Topic = "wolverine-topic";
+    options.GroupId = "wolverine-group";
+});
+
+// 或者直接使用Wolverine的Kafka集成
+builder.Host.UseWolverine(opts =>
+{
+    opts.UseKafkaTransport(kafka =>
+    {
+        kafka.ConnectionString = "localhost:9092";
+        kafka.Topic = "wolverine-topic";
+        kafka.GroupId = "wolverine-group";
+    });
+});

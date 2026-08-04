@@ -1,0 +1,57 @@
+{
+  "name": "Csscript AOT",
+  "description": "Csscript AOT高性能脚本执行脚本",
+  "version": "1.0.0",
+  "dependencies": [
+    "Microsoft.Extensions.DependencyInjection@10.0.0",
+    "Microsoft.Extensions.Logging@10.0.0",
+    "Microsoft.Extensions.Hosting@10.0.0",
+    "Microsoft.Extensions.Options@10.0.0",
+    "Newtonsoft.Json@13.0.3"
+  ],
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+    "CSSCRIPT_ALLOW_EXTERNAL_SCRIPTS": "false",
+    "CSSCRIPT_CACHE_SIZE": "1000",
+    "CSSCRIPT_EXECUTION_TIMEOUT": "60000"
+  },
+  "execution": {
+    "command": "dotnet run --project csscript_aot.cs",
+    "workingDirectory": "./scripts",
+    "timeout": "300000",
+    "retryCount": 3
+  },
+  "aotCompilation": {
+    "enabled": true,
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "file": "csscript_aot.log",
+    "maxFileSize": "10MB",
+    "maxRetainedFiles": 5
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "executionTime",
+      "memoryUsage",
+      "cpuUsage",
+      "successRate",
+      "executedScripts",
+      "cacheHitRate"
+    ],
+    "alertThresholds": {
+      "executionTime": "10000",
+      "memoryUsage": "200MB",
+      "cpuUsage": "80",
+      "executedScripts": "1000"
+    }
+  }
+}

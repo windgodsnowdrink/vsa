@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.CertMonitor": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "CertificateMonitor": {
+      "CheckIntervalMinutes": 60,
+      "ExpirationWarningDays": 30,
+      "RenewalThresholdDays": 14,
+      "NotificationEmail": "admin@example.com",
+      "SmtpServer": "smtp.example.com",
+      "SmtpPort": 587,
+      "SmtpUsername": "username",
+      "SmtpPassword": "password",
+      "UseSsl": true
+    }
+  }
+}

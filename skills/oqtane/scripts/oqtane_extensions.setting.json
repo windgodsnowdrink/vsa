@@ -1,0 +1,94 @@
+{
+  "oqtane": {
+    "options": {
+      "enabled": true,
+      "siteName": "Oqtane 站点",
+      "defaultLanguage": "zh-CN",
+      "enableModules": true,
+      "enableThemes": true,
+      "enableUsers": true,
+      "enableConfiguration": true,
+      "enableDeployment": true,
+      "enableParallelProcessing": true,
+      "maxDegreeOfParallelism": 4
+    },
+    "module": {
+      "enabled": true,
+      "repositoryUrl": "https://www.oqtane.org/Modules",
+      "cacheDuration": "00:30:00",
+      "autoUpdate": false,
+      "backupBeforeUpdate": true
+    },
+    "theme": {
+      "enabled": true,
+      "repositoryUrl": "https://www.oqtane.org/Themes",
+      "defaultTheme": "Default",
+      "cacheDuration": "00:30:00"
+    },
+    "user": {
+      "enabled": true,
+      "enableRegistration": true,
+      "requireEmailConfirmation": true,
+      "defaultRole": "Users",
+      "passwordPolicy": {
+        "requiredLength": 8,
+        "requireDigit": true,
+        "requireLowercase": true,
+        "requireUppercase": true,
+        "requireNonAlphanumeric": false
+      }
+    },
+    "configuration": {
+      "enabled": true,
+      "autoSave": true,
+      "backupBeforeSave": true,
+      "cacheDuration": "00:05:00"
+    },
+    "deployment": {
+      "enabled": true,
+      "packageFormat": "zip",
+      "includeDatabase": false,
+      "includeFiles": true,
+      "excludePaths": ["node_modules", "bin", "obj"],
+      "remoteTimeout": "00:30:00"
+    },
+    "aot": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true,
+      "optimizeForSize": false,
+      "trimMode": "partial"
+    },
+    "logging": {
+      "enabled": true,
+      "level": "Information",
+      "includeScopes": true,
+      "logFile": "oqtane.log",
+      "maxFileSize": 10485760,
+      "maxRetainedFiles": 5
+    },
+    "performance": {
+      "enableCaching": true,
+      "cacheDuration": "00:05:00",
+      "enableCompression": true,
+      "maxConcurrentRequests": 100,
+      "requestTimeout": "00:01:00"
+    },
+    "security": {
+      "enableSsl": false,
+      "requireSsl": false,
+      "enableCors": true,
+      "allowedOrigins": ["*"],
+      "enableAntiForgery": true,
+      "enableRateLimiting": false,
+      "maxRequestsPerMinute": 1000
+    },
+    "database": {
+      "provider": "SqlServer",
+      "connectionString": "Server=(localdb)\\mssqllocaldb;Database=Oqtane;Trusted_Connection=True;",
+      "enableMigration": true,
+      "autoMigrate": false,
+      "backupBeforeMigrate": true
+    }
+  }
+}

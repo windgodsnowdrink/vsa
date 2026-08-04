@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ipc_messagepack_serializer",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\serializer\scripts\ipc_messagepack_serializer.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\serializer\scripts\ipc_messagepack_serializer.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

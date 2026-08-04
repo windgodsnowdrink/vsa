@@ -1,0 +1,164 @@
+name: Wolverine
+version: 1.0.0
+title: 高性能消息传递技能
+description: 提供轻量级消息总线、命令处理、事件处理等功能的高性能消息传递工具库
+author: .NET 专家
+email: contact@example.com
+url: https://github.com/example/wolverine-skill
+license: MIT
+
+# 技能类型
+type: messaging
+
+# 标签
+tags:
+  - messaging
+  - message-bus
+  - command-handling
+  - event-handling
+  - distributed-systems
+  - high-performance
+  - utility
+
+# 依赖项
+dependencies:
+  - name: Microsoft.Extensions.DependencyInjection
+    version: ">=8.0.0"
+  - name: Scrutor
+    version: ">=4.0.0"
+
+# 功能列表
+features:
+  - name: 轻量级消息总线
+    description: 提供简单易用的消息发送和接收机制
+  - name: 命令处理
+    description: 支持命令模式，实现命令的发送和处理
+  - name: 事件处理
+    description: 支持事件模式，实现事件的发布和订阅
+  - name: 消息路由
+    description: 基于类型和配置的消息路由机制
+  - name: 消息重试
+    description: 内置消息重试机制，提高系统可靠性
+  - name: 消息持久化
+    description: 支持消息的持久化存储，确保消息不丢失
+  - name: 分布式支持
+    description: 支持分布式环境下的消息传递
+  - name: 性能优化
+    description: 采用高性能的消息处理机制，减少延迟
+  - name: 依赖注入
+    description: 支持通过 DI 容器注册和使用
+  - name: 可扩展性
+    description: 提供插件机制，支持自定义消息处理器和中间件
+
+# 平台支持
+platforms:
+  - name: .NET 8.0
+    supported: true
+  - name: .NET 9.0
+    supported: true
+  - name: .NET 10.0
+    supported: true
+
+# 安装方式
+installation:
+  - name: NuGet
+    command: dotnet add package WolverineSkill
+  - name: 手动引用
+    command: 将 wolverine_core.cs 文件添加到项目中
+
+# 使用示例
+usage:
+  - title: 基本用法
+    description: 创建消息总线并发送消息
+    code: |
+      using WolverineSkill;
+      
+      // 创建消息总线
+      var messageBus = new MessageBus();
+      
+      // 注册命令处理器
+      messageBus.RegisterHandler<CreateOrderCommand, CreateOrderHandler>();
+      
+      // 发送命令
+      var command = new CreateOrderCommand { OrderId = Guid.NewGuid(), CustomerId = 123, Amount = 100.0m };
+      await messageBus.SendAsync(command);
+
+  - title: 事件处理
+    description: 发布和订阅事件
+    code: |
+      using WolverineSkill;
+      
+      // 创建消息总线
+      var messageBus = new MessageBus();
+      
+      // 注册事件处理器
+      messageBus.RegisterHandler<OrderCreatedEvent, OrderCreatedHandler>();
+      
+      // 发布事件
+      var @event = new OrderCreatedEvent { OrderId = Guid.NewGuid(), CustomerId = 123, Amount = 100.0m, CreatedAt = DateTime.UtcNow };
+      await messageBus.PublishAsync(@event);
+
+  - title: 依赖注入
+    description: 通过 DI 容器使用消息总线
+    code: |
+      using Microsoft.Extensions.DependencyInjection;
+      using WolverineSkill;
+      
+      // 注册服务
+      var services = new ServiceCollection();
+      services.AddWolverineSkill();
+      var serviceProvider = services.BuildServiceProvider();
+      
+      // 获取消息总线
+      var messageBus = serviceProvider.GetRequiredService<IMessageBus>();
+      
+      // 使用消息总线
+      var command = new CreateOrderCommand { OrderId = Guid.NewGuid(), CustomerId = 123, Amount = 100.0m };
+      await messageBus.SendAsync(command);
+
+# 配置选项
+configuration:
+  - name: MessageBus.EnableRetries
+    type: boolean
+    default: true
+    description: 是否启用消息重试
+  - name: MessageBus.MaxRetries
+    type: integer
+    default: 5
+    description: 最大重试次数
+  - name: MessageBus.RetryInterval
+    type: string
+    default: "00:00:01"
+    description: 重试间隔
+  - name: MessageBus.EnablePersistence
+    type: boolean
+    default: true
+    description: 是否启用消息持久化
+  - name: MessageBus.PersistenceProvider
+    type: string
+    default: "InMemory"
+    description: 持久化提供者
+  - name: Serialization.Type
+    type: string
+    default: "Json"
+    description: 序列化类型
+  - name: Serialization.EnableCompression
+    type: boolean
+    default: true
+    description: 是否启用消息压缩
+
+# 文档链接
+documentation:
+  - name: 参考文档
+    url: ./reference/README.md
+  - name: 使用示例
+    url: ./reference/examples.md
+  - name: Scrutor 示例
+    url: ./scripts/scrutor_demo.cs
+
+# 脚本文件
+scripts:
+  - name: wolverine_core.cs
+    description: 核心实现文件，包含消息总线、命令处理、事件处理等功能
+  - name: scrutor_demo.cs
+    description: Scrutor 集成示例，展示自动服务注册等功能

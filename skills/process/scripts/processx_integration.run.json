@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "sdk": "10.0.0",
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "environment": {
+    "development": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "PROCESS_ENABLE_POOLING": "true",
+      "PROCESS_MAX_PROCESSES": "10",
+      "PROCESS_START_TIMEOUT": "30",
+      "PROCESS_IDLE_TIMEOUT": "300",
+      "PROCESS_ENABLE_MONITORING": "true"
+    },
+    "production": {
+      "ASPNETCORE_ENVIRONMENT": "Production",
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOG_LEVEL": "Warning",
+      "PROCESS_ENABLE_POOLING": "true",
+      "PROCESS_MAX_PROCESSES": "20",
+      "PROCESS_START_TIMEOUT": "60",
+      "PROCESS_IDLE_TIMEOUT": "600",
+      "PROCESS_ENABLE_MONITORING": "true"
+    }
+  },
+  "deployment": {
+    "aot": {
+      "enabled": true,
+      "publishProfiles": {
+        "win-x64": {
+          "command": "dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/win-x64/publish"
+        },
+        "linux-x64": {
+          "command": "dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/linux-x64/publish"
+        },
+        "osx-x64": {
+          "command": "dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishAot=true",
+          "outputDirectory": "bin/Release/net10.0/osx-x64/publish"
+        }
+      }
+    },
+    "container": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "buildArgs": {
+        "SDK_VERSION": "10.0",
+        "RUNTIME_VERSION": "10.0"
+      },
+      "tags": [
+        "processx-integration:latest",
+        "processx-integration:{version}"
+      ]
+    }
+  },
+  "performance": {
+    "optimizations": {
+      "processPooling": true,
+      "asyncProcessing": true,
+      "batchOperations": true,
+      "memoryOptimization": true
+    },
+    "limits": {
+      "maxProcesses": 20,
+      "maxConcurrentOperations": 1000,
+      "maxProcessStartTimeout": 60,
+      "maxProcessIdleTimeout": 600
+    }
+  },
+  "security": {
+    "sandbox": {
+      "enabled": true,
+      "restrictedDirectories": [
+        "../",
+        "/etc/",
+        "/sys/",
+        "/proc/"
+      ],
+      "allowedDirectories": [
+        "./temp/",
+        "./logs/"
+      ]
+    },
+    "permissions": {
+      "allowFileAccess": true,
+      "allowNetworkAccess": true,
+      "allowProcessCreation": true,
+      "allowReflection": true,
+      "allowDynamicCode": false
+    }
+  },
+  "logging": {
+    "providers": [
+      "Console",
+      "Debug",
+      "EventLog"
+    ],
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "ProcessXIntegration": "Debug"
+    },
+    "fileLogging": {
+      "enabled": true,
+      "path": "logs/processx-integration.log",
+      "maxFileSize": "10MB",
+      "maxRetainedFiles": 5
+    }
+  },
+  "monitoring": {
+    "healthChecks": {
+      "enabled": true,
+      "endpoint": "/health",
+      "interval": "30s"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "collectionInterval": "10s",
+      "counters": [
+        "process.start.count",
+        "process.stop.count",
+        "process.error.count",
+        "process.pool.size",
+        "process.pool.idle.count",
+        "process.pool.busy.count"
+      ],
+      "histograms": [
+        "process.start.time.ms",
+        "process.execute.time.ms",
+        "process.memory.usage.mb"
+      ]
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 0.1,
+      "exporters": [
+        "Jaeger",
+        "Zipkin"
+      ]
+    }
+  }
+}
+

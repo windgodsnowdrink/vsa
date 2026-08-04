@@ -1,0 +1,96 @@
+# P2P Agent Skill - P2P 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 P2P 技能实现，支持 AOT 编译，提供完整的点对点网络通信功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Net.Sockets@10.0.0
+# - System.Net.Http@10.0.0
+# - System.Threading.Channels@10.0.0
+# - System.Runtime.CompilerServices.Unsafe@6.0.0
+# - System.Buffers@4.5.1
+# - System.Text.Json@10.0.0
+# - System.Security.Cryptography@10.0.0
+# - System.Collections.Immutable@10.0.0
+# Application Scenarios: P2P 网络通信、分布式系统、文件共享、实时通信、区块链、分布式存储
+# Activation Conditions: 当需要 P2P 功能时激活
+# Main Features:
+# - P2P 节点发现与连接管理
+# - 分布式消息传递
+# - 文件共享与传输
+# - 实时通信
+# - 网络拓扑管理
+# - 故障检测与恢复
+# - 安全性与加密
+# - 性能优化
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 异步编程
+# - 批量处理
+# - 连接池管理
+# - 网络拥塞控制
+# - 零拷贝技术
+# - 内存池管理
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - 网络协议实现
+# - 消息序列化优化
+# - 错误处理与重试机制
+# - 状态机设计
+# - 管道处理模式
+# AOT Compilation:
+# - PublishAot: true
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - TrimMode: partial
+# - Optimize: true
+# - EnableCompilationRelaxations: true
+# - EnableEnhancedNgen: true
+# Target Framework:
+# - net10.0
+# Scripts:
+# - name: "p2p_integration.cs"
+#   description: "P2P 集成功能，实现核心 P2P 网络通信，包括节点发现、连接管理、消息传递和文件共享"
+# Reference:
+# - README.md: 详细文档，包含核心组件说明、配置选项和使用方法
+# - examples.md: 使用示例，包含基本用法、高级配置、文件共享、消息传递等场景
+# Configuration:
+# - Each script has corresponding .setting.json and .run.json files
+# - Supports environment-specific configurations
+# - Supports AOT compilation options
+# - Supports network configuration (port, buffer size, timeout, etc.)
+# Monitoring:
+# - Built-in metrics collection
+# - Health check endpoints
+# - Error logging and tracing
+# - Network status monitoring
+# Deployment:
+# - Self-contained deployment
+# - AOT compilation support
+# - Cross-platform support (Windows, Linux, macOS)
+# - Containerization support
+# - Single-file execution
+# Security:
+# - End-to-end encryption
+# - Node authentication
+# - Message signing
+# - Secure key exchange
+# - Network isolation
+# Scalability:
+# - Dynamic node management
+# - Load balancing
+# - Network partitioning recovery
+# - Automatic peer discovery
+# Reliability:
+# - Fault tolerance
+# - Automatic reconnection
+# - Message delivery guarantees
+# - Network resilience

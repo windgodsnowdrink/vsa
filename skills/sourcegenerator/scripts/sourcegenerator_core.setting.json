@@ -1,0 +1,27 @@
+{
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishOptions": {
+      "PublishAot": true,
+      "TrimMode": "partial",
+      "SelfContained": true,
+      "PublishSingleFile": true,
+      "PublishReadyToRun": true,
+      "RuntimeIdentifier": "win-x64"
+    }
+  },
+  "dependencies": {
+    "Microsoft.CodeAnalysis.Analyzers": "4.10.0",
+    "Microsoft.CodeAnalysis.CSharp": "4.10.0",
+    "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.10.0",
+    "Microsoft.CodeAnalysis.Workspaces.Common": "4.10.0",
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Scrutor": "4.2.2",
+    "System.CommandLine": "2.0.0",
+    "System.Text.Json": "10.0.0"
+  }
+}

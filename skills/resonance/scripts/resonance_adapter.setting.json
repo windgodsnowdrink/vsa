@@ -1,0 +1,67 @@
+{
+  "runtime": {
+    "description": "共振适配器脚本运行时配置",
+    "version": "1.0.0",
+    "sdk": "Microsoft.NET.Sdk.Web",
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "enablePreviewFeatures": true
+  },
+  "compilation": {
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "enableCompressionInSingleFile": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "outputType": "Exe",
+    "assemblyName": "resonance_adapter"
+  },
+  "packages": [
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Text.Json",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Text.Encodings.Web",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Threading.Tasks.Dataflow",
+      "version": "8.0.0"
+    }
+  ],
+  "features": {
+    "messageRouting": true,
+    "middlewareSupport": true,
+    "messageStatistics": true,
+    "retryMechanism": true,
+    "deadLetterQueue": true,
+    "genericMessageHandlers": true
+  },
+  "buildOptions": {
+    "allowUnsafeBlocks": false,
+    "define": ["RELEASE"],
+    "warnAsError": false,
+    "warningsAsErrors": []
+  },
+  "publishOptions": {
+    "include": ["**/*"],
+    "exclude": ["*.json", "*.md", "*.config"]
+  }
+}

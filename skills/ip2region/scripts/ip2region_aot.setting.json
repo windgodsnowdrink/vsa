@@ -1,0 +1,77 @@
+{
+  "Title": "IP2Region AOT 引擎",
+  "Description": "使用 AOT 编译的高性能 IP 地址查询引擎，基于 IP2Region 库",
+  "Version": "1.0.0",
+  "Author": "NET 专家",
+  "Tags": ["ip2region", "aot", "ip-query", "geolocation"],
+  "Icon": "ip",
+  "EntryPoint": "ip2region_aot.cs",
+  "OutputType": "Console",
+  "PublishAot": true,
+  "RuntimeIdentifier": "win-x64",
+  "Configuration": {
+    "DbPath": "ip2region.db",
+    "CacheType": "memory",
+    "CacheExpirationMinutes": 30,
+    "EnableLogging": true,
+    "EnableBenchmarking": true,
+    "BatchSize": 1000,
+    "ConcurrentThreads": 4
+  },
+  "Dependencies": {
+    "IP2Region": "1.2.0",
+    "Microsoft.Extensions.Caching.Memory": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Text.Json": "4.7.2",
+    "System.Collections.Immutable": "4.5.3"
+  },
+  "Commands": {
+    "search": {
+      "Description": "查询IP地址",
+      "Aliases": ["s"],
+      "Parameters": ["ip"]
+    },
+    "info": {
+      "Description": "查询IP地址（详细信息）",
+      "Aliases": ["i"],
+      "Parameters": ["ip"]
+    },
+    "batch": {
+      "Description": "批量查询IP地址",
+      "Aliases": ["b"],
+      "Parameters": ["filePath", "save"]
+    },
+    "config": {
+      "Description": "显示配置",
+      "Aliases": ["co"],
+      "Parameters": []
+    },
+    "benchmark": {
+      "Description": "运行基准测试",
+      "Aliases": ["bm"],
+      "Parameters": ["iterations"]
+    },
+    "help": {
+      "Description": "显示帮助信息",
+      "Aliases": ["h", "?"],
+      "Parameters": []
+    }
+  },
+  "CacheTypes": {
+    "none": "不使用缓存",
+    "memory": "使用内存缓存",
+    "distributed": "使用分布式缓存"
+  },
+  "Logging": {
+    "Level": "Information",
+    "Console": true,
+    "File": false
+  },
+  "Performance": {
+    "BatchSize": 1000,
+    "ConcurrentThreads": 4,
+    "CacheExpiration": 30,
+    "MaxCacheSize": 10000
+  }
+}

@@ -1,0 +1,239 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package QuestPDF@2023.12.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@7.0.0
+#:property LangVersion=preview
+#:property Nullable=enable
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.Collections.Concurrent;
+using System.Threading.Channels;
+#:package QuestPDF@2023.12.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@7.0.0
+#:package Microsoft.Extensions.Options@7.0.0
+#:property LangVersion=preview
+#:property Nullable=enable
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.Collections.Concurrent;
+using System.Threading.Channels;
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+public class QuestPdfOptions
+{
+    public string RedisConnectionString { get; set; } = string.Empty;
+    public int BatchSize { get; set; } = 100;
+    public int MaxConcurrentExports { get; set; } = 10;
+    public string TemplatePath { get; set; } = string.Empty;
+    public bool EnableWatermark { get; set; } = true;
+    public bool EnableDistributedRendering { get; set; } = false;
+}
+
+using System;
+using System.Collections.Concurrent;
+
+public interface IQuestPdfService
+{
+    Task<byte[]> GeneratePdfAsync(string templateName, object data);
+    Task<IEnumerable<byte[]>> GeneratePdfBatchAsync(IEnumerable<(string templateName, object data)> batch);
+    Task CacheTemplateAsync(string templateName, string templateContent);
+    Task<string> GetTemplateAsync(string templateName);
+    Task AddWatermarkAsync(byte[] pdfData, string watermarkText);
+}
+using System.IO;
+using System.Threading;
+
+public class QuestPdfService : IQuestPdfService
+{
+    private readonly IOptions<QuestPdfOptions> _options;
+    private readonly IDistributedCache _cache;
+    private readonly Channel<(string templateName, object data)> _channel;
+    private readonly ConcurrentDictionary<string, string> _templateCache = new();
+    
+    public QuestPdfService(IOptions<QuestPdfOptions> options, IDistributedCache cache)
+    {
+        _options = options;
+        _cache = cache;
+        _channel = Channel.CreateBounded<(string, object)>(_options.Value.BatchSize);
+        
+        // Start background processing
+        _ = Task.Run(ProcessBatchAsync);
+    }
+    
+    private async Task ProcessBatchAsync()
+    {
+        // Batch processing implementation
+    }
+    
+    public async Task<byte[]> GeneratePdfAsync(string templateName, object data)
+    {
+        // Single PDF generation implementation
+        return Array.Empty<byte>();
+    }
+}
+using System.Threading.Channels;
+using System.Threading.Tasks;
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddQuestPdfService(this IServiceCollection services, Action<QuestPdfOptions> configureOptions)
+    {
+        services.Configure(configureOptions);
+        
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = services.BuildServiceProvider()
+                .GetRequiredService<IOptions<QuestPdfOptions>>().Value.RedisConnectionString;
+        });
+        
+        services.AddSingleton<IQuestPdfService, QuestPdfService>();
+        
+        return services;
+    }
+}
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+
+namespace Trae.Vsa.PDF
+{
+    public class QuestPdfOptions
+    {
+        public string RedisConnectionString { get; set; } = string.Empty;
+        public int BatchSize { get; set; } = 100;
+        public int MaxConcurrentExports { get; set; } = 4;
+        public string TemplatesPath { get; set; } = "Templates";
+    }
+
+    public interface IQuestPdfService
+    {
+        Task<byte[]> GeneratePdfAsync(string templateName, object data, CancellationToken ct = default);
+        Task<byte[][]> BatchGeneratePdfAsync(string templateName, object[] data, CancellationToken ct = default);
+    }
+
+    public class QuestPdfService : IQuestPdfService, IDisposable
+    {
+        private readonly ILogger<QuestPdfService> _logger;
+        private readonly IDistributedCache _cache;
+        private readonly QuestPdfOptions _options;
+        private readonly ConcurrentDictionary<string, IDocument> _templates = new();
+        private readonly Channel<object[]> _batchChannel;
+        private readonly CancellationTokenSource _cts = new();
+
+        public QuestPdfService(
+            IOptions<QuestPdfOptions> options,
+            ILogger<QuestPdfService> logger,
+            IDistributedCache cache)
+        {
+            _options = options.Value;
+            _logger = logger;
+            _cache = cache;
+
+            // Load templates
+            LoadTemplates();
+
+            // Setup batch processing
+            _batchChannel = Channel.CreateBounded<object[]>(
+                new BoundedChannelOptions(_options.MaxConcurrentExports)
+                {
+                    FullMode = BoundedChannelFullMode.Wait,
+                    SingleReader = true,
+                    SingleWriter = false
+                });
+
+            // Start batch processors
+            for (int i = 0; i < _options.MaxConcurrentExports; i++)
+            {
+                Task.Run(() => ProcessBatchesAsync(_cts.Token));
+            }
+        }
+
+        private void LoadTemplates()
+        {
+            var templateFiles = Directory.GetFiles(_options.TemplatesPath, "*.pdf");
+            foreach (var file in templateFiles)
+            {
+                var templateName = Path.GetFileNameWithoutExtension(file);
+                _templates[templateName] = Document.Create(container =>
+                {
+                    // TODO: Load template logic
+                });
+            }
+        }
+
+        public async Task<byte[]> GeneratePdfAsync(string templateName, object data, CancellationToken ct = default)
+        {
+            var cacheKey = $"pdf_{templateName}_{data.GetHashCode()}";
+            var cached = await _cache.GetAsync(cacheKey, ct);
+            if (cached != null)
+                return cached;
+
+            if (!_templates.TryGetValue(templateName, out var template))
+                throw new ArgumentException($"Template '{templateName}' not found");
+
+            using var stream = new MemoryStream();
+            template.GeneratePdf(stream);
+            var pdfBytes = stream.ToArray();
+
+            await _cache.SetAsync(cacheKey, pdfBytes, 
+                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1) }, ct);
+
+            return pdfBytes;
+        }
+
+        public async Task<byte[][]> BatchGeneratePdfAsync(string templateName, object[] data, CancellationToken ct = default)
+        {
+            var batch = data.Take(_options.BatchSize).ToArray();
+            var completion = new TaskCompletionSource<byte[][]>();
+            await _batchChannel.Writer.WriteAsync(batch, ct);
+            return await completion.Task;
+        }
+
+        private async Task ProcessBatchesAsync(CancellationToken ct)
+        {
+            await foreach (var batch in _batchChannel.Reader.ReadAllAsync(ct))
+            {
+                try
+                {
+                    var results = new List<byte[]>();
+                    foreach (var data in batch)
+                    {
+                        // TODO: Implement batch processing logic
+                    }
+                    // TODO: Complete batch processing
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing PDF batch");
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public static class QuestPdfExtensions
+    {
+        public static IServiceCollection AddQuestPdfService(this IServiceCollection services, Action<QuestPdfOptions> configure)
+        {
+            services.Configure(configure);
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = services.BuildServiceProvider()
+                    .GetRequiredService<IOptions<QuestPdfOptions>>().Value.RedisConnectionString;
+            });
+            services.AddSingleton<IQuestPdfService, QuestPdfService>();
+            return services;
+        }
+    }
+}

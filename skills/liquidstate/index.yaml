@@ -1,0 +1,51 @@
+# LiquidState Agent Skill - 状态机技能
+# Version: 1.0.0
+# Author: NET专家
+# Description: 基于.NET 10的状态机技能实现，支持AOT编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Caching.Memory@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.CommandLine@2.0.0
+# - System.Threading.Channels@8.0.0
+# Application Scenarios: 状态管理、工作流控制、业务流程管理
+# Activation Conditions: 当需要状态机功能时激活
+# Main Features:
+# - 完整的状态机实现，支持状态转换、事件触发
+# - 流畅的API设计，使用构建器模式
+# - 异步操作支持，所有状态转换和动作都支持异步
+# - 依赖注入集成，与Microsoft.Extensions.DependencyInjection无缝集成
+# - 内存缓存支持，提高性能
+# - 日志记录，提供详细的运行日志
+# - 命令行界面，支持创建、启动、触发事件等操作
+# - Channel事件处理，提高并发性能
+# Performance Features:
+# - 高性能设计，支持AOT编译
+# - 内存优化，使用内存缓存
+# - 并发支持，支持多线程操作
+# - Channel事件队列，优化事件处理
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，提高代码可测试性
+# - 异步编程，避免阻塞主线程
+# - 高性能算法，优化状态转换逻辑
+# - 跨平台支持，支持Windows、Linux、macOS
+# AOT Configuration:
+# - PublishSingleFile: true
+# - SelfContained: true
+# - RuntimeIdentifier: win-x64
+# - Optimize: true
+# - PublishTrimmed: true
+# - PublishAot: true
+# - IncludeNativeLibrariesForSelfExtract: true
+# - EnableCppCodeGen: true
+# Execution Scripts:
+# - Script Path: scripts/liquidstate_aot.cs
+# - Runtime: .NET 10.0
+# - Type: Single File Executable
+# - Configuration Files: scripts/liquidstate_aot.setting.json, scripts/liquidstate_aot.run.json
+# Reference Documentation:
+# - README.md: reference/README.md
+# - Examples.md: reference/examples.md

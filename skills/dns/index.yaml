@@ -1,0 +1,53 @@
+# dns Agent Skill - DNS 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 架构的高性能 DNS 技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Net.NameResolution@10.0.0
+# Application Scenarios: DNS 查询、域名解析、网络诊断、邮件服务器配置、网站迁移、CDN 配置验证、安全审计
+# Activation Conditions: 当需要 DNS 查询或域名解析功能时激活
+# Main Features:
+# - 基于 .NET 10 AOT 编译的高性能实现
+# - 支持多种 DNS 记录类型（A、AAAA、MX、NS、CNAME、TXT 等）
+# - 智能缓存机制，提高查询速度
+# - 批量查询支持，可同时处理多个查询
+# - 多 DNS 服务器配置，提高查询可靠性
+# - 详细的查询结果和执行时间统计
+# - 完善的错误处理和日志记录
+# - 命令行工具支持
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 智能缓存，减少网络请求
+# - 异步编程模型，提高系统响应性
+# - 低延迟设计，毫秒级查询响应
+# - 内存优化，减少 GC 压力
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，便于测试和维护
+# - 异步编程模型，提高并发能力
+# - Options 配置模式，灵活配置
+# - 内置缓存机制，提高性能
+# - 支持多种 DNS 服务器
+# - 完善的状态监控
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - query: 查询 DNS 记录
+# - a: 查询 A 记录 (IPv4)
+# - aaaa: 查询 AAAA 记录 (IPv6)
+# - mx: 查询 MX 记录 (邮件)
+# - ns: 查询 NS 记录 (名称服务器)
+# - cname: 查询 CNAME 记录 (别名)
+# - txt: 查询 TXT 记录 (文本)
+# - status: 获取 DNS 服务状态
+# - reset: 重置 DNS 服务状态
+# - flush: 刷新 DNS 缓存
+# - demo: 运行 DNS 演示

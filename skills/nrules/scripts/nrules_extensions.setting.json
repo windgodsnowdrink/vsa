@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "NRulesExtension": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "1",
+        "DOTNET_TieredCompilation": "1",
+        "DOTNET_ReadyToRun": "1"
+      }
+    }
+  },
+  "nrules": {
+    "options": {
+      "enableCache": true,
+      "cacheSize": 1000,
+      "timeout": "00:00:30",
+      "enableDetailedLogging": false,
+      "defaultTimeZone": "UTC"
+    },
+    "logging": {
+      "logLevel": {
+        "default": "Information",
+        "Microsoft": "Warning",
+        "NRules": "Information"
+      }
+    },
+    "aot": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true
+    }
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MinThreads": 16,
+      "System.Threading.ThreadPool.MaxThreads": 100
+    }
+  },
+  "buildOptions": {
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "optimize": true
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.cs",
+      "**/*.setting.json",
+      "**/*.run.json"
+    ],
+    "exclude": [
+      "**/bin/**",
+      "**/obj/**"
+    ]
+  }
+}

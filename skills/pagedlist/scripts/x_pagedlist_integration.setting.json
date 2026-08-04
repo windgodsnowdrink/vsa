@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PagedList Integration Settings",
+  "description": "配置 PagedList 集成的运行时设置",
+  "type": "object",
+  "properties": {
+    "PagedListOptions": {
+      "type": "object",
+      "description": "PagedList 配置选项",
+      "properties": {
+        "DefaultPageSize": {
+          "type": "integer",
+          "description": "默认分页大小",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "MaxPageSize": {
+          "type": "integer",
+          "description": "最大分页限制",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "CacheDuration": {
+          "type": "string",
+          "description": "缓存持续时间（ISO 8601 格式）",
+          "default": "00:05:00"
+        },
+        "EnableCache": {
+          "type": "boolean",
+          "description": "是否启用缓存",
+          "default": true
+        },
+        "EnablePerformanceMetrics": {
+          "type": "boolean",
+          "description": "是否启用性能指标监控",
+          "default": true
+        },
+        "EnableZeroCopy": {
+          "type": "boolean",
+          "description": "是否启用零拷贝优化",
+          "default": true
+        },
+        "ThreadLocalCacheSize": {
+          "type": "integer",
+          "description": "线程本地缓存大小",
+          "default": 1024,
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "CacheLineSize": {
+          "type": "integer",
+          "description": "CPU 缓存行对齐大小",
+          "default": 64,
+          "minimum": 16,
+          "maximum": 256
+        },
+        "EnableParallelProcessing": {
+          "type": "boolean",
+          "description": "是否启用并行处理",
+          "default": true
+        },
+        "MaxDegreeOfParallelism": {
+          "type": "integer",
+          "description": "最大并行度",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 32
+        },
+        "EnableBatching": {
+          "type": "boolean",
+          "description": "是否启用批处理",
+          "default": true
+        },
+        "BatchSize": {
+          "type": "integer",
+          "description": "批处理大小",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "DefaultPageSize",
+        "MaxPageSize",
+        "CacheDuration",
+        "EnableCache"
+      ]
+    },
+    "Logging": {
+      "type": "object",
+      "description": "日志配置",
+      "properties": {
+        "LogLevel": {
+          "type": "object",
+          "description": "日志级别",
+          "properties": {
+            "Default": {
+              "type": "string",
+              "description": "默认日志级别",
+              "default": "Information",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"]
+            },
+            "PagedList": {
+              "type": "string",
+              "description": "PagedList 相关日志级别",
+              "default": "Debug",
+              "enum": ["Trace", "Debug", "Information", "Warning", "Error", "Critical", "None"]
+            }
+          },
+          "required": ["Default", "PagedList"]
+        }
+      },
+      "required": ["LogLevel"]
+    },
+    "AOT": {
+      "type": "object",
+      "description": "AOT 编译配置",
+      "properties": {
+        "PublishAot": {
+          "type": "boolean",
+          "description": "是否启用 AOT 编译",
+          "default": true
+        },
+        "ReadyToRun": {
+          "type": "boolean",
+          "description": "是否启用 ReadyToRun 编译",
+          "default": true
+        },
+        "TieredCompilation": {
+          "type": "boolean",
+          "description": "是否启用分层编译",
+          "default": true
+        },
+        "TrimMode": {
+          "type": "string",
+          "description": "剪裁模式",
+          "default": "partial",
+          "enum": ["copyused", "partial", "full"]
+        },
+        "Optimize": {
+          "type": "boolean",
+          "description": "是否启用优化",
+          "default": true
+        }
+      },
+      "required": [
+        "PublishAot",
+        "ReadyToRun",
+        "TieredCompilation",
+        "TrimMode",
+        "Optimize"
+      ]
+    }
+  },
+  "required": [
+    "PagedListOptions",
+    "Logging",
+    "AOT"
+  ],
+  "default": {
+    "PagedListOptions": {
+      "DefaultPageSize": 20,
+      "MaxPageSize": 100,
+      "CacheDuration": "00:05:00",
+      "EnableCache": true,
+      "EnablePerformanceMetrics": true,
+      "EnableZeroCopy": true,
+      "ThreadLocalCacheSize": 1024,
+      "CacheLineSize": 64,
+      "EnableParallelProcessing": true,
+      "MaxDegreeOfParallelism": 4,
+      "EnableBatching": true,
+      "BatchSize": 100
+    },
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "PagedList": "Debug"
+      }
+    },
+    "AOT": {
+      "PublishAot": true,
+      "ReadyToRun": true,
+      "TieredCompilation": true,
+      "TrimMode": "partial",
+      "Optimize": true
+    }
+  }
+}

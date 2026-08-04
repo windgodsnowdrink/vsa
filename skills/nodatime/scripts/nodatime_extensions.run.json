@@ -1,0 +1,80 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "NodaTime Extensions",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/scripts/nodatime_extensions.cs",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "1",
+        "DOTNET_READYTORUN": "1",
+        "DOTNET_TIERED_COMPILATION": "1",
+        "NODATIME_DEFAULT_TIMEZONE": "UTC",
+        "NODATIME_ENABLE_CACHE": "true",
+        "NODATIME_CACHE_SIZE": "1000",
+        "NODATIME_ENABLE_DETAILED_LOGGING": "false"
+      },
+      "envFile": "${workspaceFolder}/scripts/nodatime_extensions.setting.json",
+      "logging": {
+        "moduleLoad": false,
+        "engineLogging": false,
+        "browserStdOut": true
+      }
+    },
+    {
+      "name": "NodaTime Extensions (Production)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "publish",
+      "program": "${workspaceFolder}/bin/Release/net10.0/publish/nodatime_extensions",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "env": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "NODATIME_DEFAULT_TIMEZONE": "UTC",
+        "NODATIME_ENABLE_CACHE": "true",
+        "NODATIME_CACHE_SIZE": "2000",
+        "NODATIME_ENABLE_DETAILED_LOGGING": "false"
+      },
+      "envFile": "${workspaceFolder}/scripts/nodatime_extensions.setting.json",
+      "logging": {
+        "moduleLoad": false,
+        "engineLogging": false,
+        "browserStdOut": true
+      }
+    },
+    {
+      "name": "NodaTime Extensions (Performance Test)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/scripts/nodatime_extensions.cs",
+      "args": ["--performance-test"],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "NODATIME_DEFAULT_TIMEZONE": "UTC",
+        "NODATIME_ENABLE_CACHE": "true",
+        "NODATIME_CACHE_SIZE": "5000",
+        "NODATIME_ENABLE_DETAILED_LOGGING": "false"
+      },
+      "envFile": "${workspaceFolder}/scripts/nodatime_extensions.setting.json",
+      "logging": {
+        "moduleLoad": false,
+        "engineLogging": false,
+        "browserStdOut": true
+      }
+    }
+  ]
+}

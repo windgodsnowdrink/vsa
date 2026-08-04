@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Scan Assembly": {
+      "commandName": "Project",
+      "commandLineArgs": "scan --assembly \"..\" --pattern \"*Service\" --lifetime \"scoped\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Scan Specific Assembly": {
+      "commandName": "Project",
+      "commandLineArgs": "scan --assembly \"..\\bin\\Debug\\net10.0\\MyApp.dll\" --pattern \"*Repository\" --lifetime \"singleton\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Decorate Service": {
+      "commandName": "Project",
+      "commandLineArgs": "decorate --service \"IMyService\" --decorator \"MyServiceDecorator\" --lifetime \"scoped\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Services Text": {
+      "commandName": "Project",
+      "commandLineArgs": "list --format \"text\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Services Json": {
+      "commandName": "Project",
+      "commandLineArgs": "list --format \"json\"",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

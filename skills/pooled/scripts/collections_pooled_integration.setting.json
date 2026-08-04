@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "CollectionsPooledIntegration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5004",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "CollectionsPooledIntegration-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5004",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "trimMode": "partial",
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Collections.Immutable": "10.0.0",
+    "System.Memory": "10.0.0",
+    "System.Buffers": "10.0.0",
+    "System.Threading.Tasks.Dataflow": "10.0.0",
+    "System.IO.Pipelines": "10.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.dll",
+      "**/*.json",
+      "**/*.config"
+    ],
+    "exclude": [
+      "**/*.pdb",
+      "**/*.xml"
+    ]
+  },
+  "compilationOptions": {
+    "allowUnsafe": true,
+    "deterministic": true,
+    "strict": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Pooled.Collections": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "PooledCollections": {
+    "EnableMemoryPooling": true,
+    "EnableZeroAllocation": true,
+    "EnableThreadLocalStorage": true,
+    "MemoryPoolSize": 1024,
+    "ThreadLocalCacheSize": 256,
+    "DefaultInitialCapacity": 16,
+    "MaximumPoolSize": 1024,
+    "EnableStrictMode": false,
+    "EnableAutoClear": true,
+    "ClearInterval": 5000,
+    "EnablePerformanceMetrics": true
+  }
+}

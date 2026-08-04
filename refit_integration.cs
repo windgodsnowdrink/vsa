@@ -1,0 +1,72 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Refit@8.0.0
+#:package Polly@8.0.0
+#:package Microsoft.Extensions.Http.Polly@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Threading.Channels;
+using Refit;
+using Polly;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. 配置Refit客户端
+builder.Services.AddRefitClient<IMyApiService>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://api.example.com"))
+    .AddPolicyHandler(Policy<HttpResponseMessage>
+        .Handle<HttpRequestException>()
+        .OrResult(x => !x.IsSuccessStatusCode)
+        .WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(1)))
+    .AddPolicyHandler(Policy<HttpResponseMessage>
+        .Handle<HttpRequestException>()
+        .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+
+// 2. 高性能请求通道
+var requestChannel = Channel.CreateBounded<ApiRequest>(
+    new BoundedChannelOptions(10000)
+    {
+        SingleReader = true,
+        SingleWriter = false,
+        FullMode = BoundedChannelFullMode.Wait
+    });
+
+// 3. 零拷贝请求处理器
+builder.Services.AddSingleton<IApiRequestProcessor>(sp => 
+    new ChannelApiRequestProcessor(
+        requestChannel,
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[512])));
+
+var app = builder.Build();
+app.MapGet("/", () => "Refit Integration Ready");
+app.Run();
+
+// API接口定义
+public interface IMyApiService
+{
+    [Get("/users/{id}")]
+    Task<User> GetUserAsync(int id, CancellationToken ct = default);
+    
+    [Post("/users")]
+    Task<User> CreateUserAsync([Body] User user, CancellationToken ct = default);
+}
+
+// 高性能处理器
+[SkipLocalsInit]
+public class ChannelApiRequestProcessor : IApiRequestProcessor
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe void Process(ApiRequest request)
+    {
+        Span<byte> buffer = stackalloc byte[512];
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                // SIMD优化处理
+            }
+        }
+    }
+}

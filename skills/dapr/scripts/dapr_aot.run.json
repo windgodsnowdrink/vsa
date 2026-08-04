@@ -1,0 +1,63 @@
+{
+  "name": "Dapr AOT",
+  "description": "Dapr AOT高性能分布式应用运行时脚本",
+  "version": "1.0.0",
+  "dependencies": [
+    "Microsoft.Extensions.DependencyInjection@10.0.0",
+    "Microsoft.Extensions.Logging@10.0.0",
+    "Microsoft.Extensions.Hosting@10.0.0",
+    "Microsoft.Extensions.Options@10.0.0",
+    "Newtonsoft.Json@13.0.3",
+    "Dapr.Client@1.14.0",
+    "Dapr.AspNetCore@1.14.0"
+  ],
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+    "DAPR_HOST": "http://localhost",
+    "DAPR_HTTP_PORT": "3500",
+    "DAPR_GRPC_PORT": "50001",
+    "DAPR_ENABLE_TRACING": "true",
+    "DAPR_DEFAULT_STATE_STORE": "statestore",
+    "DAPR_DEFAULT_PUBSUB": "pubsub"
+  },
+  "execution": {
+    "command": "dotnet run --project dapr_aot.cs",
+    "workingDirectory": "./scripts",
+    "timeout": "300000",
+    "retryCount": 3
+  },
+  "aotCompilation": {
+    "enabled": true,
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "file": "dapr_aot.log",
+    "maxFileSize": "10MB",
+    "maxRetainedFiles": 5
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "executionTime",
+      "memoryUsage",
+      "cpuUsage",
+      "successRate",
+      "processedRequests",
+      "successfulRequests",
+      "failedRequests"
+    ],
+    "alertThresholds": {
+      "executionTime": "10000",
+      "memoryUsage": "200MB",
+      "cpuUsage": "80",
+      "failedRequests": "5"
+    }
+  }
+}

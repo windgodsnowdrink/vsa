@@ -1,0 +1,14 @@
+﻿{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning",
+            "Aspire.Hosting.Dcp": "Debug"
+        }
+    },
+    "AllowedHosts": "*",
+    //"StarServer": "http://plc.dev.localhost:6600",
+    "ConnectionStrings": {
+        "DNS": "Data Source=..\\Data\\DNS.db;provider=sqlite"
+    }
+}

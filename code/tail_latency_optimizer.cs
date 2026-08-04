@@ -1,0 +1,58 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Threading.Tasks.Dataflow;
+
+public sealed class TailLatencyOptimizer
+{
+    private readonly BufferBlock<WorkItem> _priorityBuffer;
+    private readonly BufferBlock<WorkItem> _normalBuffer;
+    private readonly ActionBlock<WorkItem> _processor;
+
+    public TailLatencyOptimizer()
+    {
+        // 双缓冲队列
+        _priorityBuffer = new BufferBlock<WorkItem>(
+            new DataflowBlockOptions { BoundedCapacity = 1000 });
+            
+        _normalBuffer = new BufferBlock<WorkItem>(
+            new DataflowBlockOptions { BoundedCapacity = 10000 });
+
+        // 动态优先级处理器
+        _processor = new ActionBlock<WorkItem>(ProcessAsync,
+            new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount * 2,
+                BoundedCapacity = 1000
+            });
+            
+        // 混合调度逻辑
+        _ = Task.Run(async () =>
+        {
+            while (true)
+            {
+                var priorityItem = await _priorityBuffer.OutputAvailableAsync();
+                if (priorityItem) await ProcessPriorityAsync();
+                
+                var normalItem = await _normalBuffer.OutputAvailableAsync();
+                if (normalItem) await ProcessNormalAsync();
+                
+                await Task.Yield();
+            }
+        });
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessPriorityAsync()
+    {
+        while (_priorityBuffer.TryReceive(out var item))
+        {
+            await _processor.SendAsync(item);
+        }
+    }
+}

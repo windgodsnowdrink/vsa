@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ExcelAotEngine": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5001"
+    },
+    "ExcelAotEngine_Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "http://localhost:8001"
+    },
+    "ExcelAotEngine_Version": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["version"]
+    },
+    "ExcelAotEngine_ReadExcel": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["read", "sample.xlsx", "Sheet1"]
+    },
+    "ExcelAotEngine_ConvertExcel": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["convert", "input.xls", "output.xlsx"]
+    },
+    "ExcelAotEngine_MergeExcel": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["merge", "file1.xlsx;file2.xlsx", "merged.xlsx"]
+    },
+    "ExcelAotEngine_SplitExcel": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["split", "data.xlsx", "output/"]
+    }
+  }
+}

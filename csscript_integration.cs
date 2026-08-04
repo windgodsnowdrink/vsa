@@ -1,0 +1,188 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package CSScriptLib@4.8.0
+#:package Microsoft.Extensions.DependencyModel@8.0.0-preview.3.23174.8
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using CSScriptLib;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.IO.Pipelines;
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Threading.Channels;
+using System.Threading.Tasks.Dataflow;
+
+public sealed class CSharpScriptExecutionContext : IAsyncDisposable
+{
+    private readonly Channel<ScriptExecutionRequest> _requestChannel;
+    private readonly TransformBlock<ScriptExecutionRequest, ScriptExecutionResult> _processingBlock;
+    private readonly ActionBlock<ScriptExecutionResult> _resultBlock;
+    private readonly ObjectPool<CSharpScript> _scriptPool;
+    private readonly ConcurrentDictionary<string, Assembly> _loadedAssemblies = new();
+    private readonly ScriptSecuritySandbox _sandbox;
+    private readonly ScriptPerformanceMonitor _monitor;
+    private readonly ScriptVersionController _versionController;
+    private readonly DistributedScriptExecutor _distributedExecutor;
+
+    public CSharpScriptExecutionContext(CSharpScriptOptions options)
+    {
+        _requestChannel = Channel.CreateUnbounded<ScriptExecutionRequest>();
+        _processingBlock = new TransformBlock<ScriptExecutionRequest, ScriptExecutionResult>(async request =>
+        {
+            var script = _scriptPool.Get();
+            try
+            {
+                return await script.ExecuteAsync(request.ScriptPath, request.Args);
+            }
+            finally
+            {
+                _scriptPool.Return(script);
+            }
+        });
+
+        _resultBlock = new ActionBlock<ScriptExecutionResult>(result =>
+        {
+            // 处理结果
+        });
+
+        _processingBlock.LinkTo(_resultBlock);
+        _scriptPool = new DefaultObjectPool<CSharpScript>(new CSharpScriptPooledPolicy(), options.MaxPoolSize);
+        _sandbox = new ScriptSecuritySandbox(options.AllowedNamespaces);
+        _monitor = new ScriptPerformanceMonitor();
+        
+        if (options.EnableVersionControl)
+            _versionController = new ScriptVersionController(options.GitRepositoryPath);
+            
+        if (options.EnableDistributedExecution && options.DistributedNodes.Any())
+            _distributedExecutor = new DistributedScriptExecutor(options.DistributedNodes);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // ... 清理代码 ...
+    }
+
+    public async Task<ScriptExecutionResult> ExecuteAsync(ScriptExecutionRequest request, CancellationToken ct = default)
+    {
+        // ... 执行逻辑 ...
+    }
+
+    private sealed class ScriptSecuritySandbox
+{
+    private readonly string[] _allowedNamespaces;
+    private readonly HashSet<string> _allowedReflectionTypes = new()
+    {
+        "System", "System.IO", "System.Linq", "System.Collections"
+    };
+
+    public ScriptSecuritySandbox(string[] allowedNamespaces)
+    {
+        _allowedNamespaces = allowedNamespaces;
+    }
+
+    public bool IsTypeAllowed(Type type)
+    {
+        return _allowedNamespaces.Contains(type.Namespace) || 
+               _allowedReflectionTypes.Contains(type.FullName);
+    }
+}
+
+    private sealed class ScriptPerformanceMonitor
+{
+    private readonly ConcurrentDictionary<string, List<TimeSpan>> _executionTimes = new();
+    private readonly ConcurrentDictionary<string, (float CpuUsage, long MemoryUsage)> _resourceUsage = new();
+
+    public void RecordExecution(string scriptPath, TimeSpan duration)
+    {
+        _executionTimes.AddOrUpdate(scriptPath, 
+            new List<TimeSpan> { duration }, 
+            (_, list) => { list.Add(duration); return list; });
+    }
+
+    public void RecordResourceUsage(string scriptPath, float cpuUsage, long memoryUsage)
+    {
+        _resourceUsage[scriptPath] = (cpuUsage, memoryUsage);
+    }
+
+    public Dictionary<string, TimeSpan> GetAverageExecutionTimes()
+    {
+        return _executionTimes.ToDictionary(
+            kv => kv.Key, 
+            kv => TimeSpan.FromTicks((long)kv.Value.Average(t => t.Ticks)));
+    }
+}
+}
+
+public record ScriptExecutionRequest(string ScriptPath, string[] Args, bool DebugMode = false);
+public record ScriptExecutionResult(bool Success, string Output, TimeSpan ExecutionTime);
+
+public sealed class CSharpScriptOptions
+{
+    public int MaxPoolSize { get; set; } = 10;
+    public TimeSpan ExecutionTimeout { get; set; } = TimeSpan.FromSeconds(30);
+    public bool EnableSandbox { get; set; } = true;
+    public bool EnablePerformanceMonitoring { get; set; } = true;
+    public bool EnableVersionControl { get; set; } = true;
+    public bool EnableDistributedExecution { get; set; } = false;
+    public string[] AllowedNamespaces { get; set; } = Array.Empty<string>();
+    public string GitRepositoryPath { get; set; } = "./scripts";
+    public string[] DistributedNodes { get; set; } = Array.Empty<string>();
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddCSharpScript(this IServiceCollection services, Action<CSharpScriptOptions> configure = null)
+    {
+        var options = new CSharpScriptOptions();
+        configure?.Invoke(options);
+
+        services.AddSingleton(options);
+        services.AddSingleton<CSharpScriptExecutionContext>();
+        services.AddSingleton<ObjectPool<CSharpScript>>(sp => 
+            new DefaultObjectPool<CSharpScript>(new CSharpScriptPooledPolicy(), options.MaxPoolSize));
+        
+        return services;
+    }
+}
+
+internal sealed class CSharpScriptPooledPolicy : IPooledObjectPolicy<CSharpScript>
+{
+    public CSharpScript Create() => new CSharpScript();
+    public bool Return(CSharpScript obj) => obj.Reset();
+}
+
+public sealed class CSharpScript : IAsyncDisposable
+{
+    private readonly ScriptSecuritySandbox _sandbox;
+    private readonly ScriptPerformanceMonitor _monitor;
+    private readonly Pipe _outputPipe;
+    private Task _executionTask;
+    private CancellationTokenSource _cts;
+
+    public CSharpScript(ScriptSecuritySandbox sandbox, ScriptPerformanceMonitor monitor)
+    {
+        _sandbox = sandbox;
+        _monitor = monitor;
+        _outputPipe = new Pipe();
+    }
+
+    public async Task<bool> ExecuteAsync(string scriptPath, string[] args, CancellationToken ct = default)
+    {
+        // ... 脚本执行实现 ...
+    }
+
+    public bool Reset()
+    {
+        // ... 重置脚本状态 ...
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // ... 资源清理 ...
+    }
+}

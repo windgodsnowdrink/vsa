@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "message_compression",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\message\scripts\message_compression.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\message\scripts\message_compression.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

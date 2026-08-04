@@ -1,0 +1,26 @@
+{
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishOptions": {
+      "PublishAot": true,
+      "TrimMode": "partial",
+      "SelfContained": true,
+      "PublishSingleFile": true,
+      "PublishReadyToRun": true,
+      "RuntimeIdentifier": "win-x64"
+    }
+  },
+  "dependencies": {
+    "SSH.NET": "2023.0.0",
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Logging.Console": "10.0.0",
+    "System.CommandLine": "2.0.0",
+    "System.Text.Json": "10.0.0",
+    "System.Threading.Channels": "8.0.0",
+    "System.IO.Pipelines": "8.0.0"
+  }
+}

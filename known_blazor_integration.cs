@@ -1,0 +1,212 @@
+#:sdk Microsoft.NET.Sdk.Web.BlazorWebAssembly
+#:package Known@1.0.0
+#:package Microsoft.Extensions.DependencyInjection@8.0.0
+#:package System.Text.Json@8.0.0
+#:package System.IO.Pipelines@8.0.0
+#:package System.IO.MemoryMappedFiles@8.0.0
+#:package System.Composition@7.0.0
+#:package Microsoft.Extensions.Localization@8.0.0
+#:package Squirrel.Windows@2.0.0
+#:package OpenTelemetry@1.8.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+
+using Known;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class KnownBlazorOptions
+{
+    public string Title { get; set; }
+    public int Width { get; set; } = 1024;
+    public int Height { get; set; } = 768;
+    public bool UseMVVM { get; set; }
+    public string LocalStoragePath { get; set; }
+    public int MaxWindows { get; set; } = 5;
+    public bool EnablePersistence { get; set; }
+    
+    // IPC配置
+    public string PipeName { get; set; }
+    public string SharedMemoryName { get; set; }
+    
+    // 插件系统配置
+    public string PluginsDirectory { get; set; }
+    
+    // 主题配置
+    public string DefaultTheme { get; set; }
+    public List<string> AvailableThemes { get; set; } = new();
+    
+    // 快捷键配置
+    public Dictionary<string, string> KeyBindings { get; set; } = new();
+    
+    // 自动更新配置
+    public string UpdateUrl { get; set; }
+    
+    // 崩溃报告配置
+    public string CrashReportUrl { get; set; }
+    
+    // 性能监控配置
+    public bool EnablePerformanceMonitoring { get; set; }
+    
+    // 多语言配置
+    public string DefaultCulture { get; set; } = "en-US";
+}
+{
+    public string Title { get; set; } = "Blazor App";
+    public int Width { get; set; } = 1024;
+    public int Height { get; set; } = 768;
+    public bool UseMVVM { get; set; } = true;
+    public string LocalStoragePath { get; set; } = "AppData";
+    public int MaxWindows { get; set; } = 5;
+    public bool EnablePersistence { get; set; } = true;
+}
+
+public interface IKnownBlazorService
+{
+    // 基础功能
+    Task CreateWindowAsync();
+    Task CloseWindowAsync();
+    Task SaveDataAsync();
+    Task LoadDataAsync();
+    
+    // IPC功能
+    Task SendMessageAsync(string message);
+    IAsyncEnumerable<string> ReceiveMessagesAsync();
+    
+    // 插件功能
+    Task LoadPluginsAsync();
+    Task UnloadPluginsAsync();
+    IEnumerable<object> GetPlugins();
+    
+    // 主题功能
+    Task SetThemeAsync(string themeName);
+    string GetCurrentTheme();
+    
+    // 快捷键功能
+    Task RegisterGlobalHotKey(string key, Action callback);
+    Task UnregisterGlobalHotKey(string key);
+    
+    // 自动更新功能
+    Task CheckForUpdatesAsync();
+    Task ApplyUpdatesAsync();
+    
+    // 崩溃报告功能
+    Task ReportCrashAsync(Exception ex);
+    
+    // 性能监控功能
+    Task<double> GetFpsAsync();
+    Task<MemoryUsage> GetMemoryUsageAsync();
+    
+    // 多语言功能
+    string GetString(string name);
+    Task SetCultureAsync(string culture);
+}
+{
+    void Initialize();
+    void Run();
+    Task<Window> CreateWindowAsync(string title, int width, int height);
+    Task CloseWindowAsync(Window window);
+    Task SaveDataAsync<T>(string key, T value);
+    Task<T> LoadDataAsync<T>(string key);
+}
+
+public class KnownBlazorService : IKnownBlazorService
+{
+    private readonly KnownBlazorOptions _options;
+    private readonly List<Window> _windows = new();
+    private readonly SemaphoreSlim _windowLock = new(1, 1);
+
+    public KnownBlazorService(KnownBlazorOptions options)
+    {
+        _options = options;
+        EnsureLocalStorage();
+    }
+
+    private void EnsureLocalStorage()
+    {
+        if (!Directory.Exists(_options.LocalStoragePath))
+            Directory.CreateDirectory(_options.LocalStoragePath);
+    }
+
+    public void Initialize()
+    {
+        Known.Initialize();
+    }
+
+    public void Run()
+    {
+        Known.Run();
+    }
+
+    public async Task<Window> CreateWindowAsync(string title, int width, int height)
+    {
+        await _windowLock.WaitAsync();
+        try
+        {
+            if (_windows.Count >= _options.MaxWindows)
+                throw new InvalidOperationException("Maximum window count reached");
+
+            var window = new Window(title, width, height);
+            _windows.Add(window);
+            return window;
+        }
+        finally
+        {
+            _windowLock.Release();
+        }
+    }
+
+    public async Task CloseWindowAsync(Window window)
+    {
+        await _windowLock.WaitAsync();
+        try
+        {
+            _windows.Remove(window);
+            window.Close();
+        }
+        finally
+        {
+            _windowLock.Release();
+        }
+    }
+
+    public async Task SaveDataAsync<T>(string key, T value)
+    {
+        if (!_options.EnablePersistence)
+            return;
+
+        var path = Path.Combine(_options.LocalStoragePath, $"{key}.json");
+        var json = JsonSerializer.Serialize(value);
+        await File.WriteAllTextAsync(path, json);
+    }
+
+    public async Task<T> LoadDataAsync<T>(string key)
+    {
+        if (!_options.EnablePersistence)
+            return default;
+
+        var path = Path.Combine(_options.LocalStoragePath, $"{key}.json");
+        if (!File.Exists(path))
+            return default;
+
+        var json = await File.ReadAllTextAsync(path);
+        return JsonSerializer.Deserialize<T>(json);
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddKnownBlazor(this IServiceCollection services, Action<KnownBlazorOptions> configure)
+    {
+        var options = new KnownBlazorOptions();
+        configure(options);
+        services.AddSingleton(options);
+        services.AddSingleton<IKnownBlazorService, KnownBlazorService>();
+        return services;
+    }
+}

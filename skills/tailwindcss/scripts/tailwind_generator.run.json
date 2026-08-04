@@ -1,0 +1,115 @@
+{
+  "profiles": {
+    "component": {
+      "commandName": "Project",
+      "arguments": "component Button --template component_button",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "TEMPLATE_DIR": "templates",
+        "OUTPUT_DIR": "output"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "config": {
+      "commandName": "Project",
+      "arguments": "config tailwind",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "CONFIG_DIR": "configs"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "style": {
+      "commandName": "Project",
+      "arguments": "style utilities",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "STYLE_DIR": "styles"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "plugin": {
+      "commandName": "Project",
+      "arguments": "plugin CustomPlugin",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information",
+        "PLUGIN_DIR": "plugins"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "scrutor": {
+      "commandName": "Project",
+      "arguments": "scrutor",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug",
+        "DEMO_MODE": "true"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "templates": {
+      "commandName": "Project",
+      "arguments": "templates",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Information"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    },
+    "component-debug": {
+      "commandName": "Project",
+      "arguments": "component Button --template component_button",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug",
+        "CACHE_ENABLED": "false",
+        "TEMPLATE_DIR": "templates",
+        "OUTPUT_DIR": "output"
+      },
+      "dotnetRunMessages": true,
+      "launchBrowser": false
+    }
+  },
+  "global": {
+    "environmentVariables": {
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_NOLOGO": "1",
+      "TMPDIR": "$(ProjectDir)\temp",
+      "MAX_CONCURRENCY": "4",
+      "TIMEOUT_SECONDS": "300", // 5 minutes
+      "CACHE_SIZE": "52428800" // 50MB
+    },
+    "workingDirectory": "$(ProjectDir)",
+    "dotnetRunMessages": true
+  },
+  "debug": {
+    "enabled": true,
+    "logLevel": "Debug",
+    "enableLogging": true,
+    "enableMetrics": false,
+    "enableProfiling": false
+  },
+  "performance": {
+    "memoryLimit": "256MB",
+    "cpuLimit": "60%",
+    "ioTimeout": "30000", // 30 seconds
+    "networkTimeout": "10000" // 10 seconds
+  }
+}

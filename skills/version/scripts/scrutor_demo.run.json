@@ -1,0 +1,14 @@
+{
+  "command": "dotnet run",
+  "args": [],
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\version\\scripts",
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "SCRUTOR_DEMO_ENABLE_LOGGING": "true",
+    "SCRUTOR_DEMO_ENABLE_CACHING": "true"
+  },
+  "timeout": 30000,
+  "requiresApproval": false,
+  "blocking": true,
+  "commandType": "short_running_process"
+}

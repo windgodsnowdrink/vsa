@@ -1,0 +1,46 @@
+{
+  "AppSettings": {
+    "ApplicationName": "Consul AOT Client",
+    "Version": "1.0.0",
+    "Description": "高性能Consul AOT客户端"
+  },
+  "Consul": {
+    "Address": "http://localhost:8500",
+    "Datacenter": "dc1",
+    "Token": "",
+    "Username": "",
+    "Password": ""
+  },
+  "ServiceSettings": {
+    "DefaultHealthCheckInterval": "10s",
+    "DefaultHealthCheckTimeout": "5s",
+    "DefaultDeregisterCriticalServiceAfter": "30s",
+    "EnableHealthChecks": true
+  },
+  "KeyValueSettings": {
+    "EnableCaching": true,
+    "CacheDuration": 60,
+    "MaxCacheSize": 1000
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Consul.AOT": "Information",
+      "Consul": "Warning"
+    }
+  },
+  "RetryPolicy": {
+    "MaxRetryCount": 3,
+    "RetryDelay": "1s",
+    "EnableExponentialBackoff": true
+  },
+  "ConnectionSettings": {
+    "ConnectTimeout": "5s",
+    "ReadTimeout": "10s",
+    "WriteTimeout": "10s",
+    "EnableKeepAlive": true,
+    "KeepAliveInterval": "30s"
+  }
+}

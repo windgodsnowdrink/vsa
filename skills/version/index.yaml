@@ -1,0 +1,125 @@
+name: Version
+version: 1.0.0
+title: 版本管理技能
+description: 提供语义化版本解析、比较、递增、验证等功能的版本管理工具库
+author: .NET 专家
+email: contact@example.com
+url: https://github.com/example/version-skill
+license: MIT
+
+# 技能类型
+type: utility
+
+# 标签
+tags:
+  - version
+  - semantic-versioning
+  - version-management
+  - utility
+
+# 依赖项
+dependencies:
+  - name: Microsoft.Extensions.DependencyInjection
+    version: ">=8.0.0"
+  - name: Scrutor
+    version: ">=4.0.0"
+
+# 功能列表
+features:
+  - name: 语义化版本解析
+    description: 支持解析符合 Semantic Versioning 规范的版本号
+  - name: 版本比较
+    description: 提供多种比较方式，判断版本高低
+  - name: 版本递增
+    description: 支持主版本、次版本、补丁版本的递增
+  - name: 版本验证
+    description: 验证版本号是否符合规范
+  - name: 版本范围
+    description: 支持定义和检查版本范围
+  - name: 版本格式化
+    description: 自定义版本号的输出格式
+  - name: 依赖注入
+    description: 支持通过 DI 容器注册和使用
+  - name: 性能优化
+    description: 使用缓存机制提高频繁操作的性能
+
+# 平台支持
+platforms:
+  - name: .NET 8.0
+    supported: true
+  - name: .NET 9.0
+    supported: true
+  - name: .NET 10.0
+    supported: true
+
+# 安装方式
+installation:
+  - name: NuGet
+    command: dotnet add package VersionSkill
+  - name: 手动引用
+    command: 将 version_core.cs 文件添加到项目中
+
+# 使用示例
+usage:
+  - title: 基本用法
+    description: 创建和解析版本号
+    code: |
+      using VersionSkill;
+      
+      // 创建版本对象
+      var version = new SemanticVersion(1, 2, 3);
+      Console.WriteLine(version); // 输出: 1.2.3
+      
+      // 解析版本字符串
+      var parsedVersion = SemanticVersion.Parse("2.0.0-alpha.1");
+      Console.WriteLine(parsedVersion); // 输出: 2.0.0-alpha.1
+
+  - title: 版本比较
+    description: 比较两个版本号的高低
+    code: |
+      using VersionSkill;
+      
+      var version1 = new SemanticVersion(1, 0, 0);
+      var version2 = new SemanticVersion(1, 1, 0);
+      Console.WriteLine(version1 < version2); // 输出: True
+
+  - title: 版本递增
+    description: 递增版本号的不同部分
+    code: |
+      using VersionSkill;
+      
+      var version = new SemanticVersion(1, 0, 0);
+      var nextPatch = version.IncrementPatch(); // 1.0.1
+      var nextMinor = version.IncrementMinor(); // 1.1.0
+      var nextMajor = version.IncrementMajor(); // 2.0.0
+
+# 配置选项
+configuration:
+  - name: CacheEnabled
+    type: boolean
+    default: true
+    description: 是否启用缓存
+  - name: CacheSize
+    type: integer
+    default: 1000
+    description: 缓存大小
+  - name: StrictMode
+    type: boolean
+    default: false
+    description: 是否使用严格模式解析版本号
+
+# 文档链接
+documentation:
+  - name: 参考文档
+    url: ./reference/README.md
+  - name: 使用示例
+    url: ./reference/examples.md
+  - name: Scrutor 示例
+    url: ./scripts/scrutor_demo.cs
+
+# 脚本文件
+scripts:
+  - name: version_core.cs
+    description: 版本管理核心实现
+  - name: scrutor_demo.cs
+    description: Scrutor 集成示例

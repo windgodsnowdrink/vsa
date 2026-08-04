@@ -1,0 +1,19 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "NetPro": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "NetProOptions": {
+    "EnablePlugins": true,
+    "PluginsPath": "plugins",
+    "EnableHotReload": true,
+    "EnableCaching": true,
+    "CacheSize": 1000,
+    "Timeout": "00:00:30",
+    "EnableDetailedLogging": false
+  }
+}

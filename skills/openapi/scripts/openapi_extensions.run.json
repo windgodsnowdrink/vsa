@@ -1,0 +1,102 @@
+{
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "0",
+        "OPENAPI_ENABLED": "true",
+        "OPENAPI_ENABLE_SWAGGER": "true",
+        "OPENAPI_ENABLE_SCALAR": "true"
+      },
+      "applicationUrl": "http://localhost:5000;https://localhost:5001",
+      "commandLineArgs": "--verbose"
+    },
+    "Production": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_PUBLISH_AOT": "1",
+        "OPENAPI_ENABLED": "true",
+        "OPENAPI_ENABLE_SWAGGER": "true",
+        "OPENAPI_ENABLE_SCALAR": "true"
+      },
+      "applicationUrl": "http://0.0.0.0:80;https://0.0.0.0:443",
+      "commandLineArgs": "--optimize"
+    },
+    "PerformanceTest": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Performance",
+        "DOTNET_PUBLISH_AOT": "1",
+        "OPENAPI_ENABLED": "true",
+        "OPENAPI_ENABLE_SWAGGER": "false",
+        "OPENAPI_ENABLE_SCALAR": "false",
+        "OPENAPI_ENABLE_PARALLEL_PROCESSING": "true",
+        "OPENAPI_MAX_DEGREE_OF_PARALLELISM": "8"
+      },
+      "applicationUrl": "http://localhost:5002",
+      "commandLineArgs": "--performance-test --iterations=1000"
+    },
+    "AOT Compilation": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "environmentVariables": {
+        "DOTNET_PUBLISH_AOT": "1",
+        "DOTNET_READYTORUN": "1",
+        "DOTNET_TIERED_COMPILATION": "1"
+      },
+      "commandLineArgs": "-c Release -r win-x64 --self-contained true /p:PublishAot=true /p:ReadyToRun=true /p:TieredCompilation=true"
+    }
+  },
+  "runtimes": {
+    "win-x64": {
+      "enabled": true,
+      "publishOptions": "-r win-x64"
+    },
+    "linux-x64": {
+      "enabled": true,
+      "publishOptions": "-r linux-x64"
+    },
+    "osx-x64": {
+      "enabled": true,
+      "publishOptions": "-r osx-x64"
+    },
+    "win-arm64": {
+      "enabled": true,
+      "publishOptions": "-r win-arm64"
+    },
+    "linux-arm64": {
+      "enabled": true,
+      "publishOptions": "-r linux-arm64"
+    },
+    "osx-arm64": {
+      "enabled": true,
+      "publishOptions": "-r osx-arm64"
+    }
+  },
+  "buildOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Swashbuckle.AspNetCore": "6.5.0",
+    "Microsoft.OpenApi": "1.6.0",
+    "System.Text.Json": "10.0.0",
+    "System.Net.Http.Json": "10.0.0",
+    "System.Threading.Tasks.Dataflow": "8.0.0"
+  }
+}

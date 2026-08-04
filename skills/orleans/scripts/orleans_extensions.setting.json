@@ -1,0 +1,69 @@
+{
+  "orleans": {
+    "options": {
+      "enabled": true,
+      "clusterId": "orleans-cluster",
+      "serviceId": "orleans-service",
+      "siloPort": 11111,
+      "gatewayPort": 30000,
+      "enableEventSourcing": true,
+      "enableStateMachine": true,
+      "enableClusterManagement": true,
+      "enableConfiguration": true,
+      "enableDeployment": true,
+      "enableParallelProcessing": true,
+      "maxDegreeOfParallelism": 4
+    },
+    "eventsourcing": {
+      "enabled": true,
+      "eventStorePath": "events",
+      "maxEventsPerBatch": 100,
+      "enableCompression": false
+    },
+    "statemachine": {
+      "enabled": true,
+      "stateStorePath": "states",
+      "enableValidation": true
+    },
+    "cluster": {
+      "enabled": true,
+      "heartbeatInterval": "00:00:10",
+      "gracefulShutdownTimeout": "00:01:00"
+    },
+    "configuration": {
+      "enabled": true,
+      "configPath": "config",
+      "autoSave": true
+    },
+    "deployment": {
+      "enabled": true,
+      "packagePath": "packages",
+      "deploymentPath": "deployments"
+    },
+    "aot": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true,
+      "optimizeForSize": false,
+      "trimMode": "partial"
+    },
+    "logging": {
+      "logFile": "orleans.log",
+      "logLevel": "Information",
+      "maxFileSize": 10485760,
+      "maxRetainedFiles": 5
+    },
+    "performance": {
+      "enableCaching": true,
+      "cacheDuration": "00:05:00",
+      "cacheSize": 1000,
+      "enableBatching": true,
+      "batchSize": 100
+    },
+    "security": {
+      "enableClusterSecurity": false,
+      "enableTls": false,
+      "enableAccessControl": false
+    }
+  }
+}

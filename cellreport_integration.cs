@@ -1,0 +1,361 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package CellReport.Core@1.5.0
+#:package Microsoft.Extensions.ObjectPool@7.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:package CellReport.Core@1.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+using System.Text.Json;
+using CellReport.Core;
+using CellReport.Core.Models;
+using CellReport.Core.Services;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.ObjectPool;
+using Microsoft.Extensions.Options;
+using System.Threading.Channels;
+
+namespace YourNamespace;
+
+/// <summary>
+/// 数据源提供者实现
+/// </summary>
+/// <summary>
+/// 报表导出服务实现
+/// </summary>
+public sealed class CellReportExportService : ICellReportExportService
+{
+    private readonly ICellReportTemplateManager _templateManager;
+    private readonly ILogger<CellReportExportService> _logger;
+    private readonly CellReportOptions _options;
+
+    public CellReportExportService(
+        ICellReportTemplateManager templateManager,
+        IOptions<CellReportOptions> options,
+        ILogger<CellReportExportService> logger)
+    {
+        _templateManager = templateManager;
+        _options = options.Value;
+        _logger = logger;
+    }
+
+    public async Task<Stream> ExportAsync(
+        string templateName, 
+        object dataSource, 
+        ExportFormat format)
+    {
+        if (!_options.SupportedExportFormats.Contains(format))
+            throw new NotSupportedException($"Export format {format} is not supported");
+
+        try
+        {
+            var template = await _templateManager.GetTemplateAsync(templateName);
+            var report = new Report(template, dataSource);
+            
+            // 确保临时目录存在
+            if (!Directory.Exists(_options.ExportTempPath))
+                Directory.CreateDirectory(_options.ExportTempPath);
+                
+            var tempFile = Path.Combine(_options.ExportTempPath, $"{Guid.NewGuid()}.{format.ToString().ToLower()}");
+            
+            await report.ExportAsync(format, tempFile);
+            
+            // 返回文件流，调用方负责释放
+            return new FileStream(tempFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.DeleteOnClose);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to export report {TemplateName} as {Format}", templateName, format);
+            throw;
+        }
+    }
+}
+
+/// <summary>
+/// 数据源提供者实现
+/// </summary>
+public sealed class CellReportDataSourceProvider : ICellReportDataSourceProvider
+{
+    private readonly ILogger<CellReportDataSourceProvider> _logger;
+    private readonly IServiceProvider _serviceProvider;
+
+    public CellReportDataSourceProvider(
+        IServiceProvider serviceProvider,
+        ILogger<CellReportDataSourceProvider> logger)
+    {
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+    }
+
+    public async Task<object> GetDataSourceAsync(string dataSourceName)
+    {
+        try
+        {
+            // 这里可以根据实际需求从数据库、API或其他数据源获取数据
+            // 示例：使用服务定位器获取特定数据服务
+            var dataService = _serviceProvider.GetRequiredService<IDataService>();
+            return await dataService.GetReportDataAsync(dataSourceName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get data source {DataSourceName}", dataSourceName);
+            throw;
+        }
+    }
+}
+
+/// <summary>
+/// 报表模板管理器实现
+/// </summary>
+public sealed class CellReportTemplateManager : ICellReportTemplateManager
+{
+    private readonly IMemoryCache _cache;
+    private readonly CellReportOptions _options;
+    private readonly ILogger<CellReportTemplateManager> _logger;
+
+    public CellReportTemplateManager(
+        IMemoryCache cache,
+        IOptions<CellReportOptions> options,
+        ILogger<CellReportTemplateManager> logger)
+    {
+        _cache = cache;
+        _options = options.Value;
+        _logger = logger;
+    }
+
+    public async Task<string> GetTemplateAsync(string templateName)
+    {
+        if (_options.EnableTemplateCache && _cache.TryGetValue(templateName, out string cachedTemplate))
+            return cachedTemplate;
+
+        var templatePath = Path.Combine(_options.TemplatePath, $"{templateName}.crpt");
+        if (!File.Exists(templatePath))
+            throw new FileNotFoundException($"Template {templateName} not found");
+
+        var content = await File.ReadAllTextAsync(templatePath);
+        
+        if (_options.EnableTemplateCache)
+            _cache.Set(templateName, content, TimeSpan.FromMinutes(30));
+            
+        return content;
+    }
+
+    public async Task SaveTemplateAsync(string templateName, string content)
+    {
+        if (!Directory.Exists(_options.TemplatePath))
+            Directory.CreateDirectory(_options.TemplatePath);
+
+        var templatePath = Path.Combine(_options.TemplatePath, $"{templateName}.crpt");
+        await File.WriteAllTextAsync(templatePath, content);
+        
+        if (_options.EnableTemplateCache)
+            _cache.Set(templateName, content, TimeSpan.FromMinutes(30));
+    }
+
+    public Task DeleteTemplateAsync(string templateName)
+    {
+        var templatePath = Path.Combine(_options.TemplatePath, $"{templateName}.crpt");
+        if (File.Exists(templatePath))
+            File.Delete(templatePath);
+            
+        _cache.Remove(templateName);
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// CellReport配置选项
+/// </summary>
+public sealed class CellReportOptions
+{
+    /// <summary>
+    /// 报表模板目录路径
+    /// </summary>
+    public string TemplatePath { get; set; } = "./Templates";
+    
+    /// <summary>
+    /// 是否启用缓存
+    /// </summary>
+    public bool EnableTemplateCache { get; set; } = true;
+    
+    /// <summary>
+    /// 并发渲染线程数
+    /// </summary>
+    public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
+}
+
+/// <summary>
+/// 报表渲染任务
+/// </summary>
+public record CellReportRenderJob(
+    string TemplateName,
+    object Data,
+    string OutputFormat = "PDF",
+    bool IsHighPriority = false);
+
+/// <summary>
+/// CellReport服务扩展方法
+/// </summary>
+public static class CellReportServiceExtensions
+{
+    /// <summary>
+    /// 添加CellReport服务
+    /// </summary>
+    public static IServiceCollection AddCellReportServices(this IServiceCollection services, Action<CellReportOptions> configure)
+    {
+        services.Configure(configure);
+        
+        // 配置对象池
+        services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+        services.AddSingleton(s => 
+            s.GetRequiredService<ObjectPoolProvider>().Create(new CellReportEnginePooledObjectPolicy(
+                s.GetRequiredService<IOptions<CellReportOptions>>())));
+        
+        // 创建高性能渲染通道
+        services.AddSingleton<Channel<CellReportRenderJob>>(_ => 
+            Channel.CreateUnbounded<CellReportRenderJob>(new UnboundedChannelOptions()
+            {
+                SingleReader = false,
+                SingleWriter = false
+            }));
+        
+        // 添加后台渲染服务
+        services.AddHostedService<CellReportRenderService>();
+        
+        return services;
+    }
+}
+
+/// <summary>
+/// CellReport引擎对象池策略
+/// </summary>
+/// <summary>
+/// DI扩展方法
+/// </summary>
+public static class CellReportServiceCollectionExtensions
+{
+    /// <summary>
+    /// 添加CellReport服务
+    /// </summary>
+    public static IServiceCollection AddCellReportServices(this IServiceCollection services, Action<CellReportOptions> configureOptions = null)
+    {
+        // 配置选项
+        services.AddOptions<CellReportOptions>()
+            .Configure(options => configureOptions?.Invoke(options))
+            .ValidateDataAnnotations();
+            
+        // 核心服务
+        services.AddSingleton<ICellReportTemplateManager, CellReportTemplateManager>();
+        services.AddSingleton<ICellReportDataSourceProvider, CellReportDataSourceProvider>();
+        services.AddSingleton<ICellReportExportService, CellReportExportService>();
+        
+        // 高性能渲染通道
+        services.AddSingleton<Channel<ReportRenderJob>>(sp => 
+            Channel.CreateBounded<ReportRenderJob>(new BoundedChannelOptions(1000)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait
+            }));
+            
+        // 后台渲染服务
+        services.AddHostedService<CellReportRenderService>();
+        
+        return services;
+    }
+}
+
+public class CellReportEnginePooledObjectPolicy : IPooledObjectPolicy<CellReportEngine>
+{
+    private readonly IOptions<CellReportOptions> _options;
+    
+    public CellReportEnginePooledObjectPolicy(IOptions<CellReportOptions> options)
+    {
+        _options = options;
+    }
+    
+    public CellReportEngine Create()
+    {
+        return new CellReportEngine(_options.Value.TemplatePath);
+    }
+    
+    public bool Return(CellReportEngine obj)
+    {
+        obj.Reset();
+        return true;
+    }
+}
+
+/// <summary>
+/// CellReport引擎
+/// </summary>
+public class CellReportEngine
+{
+    private readonly string _templatePath;
+    
+    public CellReportEngine(string templatePath)
+    {
+        _templatePath = templatePath;
+    }
+    
+    public byte[] Render(CellReportRenderJob job)
+    {
+        // 实际渲染逻辑
+        return Array.Empty<byte>();
+    }
+    
+    public void Reset()
+    {
+        // 重置引擎状态
+    }
+}
+
+/// <summary>
+/// 后台报表渲染服务
+/// </summary>
+public class CellReportRenderService : BackgroundService
+{
+    private readonly Channel<CellReportRenderJob> _channel;
+    private readonly ObjectPool<CellReportEngine> _enginePool;
+    private readonly IOptions<CellReportOptions> _options;
+    
+    public CellReportRenderService(
+        Channel<CellReportRenderJob> channel,
+        ObjectPool<CellReportEngine> enginePool,
+        IOptions<CellReportOptions> options)
+    {
+        _channel = channel;
+        _enginePool = enginePool;
+        _options = options;
+    }
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism,
+            CancellationToken = stoppingToken
+        };
+        
+        await Parallel.ForEachAsync(_channel.Reader.ReadAllAsync(stoppingToken), 
+            parallelOptions, 
+            async (job, ct) =>
+            {
+                var engine = _enginePool.Get();
+                try
+                {
+                    var result = engine.Render(job);
+                    // 处理渲染结果
+                }
+                finally
+                {
+                    _enginePool.Return(engine);
+                }
+            });
+    }
+}

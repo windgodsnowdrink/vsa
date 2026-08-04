@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "api_documentation",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\openapi\scripts\api_documentation.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\openapi\scripts\api_documentation.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

@@ -1,0 +1,70 @@
+{
+  "command": "dotnet run --project otel_extensions.cs",
+  "args": [],
+  "workingDir": "d:\\Trae\\vsa\\skills\\otel\\scripts",
+  "env": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "OTEL_SERVICE_NAME": "OpenTelemetry-Example",
+    "OTEL_SERVICE_VERSION": "1.0.0",
+    "OTEL_EXPORTER_JAEGER_ENDPOINT": "http://localhost:14268/api/traces",
+    "OTEL_EXPORTER_PROMETHEUS_ENDPOINT": "/metrics",
+    "OTEL_TRACES_SAMPLER": "always_on",
+    "OTEL_LOG_LEVEL": "Information",
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "debugSymbols": true,
+    "debugType": "portable"
+  },
+  "runtime": {
+    "rid": "win-x64",
+    "selfContained": true,
+    "trimMode": "partial",
+    "rollForward": "LatestMinor"
+  },
+  "performance": {
+    "gcServer": true,
+    "gcConcurrent": true,
+    "gcNoAffinitize": false,
+    "threadPoolMinThreads": 4,
+    "threadPoolMaxThreads": 100,
+    "memoryLimitMegabytes": 2048,
+    "cpuLimit": 0
+  },
+  "debug": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "browserLaunchUrl": "http://localhost:5000"
+  },
+  "metrics": {
+    "enabled": true,
+    "prometheusPort": 9184,
+    "prometheusEndpoint": "/metrics"
+  },
+  "tracing": {
+    "enabled": true,
+    "jaegerEnabled": true,
+    "zipkinEnabled": false,
+    "consoleEnabled": true
+  },
+  "logging": {
+    "enabled": true,
+    "consoleEnabled": true,
+    "fileEnabled": false,
+    "filePath": "opentelemetry.log",
+    "logLevel": "Information"
+  },
+  "alerting": {
+    "enabled": true,
+    "evaluationInterval": "00:00:10"
+  }
+}

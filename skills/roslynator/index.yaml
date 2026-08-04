@@ -1,0 +1,81 @@
+# Roslynator 技能配置文件
+# 基于 .NET 10 和 AOT 架构的代码分析与重构工具
+
+name: Roslynator
+version: 1.0.0
+author: 大佬
+description: 基于 .NET 10 和 AOT 编译的代码分析与重构工具，支持代码质量检查、性能优化和代码重构
+language: zh-CN
+
+# 依赖项配置
+dependencies:
+  - name: Microsoft.CodeAnalysis.CSharp
+    version: 4.10.0
+    description: C# 代码分析库
+  - name: Microsoft.CodeAnalysis.Common
+    version: 4.10.0
+    description: 代码分析通用库
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行参数解析库
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+    description: 依赖注入库
+
+# 功能配置
+features:
+  - name: code-analysis
+    description: 代码质量分析，支持检测命名规范、空值检查、性能问题等
+    commands:
+      - name: analyze
+        description: 分析代码质量
+        parameters:
+          - name: path
+            type: string
+            description: 要分析的文件、项目或解决方案路径
+          - name: severity
+            type: string
+            description: 分析结果的严重程度过滤
+            default: warning
+          - name: output
+            type: string
+            description: 分析报告输出路径
+            default: analysis-report.json
+
+  - name: code-refactoring
+    description: 代码自动重构，支持表达式体成员、字符串插值、模式匹配等优化
+    commands:
+      - name: refactor
+        description: 执行代码重构
+        parameters:
+          - name: path
+            type: string
+            description: 要重构的文件、项目或解决方案路径
+          - name: refactoring-type
+            type: string
+            description: 重构类型
+            default: all
+          - name: output
+            type: string
+            description: 重构报告输出路径
+            default: refactoring-report.json
+
+# AOT 编译配置
+aot:
+  enabled: true
+  options:
+    - name: PublishAot
+      value: true
+      description: 启用 AOT 编译
+    - name: TrimMode
+      value: partial
+      description: 裁剪模式
+    - name: SelfContained
+      value: true
+      description: 自包含部署
+    - name: PublishSingleFile
+      value: true
+      description: 发布为单文件
+    - name: RuntimeIdentifier
+      value: win-x64
+      description: 运行时标识符

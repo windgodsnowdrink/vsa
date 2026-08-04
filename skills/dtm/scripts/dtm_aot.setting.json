@@ -1,0 +1,11 @@
+{
+  "Dtm": {
+    "DefaultTimeoutMs": 30000,
+    "EnableTransactionCache": true,
+    "MaxCacheSize": 1000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "TransactionCleanupIntervalMs": 60000,
+    "TransactionExpiryMs": 3600000
+  }
+}

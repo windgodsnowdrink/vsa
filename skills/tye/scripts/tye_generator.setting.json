@@ -1,0 +1,82 @@
+{
+  "compilation": {
+    "target_framework": "net10.0",
+    "publish_aot": true,
+    "trim_mode": "partial",
+    "self_contained": true,
+    "publish_single_file": true,
+    "runtime_identifier": "win-x64",
+    "optimization_level": "Release",
+    "enable_compiler_optimizations": true,
+    "enable_optimal_code_generation": true,
+    "lang_version": "preview",
+    "nullable": true,
+    "implicit_usings": true
+  },
+  "dependencies": {
+    "sdk": "Microsoft.NET.Sdk",
+    "packages": [
+      {
+        "name": "Microsoft.Extensions.DependencyInjection",
+        "version": "9.0.0"
+      },
+      {
+        "name": "Scrutor",
+        "version": "4.2.0"
+      },
+      {
+        "name": "Microsoft.Extensions.Logging",
+        "version": "9.0.0"
+      },
+      {
+        "name": "Microsoft.Extensions.Logging.Console",
+        "version": "9.0.0"
+      },
+      {
+        "name": "System.Collections.Generic",
+        "version": "9.0.0"
+      },
+      {
+        "name": "System.Linq",
+        "version": "9.0.0"
+      },
+      {
+        "name": "System.Reflection",
+        "version": "9.0.0"
+      },
+      {
+        "name": "System.Console",
+        "version": "9.0.0"
+      },
+      {
+        "name": "System.Runtime",
+        "version": "9.0.0"
+      }
+    ]
+  },
+  "build_options": {
+    "output_path": "./output/generator",
+    "clean_before_build": true,
+    "generate_documentation_file": false,
+    "warn_as_error": false,
+    "additional_compile_options": [
+      "/optimize",
+      "/debug:pdbonly",
+      "/langversion:preview"
+    ]
+  },
+  "publish_options": {
+    "include": [],
+    "exclude": [
+      "*.pdb",
+      "*.xml"
+    ]
+  },
+  "runtime_options": {
+    "config_properties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MinThreads": 5,
+      "System.Threading.ThreadPool.MaxThreads": 50
+    }
+  }
+}

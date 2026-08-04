@@ -1,0 +1,39 @@
+{
+  "command": "dotnet run --project orleans_extensions.cs",
+  "args": [],
+  "workingDir": "d:\\Trae\\vsa\\skills\\orleans\\scripts",
+  "env": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "ORLEANS_CLUSTER_ID": "orleans-cluster",
+    "ORLEANS_SERVICE_ID": "orleans-service",
+    "ORLEANS_SILO_PORT": "11111",
+    "ORLEANS_GATEWAY_PORT": "30000",
+    "DOTNET_LOG_LEVEL": "Information"
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "readyToRun": true,
+    "tieredCompilation": true
+  },
+  "runtime": {
+    "rid": "win-x64",
+    "selfContained": true,
+    "trimMode": "partial"
+  },
+  "performance": {
+    "gcServer": true,
+    "gcConcurrent": true,
+    "gcNoAffinitize": false,
+    "threadPoolMinThreads": 4,
+    "threadPoolMaxThreads": 100
+  },
+  "debug": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false
+  }
+}

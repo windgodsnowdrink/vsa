@@ -1,0 +1,261 @@
+{
+  "name": "linkers_aot",
+  "description": "AOT编译的链接器工具，用于程序集分析、优化和验证",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "created_at": "2026-01-22",
+  "aot": true,
+  "framework": "net10.0",
+  "self_contained": true,
+  "runtime_identifier": "win-x64",
+  "publish_single_file": true,
+  "optimize": true,
+  "publish_trimmed": true,
+  "dependencies": [
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "System.Reflection.MetadataLoadContext",
+      "version": "8.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "System.Reflection.Emit",
+      "version": "4.7.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Mono.Cecil",
+      "version": "0.11.5",
+      "type": "nuget"
+    }
+  ],
+  "commands": [
+    {
+      "name": "analyze",
+      "alias": "a",
+      "description": "分析程序集的详细信息",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "resolve",
+      "alias": "r",
+      "description": "解析程序集中的符号",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        },
+        {
+          "name": "symbol",
+          "type": "string",
+          "description": "要解析的符号名称",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "list-dependencies",
+      "alias": "ld",
+      "description": "列出程序集的依赖项",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "optimize",
+      "alias": "o",
+      "description": "优化程序集",
+      "arguments": [
+        {
+          "name": "input",
+          "type": "string",
+          "description": "输入程序集路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输出程序集路径",
+          "required": true
+        }
+      ],
+      "options": [
+        {
+          "name": "--level",
+          "type": "string",
+          "description": "优化级别: low, medium, high",
+          "default": "medium"
+        }
+      ]
+    },
+    {
+      "name": "verify",
+      "alias": "v",
+      "description": "验证程序集的完整性",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "extract",
+      "alias": "e",
+      "description": "提取程序集的内容",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输出目录路径",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "generate-bindings",
+      "alias": "gb",
+      "description": "生成原生库的C#绑定代码",
+      "arguments": [
+        {
+          "name": "native-lib",
+          "type": "string",
+          "description": "原生库文件路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输出文件路径",
+          "required": true
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "benchmark",
+      "alias": "bm",
+      "description": "运行程序集的性能基准测试",
+      "arguments": [
+        {
+          "name": "assembly",
+          "type": "string",
+          "description": "程序集文件路径",
+          "required": true
+        }
+      ],
+      "options": [
+        {
+          "name": "--iterations",
+          "type": "int",
+          "description": "测试迭代次数",
+          "default": 10
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "alias": "h",
+      "description": "显示帮助信息",
+      "arguments": [],
+      "options": []
+    }
+  ],
+  "build_settings": {
+    "lang_version": "preview",
+    "target_framework": "net10.0",
+    "publish_single_file": true,
+    "self_contained": true,
+    "runtime_identifier": "win-x64",
+    "optimize": true,
+    "publish_trimmed": true,
+    "debug_type": "portable",
+    "emit_debug_symbols": true,
+    "copy_local_lock_file_assemblies": true,
+    "use_warning_level": 4,
+    "nullable": "enable",
+    "implicit_usings": true,
+    "allow_unsafe_blocks": false
+  },
+  "environment_variables": {
+    "linkers_log_level": {
+      "description": "日志级别",
+      "default": "INFO"
+    },
+    "linkers_cache_dir": {
+      "description": "缓存目录",
+      "default": "%LOCALAPPDATA%\\Linkers\\Cache"
+    },
+    "linkers_temp_dir": {
+      "description": "临时目录",
+      "default": "%TEMP%\\Linkers"
+    },
+    "linkers_max_threads": {
+      "description": "最大线程数",
+      "default": "4"
+    },
+    "linkers_assembly_load_timeout": {
+      "description": "程序集加载超时（毫秒）",
+      "default": "30000"
+    },
+    "linkers_symbol_resolution_timeout": {
+      "description": "符号解析超时（毫秒）",
+      "default": "60000"
+    },
+    "linkers_optimization_timeout": {
+      "description": "优化超时（毫秒）",
+      "default": "120000"
+    }
+  }
+}

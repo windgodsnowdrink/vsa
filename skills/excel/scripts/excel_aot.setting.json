@@ -1,0 +1,22 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "Excel": {
+    "ReadMode": "Auto",
+    "WriteMode": "Xlsx",
+    "MaxRows": 10000,
+    "MaxColumns": 100,
+    "EnableDataValidation": false,
+    "EnableFormatting": true,
+    "EnableCompression": true,
+    "RequestTimeoutMs": 30000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true
+  },
+  "AllowedHosts": "*"
+}

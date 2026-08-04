@@ -1,0 +1,160 @@
+﻿{
+  "$schema": "https://json.schemastore.org/appsettings.json",
+    "Logging": {
+        "Console": {
+            "IncludeScopes": false
+        },
+        "LogLevel": {
+            "Default": "Warning",
+            "Microsoft": "Warning",
+            "Microsoft.AspNetCore": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information",
+            "Microsoft.AspNetCore.SignalR": "Information",
+            "Microsoft.AspNetCore.Http.Connections": "Information",
+            "Microsoft.Extensions.Http": "Information",
+            "Microsoft.Extensions.ServiceDiscovery": "Information",
+            "Microsoft.Extensions.Resilience": "Information",
+            "RestEase.HttpClientFactory": "Information",
+            "ServiceDiscoveryHandler": "Information",
+            "Microsoft.EntityFrameworkCore": "Information",
+            "System": "Warning",
+            "Steeltoe": "Warning",
+            "Nacos": "Warning",
+            "EasyCaching.Core": "Warning",
+            "BEAT": "Warning",
+            "Hangfire": "Warning",
+            "SignalR": "Warning",
+            "Zipkin": "Warning",
+            "Pomelo": "Warning",
+            "Quartz": "Warning",
+            "Minio": "Warning",
+            "MediatR": "Warning",
+            "mediator": "Warning",
+            "RabbitMQ": "Information",
+            "Swagger": "Information",
+            "Redis": "Information",
+            "Oidc": "Information",
+            "Security": "Information",
+            "Seq": "Information"
+        },
+        "SensitiveData": {
+            "Keywords": [
+                "token",
+                "password",
+                "PassWord",
+                "NewPassWord",
+                "email",
+                "phone",
+                "PhoneNumber"
+            ],
+            "Mask": "******"
+        }
+    },
+  "HealthChecksUI": {
+    "HealthChecks": [
+      {
+        "Name": "HTTP-Api-mysqlhealth",
+        "Uri": "/mysqlhealth"
+      },
+      {
+        "Name": "HTTP-Api-redishealth",
+        "Uri": "/redishealth"
+      }
+    ],
+    "Webhooks": [
+      {
+        "Name": "webhook",
+        "Uri": "http://127.0.0.1:8060/dingtalk/webhook1/send",
+        "Payload": "",
+        "RestoredPayload": ""
+      }
+    ],
+    "EvaluationTimeInSeconds": 60,
+    "MinimumSecondsBetweenFailureNotifications": 60
+  },
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.Async",
+      "Serilog.Sinks.Seq",
+      "Serilog.Sinks.Elasticsearch",
+      "Serilog.Sinks.MySQL"
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithProcessId",
+      "WithThreadId",
+      "WithHangfireContext"
+    ],
+    "MinimumLevel": {
+      "Default": "Warning",
+      "Override": {
+        "Hangfire": "Warning",
+        "Microsoft": "Warning",
+        "Microsoft.AspNetCore": "Warning",
+        "Volo.Abp.AbpApplicationBase": "Error",
+        "Microsoft.Hosting.Lifetime": "Information",
+        "Microsoft.AspNetCore.SignalR": "Information",
+        "Microsoft.AspNetCore.Http.Connections": "Information",
+        "Microsoft.EntityFrameworkCore": "Information",
+        "System": "Warning",
+        "Steeltoe": "Warning",
+        "com.alibaba.nacos": "Warning"
+      }
+    },
+    "Properties": {
+      "Application": "Maxvision.Robot"
+    },
+    "WriteTo:Async": {
+      "Name": "Async",
+      "Args": {
+        "configure": [
+          {
+            "Name": "Console"
+          },
+          {
+            "Name": "File",
+            "Args": {
+              "path": "Logs/{date:yyyy-MM-dd}/logs.json",
+              "formatter": "Serilog.Formatting.Elasticsearch.ExceptionAsObjectJsonFormatter, Serilog",
+              "rollingInterval": "Day",
+              "rollOnFileSizeLimit": true,
+              "fileSizeLimitBytes": 15242880,
+              "restrictedToMinimumLevel": "Information",
+              "retainedFileCountLimit": "7",
+              "theme": "Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme::Colored, Serilog.Sinks.Console",
+              "outputTemplate": "[EventLevel:{Level:u} EventTime:{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} EventSource:{SourceContext}] Information:{Message:lj} {Properties:j}{NewLine}{Exception}"
+            }
+          }
+        ]
+      }
+    },
+    "WriteTo": [
+      {
+        "Args": {
+          "path": "Logs/{date:yyyy-MM-dd}/logs.json",
+          "formatter": "Serilog.Formatting.Elasticsearch.ExceptionAsObjectJsonFormatter, Serilog",
+          "rollingInterval": "Day",
+          "rollOnFileSizeLimit": true,
+          "fileSizeLimitBytes": 15242880,
+          "restrictedToMinimumLevel": "Information",
+          "retainedFileCountLimit": "7",
+          "theme": "Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme::Colored, Serilog.Sinks.Console",
+          "outputTemplate": "[EventLevel:{Level:u} EventTime:{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} EventSource:{SourceContext}] Information:{Message:lj} {Properties:j}{NewLine}{Exception}"
+        },
+        "Name": "File"
+      },
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "Seq",
+        "Args": {
+          "serverUrl": "http://127.0.0.1:5341"
+        }
+      }
+    ]
+  }
+}

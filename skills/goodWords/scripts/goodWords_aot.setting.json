@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "GoodWordsAOT": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "trimMode": "partial",
+    "enableCompilation": false,
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Logging.Console": "10.0.0",
+    "Microsoft.Extensions.Logging.Debug": "10.0.0",
+    "System.Collections.Immutable": "8.0.0",
+    "System.Linq.Async": "6.0.1"
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32
+    }
+  },
+  "aotOptions": {
+    "enableMemoryOptimizations": true,
+    "enableStringOptimizations": true,
+    "enableAggressiveTrimming": true,
+    "enableTrimAnalyzer": true,
+    "excludeSymbols": false,
+    "excludeDebugInformation": false
+  },
+  "buildOptions": {
+    "outputType": "Exe",
+    "optimize": true,
+    "debugType": "portable",
+    "warnAsError": false,
+    "warningsAsErrors": [],
+    "nowarn": []
+  },
+  "publishOptions": {
+    "include": [
+      "*.json",
+      "*.config"
+    ],
+    "exclude": [
+      "*.cs",
+      "*.csproj"
+    ]
+  },
+  "launchSettings": {
+    "profiles": {
+      "GenerateWords": {
+        "commandName": "Project",
+        "commandLineArgs": "generate --count=10",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
+      },
+      "SearchWords": {
+        "commandName": "Project",
+        "commandLineArgs": "search 优秀",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
+      },
+      "ListCategories": {
+        "commandName": "Project",
+        "commandLineArgs": "categories",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
+      },
+      "AddWord": {
+        "commandName": "Project",
+        "commandLineArgs": "add 创新 --category=creativity --score=95",
+        "workingDirectory": "d:\\Trae\\vsa",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
+      }
+    }
+  }
+}

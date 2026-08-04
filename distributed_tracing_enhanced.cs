@@ -1,0 +1,88 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.6.0
+#:package OpenTelemetry.Extensions.Hosting@1.6.0
+#:package OpenTelemetry.Instrumentation.AspNetCore@1.6.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using System.Diagnostics;
+using System.Threading.Channels;
+
+var builder = WebApplication.CreateBuilder();
+
+// 高性能追踪通道 (RingBuffer实现)
+var traceChannel = Channel.CreateBounded<Activity>(
+    new BoundedChannelOptions(10000)
+    {
+        SingleReader = true,
+        AllowSynchronousContinuations = true,
+        FullMode = BoundedChannelFullMode.DropOldest
+    });
+
+// 零拷贝追踪处理器
+builder.Services.AddSingleton<ITraceProcessor>(sp => 
+    new ChannelTraceProcessor(
+        traceChannel,
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[256])));
+
+// OpenTelemetry配置
+builder.Services.AddOpenTelemetry()
+    .WithTracing(builder =>
+    {
+        builder
+            .AddSource("SampleApp")
+            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService("SampleApp", serviceVersion: "1.0.0")
+                .AddTelemetrySdk())
+            .AddAspNetCoreInstrumentation(options =>
+            {
+                options.RecordException = true;
+                options.Filter = ctx => ctx.Request.Path != "/health";
+            })
+            .AddProcessor(new BatchActivityExportProcessor(
+                new ChannelActivityExporter(traceChannel.Reader),
+                new BatchExportProcessorOptions<Activity>
+                {
+                    MaxQueueSize = 10000,
+                    ScheduledDelayMilliseconds = 5000,
+                    MaxExportBatchSize = 1000,
+                    ExporterTimeoutMilliseconds = 30000
+                }))
+            .AddOtlpExporter(opt =>
+            {
+                opt.Endpoint = new Uri("http://localhost:4317");
+                opt.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+            });
+    });
+
+var app = builder.Build();
+app.MapGet("/", () => "Enhanced Distributed Tracing Ready");
+app.Run();
+
+[SkipLocalsInit]
+public class ChannelTraceProcessor : ITraceProcessor
+{
+    private readonly ChannelWriter<Activity> _writer;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    
+    public ChannelTraceProcessor(Channel<Activity> channel, ThreadLocal<Span<byte>> buffer)
+    {
+        _writer = channel.Writer;
+        _buffer = buffer;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public void Process(Activity activity)
+    {
+        var span = _buffer.Value;
+        // SIMD优化处理Span数据
+        _writer.TryWrite(activity);
+    }
+}

@@ -1,0 +1,107 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MiniExcel@1.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using MiniExcelLibs;
+using Microsoft.Extensions.ObjectPool;
+
+[SkipLocalsInit]
+public sealed class AdvancedExcelService : IAsyncDisposable
+{
+    private readonly Channel<ExcelRequest> _requestChannel;
+    private readonly ObjectPool<MemoryStream> _streamPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly CancellationTokenSource _cts;
+
+    public AdvancedExcelService()
+    {
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _cts = new CancellationTokenSource();
+        
+        _requestChannel = Channel.CreateBounded<ExcelRequest>(
+            new BoundedChannelOptions(10_000)
+            {
+                SingleReader = true,
+                AllowSynchronousContinuations = true,
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
+        
+        _streamPool = new DefaultObjectPool<MemoryStream>(
+            new MemoryStreamPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+        
+        _ = Task.Run(ProcessRequestsAsync);
+    }
+
+    // 新增多Sheet导出功能
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task GenerateMultiSheetExcelAsync(Dictionary<string, object> sheetsData, string filePath)
+    {
+        var request = new ExcelRequest(sheetsData, filePath);
+        await _requestChannel.Writer.WriteAsync(request, _cts.Token);
+    }
+
+    // 新增模板导出功能
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task GenerateFromTemplateAsync(string templatePath, string outputPath, object data)
+    {
+        var request = new ExcelRequest(new { Template = templatePath, Data = data }, outputPath);
+        await _requestChannel.Writer.WriteAsync(request, _cts.Token);
+    }
+
+    // 新增大数据量分块处理
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessLargeDataAsync<T>(IAsyncEnumerable<T> dataStream, string filePath)
+    {
+        var request = new ExcelRequest(dataStream, filePath);
+        await _requestChannel.Writer.WriteAsync(request, _cts.Token);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessRequestsAsync()
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            using var latencyToken = _latencyOptimizer.BeginOperation();
+            var stream = _streamPool.Get();
+            try
+            {
+                if (request.Data is Dictionary<string, object> sheets)
+                {
+                    MiniExcel.SaveAs(stream, sheets);
+                }
+                else if (request.Data is IAsyncEnumerable<object> asyncData)
+                {
+                    await MiniExcel.SaveAsAsync(stream, asyncData);
+                }
+                else 
+                {
+                    MiniExcel.SaveAs(stream, request.Data);
+                }
+                
+                await WriteToFileAsync(stream, request.FilePath);
+            }
+            finally
+            {
+                _streamPool.Return(stream);
+            }
+        }
+    }
+
+    // ... existing code ...
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<AdvancedExcelService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Advanced Excel Service");
+app.Run();

@@ -1,0 +1,230 @@
+# scheduler 技能配置文件
+# 版本: 1.0.0
+# 描述: 基于 .NET 10 的任务调度器技能，支持多种调度策略和 AOT 编译
+
+# 技能基本信息
+name: scheduler
+version: 1.0.0
+description: 任务调度器技能，支持定时任务、延迟任务和复杂调度策略
+author: .NET 开发团队
+email: contact@example.com
+website: https://github.com/dotnet/scheduler
+
+# 技能分类
+categories:
+  - scheduling
+  - automation
+  - background-tasks
+  - cron
+
+# 依赖项
+dependencies:
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行解析库
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+    description: 依赖注入库
+  - name: Microsoft.Extensions.Configuration
+    version: 8.0.0
+    description: 配置管理库
+  - name: System.Text.Json
+    version: 8.0.0
+    description: JSON 序列化库
+  - name: Microsoft.Extensions.Hosting
+    version: 8.0.0
+    description: 主机管理库
+  - name: Microsoft.Extensions.Hosting.WindowsServices
+    version: 8.0.0
+    description: Windows 服务支持
+  - name: Quartz
+    version: 3.8.0
+    description: 任务调度库
+  - name: Cronos
+    version: 0.12.0
+    description: Cron 表达式解析库
+
+# 技能特性
+features:
+  - name: 定时任务
+    description: 支持基于 Cron 表达式的定时任务调度
+    enabled: true
+  - name: 延迟任务
+    description: 支持设置延迟执行的任务
+    enabled: true
+  - name: 周期性任务
+    description: 支持设置固定间隔的周期性任务
+    enabled: true
+  - name: 任务依赖
+    description: 支持任务之间的依赖关系
+    enabled: true
+  - name: 任务分组
+    description: 支持任务分组管理
+    enabled: true
+  - name: 任务优先级
+    description: 支持任务优先级设置
+    enabled: true
+  - name: 任务监控
+    description: 支持任务执行状态监控
+    enabled: true
+  - name: 任务重试
+    description: 支持任务失败自动重试
+    enabled: true
+  - name: 分布式调度
+    description: 支持分布式环境下的任务调度
+    enabled: true
+  - name: 代码生成
+    description: 支持生成任务调度相关代码
+    enabled: true
+
+# 命令行接口
+cli:
+  commands:
+    - name: add
+      description: 添加新任务
+      options:
+        - name: name
+          description: 任务名称
+          required: true
+        - name: type
+          description: 任务类型 (cron/delay/interval)
+          required: true
+        - name: expression
+          description: Cron 表达式或间隔时间
+          required: true
+        - name: handler
+          description: 任务处理程序
+          required: true
+        - name: group
+          description: 任务分组
+          required: false
+        - name: priority
+          description: 任务优先级
+          required: false
+    - name: list
+      description: 列出所有任务
+      options:
+        - name: format
+          description: 输出格式 (json/text/yaml)
+          required: false
+          default: json
+        - name: group
+          description: 按分组筛选
+          required: false
+    - name: remove
+      description: 删除任务
+      options:
+        - name: name
+          description: 任务名称
+          required: true
+        - name: group
+          description: 任务分组
+          required: false
+    - name: start
+      description: 启动任务调度器
+    - name: stop
+      description: 停止任务调度器
+    - name: status
+      description: 查看任务调度器状态
+    - name: generate
+      description: 生成任务调度代码
+      options:
+        - name: type
+          description: 生成类型 (host/worker/service)
+          required: true
+        - name: output
+          description: 输出文件路径
+          required: true
+        - name: format
+          description: 输出格式 (csharp)
+          required: false
+          default: csharp
+
+# AOT 编译配置
+aot:
+  enabled: true
+  options:
+    - name: PublishAot
+      value: true
+      description: 启用 AOT 编译
+    - name: TrimMode
+      value: partial
+      description: 裁剪模式
+    - name: SelfContained
+      value: true
+      description: 自包含部署
+    - name: PublishSingleFile
+      value: true
+      description: 发布为单文件
+    - name: RuntimeIdentifier
+      value: win-x64
+      description: 运行时标识符
+
+# 运行环境要求
+environment:
+  dotnet:
+    version: 10.0
+    required: true
+  os:
+    - windows
+    - linux
+    - macos
+  memory:
+    minimum: 256MB
+    recommended: 512MB
+  cpu:
+    minimum: 1
+    recommended: 2
+
+# 安全配置
+security:
+  sandboxed: true
+  network_access: false
+  file_system_access:
+    read: true
+    write: true
+    paths:
+      - ./schedules
+      - ./logs
+  environment_variables:
+    allowed:
+      - DOTNET_ENVIRONMENT
+      - SCHEDULER_CONFIG_PATH
+
+# 日志配置
+logging:
+  enabled: true
+  level: Information
+  providers:
+    - console
+    - file
+  file:
+    path: ./logs/scheduler.log
+    max_size: 10MB
+    max_files: 5
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics:
+    enabled: true
+    endpoint: /metrics
+  health_check:
+    enabled: true
+    endpoint: /health
+
+# 部署配置
+deployment:
+  types:
+    - console
+    - windows-service
+    - linux-systemd
+    - docker
+  docker:
+    enabled: true
+    image: scheduler:latest
+    ports:
+      - 8080:80
+    volumes:
+      - ./schedules:/app/schedules
+      - ./logs:/app/logs

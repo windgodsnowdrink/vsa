@@ -1,0 +1,126 @@
+name: "OpenTelemetry"
+description: "OpenTelemetry 技能 - 提供完整的可观测性解决方案，包括追踪、指标、日志和告警功能"
+version: "1.0.0"
+author: "VSA Architecture Team"
+email: "info@vsa-arch.com"
+url: "https://vsa-arch.com"
+
+# 依赖项
+dependencies:
+  - name: "Microsoft.Extensions.DependencyInjection"
+    version: "10.0.0"
+  - name: "Microsoft.Extensions.Logging"
+    version: "10.0.0"
+  - name: "Microsoft.Extensions.Options"
+    version: "10.0.0"
+  - name: "OpenTelemetry"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Exporter.Prometheus.Http"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Exporter.Jaeger"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Exporter.Zipkin"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Extensions.Hosting"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Instrumentation.Http"
+    version: "1.8.0"
+  - name: "OpenTelemetry.Instrumentation.AspNetCore"
+    version: "1.8.0"
+  - name: "System.Text.Json"
+    version: "10.0.0"
+  - name: "System.Threading.Tasks.Dataflow"
+    version: "8.0.0"
+
+# 技能特性
+features:
+  - name: "OpenTelemetry 集成"
+    description: "与 OpenTelemetry 框架的无缝集成"
+  - name: "分布式追踪"
+    description: "支持分布式系统的追踪功能"
+  - name: "指标监控"
+    description: "提供系统和应用的指标监控"
+  - name: "日志集成"
+    description: "集成日志系统，提供完整的可观测性"
+  - name: "告警系统"
+    description: "基于指标和日志的告警功能"
+  - name: "数据可视化"
+    description: "与 Grafana 等可视化工具集成"
+  - name: "性能分析"
+    description: "提供系统性能分析功能"
+  - name: "AOT 编译"
+    description: "支持 .NET 10 AOT 编译，提升运行性能"
+
+# AOT 编译选项
+aot:
+  publishAot: true
+  readyToRun: true
+  tieredCompilation: true
+  optimizeForSize: false
+  trimMode: "partial"
+
+# 支持的运行时
+runtimes:
+  - "win-x64"
+  - "linux-x64"
+  - "osx-x64"
+  - "win-arm64"
+  - "linux-arm64"
+  - "osx-arm64"
+
+# 脚本信息
+scripts:
+  - name: "otel_extensions.cs"
+    description: "OpenTelemetry 核心扩展功能，包含所有服务实现"
+  - name: "opentelemetry_integration.cs"
+    description: "OpenTelemetry 集成功能"
+  - name: "opentelemetry_logging.cs"
+    description: "OpenTelemetry 日志集成"
+  - name: "opentelemetry_metrics.cs"
+    description: "OpenTelemetry 指标功能"
+  - name: "opentelemetry_tracing.cs"
+    description: "OpenTelemetry 追踪功能"
+  - name: "opentelemetry_alerting.cs"
+    description: "OpenTelemetry 告警功能"
+  - name: "opentelemetry_prometheus.cs"
+    description: "OpenTelemetry Prometheus 集成"
+  - name: "opentelemetry_jaeger.cs"
+    description: "OpenTelemetry Jaeger 集成"
+  - name: "opentelemetry_zipkin.cs"
+    description: "OpenTelemetry Zipkin 集成"
+  - name: "opentelemetry_grafana.cs"
+    description: "OpenTelemetry Grafana 集成"
+
+# 参考文档
+documentation:
+  - name: "README.md"
+    description: "详细参考文档"
+  - name: "examples.md"
+    description: "使用示例文档"
+
+# 环境要求
+environment:
+  dotnet: "10.0"
+  os: ["Windows", "Linux", "macOS"]
+
+# 许可证
+license:
+  name: "MIT"
+  url: "https://opensource.org/licenses/MIT"
+
+# 发布日期
+published:
+  date: "2026-01-24"
+  version: "1.0.0"
+
+# 标签
+tags:
+  - "opentelemetry"
+  - "observability"
+  - "tracing"
+  - "metrics"
+  - "logging"
+  - "alerting"
+  - "dotnet"
+  - "aot"
+  - "integration"

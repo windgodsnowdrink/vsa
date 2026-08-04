@@ -1,0 +1,86 @@
+# PagedList Agent Skill - PagedList 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 PagedList 技能实现，支持 AOT 编译，提供高性能的分页功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - X.PagedList@8.4.0
+# - X.PagedList.Mvc.Core@8.4.0
+# - System.Linq@10.0.0
+# - System.Collections.Generic@10.0.0
+# - System.Threading.Tasks@10.0.0
+# Application Scenarios: 分页查询、数据展示、API 响应格式化、高性能数据处理
+# Activation Conditions: 当需要分页功能时激活
+# Main Features:
+# - 高性能分页查询
+# - 异步分页操作
+# - 内存优化
+# - 缓存支持
+# - 自定义分页选项
+# - 错误处理与重试机制
+# - 性能监控与指标
+# - 支持多种数据源
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# - 缓存机制
+# - 零拷贝技术
+# - 线程本地缓存
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - LINQ 优化
+# - 错误处理与重试机制
+# - 状态管理
+# - 管道处理模式
+# AOT Compilation:
+# - PublishAot: true
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - TrimMode: partial
+# - Optimize: true
+# - EnableCompilationRelaxations: true
+# - EnableEnhancedNgen: true
+# Target Framework:
+# - net10.0
+# Scripts:
+# - name: "x_pagedlist_integration.cs"
+#   description: "PagedList 集成功能，实现核心分页功能，包括高性能分页查询、异步操作、缓存支持等"
+# Reference:
+# - README.md: 详细文档，包含核心组件说明、配置选项和使用方法
+# - examples.md: 使用示例，包含基本用法、高级配置、性能优化等场景
+# Configuration:
+# - Each script has corresponding .setting.json and .run.json files
+# - Supports environment-specific configurations
+# - Supports AOT compilation options
+# - Supports pagination configuration (page size, cache settings, etc.)
+# Monitoring:
+# - Built-in metrics collection
+# - Health check endpoints
+# - Error logging and tracing
+# - Performance monitoring
+# Deployment:
+# - Self-contained deployment
+# - AOT compilation support
+# - Cross-platform support (Windows, Linux, macOS)
+# - Containerization support
+# - Single-file execution
+# Security:
+# - Input validation
+# - Error handling
+# - Resource management
+# Scalability:
+# - Dynamic configuration
+# - Performance tuning
+# - Memory management
+# Reliability:
+# - Fault tolerance
+# - Error handling
+# - Retry mechanisms

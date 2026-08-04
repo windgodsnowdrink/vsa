@@ -1,0 +1,39 @@
+# CsvHelper AOT Agent Skill - CsvHelper AOT高性能CSV处理工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: CsvHelper AOT高性能CSV处理工具，基于.NET 10 AOT架构，提供高效、可靠的CSV导出和导入功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# - CsvHelper@32.0.1
+# - CsvHelper.Schema@32.0.1
+# Application Scenarios: 数据导出、报表生成、数据迁移、数据分析、数据备份、API响应、批量处理、日志导出
+# Activation Conditions: 当需要处理CSV文件时激活
+# Main Features:
+# - 支持导出为CSV字符串和CSV文件
+# - 支持批量导出多个CSV文件
+# - 支持自定义CSV配置选项
+# - 内置缓存机制，提高重复导出速度
+# - 提供详细的状态监控信息
+# - 支持命令行使用
+# - 基于.NET 10 AOT架构
+# Performance Features:
+# - AOT编译，启动时间快，内存占用低
+# - 高性能设计，执行速度快
+# - 缓存支持，提高重复执行性能
+# - 异步编程，提高并发处理能力
+# - 工作线程优化，充分利用CPU资源
+# Technical Features:
+# - .NET 10 AOT编译
+# - 依赖注入（IoC容器）
+# - 选项模式，灵活配置管理
+# - 异步编程模型
+# - 日志记录
+# - 命令行接口
+# - 批量处理支持
+# - 自动映射，支持对象到CSV列的自动映射
+# - 支持自定义记录映射

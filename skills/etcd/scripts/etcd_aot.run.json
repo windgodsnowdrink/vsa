@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "etcd_aot": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "--help"
+    },
+    "etcd_aot_put": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "put test-key test-value"
+    },
+    "etcd_aot_get": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "get test-key"
+    },
+    "etcd_aot_version": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true"
+      },
+      "commandLineArgs": "version"
+    }
+  }
+}

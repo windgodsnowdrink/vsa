@@ -1,0 +1,225 @@
+{
+  "version": "1.0.0",
+  "description": "LiteDB AOT 工具配置文件",
+  "commands": [
+    {
+      "name": "create-collection",
+      "description": "创建集合",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "insert",
+      "description": "插入文档",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        },
+        {
+          "name": "--document",
+          "description": "文档内容",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "query",
+      "description": "查询文档",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        },
+        {
+          "name": "--query",
+          "description": "查询条件",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "update",
+      "description": "更新文档",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        },
+        {
+          "name": "--id",
+          "description": "文档ID",
+          "required": true
+        },
+        {
+          "name": "--document",
+          "description": "文档内容",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "delete",
+      "description": "删除文档",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        },
+        {
+          "name": "--id",
+          "description": "文档ID",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "drop-collection",
+      "description": "删除集合",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--collection",
+          "description": "集合名称",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list-collections",
+      "description": "列出所有集合",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "backup",
+      "description": "备份数据库",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        },
+        {
+          "name": "--backup",
+          "description": "备份路径",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact",
+      "description": "压缩数据库",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "info",
+      "description": "获取数据库信息",
+      "arguments": [
+        {
+          "name": "--database",
+          "description": "数据库路径",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Console",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Debug",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0"
+    },
+    {
+      "name": "LiteDB",
+      "version": "5.0.16"
+    }
+  ],
+  "build": {
+    "targetFramework": "net10.0",
+    "publishSingleFile": true,
+    "selfContained": true,
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ],
+    "optimize": true,
+    "publishTrimmed": true,
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  }
+}

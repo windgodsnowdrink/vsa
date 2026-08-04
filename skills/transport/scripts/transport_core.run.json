@@ -1,0 +1,134 @@
+{
+  "runtime": {
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "TRANSPORT_MAX_BUFFER_SIZE": "65536",
+      "TRANSPORT_TIMEOUT": "30000",
+      "TRANSPORT_HTTP_RETRY_COUNT": "3",
+      "TRANSPORT_HTTP_RETRY_DELAY": "1000",
+      "TRANSPORT_TCP_BUFFER_SIZE": "8192",
+      "TRANSPORT_UDP_BUFFER_SIZE": "8192",
+      "TRANSPORT_PIPELINE_MIN_SIZE": "512",
+      "TRANSPORT_PIPELINE_MAX_SIZE": "65536",
+      "TRANSPORT_CHANNEL_CAPACITY": "-1"
+    },
+    "commandLineArgs": [],
+    "workingDirectory": "%SCRIPT_DIR%",
+    "outputEncoding": "utf-8",
+    "errorEncoding": "utf-8",
+    "exitCode": 0
+  },
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug"
+      },
+      "commandLineArgs": []
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning",
+        "TRANSPORT_TIMEOUT": "60000",
+        "TRANSPORT_MAX_BUFFER_SIZE": "131072"
+      },
+      "commandLineArgs": []
+    },
+    "HttpDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["http", "--url", "https://api.example.com/data"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "TcpClientDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["tcp", "--host", "localhost", "--port", "8080", "--message", "Hello TCP"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "TcpServerDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["tcp", "--server", "--port", "8080"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "UdpClientDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["udp", "--host", "localhost", "--port", "8081", "--message", "Hello UDP"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "UdpReceiveDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["udp", "--receive", "--port", "8081"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "PipelineDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["pipeline", "--count", "100"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "ChannelDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["channel", "--count", "100"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "BufferDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["buffer", "--size", "4096", "--pool"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "debug": {
+    "enable": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "exceptions": {
+      "breakOnAllExceptions": false,
+      "breakOnUserUnhandledExceptions": true
+    }
+  },
+  "performance": {
+    "enableMetrics": true,
+    "metricsPort": 5002,
+    "enableProfiling": false,
+    "profilerPath": "",
+    "memoryLimitMB": 0,
+    "cpuLimitPercent": 0
+  },
+  "logging": {
+    "logLevel": {
+      "Default": "Information",
+      "System": "Warning",
+      "Microsoft": "Warning",
+      "TransportSkill": "Debug"
+    },
+    "console": {
+      "enable": true,
+      "format": "json",
+      "includeScopes": true
+    },
+    "file": {
+      "enable": false,
+      "path": "logs/transport_core.log",
+      "rollingInterval": "Day",
+      "retainedFileCountLimit": 7
+    }
+  }
+}

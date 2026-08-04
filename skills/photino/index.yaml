@@ -1,0 +1,91 @@
+# Photino Agent Skill - Photino 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 Photino 技能实现，支持 AOT 编译，提供高性能的跨平台桌面应用开发能力
+# Skill Type: System Function
+# Dependencies:
+# - Photino.NET@2.0.0
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - CommunityToolkit.Mvvm@8.2.0
+# - Microsoft.Data.Sqlite@10.0.0
+# - Microsoft.EntityFrameworkCore.Sqlite@10.0.0
+# - System.IO.Pipelines@10.0.0
+# - System.IO.MemoryMappedFiles@10.0.0
+# - System.Composition@10.0.0
+# - Microsoft.Extensions.Localization@10.0.0
+# - Squirrel@2.0.0
+# - OpenTelemetry@1.6.0
+# Application Scenarios: 跨平台桌面应用开发、Web 技术封装、轻量级桌面解决方案、企业内部工具开发
+# Activation Conditions: 当需要跨平台桌面应用开发能力时激活
+# Main Features:
+# - 跨平台桌面应用开发
+# - Web 技术与原生能力融合
+# - 轻量级应用部署
+# - 高性能渲染
+# - 丰富的原生 API 访问
+# - 插件系统支持
+# - 自动更新机制
+# - 多语言支持
+# - 主题定制
+# - 快捷键系统
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# - 缓存机制
+# - 零拷贝技术
+# - 线程本地缓存
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - LINQ 优化
+# - 错误处理与重试机制
+# - 状态管理
+# - 管道处理模式
+# AOT Compilation:
+# - PublishAot: true
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - TrimMode: partial
+# - Optimize: true
+# - EnableCompilationRelaxations: true
+# - EnableEnhancedNgen: true
+# Target Framework:
+# - net10.0
+# Scripts:
+# - name: "photino_integration.cs"
+#   description: "Photino 集成功能，实现核心跨平台桌面应用能力，包括窗口管理、Web 集成、插件系统等"
+# Reference:
+# - README.md: 详细文档，包含核心组件说明、配置选项和使用方法
+# - examples.md: 使用示例，包含基本用法、高级配置、性能优化等场景
+# Configuration:
+# - Each script has corresponding .setting.json and .run.json files
+# - Supports environment-specific configurations
+# - Supports AOT compilation options
+# - Supports Photino configuration (window settings, Web settings, etc.)
+# Monitoring:
+# - Built-in metrics collection
+# - Health check endpoints
+# - Error logging and tracing
+# - Performance monitoring
+# Deployment:
+# - Self-contained deployment
+# - AOT compilation support
+# - Cross-platform support (Windows, Linux, macOS)
+# - Containerization support
+# Security:
+# - Input validation
+# - Error handling
+# - Resource management
+# Scalability:
+# - Dynamic configuration
+# - Performance tuning
+# - Memory management
+# Reliability:
+# - Fault tolerance
+# - Error handling
+# - Retry mechanisms

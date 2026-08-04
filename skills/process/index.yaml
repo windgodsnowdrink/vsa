@@ -1,0 +1,62 @@
+# process Agent Skill - 进程管理技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于.NET 10的进程管理技能实现，提供高性能、可靠的进程管理功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Diagnostics.Process@10.0.0
+# - System.Threading.Tasks.Dataflow@10.0.0
+# - System.IO.Pipelines@10.0.0
+# - System.Threading.Channels@10.0.0
+# Application Scenarios:
+# - 进程启动、监控和管理
+# - 进程间通信
+# - 后台任务处理
+# - 批处理操作
+# - 系统服务管理
+# Activation Conditions: 当需要使用进程管理功能时激活
+# Main Features:
+# - 进程启动和管理
+# - 进程监控和健康检查
+# - 进程间通信
+# - 进程生命周期管理
+# - 进程池化和负载均衡
+# - 进程资源监控和限制
+# AOT Compilation Support:
+# - PublishAot=true
+# - TrimMode=partial
+# - ReadyToRun=true
+# - TieredCompilation=true
+# Performance Features:
+# - 高性能进程管理
+# - 低内存占用
+# - 并发优化，支持高并行度
+# - 批量操作优化
+# - 资源使用监控和分析
+# - 缓存友好的设计
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入集成
+# - 异步编程支持
+# - 高性能算法实现
+# - 进程池管理
+# - 零拷贝技术
+# - 线程安全的实现
+# Deployment Options:
+# - 支持Windows、Linux、macOS平台
+# - 支持x64、arm64架构
+# - 支持容器化部署
+# - 支持AOT编译部署
+# Security Features:
+# - 进程权限管理
+# - 安全的进程间通信
+# - 资源访问控制
+# - 进程隔离
+# Monitoring Features:
+# - 进程健康检查
+# - 性能指标监控
+# - 日志记录和分析
+# - 异常检测和处理

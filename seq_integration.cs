@@ -1,0 +1,139 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Serilog@3.1.1
+#:package Serilog.Sinks.Seq@6.0.0
+#:package System.Threading.Channels@7.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+using System.Threading.Channels;
+using System.Runtime.CompilerServices;
+
+/*
+{
+  "Seq": {
+    "ServerUrl": "http://localhost:5341",
+    "ApiKey": "YOUR_API_KEY"
+  }
+}
+*/
+[SkipLocalsInit]
+public static class SeqConfig
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static Logger CreateLogger(IConfiguration config)
+    {
+        return new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .Enrich.WithThreadId()
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .WriteTo.Async(a => a.Seq(
+                serverUrl: config["Seq:ServerUrl"],
+                apiKey: config["Seq:ApiKey"],
+                bufferBaseFilename: "logs/seq-buffer",
+                batchPostingLimit: 100,
+                period: TimeSpan.FromSeconds(5),
+                eventBodyLimitBytes: 1024 * 1024))
+            .CreateLogger();
+    }
+}
+
+[SkipLocalsInit]
+public sealed class SeqLogChannel : IAsyncDisposable
+{
+    private readonly Channel<LogEvent> _channel;
+    private readonly CancellationTokenSource _cts;
+    private readonly Logger _logger;
+
+    public SeqLogChannel(Logger logger)
+    {
+        _logger = logger;
+        _cts = new CancellationTokenSource();
+        _channel = Channel.CreateBounded<LogEvent>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            SingleWriter = false,
+            FullMode = BoundedChannelFullMode.Wait
+        });
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public ValueTask WriteAsync(LogEvent logEvent)
+    {
+        return _channel.Writer.WriteAsync(logEvent, _cts.Token);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async ValueTask ProcessAsync()
+    {
+        await foreach (var logEvent in _channel.Reader.ReadAllAsync(_cts.Token))
+        {
+            _logger.Write(logEvent);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _channel.Writer.Complete();
+        await _channel.Reader.Completion;
+    }
+}
+
+public static class LogExtensions
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static WebApplicationBuilder AddSeqLogging(this WebApplicationBuilder builder)
+    {
+        Log.Logger = SeqConfig.CreateLogger(builder.Configuration);
+        builder.Host.UseSerilog(Log.Logger, dispose: true);
+        
+        builder.Services.AddSingleton<SeqLogChannel>();
+        builder.Services.AddHostedService<SeqBackgroundService>();
+        
+        return builder;
+    }
+}
+
+[SkipLocalsInit]
+public sealed class SeqBackgroundService : BackgroundService
+{
+    private readonly SeqLogChannel _channel;
+
+    public SeqBackgroundService(SeqLogChannel channel)
+    {
+        _channel = channel;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _channel.ProcessAsync();
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.AddSeqLogging(); // 添加Seq支持
+
+var app = builder.Build();
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+        diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress);
+    };
+});
+
+app.MapGet("/", () => "Seq Integration Demo");
+app.Run();

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "masstransit_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\masstransit\scripts\masstransit_integration.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\masstransit\scripts\masstransit_integration.setting.json"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SINGLE_FILE": "true",
+        "DOTNET_SELF_CONTAINED": "true",
+        "RABBITMQ_HOST": "localhost",
+        "RABBITMQ_USERNAME": "guest",
+        "RABBITMQ_PASSWORD": "guest"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

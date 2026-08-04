@@ -1,0 +1,28 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package ZstdNet@1.4.5
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+using System.Buffers;
+using ZstdNet;
+
+// 零拷贝压缩处理器
+public sealed class CompressedMessageHandler : IEventHandler<MessageEvent>
+{
+    private readonly ThreadLocal<Compressor> _compressor;
+    private readonly ThreadLocal<Decompressor> _decompressor;
+    
+    public CompressedMessageHandler()
+    {
+        _compressor = new(() => new Compressor(new CompressionOptions(3)));
+        _decompressor = new(() => new Decompressor());
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public void OnEvent(MessageEvent data, long sequence, bool endOfBatch)
+    {
+        var compressed = _compressor.Value.Wrap(data.Payload);
+        // ... 处理压缩数据 ...
+    }
+}

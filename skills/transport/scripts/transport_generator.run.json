@@ -1,0 +1,141 @@
+{
+  "runtime": {
+    "environment_variables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_LOGGING_LEVEL": "Information",
+      "DOTNET_AOT_ENABLED": "true",
+      "SCRUTOR_DEMO_MODE": "true",
+      "SCRUTOR_ASSEMBLY_SCAN": "true",
+      "SCRUTOR_DECORATOR_ENABLED": "true"
+    },
+    "command": "transport_generator",
+    "arguments": [
+      "--demo",
+      "all"
+    ],
+    "working_directory": "%PROJECT_ROOT%/transport/scripts",
+    "timeout_seconds": 300
+  },
+  "profiles": {
+    "BasicRegistration": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "basic"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "basic",
+        "SCRUTOR_LOG_LEVEL": "Debug"
+      }
+    },
+    "DecoratorPattern": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "decorator"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "decorator",
+        "SCRUTOR_DECORATOR_COUNT": "2"
+      }
+    },
+    "ServiceFiltering": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "filter"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "filter",
+        "SCRUTOR_FILTER_CRITERIA": "Service"
+      }
+    },
+    "LifetimeManagement": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "lifetime"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "lifetime",
+        "SCRUTOR_LIFETIME_TEST": "true"
+      }
+    },
+    "AdvancedRegistration": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "advanced"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "advanced",
+        "SCRUTOR_ADVANCED_FEATURES": "true"
+      }
+    },
+    "AssemblyScanning": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "scanning"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "scanning",
+        "SCRUTOR_ASSEMBLY_SCAN": "true",
+        "SCRUTOR_SCAN_PATTERN": "*Service*"
+      }
+    },
+    "MultipleDecorators": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "multiple"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "multiple",
+        "SCRUTOR_DECORATOR_COUNT": "3"
+      }
+    },
+    "ConditionalRegistration": {
+      "command": "transport_generator",
+      "arguments": [
+        "--demo",
+        "conditional"
+      ],
+      "environment_variables": {
+        "SCRUTOR_DEMO_MODE": "conditional",
+        "SCRUTOR_CONDITIONAL_ENABLED": "true"
+      }
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "format": "json",
+    "outputs": [
+      "console",
+      "file"
+    ],
+    "file_path": "logs/transport_generator.log",
+    "max_file_size": 10485760,
+    "max_retained_files": 5
+  },
+  "performance": {
+    "enabled": true,
+    "metrics": [
+      "cpu",
+      "memory",
+      "gc",
+      "threading"
+    ],
+    "sampling_interval_ms": 1000,
+    "output_path": "metrics/transport_generator_metrics.json"
+  },
+  "diagnostics": {
+    "enabled": true,
+    "collect_exceptions": true,
+    "collect_stack_traces": true,
+    "collect_garbage_collection": true,
+    "collect_threading_info": true,
+    "output_path": "diagnostics/transport_generator_diagnostics.json"
+  }
+}

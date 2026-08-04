@@ -1,0 +1,183 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Dtmcli@1.2.0
+#:package Dtmgrpc@1.2.0
+#:package Microsoft.EntityFrameworkCore.SqlServer@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Dtmcli; 
+using Dtmgrpc; 
+using Microsoft.AspNetCore.Mvc; 
+using Microsoft.EntityFrameworkCore; 
+using System.Text.Json; 
+
+// 定义数据库上下文
+class TransferDbContext : DbContext 
+{ 
+    public DbSet<Account> Accounts { get; set; } 
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+    { 
+        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TransferDB;Trusted_Connection=True;"); 
+    } 
+} 
+
+// 账户实体
+class Account 
+{ 
+    public int Id { get; set; } 
+    public decimal Balance { get; set; } 
+} 
+
+// 定义API控制器
+[ApiController] 
+[Route("[controller]")] 
+class TransferController : ControllerBase 
+{ 
+    private readonly IDtmClient _dtmClient; 
+    private readonly IGrpcClientFactory _grpcClientFactory; 
+    private readonly TransferDbContext _dbContext; 
+
+    public TransferController(IDtmClient dtmClient, IGrpcClientFactory grpcClientFactory, TransferDbContext dbContext) 
+    { 
+        _dtmClient = dtmClient; 
+        _grpcClientFactory = grpcClientFactory; 
+        _dbContext = dbContext; 
+    } 
+
+    // 增强1：添加内存池和零拷贝优化
+    builder.Services.AddSingleton<ObjectPool<Memory<byte>>>(new DefaultObjectPool<Memory<byte>>(
+        new DefaultPooledObjectPolicy<Memory<byte>>(), 1000));
+    builder.Services.AddSingleton<TailLatencyOptimizer>();
+
+    // 增强2：添加高性能通道处理
+    builder.Services.AddSingleton<Channel<TransferRequest>>(Channel.CreateUnbounded<TransferRequest>(
+        new UnboundedChannelOptions { SingleReader = true }));
+
+    // 增强3：在转账接口中使用Span优化
+    [HttpPost("transfer")]
+    public async Task<IActionResult> Transfer([FromBody] TransferRequest request)
+    {
+        // 使用Span优化内存分配
+        Span<byte> buffer = stackalloc byte[256];
+        var json = JsonSerializer.SerializeToUtf8Bytes(request);
+        json.CopyTo(buffer);
+        
+        var saga = _dtmClient.NewSaga("http://localhost:36789/api/dtmsvr", TimeSpan.FromSeconds(60))
+            .Add(
+                "http://localhost:5000/transfer/debit",
+                "http://localhost:5000/transfer/undo_debit",
+                new { UserId = request.FromUserId, Amount = request.Amount }
+            )
+            .Add(
+                "http://localhost:5000/transfer/credit",
+                "http://localhost:5000/transfer/undo_credit",
+                new { UserId = request.ToUserId, Amount = request.Amount }
+            );
+
+        await saga.Submit();
+        return Ok();
+    }
+
+    // 扣款操作
+    [HttpPost("debit")] 
+    public async Task<IActionResult> Debit([FromBody] JsonElement body) 
+    { 
+        var userId = body.GetProperty("UserId").GetInt32(); 
+        var amount = body.GetProperty("Amount").GetDecimal(); 
+        
+        var account = await _dbContext.Accounts.FindAsync(userId); 
+        if (account.Balance < amount) 
+        { 
+            return BadRequest("余额不足"); 
+        } 
+        
+        account.Balance -= amount; 
+        await _dbContext.SaveChangesAsync(); 
+        return Ok(); 
+    } 
+
+    // 撤销扣款操作
+    [HttpPost("undo_debit")] 
+    public async Task<IActionResult> UndoDebit([FromBody] JsonElement body) 
+    { 
+        var userId = body.GetProperty("UserId").GetInt32(); 
+        var amount = body.GetProperty("Amount").GetDecimal(); 
+        
+        var account = await _dbContext.Accounts.FindAsync(userId); 
+        account.Balance += amount; 
+        await _dbContext.SaveChangesAsync(); 
+        return Ok(); 
+    } 
+
+    // 加款操作
+    [HttpPost("credit")] 
+    public async Task<IActionResult> Credit([FromBody] JsonElement body) 
+    { 
+        var userId = body.GetProperty("UserId").GetInt32(); 
+        var amount = body.GetProperty("Amount").GetDecimal(); 
+        
+        var account = await _dbContext.Accounts.FindAsync(userId); 
+        account.Balance += amount; 
+        await _dbContext.SaveChangesAsync(); 
+        return Ok(); 
+    } 
+
+    // 撤销加款操作
+    [HttpPost("undo_credit")] 
+    public async Task<IActionResult> UndoCredit([FromBody] JsonElement body) 
+    { 
+        var userId = body.GetProperty("UserId").GetInt32(); 
+        var amount = body.GetProperty("Amount").GetDecimal(); 
+        
+        var account = await _dbContext.Accounts.FindAsync(userId); 
+        account.Balance -= amount; 
+        await _dbContext.SaveChangesAsync(); 
+        return Ok(); 
+    } 
+} 
+
+// 转账请求模型
+class TransferRequest 
+{ 
+    public int FromUserId { get; set; } 
+    public int ToUserId { get; set; } 
+    public decimal Amount { get; set; } 
+} 
+
+var builder = WebApplication.CreateBuilder(); 
+
+// 配置Dtm客户端
+builder.Services.AddDtmcli(option => 
+{ 
+    option.DtmUrl = "http://localhost:36789/api/dtmsvr"; 
+    option.DefaultTimeout = 60000; 
+    option.DefaultRetryInterval = 1000; 
+}); 
+
+builder.Services.AddGrpcClientFactory(); 
+builder.Services.AddDbContext<TransferDbContext>(); 
+
+var app = builder.Build(); 
+
+app.MapControllers(); 
+
+// 初始化数据库
+using (var scope = app.Services.CreateScope()) 
+{ 
+    var dbContext = scope.ServiceProvider.GetRequiredService<TransferDbContext>(); 
+    dbContext.Database.EnsureCreated(); 
+    
+    if (!dbContext.Accounts.Any()) 
+    { 
+        dbContext.Accounts.AddRange( 
+            new Account { Id = 1, Balance = 1000 }, 
+            new Account { Id = 2, Balance = 500 } 
+        ); 
+        dbContext.SaveChanges(); 
+    } 
+} 
+
+app.Run("http://localhost:5000");

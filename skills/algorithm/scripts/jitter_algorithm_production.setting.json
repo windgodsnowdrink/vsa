@@ -1,0 +1,36 @@
+{
+  "JitterAlgorithmSettings": {
+    "BaseDelay": "00:00:00.100",
+    "MaxDelay": "00:00:10.000",
+    "ExponentialBase": 2.0,
+    "JitterFactor": 0.5,
+    "EnableMetrics": true,
+    "MetricsCollectionInterval": "00:01:00",
+    "PerformanceOptimization": {
+      "EnableSpanOptimization": true,
+      "EnableMemoryPooling": true,
+      "EnableCacheLineAlignment": true,
+      "EnableParallelProcessing": true,
+      "MaxConcurrentCalculations": 10
+    },
+    "RetryPolicy": {
+      "DefaultMaxAttempts": 5,
+      "EnableCircuitBreaker": false,
+      "CircuitBreakerFailureThreshold": 0.5,
+      "CircuitBreakerResetInterval": "00:01:00"
+    },
+    "Logging": {
+      "LogCalculationDetails": false,
+      "LogPerformanceMetrics": true,
+      "EnableDebugLogging": false
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Algorithm.Jitter": "Debug",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

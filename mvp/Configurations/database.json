@@ -1,0 +1,6 @@
+﻿{
+  "DatabaseSettings": {
+    "DBProvider": "mysql",
+    "ConnectionString": "Server=127.0.0.1;Port=3306;Database=cleanrobot_device_whtest;Uid=root;Pwd=AnmMAn%#2222;Allow User Variables=True;TreatTinyAsBoolean=false;SSL Mode=None;pooling=true;CharSet=utf8mb4;"
+  }
+}

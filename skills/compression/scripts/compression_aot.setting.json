@@ -1,0 +1,42 @@
+{
+  "AppSettings": {
+    "ApplicationName": "Compression AOT Processor",
+    "Version": "1.0.0",
+    "Description": "高性能压缩AOT处理引擎"
+  },
+  "CompressionSettings": {
+    "DefaultAlgorithm": "Gzip",
+    "DefaultCompressionLevel": "Optimal",
+    "BufferSize": 65536,
+    "EnableMemoryOptimization": true,
+    "EnableParallelCompression": true,
+    "MaxFileSize": 1073741824,
+    "TempFileLocation": "./temp"
+  },
+  "SupportedAlgorithms": [
+    "Gzip",
+    "Deflate",
+    "Brotli",
+    "Zip"
+  ],
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Compression.AOT": "Information"
+    }
+  },
+  "Performance": {
+    "EnableCaching": true,
+    "CacheSize": 100,
+    "CacheDuration": 300,
+    "EnableProfiling": false,
+    "EnableMetrics": true
+  },
+  "Security": {
+    "AllowRemoteFiles": false,
+    "ValidateFileIntegrity": true,
+    "AllowedExtensions": [".txt", ".log", ".csv", ".json", ".xml", ".bin"]
+  }
+}

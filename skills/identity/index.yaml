@@ -1,0 +1,45 @@
+# Identity Agent Skill - Identity 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的高性能身份认证技能，提供完整的 JWT 令牌管理和用户认证授权功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.IdentityModel.Tokens.Jwt@7.0.0
+# - Microsoft.IdentityModel.Tokens@7.0.0
+# - Microsoft.AspNetCore.Authentication.JwtBearer@7.0.0
+# - System.Security.Cryptography@4.3.0
+# - System.Text.Json@8.0.0
+# - System.Text.RegularExpressions@4.3.1
+# - System.Collections.Immutable@8.0.0
+# - Microsoft.Extensions.Caching.Memory@10.0.0
+# - Microsoft.Extensions.Http@10.0.0
+# Application Scenarios: 身份认证、授权管理、令牌验证、用户登录等场景
+# Activation Conditions: 当需要身份认证或授权功能时激活
+# Main Features:
+# - JWT 令牌管理：生成、验证、解码、撤销和刷新
+# - 用户认证：基于用户名和密码的认证
+# - 用户授权：基于角色的权限控制
+# - 高性能设计：AOT 编译优化
+# - 缓存机制：内置内存缓存
+# - 基准测试：内置性能测试功能
+# Performance Features:
+# - AOT 编译优化：减少启动时间和内存占用
+# - 内存优化：使用对象池和内存管理技术
+# - 并发支持：优化的并发处理
+# - 缓存机制：提高重复操作性能
+# Technical Features:
+# - 模块化设计：清晰的代码结构
+# - 依赖注入：使用 Microsoft.Extensions.DependencyInjection
+# - 异步编程：基于 Task 的异步模式
+# - 高性能算法：优化的令牌处理
+# - 错误处理：完善的异常处理和日志记录
+# - 配置选项：使用 Microsoft.Extensions.Options
+# Identity AOT 引擎:
+# - 基于 .NET 10 AOT 编译技术
+# - 单文件执行脚本
+# - 支持多种命令和操作
+# - 内置性能基准测试
+# - 完善的错误处理和日志记录

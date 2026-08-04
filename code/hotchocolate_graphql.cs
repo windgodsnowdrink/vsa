@@ -1,0 +1,142 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package HotChocolate.AspNetCore@13.0.0
+#:package HotChocolate.Data@13.0.0
+#:package HotChocolate.Types@13.0.0
+#:package Microsoft.NET.Sdk.Boxed.Templates@6.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using HotChocolate.Types;
+using HotChocolate.Execution;
+using System.Threading.Channels;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. GraphQL配置
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddSubscriptionType<Subscription>()
+    .AddFiltering()
+    .AddSorting()
+    .AddProjections()
+    .ModifyRequestOptions(opt => 
+    {
+        opt.IncludeExceptionDetails = true;
+        opt.ExecutionTimeout = TimeSpan.FromMinutes(1);
+    });
+
+// 2. 高性能通道
+var graphqlChannel = Channel.CreateBounded<GraphQLMessage>(
+    new BoundedChannelOptions(10000)
+    {
+        SingleReader = true,
+        AllowSynchronousContinuations = true,
+        FullMode = BoundedChannelFullMode.Wait
+    });
+
+// 3. 零拷贝处理器
+builder.Services.AddSingleton<IGraphQLProcessor>(sp => 
+    new GraphQLChannelProcessor(
+        graphqlChannel,
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[1024])));
+
+var app = builder.Build();
+app.MapGraphQL();
+app.MapGet("/", () => "GraphQL API Ready");
+app.Run();
+
+// GraphQL类型定义
+public class Query
+{
+    [UsePaging]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<Todo> GetTodos([Service] TodoDbContext db) => db.Todos;
+}
+
+public class Mutation
+{
+    public async Task<Todo> AddTodo(
+        string title,
+        [Service] TodoDbContext db,
+        [Service] IGraphQLProcessor processor)
+    {
+        var todo = new Todo { Title = title };
+        await db.Todos.AddAsync(todo);
+        await db.SaveChangesAsync();
+        
+        await processor.ProcessAsync(todo);
+        return todo;
+    }
+}
+
+public class Subscription
+{
+    [Subscribe]
+    [Topic("TodoAdded")]
+    public Todo OnTodoAdded([EventMessage] Todo todo) => todo;
+}
+
+// 高性能处理器
+[SkipLocalsInit]
+public class GraphQLChannelProcessor : IGraphQLProcessor
+{
+    private readonly ChannelWriter<GraphQLMessage> _writer;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    
+    public GraphQLChannelProcessor(
+        Channel<GraphQLMessage> channel,
+        ThreadLocal<Span<byte>> buffer)
+    {
+        _writer = channel.Writer;
+        _buffer = buffer;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe Task ProcessAsync(Todo todo)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                var msg = new GraphQLMessage
+                {
+                    Payload = MessagePackSerializer.Serialize(todo),
+                    Timestamp = DateTimeOffset.UtcNow
+                };
+                return _writer.WriteAsync(msg).AsTask();
+            }
+        }
+        return Task.CompletedTask;
+    }
+}
+
+[MessagePackObject]
+public class GraphQLMessage
+{
+    [Key(0)]
+    public byte[] Payload { get; set; }
+    
+    [Key(1)]
+    public DateTimeOffset Timestamp { get; set; }
+}
+
+public class Todo
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public bool IsComplete { get; set; }
+}
+
+public class TodoDbContext : DbContext
+{
+    public DbSet<Todo> Todos { get; set; }
+    
+    public TodoDbContext(DbContextOptions options) : base(options) {}
+}

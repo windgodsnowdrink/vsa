@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "EventFlowAotEngine": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "EventFlowAotEngine_Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "http://localhost:8000"
+    },
+    "EventFlowAotEngine_Staging": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Staging"
+      },
+      "applicationUrl": "http://localhost:7000"
+    },
+    "EventFlowAotEngine_CreateEvent": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["create", "UserCreated", "{\"userId\":\"123\",\"name\":\"测试用户\"}"]
+    },
+    "EventFlowAotEngine_GetEvent": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["get"]
+    },
+    "EventFlowAotEngine_ListEvents": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["list", "UserCreated", "10"]
+    },
+    "EventFlowAotEngine_PublishEvent": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["publish", "OrderPlaced", "{\"orderId\":\"456\",\"amount\":100}"]
+    },
+    "EventFlowAotEngine_SubscribeEvent": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["subscribe", "UserCreated", "Subscriber1"]
+    },
+    "EventFlowAotEngine_Version": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "args": ["version"]
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "profiles": [
+    {
+      "name": "Generate SSH Config",
+      "command": "generate-config",
+      "arguments": [
+        "--host", "example.com",
+        "--port", "22",
+        "--username", "user",
+        "--keyfile", "~/.ssh/id_rsa",
+        "--output", "ssh_config.txt"
+      ],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Generate SSH Script",
+      "command": "generate-script",
+      "arguments": [
+        "--template", "SshScript",
+        "--output", "ssh_script.sh",
+        "--parameters", "Host=example.com",
+        "--parameters", "Port=22",
+        "--parameters", "Username=user"
+      ],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "List Templates",
+      "command": "list-templates",
+      "arguments": [],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Scrutor Demo",
+      "command": "scrutor-demo",
+      "arguments": [],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Generate Batch Script",
+      "command": "generate-script",
+      "arguments": [
+        "--template", "SshBatchScript",
+        "--output", "batch_script.sh",
+        "--parameters", "Hosts=server1 server2 server3",
+        "--parameters", "Command=echo \"Hello from $(hostname)\""
+      ],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Generate Config with Key",
+      "command": "generate-config",
+      "arguments": [
+        "--host", "linux-server",
+        "--port", "2222",
+        "--username", "admin",
+        "--keyfile", "C:\\Users\\user\\.ssh\\id_ed25519",
+        "--output", "ssh_config_with_key.txt"
+      ],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Generate Complex Script",
+      "command": "generate-script",
+      "arguments": [
+        "--template", "SshScript",
+        "--output", "complex_script.sh",
+        "--parameters", "Host=db-server",
+        "--parameters", "Port=22",
+        "--parameters", "Username=dbuser",
+        "--parameters", "Command=sudo systemctl status postgresql"
+      ],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    },
+    {
+      "name": "Test All Templates",
+      "command": "list-templates",
+      "arguments": [],
+      "workingDirectory": "${workspaceFolder}/ssh",
+      "environmentVariables": {}
+    }
+  ],
+  "defaultProfile": "List Templates",
+  "compilationOptions": {
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "singleFile": true
+  }
+}

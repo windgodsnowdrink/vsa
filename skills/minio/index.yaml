@@ -1,0 +1,47 @@
+# MinIO 智能体技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的 MinIO 技能实现，支持高性能对象存储操作，采用 AOT 编译优化
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Minio@6.0.0
+# - AWSSDK.S3@3.7.0
+# 应用场景: 对象存储、文件上传下载、数据备份、云存储集成等
+# 激活条件: 当需要使用 MinIO 功能时激活
+# 主要功能:
+# - 高性能对象存储操作
+# - 支持文件上传下载
+# - 支持批量操作
+# - 支持预签名 URL
+# - 支持生命周期管理
+# 性能特性:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# 技术特性:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - AOT 编译优化
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

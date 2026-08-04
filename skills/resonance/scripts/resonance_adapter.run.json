@@ -1,0 +1,66 @@
+{
+  "name": "Resonance Adapter",
+  "description": "共振适配器脚本运行配置",
+  "command": "dotnet run --project resonance_adapter.cs",
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\resonance\\scripts",
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_LOG_LEVEL": "Information",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "MAX_MESSAGE_SIZE": "1048576",
+    "QUEUE_CAPACITY": "1000",
+    "WORKER_COUNT": "4",
+    "RETRY_COUNT": "3",
+    "RETRY_DELAY_MS": "100",
+    "ENABLE_DEAD_LETTER_QUEUE": "true"
+  },
+  "runtimeOptions": {
+    "framework": "net10.0",
+    "arguments": [],
+    "timeout": 30000,
+    "redirectOutput": true,
+    "redirectError": true,
+    "useShellExecute": false
+  },
+  "debugOptions": {
+    "enableDebugging": false,
+    "debugPort": 0,
+    "waitForDebugger": false
+  },
+  "profiles": {
+    "Development": {
+      "command": "dotnet run --project resonance_adapter.cs",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug"
+      }
+    },
+    "Production": {
+      "command": "dotnet run --project resonance_adapter.cs",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning"
+      }
+    },
+    "AOT": {
+      "command": ".\\resonance_adapter.exe",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "checks": [
+      "dotnet --version",
+      "dotnet build --help",
+      "dotnet publish --help"
+    ]
+  },
+  "recovery": {
+    "enabled": true,
+    "maxRetries": 3,
+    "retryDelayMs": 1000
+  }
+}

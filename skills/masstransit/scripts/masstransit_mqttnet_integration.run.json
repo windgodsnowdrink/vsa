@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "masstransit_mqttnet_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\masstransit\scripts\masstransit_mqttnet_integration.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\masstransit\scripts\masstransit_mqttnet_integration.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

@@ -1,0 +1,59 @@
+﻿{
+    "schema": "",
+    "version": "1.0",
+    "profile": {
+        "productKey": "45b60825b46b41b2b9b77db1da3217e7"
+    },
+    "properties": [],
+    "events": [
+        {
+            "identifier": "device:state",
+            "name": "设备状态",
+            "desc": "设备状态",
+            "eventType": "info",
+            "method": "things.event.post.device:state",
+            "outputData": [
+                {
+                    "identifier": "isOccupy",
+                    "name": "是否被占用",
+                    "desc": "是否被占用",
+                    "dataType": {
+                        "type": "bool",
+                        "specs": {
+                            "0": "未占用",
+                            "1": "占用"
+                        }
+                    }
+                },
+                {
+                    "identifier": "isCharge",
+                    "name": "是否正在充电",
+                    "desc": "是否正在充电",
+                    "dataType": {
+                        "type": "bool",
+                        "specs": {
+                            "0": "未充电",
+                            "1": "充电中"
+                        }
+                    }
+                },
+                {
+                    "identifier": "OccupiedDeviceCode",
+                    "name": "占用设备编号",
+                    "desc": "占用设备编号(机器人)",
+                    "dataType": {
+                        "type": "string"
+                    }
+                }
+            ]
+        }
+    ],
+    "actions": [],
+    "functionBlocks": [
+        {
+            "functionBlockId": "device",
+            "functionBlockName": "设备信息",
+            "functionBlockDesc": "设备信息"
+        }
+    ]
+}

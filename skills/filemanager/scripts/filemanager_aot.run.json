@@ -1,0 +1,78 @@
+{
+  "runOptions": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1"
+    },
+    "commandLineArgs": [],
+    "launchBrowser": false,
+    "applicationUrl": "",
+    "nativeDebugging": false
+  },
+  "debugOptions": {
+    "enabled": false,
+    "debuggerType": "vsdbg",
+    "launchSettings": {
+      "profiles": {
+        "CreateFile": {
+          "commandName": "Project",
+          "commandLineArgs": "create test.txt 'Hello World'",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "ReadFile": {
+          "commandName": "Project",
+          "commandLineArgs": "read test.txt",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "WriteFile": {
+          "commandName": "Project",
+          "commandLineArgs": "write test.txt 'Updated content'",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "DeleteFile": {
+          "commandName": "Project",
+          "commandLineArgs": "delete test.txt",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "ListFiles": {
+          "commandName": "Project",
+          "commandLineArgs": "list .",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "CopyFile": {
+          "commandName": "Project",
+          "commandLineArgs": "copy test.txt test_copy.txt",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "MoveFile": {
+          "commandName": "Project",
+          "commandLineArgs": "move test_copy.txt test_move.txt",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "VersionInfo": {
+          "commandName": "Project",
+          "commandLineArgs": "version",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        },
+        "Help": {
+          "commandName": "Project",
+          "commandLineArgs": "help",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\filemanager"
+        }
+      }
+    }
+  },
+  "buildOptions": {
+    "buildBeforeRun": true,
+    "outputPath": "bin\\Release\\net10.0",
+    "configuration": "Release",
+    "publishProfile": "Default"
+  },
+  "validationOptions": {
+    "enableScriptAnalysis": true,
+    "enableRuntimeValidation": true,
+    "enablePerformanceCounters": false
+  }
+}

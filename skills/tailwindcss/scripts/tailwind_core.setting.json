@@ -1,0 +1,79 @@
+{
+  "compilation": {
+    "targetFramework": "net10.0",
+    "languageVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "optimize": true,
+    "debugSymbols": false,
+    "debugType": "none"
+  },
+  "dependencies": [
+    {
+      "name": "Scrutor",
+      "version": "4.2.0"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Console",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "8.0.0"
+    },
+    {
+      "name": "System.IO.Abstractions",
+      "version": "17.0.21"
+    },
+    {
+      "name": "Newtonsoft.Json",
+      "version": "13.0.3"
+    }
+  ],
+  "features": [
+    "css_generation",
+    "theme_management",
+    "plugin_system",
+    "code_generation",
+    "aot_compilation",
+    "scrutor_integration"
+  ],
+  "platforms": [
+    "win-x64",
+    "win-arm64",
+    "linux-x64",
+    "linux-arm64",
+    "osx-x64",
+    "osx-arm64"
+  ],
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MinThreads": 4,
+      "System.Threading.ThreadPool.MaxThreads": 32
+    }
+  },
+  "buildOptions": {
+    "outputPath": "../bin/tailwind_core",
+    "intermediateOutputPath": "../obj/tailwind_core",
+    "emitEntryPoint": true,
+    "enableTrimAnalyzer": true,
+    "enableAotAnalyzer": true
+  }
+}

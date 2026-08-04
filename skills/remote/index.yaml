@@ -1,0 +1,72 @@
+# remote Agent Skill - remote Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: remote skill implementation based on .NET 10 with AOT compilation support, providing high-performance remote execution capabilities
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.Extensions.Http@10.0.0
+# - Microsoft.Extensions.Diagnostics.HealthChecks@10.0.0
+# - System.Net.Http@8.0.0
+# - System.Text.Json@8.0.0
+# - System.Threading.Tasks.Dataflow@8.0.0
+# - System.Runtime.CompilerServices.Unsafe@6.0.0
+# - System.Net.Sockets@8.0.0
+# - System.Threading.Channels@8.0.0
+# - Polly@7.2.4
+# - System.Buffers@4.5.1
+# Application Scenarios: remote execution, network operations, distributed systems, cloud services, IoT devices
+# Activation Conditions: Activate when remote functionality is needed
+# Main Features:
+# - Remote command execution
+# - Network communication (HTTP, TCP/IP)
+# - Distributed task processing
+# - Remote resource management
+# - Asynchronous operation support
+# - Secure authentication
+# - Connection pooling
+# - Error handling and recovery
+# - Resilience patterns (retry, circuit breaker)
+# Performance Features:
+# - High performance design
+# - Memory optimization
+# - Concurrency support
+# - Connection pooling
+# - Batch processing
+# - Asynchronous I/O
+# - Object pooling
+# - Memory pooling
+# Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms
+# - Object pooling
+# - Memory management
+# - AOT compilation support
+# - Configuration management
+# AOT Compilation Options:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - Optimize: true
+# - EnableCompressionInSingleFile: true
+# - SelfContained: true
+# Target Framework:
+# - TargetFramework: net10.0
+# Platform Support:
+# - Windows
+# - Linux
+# - macOS
+# Configuration Options:
+# - OneRemoteOptions: Configuration for remote operations
+# - ConnectionPoolSize: 100
+# - Timeout: 30000
+# - RetryCount: 3
+# - CircuitBreakerFailureThreshold: 0.5
+# - CircuitBreakerDurationOfBreak: 30000
+# - EnableCompression: true
+# - EnableEncryption: true

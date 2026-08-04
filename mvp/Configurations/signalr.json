@@ -1,0 +1,9 @@
+﻿{
+    "SignalRSettings": {
+        "UseBackplane": true,
+        "Backplane": {
+            "Provider": "redis",
+            "StringConnection": ""
+        }
+    }
+}

@@ -1,0 +1,11 @@
+﻿{
+  "Redis": {
+    "UseDistributedCache": true,
+    "PreferRedis": true,
+    "Configuration": "127.0.0.1:6379,password=Mn82nm&m2022n1",
+    "InstanceName": "robot",
+    "Host": "127.0.0.1",
+    "Port": 6379,
+    "Password": "Mn82nm&m2022n1"
+  }
+}

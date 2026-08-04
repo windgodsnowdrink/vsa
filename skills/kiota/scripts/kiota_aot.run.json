@@ -1,0 +1,131 @@
+{
+  "runtime": {
+    "framework": "net10.0",
+    "aot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release"
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "KIOTA_CACHE_DIRECTORY": "%LOCALAPPDATA%\\Kiota\\Cache",
+    "KIOTA_TEMP_DIRECTORY": "%TEMP%\\Kiota",
+    "KIOTA_MAX_CACHE_SIZE": "104857600",
+    "KIOTA_DEFAULT_LANGUAGE": "csharp",
+    "KIOTA_DEFAULT_NAMESPACE": "ApiClient",
+    "KIOTA_HTTP_TIMEOUT": "30000",
+    "KIOTA_MAX_RETRY_COUNT": "3",
+    "KIOTA_RETRY_DELAY": "1000"
+  },
+  "memory": {
+    "initial": 128,
+    "maximum": 1024
+  },
+  "timeouts": {
+    "command": 60000,
+    "generate": 120000,
+    "validate": 30000,
+    "download": 60000,
+    "cacheOperation": 10000,
+    "benchmark": 300000
+  },
+  "profiles": {
+    "generate": {
+      "command": "generate",
+      "description": "生成API客户端",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 120000
+      },
+      "memory": {
+        "maximum": 1024
+      }
+    },
+    "validate": {
+      "command": "validate",
+      "description": "验证OpenAPI规范",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 30000
+      }
+    },
+    "list-languages": {
+      "command": "list-languages",
+      "description": "列出支持的语言",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 10000
+      }
+    },
+    "download-spec": {
+      "command": "download-spec",
+      "description": "下载OpenAPI规范",
+      "arguments": [],
+      "environmentVariables": {
+        "KIOTA_HTTP_TIMEOUT": "60000"
+      },
+      "timeouts": {
+        "command": 60000
+      }
+    },
+    "cache-clear": {
+      "command": "cache-clear",
+      "description": "清除缓存",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 10000
+      }
+    },
+    "cache-info": {
+      "command": "cache-info",
+      "description": "显示缓存信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 10000
+      }
+    },
+    "benchmark": {
+      "command": "benchmark",
+      "description": "运行性能基准测试",
+      "arguments": [],
+      "environmentVariables": {
+        "KIOTA_HTTP_TIMEOUT": "30000",
+        "KIOTA_MAX_RETRY_COUNT": "1"
+      },
+      "memory": {
+        "maximum": 1024
+      },
+      "timeouts": {
+        "command": 300000
+      }
+    },
+    "help": {
+      "command": "help",
+      "description": "显示帮助信息",
+      "arguments": [],
+      "environmentVariables": {},
+      "timeouts": {
+        "command": 5000
+      }
+    }
+  },
+  "logging": {
+    "level": "Information",
+    "format": "json"
+  },
+  "errorHandling": {
+    "showStackTrace": false,
+    "exitOnError": true
+  },
+  "network": {
+    "socketTimeoutMs": 30000,
+    "requestTimeoutMs": 40000,
+    "maxRetryCount": 3,
+    "retryDelayMs": 1000
+  }
+}

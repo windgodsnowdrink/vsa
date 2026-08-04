@@ -1,0 +1,216 @@
+name: kiota
+version: 1.0.0
+description: Microsoft Kiota - OpenAPI 客户端生成器（AOT 架构）
+author: Trae AI
+created_at: 2026-01-21
+updated_at: 2026-01-21
+
+# 技能类型
+type: development
+category: API 开发
+
+# AOT架构信息
+aot:
+  enabled: true
+  framework: net10.0
+  self_contained: true
+  runtime_identifier: win-x64
+  optimization_level: Release
+  publish_date: 2026-01-21
+
+# 功能特性
+features:
+  - OpenAPI 规范验证
+  - 多语言客户端生成
+  - API 文档生成
+  - 代码示例生成
+  - 支持 RESTful API
+  - 支持 GraphQL
+  - 支持 gRPC
+  - 支持 OpenAPI 3.0+
+  - 支持 Swagger 2.0
+  - AOT 编译支持
+  - 单文件执行
+  - 高性能运行
+  - 跨平台支持
+
+# 技术栈
+tech_stack:
+  - C#
+  - .NET 10.0
+  - Microsoft.Kiota.Abstractions
+  - Microsoft.Kiota.Authentication.Azure
+  - Microsoft.Kiota.Http.HttpClientLibrary
+  - Microsoft.Kiota.Serialization.Json
+  - Microsoft.Kiota.Serialization.Text
+  - Microsoft.Kiota.Serialization.Form
+  - Microsoft.Extensions.DependencyInjection
+  - Microsoft.Extensions.Caching.Memory
+  - Microsoft.Extensions.Logging
+  - Microsoft.Extensions.Options
+  - System.CommandLine
+  - OpenAPI
+  - REST
+  - GraphQL
+  - gRPC
+
+# 脚本信息
+scripts:
+  - name: kiota_aot
+    path: scripts/kiota_aot.cs
+    description: AOT 编译的 Kiota 工具
+    aot: true
+    commands:
+      - generate
+      - validate
+      - list-languages
+      - download-spec
+      - cache-clear
+      - cache-info
+      - benchmark
+      - help
+  - name: kiota_cache
+    path: scripts/kiota_cache.cs
+    description: Kiota 缓存管理工具
+  - name: kiota_integration
+    path: scripts/kiota_integration.cs
+    description: Kiota 集成测试工具
+  - name: kiota_metrics
+    path: scripts/kiota_metrics.cs
+    description: Kiota 性能指标收集工具
+  - name: kiota_openapi_loader
+    path: scripts/kiota_openapi_loader.cs
+    description: Kiota OpenAPI 规范加载工具
+
+# 文档信息
+documentation:
+  - name: 技能文档
+    path: SKILL.md
+    language: zh-CN
+  - name: 技术参考
+    path: reference/README.md
+    language: zh-CN
+  - name: 使用示例
+    path: reference/examples.md
+    language: zh-CN
+
+# 依赖项
+dependencies:
+  - name: Microsoft.Kiota.Abstractions
+    version: 1.16.0
+    type: nuget
+  - name: Microsoft.Kiota.Authentication.Azure
+    version: 1.1.0
+    type: nuget
+  - name: Microsoft.Kiota.Http.HttpClientLibrary
+    version: 1.1.0
+    type: nuget
+  - name: Microsoft.Kiota.Serialization.Json
+    version: 1.1.0
+    type: nuget
+  - name: Microsoft.Kiota.Serialization.Text
+    version: 1.1.0
+    type: nuget
+  - name: Microsoft.Kiota.Serialization.Form
+    version: 1.1.0
+    type: nuget
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+    type: nuget
+  - name: Microsoft.Extensions.Caching.Memory
+    version: 10.0.0
+    type: nuget
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+    type: nuget
+  - name: Microsoft.Extensions.Options
+    version: 10.0.0
+    type: nuget
+  - name: System.CommandLine
+    version: 2.0.0
+    type: nuget
+
+# 性能指标
+performance:
+  - name: 客户端生成速度
+    description: 生成 API 客户端的速度
+    value: "约 500ms/规范"
+  - name: 规范验证速度
+    description: 验证 OpenAPI 规范的速度
+    value: "约 200ms/规范"
+  - name: 内存使用
+    description: 运行时内存使用
+    value: "约 128MB"
+  - name: 启动时间
+    description: 应用启动时间
+    value: "约 50ms"
+
+# 使用场景
+use_cases:
+  - API 客户端生成
+  - 微服务通信
+  - 第三方 API 集成
+  - 前端 API 调用
+  - 后端服务间通信
+  - API 文档生成
+  - 代码示例生成
+  - 性能测试
+  - CI/CD 集成
+  - 自动化测试
+
+# 限制
+limitations:
+  - 需要有效的 OpenAPI 规范
+  - 复杂 API 可能生成大量代码
+  - 某些高级 OpenAPI 特性可能不支持
+  - 生成的客户端需要手动配置认证
+  - AOT 编译增加了构建时间
+
+# 配置选项
+configuration:
+  - name: KIOTA_CACHE_DIRECTORY
+    description: Kiota 缓存目录
+    type: string
+    default: "%LOCALAPPDATA%\\Kiota\\Cache"
+  - name: KIOTA_TEMP_DIRECTORY
+    description: Kiota 临时目录
+    type: string
+    default: "%TEMP%\\Kiota"
+  - name: KIOTA_MAX_CACHE_SIZE
+    description: Kiota 最大缓存大小
+    type: integer
+    default: 104857600
+  - name: KIOTA_DEFAULT_LANGUAGE
+    description: 默认生成语言
+    type: string
+    default: "csharp"
+  - name: KIOTA_DEFAULT_NAMESPACE
+    description: 默认命名空间
+    type: string
+    default: "ApiClient"
+  - name: KIOTA_HTTP_TIMEOUT
+    description: HTTP 请求超时时间
+    type: integer
+    default: 30000
+  - name: KIOTA_MAX_RETRY_COUNT
+    description: 最大重试次数
+    type: integer
+    default: 3
+
+# 兼容性
+compatibility:
+  - OpenAPI 2.0
+  - OpenAPI 3.0+
+  - Swagger 2.0
+  - RESTful API
+  - GraphQL
+  - gRPC
+  - Windows x64
+  - Linux x64
+  - macOS x64
+
+# 维护状态
+maintenance:
+  status: active
+  last_updated: 2026-01-21
+  next_update: 2026-03-01

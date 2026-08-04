@@ -1,0 +1,138 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Development",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.setting.json",
+        "--environment",
+        "Development"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Information",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+        "REACTIVE_ENABLE_DEBUG_LOGGING": "true",
+        "REACTIVE_ENABLE_SUBSCRIPTION_TRACKING": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": false,
+      "logging": {
+        "moduleLoad": true,
+        "exceptions": true,
+        "browser": {
+          "level": "error"
+        }
+      }
+    },
+    {
+      "name": "Production",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.setting.json",
+        "--environment",
+        "Production"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "true",
+        "REACTIVE_ENABLE_DEBUG_LOGGING": "false",
+        "REACTIVE_ENABLE_SUBSCRIPTION_TRACKING": "false"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "launchBrowser": false
+    },
+    {
+      "name": "AOT Debug",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.setting.json",
+        "--environment",
+        "Development",
+        "--aot",
+        "true"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+        "DOTNET_TC_QuickJitForLoops": "0",
+        "DOTNET_TieredPGO": "1",
+        "DOTNET_ReadyToRun": "1",
+        "DOTNET_PublishAot": "1",
+        "DOTNET_TrimMode": "partial",
+        "REACTIVE_ENABLE_DEBUG_LOGGING": "true",
+        "REACTIVE_ENABLE_SCHEDULER_OPTIMIZATION": "true"
+      },
+      "stopAtEntry": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": false,
+      "logging": {
+        "moduleLoad": true,
+        "exceptions": true,
+        "browser": {
+          "level": "verbose"
+        }
+      }
+    },
+    {
+      "name": "Reactive Test",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\reactive\scripts\rx_reactiveui_mvvm.setting.json",
+        "--environment",
+        "Development",
+        "--test",
+        "true"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug",
+        "REACTIVE_TEST_MODE": "true",
+        "REACTIVE_ENABLE_DEBUG_LOGGING": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "launchBrowser": false
+    }
+  ],
+  "compounds": [
+    {
+      "name": "All Environments",
+      "configurations": [
+        "Development",
+        "Production",
+        "AOT Debug"
+      ]
+    }
+  ]
+}
+

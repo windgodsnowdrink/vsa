@@ -1,0 +1,27 @@
+{
+  "$schema": "https://dot.net/v1/dotnet.run.schema.json",
+  "framework": "net10.0",
+  "options": {
+    "PublishAot": true,
+    "InvariantGlobalization": true,
+    "EnableCompilationRelaxations": true,
+    "PublishReadyToRun": true,
+    "LangVersion": "preview",
+    "Nullable": true,
+    "ImplicitUsings": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Net.NameResolution": "10.0.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  }
+}

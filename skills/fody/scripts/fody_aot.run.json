@@ -1,0 +1,53 @@
+{
+  "runOptions": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\fody",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1"
+    },
+    "commandLineArgs": [],
+    "launchBrowser": false,
+    "applicationUrl": "",
+    "nativeDebugging": false
+  },
+  "debugOptions": {
+    "enabled": false,
+    "debuggerType": "vsdbg",
+    "launchSettings": {
+      "profiles": {
+        "Weave": {
+          "commandName": "Project",
+          "commandLineArgs": "weave MyAssembly.dll Output.dll",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fody"
+        },
+        "ListWeavers": {
+          "commandName": "Project",
+          "commandLineArgs": "weavers",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fody"
+        },
+        "VersionInfo": {
+          "commandName": "Project",
+          "commandLineArgs": "version",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fody"
+        },
+        "Help": {
+          "commandName": "Project",
+          "commandLineArgs": "help",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fody"
+        }
+      }
+    }
+  },
+  "buildOptions": {
+    "buildBeforeRun": true,
+    "outputPath": "bin\\Release\\net10.0",
+    "configuration": "Release",
+    "publishProfile": "Default"
+  },
+  "validationOptions": {
+    "enableScriptAnalysis": true,
+    "enableRuntimeValidation": true,
+    "enablePerformanceCounters": false
+  }
+}

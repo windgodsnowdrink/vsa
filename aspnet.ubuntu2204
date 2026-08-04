@@ -1,0 +1,20 @@
+﻿# 安装基础的 Ubuntu 22.04 LTS 镜像
+ARG UBUNTU_VERSION=22.04
+FROM ubuntu:${UBUNTU_VERSION} AS base
+
+RUN echo "deb http://mirrors.aliyun.com/debian/ bullseye main non-free contrib \deb-src http://mirrors.aliyun.com/debian/ bullseye main non-free contrib \deb http://mirrors.aliyun.com/debian-security/ bullseye-security main \deb-src http://mirrors.aliyun.com/debian-security/ bullseye-security main \deb http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib \deb-src http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib \deb http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib \deb-src http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib" > /etc/apt/sources.list
+
+# 更新包管理器并安装 .NET 运行时
+RUN apt-get update && \
+    apt-get install -y wget apt-utils locales libgdiplus fontconfig --no-install-recommends && \    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \    locale-gen en_US.utf8 && \    /usr/sbin/update-locale LANG=en_US.UTF-8 && \    ln -s /usr/lib/libgdiplus.so /usr/lib/gdiplus.dll && \    unlink /etc/localtime && \    ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    wget -q https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends dotnet-runtime-8.0
+    apt-get clean -y && \    apt-get autoclean && \    rm -rf \    /var/cache/debconf/* \    /var/lib/apt/lists/* \    /var/log/* \    /var/tmp/* \    && rm -rf /tmp/*
+
+# 设置工作目录并部署应用
+USER $APP_UIDWORKDIR /appENV TZ=Asia/ShanghaiEXPOSE 8080EXPOSE 8081EXPOSE 443
+COPY ./publish/app/ ./
+CMD ["dotnet", "--info"]

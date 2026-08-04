@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "version_control_manager",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\zstdNet\scripts\version_control_manager.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\zstdNet\scripts\version_control_manager.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

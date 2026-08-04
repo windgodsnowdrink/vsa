@@ -1,0 +1,54 @@
+﻿{
+    "nacos": {
+        "EndPoint": "",
+        "ServerAddresses": "http://172.100.61.40:8848",
+        "DefaultTimeOut": 15000,
+        "Namespace": "dev",
+        "ListenInterval": 1000,
+        "ServiceName": "robot-device-svc",
+        "GroupName": "DEFAULT_GROUP",
+        "ClusterName": "DEFAULT",
+        "Ip": "",
+        "PreferredNetworks": "",
+        "Port": 40505,
+        "Weight": 100.0,
+        "RegisterEnabled": true,
+        "InstanceEnabled": true,
+        "Ephemeral": true,
+        "Secure": false,
+        "AccessKey": "",
+        "SecretKey": "",
+        "UserName": "nacos",
+        "Password": "nacos",
+        "ConfigUseRpc": true,
+        "ContextPath": "nacos",
+        "NamingCacheRegistryDir": "",
+        "NamingUseRpc": true,
+        "NamingLoadCacheAtStart": "",
+        "NamingPushEmptyProtection": false,
+        "LBStrategy": "WeightRandom",
+        "RamRoleName": "",
+        "TLSConfig": ""
+    },
+    "NacosConfig": {
+        "Namespace": "dev",
+        "ServerAddresses": [
+            "http://172.100.61.40:8848"
+        ],
+        "Group": "DEFAULT_GROUP",
+        "UserName": "nacos",
+        "Password": "nacos",
+        "AccessKey": "",
+        "SecretKey": "",
+        "EndPoint": "",
+        "ConfigUseRpc": true,
+        "NamingUseRpc": true,
+        "Listeners": [
+            {
+                "Optional": true,
+                "DataId": "robot-device-conf",
+                "Group": "DEFAULT_GROUP"
+            }
+        ]
+    }
+}

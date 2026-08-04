@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Ip2Region_Search": {
+      "commandName": "Project",
+      "commandLineArgs": "search {ip}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IP2REGION_ENABLE_LOGGING": "true"
+      }
+    },
+    "Ip2Region_Info": {
+      "commandName": "Project",
+      "commandLineArgs": "info {ip}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IP2REGION_ENABLE_LOGGING": "true"
+      }
+    },
+    "Ip2Region_Batch": {
+      "commandName": "Project",
+      "commandLineArgs": "batch {filePath} {save}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IP2REGION_ENABLE_LOGGING": "true",
+        "IP2REGION_BATCH_SIZE": "1000",
+        "IP2REGION_CONCURRENT_THREADS": "4"
+      }
+    },
+    "Ip2Region_Config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Ip2Region_Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark {iterations}",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "IP2REGION_ENABLE_BENCHMARKING": "true",
+        "IP2REGION_ENABLE_LOGGING": "false"
+      }
+    },
+    "Ip2Region_Help": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Ip2Region_Publish_AOT": {
+      "commandName": "Publish",
+      "publishProfile": "Default",
+      "commandLineArgs": "",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "publishOptions": {
+        "PublishSingleFile": true,
+        "PublishTrimmed": true,
+        "EnableCompressionInSingleFile": true,
+        "SelfContained": true,
+        "RuntimeIdentifier": "win-x64",
+        "Configuration": "Release"
+      }
+    }
+  },
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "IP2REGION_DB_PATH": "ip2region.db",
+    "IP2REGION_CACHE_TYPE": "memory",
+    "IP2REGION_CACHE_EXPIRATION": "30",
+    "IP2REGION_ENABLE_LOGGING": "true",
+    "IP2REGION_ENABLE_BENCHMARKING": "true",
+    "IP2REGION_BATCH_SIZE": "1000",
+    "IP2REGION_CONCURRENT_THREADS": "4"
+  },
+  "launchUrl": "",
+  "applicationUrl": "",
+  "dotnetRunMessages": true,
+  "hotReloadEnabled": false
+}

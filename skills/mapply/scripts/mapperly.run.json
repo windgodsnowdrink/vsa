@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "mapperly",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\mapply\scripts\mapperly.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\mapply\scripts\mapperly.setting.json"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_SINGLE_FILE": "true",
+        "DOTNET_SELF_CONTAINED": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

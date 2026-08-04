@@ -1,0 +1,91 @@
+﻿{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Sinks.Async", "Elastic.Serilog.Sinks", "Serilog.Sinks.Http", "Serilog.Sinks.RollingFileAlternate", "Serilog.Sinks.Seq", "Serilog.Sinks.SpectreConsole" ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithProcessId",
+      "WithThreadId",
+      "WithHangfireContext"
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.AspNetCore": "Warning",
+        "Volo.Abp.AbpApplicationBase": "Error",
+        "Microsoft.Hosting.Lifetime": "Information",
+        "Microsoft.AspNetCore.SignalR": "Information",
+        "Microsoft.AspNetCore.Http.Connections": "Information",
+        "Microsoft.EntityFrameworkCore": "Information",
+        "System": "Warning",
+        "Steeltoe": "Warning",
+        "Nacos": "Warning",
+        "EasyCaching.Core": "Warning",
+        "BEAT": "Warning",
+        "Hangfire": "Warning",
+        "SignalR": "Warning",
+        "Zipkin": "Warning",
+        "Pomelo": "Warning",
+        "Quartz": "Warning",
+        "Minio": "Warning",
+        "MediatR": "Warning",
+        "mediator": "Warning",
+        "RabbitMQ": "Information",
+        "Swagger": "Information",
+        "Redis": "Information",
+        "Oidc": "Information",
+        "Security": "Information",
+        "Seq": "Information"
+      }
+    },
+    "Properties": {
+      "Application": "maxvision.ucrsvc"
+    },
+    "WriteTo:Async": {
+      "Name": "Async",
+      "Args": {
+        "configure": [
+          { "Name": "Console" },
+          {
+            "Name": "File",
+            "Args": {
+              "path": "Logs/Info/logs.json",
+              "formatter": "Serilog.Formatting.Elasticsearch.ExceptionAsObjectJsonFormatter, Serilog",
+              "rollingInterval": "Day",
+              "rollOnFileSizeLimit": true,
+              "fileSizeLimitBytes": 15242880,
+              "restrictedToMinimumLevel": "Information",
+              "retainedFileCountLimit": "60",
+              "theme": "Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme::Colored, Serilog.Sinks.Console",
+              "outputTemplate": "[EventLevel:{Level:u} EventTime:{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} EventSource:{SourceContext}] Information:{Message:lj} {Properties:j}{NewLine}{Exception}"
+            }
+          }
+        ]
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Logs/Info/logs.json",
+          "formatter": "Serilog.Formatting.Elasticsearch.ExceptionAsObjectJsonFormatter, Serilog",
+          "rollingInterval": "Day",
+          "rollOnFileSizeLimit": true,
+          "fileSizeLimitBytes": 15242880,
+          "restrictedToMinimumLevel": "Information",
+          "retainedFileCountLimit": "60",
+          "theme": "Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme::Colored, Serilog.Sinks.Console",
+          "outputTemplate": "[EventLevel:{Level:u} EventTime:{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} EventSource:{SourceContext}] Information:{Message:lj} {Properties:j}{NewLine}{Exception}"
+        }
+      },
+      { "Name": "Console" },
+      {
+        "Name": "Seq",
+        "Args": {
+          "serverUrl": "http://127.0.0.1:5341"
+        }
+      }
+    ]
+  }
+}

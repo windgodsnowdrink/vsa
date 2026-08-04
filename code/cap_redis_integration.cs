@@ -1,0 +1,249 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package DotNetCore.CAP@7.2.0
+#:package DotNetCore.CAP.Redis@7.2.0
+#:package DotNetCore.CAP.InMemoryStorage@7.2.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@7.0.11
+#:package Microsoft.Extensions.Hosting@7.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.Threading.Channels;
+using DotNetCore.CAP;
+using StackExchange.Redis;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. 配置Redis分片集群
+var redisOptions = new ConfigurationOptions
+{
+    // 分片节点配置
+    EndPoints =
+    {
+        { "redis-shard1:6379" },
+        { "redis-shard2:6379" },
+        { "redis-shard3:6379" }
+    },
+    // 使用Twemproxy分片策略
+    Proxy = Proxy.Twemproxy,
+    // 连接池优化
+    SocketPooled = true,
+    // 高性能序列化
+    DefaultVersion = RedisVersion.Version_7_0
+};
+
+// 2. 高性能连接多路复用器
+var redis = ConnectionMultiplexer.Connect(redisOptions);
+builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
+
+// 3. 配置CAP使用Redis Streams
+builder.Services.AddCap(options =>
+{
+    // 使用Redis作为消息总线
+    options.UseRedis(redisOptions);
+    
+    // 内存优化配置
+    options.UseMemoryBuffer(options =>
+    {
+        options.PollingDelay = 100;
+        options.LockTimeout = 1000;
+        options.ConsumerThreadCount = Environment.ProcessorCount * 2;
+    });
+    
+    // 分片策略配置
+    options.UseSharding(options =>
+    {
+        options.ShardingStrategy = new ConsistentHashingShardingStrategy();
+        options.ShardCount = 3; // 虚拟分片数
+        options.VirtualNodesPerShard = 160; // 每个分片的虚拟节点数
+    });
+    
+    // 失败重试策略
+    options.FailedRetryCount = 3;
+    options.FailedRetryInterval = 60;
+});
+
+// 4. 高性能消息处理器
+builder.Services.AddSingleton<IMessageProcessor, OptimizedMessageProcessor>();
+
+var app = builder.Build();
+app.MapGet("/", () => "CAP Redis Integration");
+app.Run();
+
+// 5. 一致性哈希分片策略
+public class ConsistentHashingShardingStrategy : IShardingStrategy
+{
+    private readonly ThreadLocal<Span<byte>> _hashBuffer = new(() => stackalloc byte[256]);
+    
+    public string GetShardKey(string key)
+    {
+        var buffer = _hashBuffer.Value;
+        var hash = System.Security.Cryptography.SHA256.HashData(buffer);
+        return $"shard-{hash[0] % 3}"; // 3个分片
+    }
+}
+
+// 6. 优化消息处理器
+[SkipLocalsInit]
+public class OptimizedMessageProcessor : IMessageProcessor
+{
+    private readonly Channel<CapMessage> _processingChannel;
+    private readonly ObjectPool<IMessageHandler> _handlerPool;
+    
+    public OptimizedMessageProcessor()
+    {
+        _processingChannel = Channel.CreateBounded<CapMessage>(10000);
+        _handlerPool = new DefaultObjectPool<IMessageHandler>(
+            new MessageHandlerPoolPolicy(), 
+            Environment.ProcessorCount * 2);
+            
+        // 启动处理任务
+        _ = Task.Run(ProcessMessagesAsync);
+    }
+    
+    private async Task ProcessMessagesAsync()
+    {
+        await foreach (var message in _processingChannel.Reader.ReadAllAsync())
+        {
+            using var handler = _handlerPool.Get();
+            await handler.HandleAsync(message);
+        }
+    }
+    
+    public async Task ProcessAsync(CapMessage message)
+    {
+        await _processingChannel.Writer.WriteAsync(message);
+    }
+}
+
+// 7. 消息处理器池策略
+public class MessageHandlerPoolPolicy : IPooledObjectPolicy<IMessageHandler>
+{
+    public IMessageHandler Create() => new DefaultMessageHandler();
+    public bool Return(IMessageHandler obj) => true;
+}
+
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddTransforms<RedisShardingTransform>();
+
+public class RedisShardingTransform : RequestTransform
+{
+    private readonly ThreadLocal<Span<byte>> _hashBuffer = new(() => stackalloc byte[256]);
+    
+    public override ValueTask ApplyAsync(RequestTransformContext context)
+    {
+        var key = context.HttpContext.Request.Headers["X-Shard-Key"].FirstOrDefault();
+        var buffer = _hashBuffer.Value;
+        var hash = System.Security.Cryptography.SHA256.HashData(buffer);
+        var shard = $"redis-{hash[0] % 3}";
+        context.ProxyRequest.RequestUri = new Uri($"http://{shard}:6379");
+        return ValueTask.CompletedTask;
+    }
+}
+
+// 8. 分片连接池管理器
+[SkipLocalsInit]
+public class ShardedConnectionPool : IAsyncDisposable
+{
+    private readonly ConnectionMultiplexer[] _shardConnections;
+    private readonly ObjectPool<IDatabase>[] _shardPools;
+    private readonly Timer _healthCheckTimer;
+
+    public ShardedConnectionPool(ConfigurationOptions config, int shardCount = 3)
+    {
+        _shardConnections = new ConnectionMultiplexer[shardCount];
+        _shardPools = new ObjectPool<IDatabase>[shardCount];
+        
+        // 初始化分片连接
+        for (int i = 0; i < shardCount; i++)
+        {
+            var shardConfig = config.Clone();
+            shardConfig.EndPoints.Clear();
+            shardConfig.EndPoints.Add($"redis-shard{i+1}:6379");
+            
+            _shardConnections[i] = ConnectionMultiplexer.Connect(shardConfig);
+            _shardPools[i] = new DefaultObjectPool<IDatabase>(
+                new RedisDatabasePoolPolicy(_shardConnections[i]), 
+                Environment.ProcessorCount * 2);
+        }
+        
+        // 健康检查定时器
+        _healthCheckTimer = new Timer(CheckHealthStatus, null, 
+            TimeSpan.FromMinutes(1), 
+            TimeSpan.FromMinutes(1));
+    }
+
+    // 9. 自动故障转移实现
+    private void CheckHealthStatus(object? state)
+    {
+        for (int i = 0; i < _shardConnections.Length; i++)
+        {
+            if (!_shardConnections[i].IsConnected)
+            {
+                // 触发故障转移
+                var backupConfig = GetBackupConfig(i);
+                var backupConn = ConnectionMultiplexer.Connect(backupConfig);
+                
+                Interlocked.Exchange(ref _shardConnections[i], backupConn);
+                Interlocked.Exchange(ref _shardPools[i], 
+                    new DefaultObjectPool<IDatabase>(
+                        new RedisDatabasePoolPolicy(backupConn),
+                        Environment.ProcessorCount * 2));
+                
+                // 发送告警
+                SendAlert($"Redis shard-{i+1} failed over to backup");
+            }
+        }
+    }
+
+    // 10. 监控指标收集
+    public ShardMetrics[] GetMetrics()
+    {
+        var metrics = new ShardMetrics[_shardConnections.Length];
+        for (int i = 0; i < _shardConnections.Length; i++)
+        {
+            metrics[i] = new ShardMetrics(
+                _shardConnections[i].GetCounters(),
+                _shardPools].GetAvailableCount());
+        }
+        return metrics;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _healthCheckTimer.Dispose();
+        foreach (var conn in _shardConnections)
+        {
+            await conn.CloseAsync();
+        }
+    }
+}
+
+// 11. Redis连接池策略
+public class RedisDatabasePoolPolicy : IPooledObjectPolicy<IDatabase>
+{
+    private readonly ConnectionMultiplexer _connection;
+    
+    public RedisDatabasePoolPolicy(ConnectionMultiplexer connection) 
+        => _connection = connection;
+
+    public IDatabase Create() => _connection.GetDatabase();
+    public bool Return(IDatabase obj) => true;
+}
+
+// 12. 监控告警集成
+public static class MonitoringExtensions
+{
+    public static IServiceCollection AddRedisMonitoring(
+        this IServiceCollection services,
+        Action<MonitoringOptions>? configure = null)
+    {
+        services.AddSingleton<ShardedConnectionPool>();
+        services.AddHostedService<MetricsCollectorService>();
+        services.AddSingleton<IAlertService, PagerDutyAlertService>();
+        return services;
+    }
+}

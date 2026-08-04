@@ -1,0 +1,186 @@
+{
+  "name": "kiota_aot",
+  "description": "基于Microsoft.Kiota的AOT编译API客户端生成工具",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "commands": [
+    {
+      "name": "generate",
+      "alias": "g",
+      "description": "生成API客户端",
+      "arguments": [
+        {
+          "name": "spec",
+          "description": "OpenAPI规范URL或文件路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "description": "输出目录路径",
+          "required": true
+        },
+        {
+          "name": "language",
+          "description": "生成客户端的语言",
+          "required": true
+        },
+        {
+          "name": "namespace",
+          "description": "客户端命名空间，默认ApiClient",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "validate",
+      "alias": "v",
+      "description": "验证OpenAPI规范",
+      "arguments": [
+        {
+          "name": "spec",
+          "description": "OpenAPI规范URL或文件路径",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list-languages",
+      "alias": "ll",
+      "description": "列出支持的语言",
+      "arguments": []
+    },
+    {
+      "name": "download-spec",
+      "alias": "ds",
+      "description": "下载OpenAPI规范",
+      "arguments": [
+        {
+          "name": "url",
+          "description": "OpenAPI规范URL",
+          "required": true
+        },
+        {
+          "name": "output",
+          "description": "输出文件路径",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "cache-clear",
+      "alias": "cc",
+      "description": "清除缓存",
+      "arguments": []
+    },
+    {
+      "name": "cache-info",
+      "alias": "ci",
+      "description": "显示缓存信息",
+      "arguments": []
+    },
+    {
+      "name": "benchmark",
+      "alias": "bm",
+      "description": "运行性能基准测试",
+      "arguments": [
+        {
+          "name": "spec",
+          "description": "OpenAPI规范URL或文件路径",
+          "required": true
+        },
+        {
+          "name": "count",
+          "description": "运行次数，默认5",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "alias": "h",
+      "description": "显示帮助信息",
+      "arguments": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Microsoft.Kiota.Abstractions",
+      "version": "1.16.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Kiota.Authentication.Azure",
+      "version": "1.1.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Kiota.Http.HttpClientLibrary",
+      "version": "1.1.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Kiota.Serialization.Json",
+      "version": "1.1.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Kiota.Serialization.Text",
+      "version": "1.1.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Kiota.Serialization.Form",
+      "version": "1.1.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0",
+      "type": "nuget"
+    },
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0",
+      "type": "nuget"
+    }
+  ],
+  "build": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release",
+    "additionalProperties": {
+      "LangVersion": "preview",
+      "Nullable": "enable",
+      "ImplicitUsings": "enable"
+    }
+  },
+  "execution": {
+    "timeout": 60000,
+    "memoryLimit": 1024
+  },
+  "environmentVariables": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "KIOTA_CACHE_DIRECTORY": "%LOCALAPPDATA%\\Kiota\\Cache",
+    "KIOTA_TEMP_DIRECTORY": "%TEMP%\\Kiota",
+    "KIOTA_MAX_CACHE_SIZE": "104857600",
+    "KIOTA_DEFAULT_LANGUAGE": "csharp",
+    "KIOTA_DEFAULT_NAMESPACE": "ApiClient"
+  }
+}

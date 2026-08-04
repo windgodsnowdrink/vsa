@@ -1,0 +1,111 @@
+{
+  "AmplicationIntegrationSettings": {
+    "ApiSettings": {
+      "ApiKey": "your-amplication-api-key",
+      "BaseUrl": "https://api.amplication.com",
+      "ConnectionTimeout": "00:00:30",
+      "RetryCount": 3,
+      "EnableDebugLogging": false,
+      "EnableRateLimit": true,
+      "RateLimitRequestsPerMinute": 60
+    },
+    "ProjectSettings": {
+      "DefaultProjectId": "your-default-project-id",
+      "DefaultDatabaseType": "MongoDb",
+      "DefaultApiType": "Rest",
+      "EnableAutoSave": true,
+      "AutoSaveInterval": "00:01:00"
+    },
+    "ApiGenerationSettings": {
+      "DefaultAuthenticationType": "Jwt",
+      "EnableCors": true,
+      "EnableSwagger": true,
+      "EnablePagination": true,
+      "DefaultPageSize": 50,
+      "MaxPageSize": 1000,
+      "EnableAuthorization": false,
+      "EnableSoftDelete": true,
+      "EnableAuditLogging": false,
+      "EnableRateLimiting": false
+    },
+    "DatabaseSettings": {
+      "EnableMigrations": true,
+      "EnableSeedData": false,
+      "EnableIndexOptimization": true,
+      "MigrationStrategy": "Safe",
+      "DefaultSchemaName": "public"
+    },
+    "FrontendSettings": {
+      "DefaultFramework": "React",
+      "DefaultUiLibrary": "MaterialUi",
+      "DefaultStateManagement": "Redux",
+      "EnableStateManagement": true,
+      "EnableRouting": true,
+      "EnableAuthentication": true,
+      "EnableTesting": false,
+      "EnableLinting": true
+    },
+    "CICDSettings": {
+      "DefaultPipelineType": "GitHubActions",
+      "EnableSonarQube": false,
+      "EnableCodeCoverage": false,
+      "DefaultDeploymentTarget": "AzureAppService",
+      "DefaultTestFramework": "XUnit"
+    },
+    "DockerSettings": {
+      "EnableDockerGeneration": true,
+      "DefaultBaseImage": "mcr.microsoft.com/dotnet/aspnet:10.0",
+      "EnableMultiStageBuild": true,
+      "EnableHealthCheck": true,
+      "EnableResourceLimits": true
+    },
+    "PerformanceOptimization": {
+      "EnableSpanOptimization": true,
+      "EnableMemoryPooling": true,
+      "EnableCacheLineAlignment": true,
+      "EnableParallelProcessing": true,
+      "MaxConcurrentRequests": 10,
+      "EnableBatchProcessing": true,
+      "BatchSize": 5,
+      "BatchInterval": "00:00:00.100"
+    },
+    "CacheSettings": {
+      "EnableCaching": true,
+      "CacheExpiration": "00:05:00",
+      "EnableSlidingExpiration": true,
+      "MaxCacheItems": 1000,
+      "EnableDistributedCache": false
+    },
+    "PluginSettings": {
+      "EnablePlugins": true,
+      "PluginDirectory": "./plugins",
+      "EnableAutoLoadPlugins": true,
+      "EnablePluginValidation": true
+    },
+    "MetricsSettings": {
+      "EnableMetrics": true,
+      "CollectionInterval": "00:00:10",
+      "EnablePrometheusExporter": false,
+      "PrometheusPort": 9090,
+      "EnableOpenTelemetry": false
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Amplication": "Debug",
+      "Microsoft.AspNetCore": "Warning"
+    },
+    "Console": {
+      "Format": "json",
+      "IncludeScopes": true
+    },
+    "File": {
+      "Path": "./logs/amplication.log",
+      "RollingInterval": "Day",
+      "RetentionPeriod": "7.00:00:00",
+      "IncludeScopes": true
+    }
+  },
+  "AllowedHosts": "*"
+}

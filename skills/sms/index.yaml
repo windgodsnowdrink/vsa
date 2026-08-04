@@ -1,0 +1,121 @@
+name: sms
+version: 1.0.0
+author: NET专家
+description: 基于.NET 10的SMS技能，支持AOT编译，集成Twilio服务，提供发送、接收、模板、批量、调度和分析功能
+
+compilation:
+  targetFramework: net10.0
+  publishAot: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  langVersion: latest
+  nullable: enable
+  implicitUsings: enable
+
+dependencies:
+  - name: Twilio
+    version: 7.0.0
+    description: Twilio SMS服务提供商SDK
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+    description: 依赖注入框架
+  - name: Scrutor
+    version: 4.0.0
+    description: 高级服务注册和装饰器模式库
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行接口框架
+  - name: Microsoft.Extensions.Options
+    version: 10.0.0
+    description: 配置选项管理
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+    description: 日志记录框架
+  - name: Newtonsoft.Json
+    version: 13.0.3
+    description: JSON序列化库
+
+features:
+  - id: sms-sending
+    name: SMS发送
+    description: 支持单条和批量发送SMS消息
+  - id: sms-receiving
+    name: SMS接收
+    description: 支持接收和处理SMS消息
+  - id: sms-templating
+    name: SMS模板
+    description: 支持SMS模板管理和参数替换
+  - id: sms-batching
+    name: 批量发送
+    description: 支持批量发送SMS消息
+  - id: sms-scheduling
+    name: 定时发送
+    description: 支持定时发送SMS消息
+  - id: sms-analytics
+    name: 发送分析
+    description: 支持SMS发送统计和趋势分析
+
+cli:
+  commands:
+    - name: send
+      description: 发送SMS消息
+      arguments:
+        - name: to
+          description: 目标手机号码
+          required: true
+        - name: message
+          description: 消息内容
+          required: true
+    - name: receive
+      description: 接收SMS消息
+    - name: template
+      description: 管理SMS模板
+      subcommands:
+        - name: create
+          description: 创建SMS模板
+        - name: list
+          description: 列出所有SMS模板
+        - name: delete
+          description: 删除SMS模板
+    - name: batch
+      description: 批量发送SMS消息
+      arguments:
+        - name: file
+          description: 包含手机号码列表的文件路径
+          required: true
+        - name: message
+          description: 消息内容
+          required: true
+    - name: schedule
+      description: 定时发送SMS消息
+      arguments:
+        - name: to
+          description: 目标手机号码
+          required: true
+        - name: message
+          description: 消息内容
+          required: true
+        - name: time
+          description: 发送时间
+          required: true
+    - name: analytics
+      description: 查看SMS发送分析
+
+files:
+  - path: scripts/sms_core.cs
+    description: SMS核心功能实现
+  - path: scripts/sms_core.setting.json
+    description: SMS核心功能编译配置
+  - path: scripts/sms_core.run.json
+    description: SMS核心功能运行配置
+  - path: scripts/sms_generator.cs
+    description: SMS代码生成和Scrutor用法示例
+  - path: scripts/sms_generator.setting.json
+    description: SMS代码生成编译配置
+  - path: scripts/sms_generator.run.json
+    description: SMS代码生成运行配置
+  - path: reference/README.md
+    description: 参考文档
+  - path: reference/examples.md
+    description: 使用示例文档

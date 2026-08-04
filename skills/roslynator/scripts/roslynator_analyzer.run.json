@@ -1,0 +1,16 @@
+{
+  "command": "roslynator_analyzer.exe",
+  "args": [
+    "analyze",
+    "--path", "${workspaceFolder}",
+    "--severity", "warning",
+    "--output", "analysis-report.json"
+  ],
+  "env": {
+    "DOTNET_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+  },
+  "workingDirectory": "${workspaceFolder}",
+  "problemMatcher": [],
+  "label": "Run Roslynator Analyzer"
+}

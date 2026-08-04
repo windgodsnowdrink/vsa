@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "command": "dotnet",
+  "args": ["run", "--project", "rate_limiter.cs"],
+  "options": {
+    "cwd": "d:\\Trae\\vsa\\skills\\resilient\\scripts",
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_RUNNING_IN_CONTAINER": "false"
+    },
+    "shell": true,
+    "timeout": 300000
+  },
+  "settings": {
+    "rateLimiter": {
+      "tokenLimit": 100,
+      "tokensPerPeriod": 100,
+      "replenishmentPeriod": "00:00:01",
+      "queueLimit": 50,
+      "queueProcessingOrder": "OldestFirst",
+      "windowLimit": 100,
+      "window": "00:00:01",
+      "autoReplenishment": true,
+      "permitLimit": 100,
+      "healthCheckInterval": "00:01:00",
+      "enableHealthCheck": true,
+      "enableTelemetry": true
+    },
+    "logging": {
+      "level": "Information",
+      "file": "logs\\rate_limiter.log",
+      "console": true
+    }
+  }
+}

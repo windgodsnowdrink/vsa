@@ -1,0 +1,14 @@
+{
+  "Database": {
+    "DatabaseType": "Sqlite",
+    "ConnectionString": "Data Source=app.db",
+    "EnableConnectionPooling": true,
+    "MaxPoolSize": 100,
+    "ConnectionTimeout": 30,
+    "CommandTimeout": 30,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "BatchSize": 1000,
+    "EnableTransactions": true
+  }
+}

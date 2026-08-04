@@ -1,0 +1,236 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Craftsman@0.28.3
+#:package Microsoft.CodeAnalysis.CSharp@4.7.0
+#:package Microsoft.CodeAnalysis.Analyzers@3.3.4
+#:package Microsoft.Extensions.DependencyInjection.Abstractions@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property EnforceExtendedAnalyzerRules true
+#:property EnableNETAnalyzers true
+#:property GenerateDocumentationFile true
+#:property AotEnable true
+#:property PublishAot=true
+
+using Craftsman;
+using Microsoft.Extensions.DependencyInjection;
+
+public static class CraftsmanIntegration
+{
+    public static IServiceCollection AddCraftsmanServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICraftsmanService, CraftsmanService>();
+        
+        // DDD分层注册
+        services.AddDomainServices()
+            .AddApplicationServices()
+            .AddInfrastructureServices()
+            .AddPresentationServices();
+            
+        // AOT优化配置
+        services.Configure<AotOptions>(options => 
+        {
+            options.EnableTieredCompilation = true;
+            options.EnableReadyToRun = true;
+            options.EnableDynamicPgo = true;
+            options.EnableQuickJitForLoops = false;
+        });
+        
+        // SG代码生成器注册
+        services.AddSourceGenerators()
+            .AddSingleton<IDddSourceGenerator, DddSourceGenerator>()
+            .AddSingleton<IApiSourceGenerator, ApiSourceGenerator>();
+            
+        return services;
+    }
+}
+
+public interface ICraftsmanService
+{
+    void GenerateTodoYamlDefinition(string outputPath);
+    void GenerateCrudCodeFromYaml(string yamlPath, string outputPath);
+}
+
+[Generator(LanguageNames.CSharp)]
+public partial class CraftsmanService : ICraftsmanService, ISourceGenerator
+{
+    private readonly IDddSourceGenerator _dddGenerator;
+    private readonly IApiSourceGenerator _apiGenerator;
+    
+    public CraftsmanService(
+        IDddSourceGenerator dddGenerator,
+        IApiSourceGenerator apiGenerator)
+    {
+        _dddGenerator = dddGenerator;
+        _apiGenerator = apiGenerator;
+    }
+    
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        context.RegisterForSyntaxNotifications(() => new DddSyntaxReceiver());
+    }
+    
+    public void Execute(GeneratorExecutionContext context)
+    {
+        if (context.SyntaxReceiver is not DddSyntaxReceiver receiver)
+            return;
+            
+        // DDD代码生成
+        var dddCode = _dddGenerator.Generate(receiver);
+        context.AddSource("DddGenerated.cs", SourceText.From(dddCode, Encoding.UTF8));
+        
+        // API代码生成
+        var apiCode = _apiGenerator.Generate(receiver);
+        context.AddSource("ApiGenerated.cs", SourceText.From(apiCode, Encoding.UTF8));
+    }
+{
+    public void GenerateTodoYamlDefinition(string outputPath)
+    {
+        var yamlContent = @"
+apiName: TodoApi
+entities:
+  - name: Todo
+    properties:
+      - name: Id
+        type: Guid
+        isRequired: true
+        isKey: true
+      - name: Title
+        type: string
+        maxLength: 100
+        isRequired: true
+      - name: Description
+        type: string
+        maxLength: 500
+      - name: IsCompleted
+        type: bool
+        defaultValue: false
+      - name: CreatedDate
+        type: DateTime
+        isRequired: true
+      - name: UpdatedDate
+        type: DateTime
+
+database:
+  provider: sqlite
+  connectionStringName: DefaultConnection
+
+api:
+  version: v1
+  useSwagger: true
+  useJwtAuth: true
+  architecture:
+    type: vsa
+    verticalSlices: true
+    featureModules: true
+    endpointRouting: \""{Feature}/{Endpoint}\""
+    useMinimalApis: true
+
+database:
+  sqlite:
+    connectionString: \""Data Source=Todo.db\""
+    enableWal: true
+    cacheSize: -2000
+    journalMode: WAL
+    synchronous: NORMAL
+    tempStore: MEMORY
+    mmapSize: 268435456
+    foreignKeys: true
+    recursiveTriggers: true
+    autoVacuum: FULL
+    busyTimeout: 5000
+    defaultTimeout: 30
+    poolSize: 100
+    maxPageCount: 2147483646
+    pageSize: 4096
+
+  litedb:
+    connectionString: \""Filename=Todo.db;Connection=shared\""
+    timeout: 00:01:00
+    journal: true
+    password: ""
+    initialSize: 0
+    limitSize: 1073741824
+    logLevel: 0
+    readOnly: false
+    upgrade: false
+    async: true
+    chunkSize: 8192
+    collation: Binary
+    maxOpenTransactions: 100
+";
+        File.WriteAllText(outputPath, yamlContent);
+    }
+
+    public void GenerateCrudCodeFromYaml(string yamlPath, string outputPath)
+    {
+        // 应用DDD分层架构
+        var dddContext = new DddContext
+        {
+            Layers = DddLayers.All,
+            Patterns = DddPatterns.AggregateRoot | DddPatterns.ValueObject | 
+                      DddPatterns.DomainEvent | DddPatterns.Repository |
+                      DddPatterns.Specification
+        };
+        
+        var builder = new CraftsmanBuilder()
+            .AddDddContext(dddContext)
+            .AddYamlFile(yamlPath)
+            .AddProject(outputPath)
+            .AddDomainLayer()
+            .AddApplicationLayer()
+            .AddInfrastructureLayer()
+            .AddApiLayer()
+            .ConfigureVsaArchitecture(options =>
+            {
+                options.UseVerticalSlices = true;
+                options.FeatureModuleNamingConvention = "Features.{FeatureName}";
+                options.EndpointRoutingConvention = "{FeatureName}/{EndpointName}";
+                options.UseMinimalApis = false;
+                options.UseFeatureFolders = true;
+            })
+            .ConfigureDatabase(options =>
+            {
+                // SQLite配置
+                options.UseSqlite(sqliteOptions =>
+                {
+                    sqliteOptions.ConnectionString = "Data Source=Todo.db";
+                    sqliteOptions.EnableWal = true;
+                    sqliteOptions.CacheSize = -2000;
+                    sqliteOptions.JournalMode = SqliteJournalMode.Wal;
+                    sqliteOptions.Synchronous = SqliteSynchronousMode.Normal;
+                    sqliteOptions.TempStore = SqliteTempStore.Memory;
+                    sqliteOptions.MmapSize = 268435456;
+                    sqliteOptions.ForeignKeys = true;
+                    sqliteOptions.RecursiveTriggers = true;
+                    sqliteOptions.AutoVacuum = SqliteAutoVacuumMode.Full;
+                    sqliteOptions.BusyTimeout = 5000;
+                    sqliteOptions.DefaultTimeout = 30;
+                    sqliteOptions.PoolSize = 100;
+                    sqliteOptions.MaxPageCount = 2147483646;
+                    sqliteOptions.PageSize = 4096;
+                });
+
+                // LiteDB配置
+                options.UseLiteDb(liteDbOptions =>
+                {
+                    liteDbOptions.ConnectionString = "Filename=Todo.db;Connection=shared";
+                    liteDbOptions.Timeout = TimeSpan.FromMinutes(1);
+                    liteDbOptions.Journal = true;
+                    liteDbOptions.Password = "";
+                    liteDbOptions.InitialSize = 0;
+                    liteDbOptions.LimitSize = 1073741824;
+                    liteDbOptions.LogLevel = 0;
+                    liteDbOptions.ReadOnly = false;
+                    liteDbOptions.Upgrade = false;
+                    liteDbOptions.Async = true;
+                    liteDbOptions.ChunkSize = 8192;
+                    liteDbOptions.Collation = LiteDB.Collation.Binary;
+                    liteDbOptions.MaxOpenTransactions = 100;
+                });
+            });
+
+        builder.Build();
+    }
+}

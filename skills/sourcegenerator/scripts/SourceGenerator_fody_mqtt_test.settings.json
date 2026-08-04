@@ -1,0 +1,37 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.Fody.MQTT": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "FodyMQTT": {
+      "MqttBrokerUrl": "mqtt://localhost:1883",
+      "MqttUsername": "admin",
+      "MqttPassword": "password",
+      "ClientId": "SourceGeneratorTest",
+      "Topics": [
+        "test/topic1",
+        "test/topic2"
+      ],
+      "QoSLevel": 1,
+      "CleanSession": true,
+      "KeepAlivePeriodSeconds": 60,
+      "AutoReconnectDelaySeconds": 5,
+      "MaxReconnectAttempts": 10,
+      "GenerateDebugInfo": true,
+      "EnableCodeGeneration": true
+    }
+  }
+}

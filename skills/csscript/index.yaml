@@ -1,0 +1,36 @@
+# Csscript AOT Agent Skill - Csscript AOT高性能脚本执行工具
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: Csscript AOT高性能脚本执行工具，基于.NET 10 AOT架构
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# Application Scenarios: 动态脚本执行、配置驱动逻辑、规则引擎、动态计算、扩展插件系统、测试脚本执行、脚本化管理、动态工作流
+# Activation Conditions: 当需要执行脚本功能时激活
+# Main Features:
+# - 支持内联脚本和脚本文件执行
+# - 支持批量执行多个脚本
+# - 支持脚本编译检查
+# - 内置缓存机制，提高重复脚本执行速度
+# - 提供详细的状态监控信息
+# - 支持命令行使用
+# - 基于.NET 10 AOT架构
+# Performance Features:
+# - AOT编译，启动时间快，内存占用低
+# - 高性能设计，执行速度快
+# - 缓存支持，提高重复执行性能
+# - 异步编程，提高并发处理能力
+# - 工作线程优化，充分利用CPU资源
+# Technical Features:
+# - .NET 10 AOT编译
+# - 依赖注入（IoC容器）
+# - 选项模式，灵活配置管理
+# - 异步编程模型
+# - 日志记录
+# - 命令行接口
+# - 批量处理支持
+# - 安全配置，控制外部脚本执行

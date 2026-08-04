@@ -1,0 +1,142 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MediatR@12.1.1
+#:package Microsoft.EntityFrameworkCore@8.0.0
+#:property TargetFramework net10.0
+#:property Nullable enable
+
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+// 本地消息表实体
+public class OutboxMessage
+{
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string MessageType { get; set; } = null!;
+    public string Payload { get; set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? ProcessedAt { get; set; }
+    public string? Error { get; set; }
+}
+
+// 数据库上下文
+public class MessageDbContext : DbContext
+{
+    public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite("Data Source=messages.db");
+}
+
+// 消息发布行为
+public class OutboxBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    private readonly MessageDbContext _dbContext;
+
+    public OutboxBehavior(MessageDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        var response = await next();
+
+        if (request is IOutboxMessage outboxMessage)
+        {
+            await _dbContext.OutboxMessages.AddAsync(new OutboxMessage
+            {
+                MessageType = request.GetType().FullName!,
+                Payload = outboxMessage.Serialize()
+            }, cancellationToken);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        return response;
+    }
+}
+
+// 后台消息处理服务
+public class OutboxProcessor : BackgroundService
+{
+    private readonly IServiceProvider _services;
+    private readonly ILogger<OutboxProcessor> _logger;
+
+    public OutboxProcessor(
+        IServiceProvider services,
+        ILogger<OutboxProcessor> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                using var scope = _services.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<MessageDbContext>();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                var messages = await dbContext.OutboxMessages
+                    .Where(m => m.ProcessedAt == null)
+                    .OrderBy(m => m.CreatedAt)
+                    .Take(100)
+                    .ToListAsync(stoppingToken);
+
+                foreach (var message in messages)
+                {
+                    try
+                    {
+                        var messageType = Type.GetType(message.MessageType);
+                        if (messageType != null)
+                        {
+                            var request = JsonSerializer.Deserialize(
+                                message.Payload, 
+                                messageType) as IRequest;
+                            
+                            if (request != null)
+                            {
+                                await mediator.Send(request, stoppingToken);
+                                message.ProcessedAt = DateTime.UtcNow;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        message.Error = ex.ToString();
+                        _logger.LogError(ex, "处理消息失败: {MessageId}", message.Id);
+                    }
+                }
+
+                await dbContext.SaveChangesAsync(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "处理消息表时发生异常");
+            }
+
+            await Task.Delay(5000, stoppingToken);
+        }
+    }
+}
+
+// DI扩展
+public static class MediatRDependencyInjectionExtensions
+{
+    public static IServiceCollection AddMediatROutboxSupport(this IServiceCollection services)
+    {
+        services.AddDbContext<MessageDbContext>();
+        services.AddHostedService<OutboxProcessor>();
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OutboxBehavior<,>));
+        return services;
+    }
+}

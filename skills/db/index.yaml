@@ -1,0 +1,46 @@
+# db Agent Skill - 数据库技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的高性能数据库技能，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.Data.Sqlite@8.0.0
+# - Dapper@2.1.35
+# - MySqlConnector@2.3.5
+# - Npgsql@8.0.3
+# Application Scenarios: 数据库相关功能，如查询、插入、更新、删除、事务处理等
+# Activation Conditions: 当需要数据库功能时激活
+# Main Features:
+# - 多数据库支持（SQLite、MySQL、PostgreSQL）
+# - 全面的数据库操作支持
+# - 高性能 AOT 编译
+# - 批量操作支持
+# - 事务管理
+# - 存储过程支持
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 优化的连接池管理
+# - 内存优化设计
+# - 高并发支持
+# - 批量操作优化
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程模型
+# - Options 配置模式
+# - 日志记录支持
+# - 状态监控
+# - 易于扩展的架构
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - status: 查看数据库服务状态
+# - reset: 重置数据库服务状态
+# - demo: 运行数据库演示程序

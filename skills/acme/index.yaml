@@ -1,0 +1,27 @@
+# ACME Agent Skill - 证书自动化管理
+# 版本: 1.0.0
+# 作者: VSA Architecture Team
+# 描述: 基于ACME协议的证书自动化管理，支持多种ACME客户端库集成
+# 技能类型: 安全管理
+# 依赖:
+# - AcmeDotnet@2.0.0
+# - Certes@3.0.0
+# - Prometheus.Client@6.0.0
+# 适用场景: SSL证书自动获取、证书监控、分布式证书管理、多算法证书支持
+# 激活条件: 需要SSL证书管理时激活
+# 主要功能:
+# - 证书自动获取和续订
+# - 证书有效期监控
+# - 多种ACME客户端支持
+# - 分布式锁保护
+# - RSA/ECDSA算法支持
+# - Lettuce Encrypt集成
+# - Prometheus监控指标
+# 性能特性:
+# - 使用通道(Channel)处理证书监控
+# - 支持尾延迟优化(TailLatencyOptimizer)
+# - 实现证书缓存机制
+# 安全特性:
+# - 支持多种证书算法
+# - 分布式锁确保唯一性
+# - 证书私钥安全管理

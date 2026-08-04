@@ -1,0 +1,403 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "version": "1.0.0",
+  "profiles": {
+    "GrpcAOT": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GRPC_SERVER_HOST": "localhost",
+        "GRPC_SERVER_PORT": "50051",
+        "GRPC_MAX_CONCURRENT_CALLS": "100",
+        "GRPC_KEEP_ALIVE_TIME_SECONDS": "60",
+        "GRPC_MAX_MESSAGE_SIZE": "4194304",
+        "GRPC_ENABLE_TLS": "false",
+        "GRPC_CERTIFICATE_PATH": "",
+        "GRPC_CERTIFICATE_PASSWORD": ""
+      },
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": false
+    },
+    "GrpcAOT-Production": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GRPC_SERVER_HOST": "0.0.0.0",
+        "GRPC_SERVER_PORT": "50051",
+        "GRPC_MAX_CONCURRENT_CALLS": "200",
+        "GRPC_KEEP_ALIVE_TIME_SECONDS": "30",
+        "GRPC_MAX_MESSAGE_SIZE": "8388608",
+        "GRPC_ENABLE_TLS": "false",
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+        "DOTNET_HTTP2_ENABLED": "1"
+      },
+      "dotnetRunMessages": false,
+      "hotReloadEnabled": false
+    },
+    "GrpcAOT-Staging": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Staging",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GRPC_SERVER_HOST": "localhost",
+        "GRPC_SERVER_PORT": "50052",
+        "GRPC_MAX_CONCURRENT_CALLS": "150",
+        "GRPC_KEEP_ALIVE_TIME_SECONDS": "45",
+        "GRPC_MAX_MESSAGE_SIZE": "4194304",
+        "GRPC_ENABLE_TLS": "false"
+      },
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": false
+    },
+    "GrpcAOT-Test": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Testing",
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "GRPC_SERVER_HOST": "localhost",
+        "GRPC_SERVER_PORT": "50053",
+        "GRPC_MAX_CONCURRENT_CALLS": "50",
+        "GRPC_KEEP_ALIVE_TIME_SECONDS": "60",
+        "GRPC_MAX_MESSAGE_SIZE": "2097152",
+        "GRPC_ENABLE_TLS": "false"
+      },
+      "dotnetRunMessages": true,
+      "hotReloadEnabled": true
+    }
+  },
+  "commandAliases": {
+    "server": "server",
+    "s": "server",
+    "client": "client",
+    "c": "client",
+    "hello": "hello",
+    "h": "hello",
+    "ping": "ping",
+    "p": "ping",
+    "health": "health",
+    "he": "health",
+    "config": "config",
+    "conf": "config",
+    "help": "help",
+    "?": "help",
+    "--help": "help",
+    "-h": "help"
+  },
+  "commandDefaults": {
+    "server": {
+      "host": "localhost",
+      "port": "50051",
+      "maxConcurrentCalls": "100"
+    },
+    "client": {
+      "host": "localhost",
+      "port": "50051"
+    },
+    "hello": {
+      "name": "World"
+    },
+    "ping": {
+      "message": "Hello gRPC"
+    },
+    "health": {
+      "service": ""
+    }
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": "Microsoft.NETCore.App",
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 10,
+      "System.Threading.ThreadPool.MaxThreads": 100,
+      "System.Net.Sockets.UseOnlyIPv4": false,
+      "System.Net.Http.UseSocketsHttpHandler": true,
+      "System.Net.Http.SocketsHttpHandler.Http2Support": true,
+      "System.Net.Http.SocketsHttpHandler.EnableMultipleHttp2Connections": true,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingDelay": 60,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingTimeout": 30,
+      "System.Net.Http.SocketsHttpHandler.KeepAlivePingPolicy": 2,
+      "System.Text.Json.Serialization.MaxDepth": 64,
+      "System.Net.Security.SslStream.AlwaysEncrypt": false,
+      "System.Net.Security.SslStream.CheckCertificateRevocation": false,
+      "System.Net.Http.SocketsHttpHandler.AutomaticDecompression": 3
+    }
+  },
+  "debugOptions": {
+    "enabled": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "exposeDebugPort": true,
+    "debugPort": 5005,
+    "justMyCode": true,
+    "enableLogging": true,
+    "logLevel": "Debug"
+  },
+  "performanceOptions": {
+    "enableMemoryProfiling": false,
+    "enableCpuProfiling": false,
+    "enableGcLogging": false,
+    "enableTracing": false,
+    "traceLevel": "Information",
+    "enableEventCounters": true,
+    "eventCounterIntervalSec": 1
+  },
+  "loggingOptions": {
+    "logLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "Grpc": "Information",
+      "GrpcAOT": "Information"
+    },
+    "console": {
+      "enabled": true,
+      "format": "default",
+      "includeScopes": false,
+      "timestampFormat": "yyyy-MM-dd HH:mm:ss.fff",
+      "useAnsiColors": true,
+      "disableColors": false
+    },
+    "debug": {
+      "enabled": true,
+      "logLevel": {
+        "Default": "Debug",
+        "GrpcAOT": "Debug"
+      }
+    },
+    "file": {
+      "enabled": false,
+      "path": "grpc_aot.log",
+      "append": true,
+      "rollOnSizeLimit": true,
+      "fileSizeLimitBytes": 10485760,
+      "maxRollingFiles": 5
+    }
+  },
+  "validationOptions": {
+    "enableInputValidation": true,
+    "enableOutputValidation": true,
+    "enablePerformanceValidation": false,
+    "maxValidationErrors": 10,
+    "enableRequestValidation": true,
+    "enableResponseValidation": true,
+    "enableProtocolValidation": true
+  },
+  "extensionCommands": {
+    "server": {
+      "description": "启动gRPC服务器",
+      "commandLineArgs": "server",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      }
+    },
+    "client": {
+      "description": "启动gRPC客户端",
+      "commandLineArgs": "client"
+    },
+    "hello": {
+      "description": "发送Hello请求",
+      "commandLineArgs": "hello"
+    },
+    "ping": {
+      "description": "发送Ping请求",
+      "commandLineArgs": "ping"
+    },
+    "health": {
+      "description": "发送健康检查请求",
+      "commandLineArgs": "health"
+    },
+    "config": {
+      "description": "显示配置信息",
+      "commandLineArgs": "config"
+    }
+  },
+  "deploymentOptions": {
+    "selfContained": true,
+    "publishSingleFile": true,
+    "publishReadyToRun": true,
+    "publishTrimmed": true,
+    "runtimeIdentifier": "win-x64",
+    "targetFramework": "net10.0",
+    "outputPath": "bin\\Release\\net10.0\\win-x64\\publish",
+    "publishDir": "bin\\Release\\net10.0\\win-x64\\publish",
+    "includeNativeLibrariesForSelfExtract": true,
+    "includeAllContentForSelfExtract": true,
+    "excludeSymbols": false,
+    "excludeDebugInformation": false
+  },
+  "healthChecks": {
+    "enabled": true,
+    "endpoints": {
+      "health": "/health",
+      "ready": "/ready",
+      "live": "/live"
+    },
+    "interval": 30,
+    "timeout": 10,
+    "maxAttempts": 3,
+    "failureThreshold": 3,
+    "successThreshold": 1
+  },
+  "metrics": {
+    "enabled": true,
+    "endpoints": {
+      "metrics": "/metrics"
+    },
+    "exporters": {
+      "prometheus": {
+        "enabled": true,
+        "url": "http://localhost:9100/metrics"
+      },
+      "applicationInsights": {
+        "enabled": false,
+        "connectionString": ""
+      }
+    },
+    "metricsOptions": {
+      "includeRuntimeMetrics": true,
+      "includeProcessMetrics": true,
+      "includeGrpcMetrics": true,
+      "includeSystemMetrics": false
+    }
+  },
+  "securityOptions": {
+    "enableSsl": false,
+    "enableCors": false,
+    "enableHsts": false,
+    "enableContentSecurityPolicy": false,
+    "allowedOrigins": [],
+    "allowedMethods": [],
+    "allowedHeaders": [],
+    "allowCredentials": false,
+    "maxAge": 3600,
+    "requireHttps": false,
+    "redirectToHttps": false,
+    "sslPort": 0
+  },
+  "networkOptions": {
+    "maxConcurrentCalls": 100,
+    "maxConcurrentStreams": 1000,
+    "maxMessageSize": 4194304,
+    "keepAliveTimeSeconds": 60,
+    "keepAliveTimeoutSeconds": 30,
+    "keepAlivePermitWithoutCalls": true,
+    "initialWindowSize": 65536,
+    "initialConnectionWindowSize": 1048576,
+    "maxHeaderListSize": 8192,
+    "maxHeaderSize": 8192,
+    "enableHttp2PriorKnowledge": true,
+    "enableHttp2Multiplexing": true,
+    "enableHttp2ServerPush": false,
+    "http2FlowControl": true,
+    "http2InitialConnectionWindowSize": 1048576,
+    "http2InitialStreamWindowSize": 65536,
+    "http2MaxStreamsPerConnection": 100,
+    "http2MaxFrameSize": 16384,
+    "http2MaxHeaderListSize": 8192
+  },
+  "grpcOptions": {
+    "services": [
+      {
+        "name": "Greeter",
+        "serviceName": "greeter.Greeter",
+        "methods": [
+          {
+            "name": "SayHello",
+            "type": "Unary",
+            "requestType": "HelloRequest",
+            "responseType": "HelloResponse",
+            "timeout": 30,
+            "maxRetries": 3,
+            "retryDelay": 1
+          }
+        ],
+        "enabled": true,
+        "maxConcurrentCalls": 50
+      },
+      {
+        "name": "Health",
+        "serviceName": "grpc.health.v1.Health",
+        "methods": [
+          {
+            "name": "Check",
+            "type": "Unary",
+            "requestType": "HealthCheckRequest",
+            "responseType": "HealthCheckResponse",
+            "timeout": 10,
+            "maxRetries": 1,
+            "retryDelay": 0.5
+          }
+        ],
+        "enabled": true,
+        "maxConcurrentCalls": 100
+      },
+      {
+        "name": "Ping",
+        "serviceName": "ping.Ping",
+        "methods": [
+          {
+            "name": "Ping",
+            "type": "Unary",
+            "requestType": "PingRequest",
+            "responseType": "PingResponse",
+            "timeout": 5,
+            "maxRetries": 1,
+            "retryDelay": 0.1
+          }
+        ],
+        "enabled": true,
+        "maxConcurrentCalls": 200
+      }
+    ],
+    "client": {
+      "timeout": 30,
+      "maxRetries": 3,
+      "retryDelay": 1,
+      "backoffMultiplier": 2,
+      "maxBackoff": 30,
+      "connectTimeout": 10,
+      "keepAliveTime": 60,
+      "keepAliveTimeout": 30,
+      "enableKeepAlive": true,
+      "keepAliveWithoutCalls": true
+    },
+    "server": {
+      "maxConcurrentCalls": 100,
+      "maxConcurrentStreams": 1000,
+      "maxMessageSize": 4194304,
+      "keepAliveTime": 60,
+      "keepAliveTimeout": 30,
+      "keepAlivePermitWithoutCalls": true,
+      "maxConnectionAge": 0,
+      "maxConnectionAgeGrace": 0,
+      "maxConcurrentConnections": 0,
+      "channelArguments": {
+        "grpc.max_concurrent_streams": 1000,
+        "grpc.max_message_length": 4194304,
+        "grpc.keepalive_time_ms": 60000,
+        "grpc.keepalive_timeout_ms": 30000,
+        "grpc.keepalive_permit_without_calls": 1,
+        "grpc.http2.initial_connection_window_size": 1048576,
+        "grpc.http2.initial_stream_window_size": 65536,
+        "grpc.http2.max_frame_size": 16384,
+        "grpc.http2.max_header_list_size": 8192,
+        "grpc.enable_retries": 1,
+        "grpc.initial_reconnect_backoff_ms": 100,
+        "grpc.max_reconnect_backoff_ms": 30000
+      }
+    }
+  }
+}

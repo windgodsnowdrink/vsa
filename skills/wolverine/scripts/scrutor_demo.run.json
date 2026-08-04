@@ -1,0 +1,21 @@
+{
+  "command": "dotnet",
+  "arguments": ["run", "--project", "scrutor_demo.cs"],
+  "workingDirectory": "d:\\Trae\\vsa\\skills\\wolverine\\scripts",
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_RUNNING_IN_CONTAINER": "false"
+  },
+  "timeout": 30000,
+  "runOptions": {
+    "captureOutput": true,
+    "redirectStandardInput": true,
+    "redirectStandardOutput": true,
+    "redirectStandardError": true
+  },
+  "debugOptions": {
+    "enabled": false,
+    "launchBrowser": false
+  }
+}

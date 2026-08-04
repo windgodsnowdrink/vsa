@@ -1,0 +1,106 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Esquio.AspNetCore@5.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Esquio.AspNetCore;
+using Microsoft.Extensions.ObjectPool;
+// 1. 高性能任务处理器(Disruptor模式)
+
+// 2. 主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Esquio
+builder.Services.AddEsquio()
+    .AddAspNetCoreDefaultServices()
+    .AddConfigurationStore();
+
+// 注册任务处理器
+builder.Services.AddHostedService<EsquioScheduler>();
+
+var app = builder.Build();
+
+// 任务调度端点
+app.MapPost("/schedule", async (ScheduledJob job, EsquioScheduler scheduler) =>
+{
+    await scheduler.ScheduleJobAsync(job);
+    return Results.Ok();
+});
+
+app.Run();
+
+[SkipLocalsInit]
+public sealed class EsquioScheduler : BackgroundService
+{
+    private readonly Channel<ScheduledJob> _jobChannel;
+    private readonly ObjectPool<JobContext> _contextPool;
+    private readonly IEsquioClient _esquio;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public EsquioScheduler(IEsquioClient esquio)
+    {
+        _esquio = esquio;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _jobChannel = Channel.CreateBounded<ScheduledJob>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<JobContext>(
+            new JobContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ScheduleJobAsync(ScheduledJob job)
+    {
+        await _jobChannel.Writer.WriteAsync(job);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var job in _jobChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Execute(job, _esquio);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 3. 辅助类
+public record ScheduledJob(string Id, string FeatureName, string Parameters);
+public class JobContext
+{
+    public void Execute(ScheduledJob job, IEsquioClient esquio)
+    {
+        if (esquio.IsEnabled(job.FeatureName))
+        {
+            Console.WriteLine($"Executing job: {job.Id}");
+        }
+    }
+}
+public class JobContextPooledPolicy : IPooledObjectPolicy<JobContext>
+{
+    public JobContext Create() => new JobContext();
+    public bool Return(JobContext obj) => true;
+}

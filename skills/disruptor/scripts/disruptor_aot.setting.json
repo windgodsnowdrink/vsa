@@ -1,0 +1,14 @@
+{
+  "Disruptor": {
+    "RingBufferSize": 4096,
+    "ConsumerCount": 2,
+    "EnableBatching": true,
+    "BatchSize": 64,
+    "EnablePriorityQueue": false,
+    "EnableEventTracking": true,
+    "EventTimeoutMs": 5000,
+    "MaxRetryCount": 3,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true
+  }
+}

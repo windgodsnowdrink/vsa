@@ -1,0 +1,120 @@
+//#:sdk Microsoft.NET.Sdk.Web
+//#:package Util.Core@latest
+//#:package System.Threading.Channels@7.0.0
+//#:package Microsoft.Extensions.Caching.Memory@7.0.0
+//#:property LangVersion=preview
+//#:property TargetFramework=net10.0
+//#:property Nullable=enable
+//#:property ImplicitUsings=enable
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using Util;
+
+namespace UtilEnhancedIntegration
+{
+    public class UtilEnhancedOptions : UtilOptions
+    {
+        public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount;
+        public TimeSpan CacheExpiration { get; set; } = TimeSpan.FromMinutes(5);
+    }
+
+    public interface IUtilEnhancedService : IUtilService
+    {
+        Task ProcessInParallelAsync(string[] keys);
+        Task<string> GetOrSetCachedDataAsync(string key, Func<Task<string>> valueFactory);
+    }
+
+    public class UtilEnhancedService : UtilService, IUtilEnhancedService
+    {
+        private readonly Channel<string> _processingChannel;
+        private readonly IMemoryCache _cache;
+        private readonly UtilEnhancedOptions _enhancedOptions;
+
+        public UtilEnhancedService(
+            IOptions<UtilEnhancedOptions> options,
+            ILogger<UtilEnhancedService> logger,
+            IMemoryCache cache) : base(options, logger)
+        {
+            _enhancedOptions = options.Value;
+            _cache = cache;
+            _processingChannel = Channel.CreateUnbounded<string>();
+            StartProcessingWorkers();
+        }
+
+        private void StartProcessingWorkers()
+        {
+            for (int i = 0; i < _enhancedOptions.MaxDegreeOfParallelism; i++)
+            {
+                Task.Run(ProcessItemsAsync);
+            }
+        }
+
+        private async Task ProcessItemsAsync()
+        {
+            await foreach (var item in _processingChannel.Reader.ReadAllAsync())
+            {
+                await ProcessItemAsync(item);
+            }
+        }
+
+        public async Task ProcessInParallelAsync(string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                await _processingChannel.Writer.WriteAsync(key);
+            }
+        }
+
+        public async Task<string> GetOrSetCachedDataAsync(string key, Func<Task<string>> valueFactory)
+        {
+            return await _cache.GetOrCreateAsync(key, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = _enhancedOptions.CacheExpiration;
+                return await valueFactory();
+            });
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddUtilEnhancedServices(this IServiceCollection services, Action<UtilEnhancedOptions> configureOptions)
+        {
+            services.AddMemoryCache();
+            services.Configure(configureOptions);
+            services.AddSingleton<IUtilEnhancedService, UtilEnhancedService>();
+            return services;
+        }
+    }
+
+    public static class ExampleEnhancedUsage
+    {
+        public static async Task Demo()
+        {
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddUtilEnhancedServices(options =>
+            {
+                options.DefaultConnectionString = "Server=.;Database=Test;Trusted_Connection=True;";
+                options.MaxRetryCount = 5;
+                options.Timeout = TimeSpan.FromMinutes(1);
+                options.MaxDegreeOfParallelism = 8;
+                options.CacheExpiration = TimeSpan.FromHours(1);
+            });
+
+            var provider = services.BuildServiceProvider();
+            var enhancedService = provider.GetRequiredService<IUtilEnhancedService>();
+
+            // 使用缓存功能
+            var cachedData = await enhancedService.GetOrSetCachedDataAsync("cacheKey", 
+                () => Task.FromResult("Cached Value"));
+
+            // 并行处理
+            await enhancedService.ProcessInParallelAsync(new[] { "key1", "key2", "key3" });
+        }
+    }
+}

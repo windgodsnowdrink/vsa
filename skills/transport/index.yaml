@@ -1,0 +1,217 @@
+name: transport
+version: 1.0.0
+description: 传输技能 - 提供各种传输协议和机制的实现
+author: .NET 专家
+email: contact@example.com
+language: zh-CN
+
+compilation:
+  publishAot: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  targetFramework: net10.0
+  langVersion: preview
+  nullable: enable
+  implicitUsings: enable
+
+dependencies:
+  - name: System.CommandLine
+    version: 2.0.0-beta4.22272.1
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+  - name: Microsoft.Extensions.Logging
+    version: 8.0.0
+  - name: Microsoft.Extensions.Logging.Console
+    version: 8.0.0
+  - name: Scrutor
+    version: 4.2.0
+  - name: System.Net.Http
+    version: 8.0.0
+  - name: System.Net.Sockets
+    version: 8.0.0
+  - name: System.IO.Pipelines
+    version: 8.0.0
+  - name: System.Threading.Channels
+    version: 8.0.0
+  - name: System.Buffers
+    version: 8.0.0
+
+features:
+  - name: http
+    description: HTTP传输协议支持
+    enabled: true
+  - name: tcp
+    description: TCP传输协议支持
+    enabled: true
+  - name: udp
+    description: UDP传输协议支持
+    enabled: true
+  - name: pipeline
+    description: 管道传输支持
+    enabled: true
+  - name: channel
+    description: 通道传输支持
+    enabled: true
+  - name: buffer
+    description: 缓冲区管理
+    enabled: true
+  - name: scrutor
+    description: 依赖注入装饰器模式
+    enabled: true
+
+commands:
+  - name: http
+    description: HTTP传输操作
+    options:
+      - name: --url
+        type: string
+        description: 请求URL
+      - name: --method
+        type: string
+        default: GET
+        description: HTTP方法
+      - name: --data
+        type: string
+        description: 请求数据
+  - name: tcp
+    description: TCP传输操作
+    options:
+      - name: --host
+        type: string
+        default: localhost
+        description: 主机名
+      - name: --port
+        type: int
+        default: 8080
+        description: 端口号
+      - name: --message
+        type: string
+        description: 消息内容
+  - name: udp
+    description: UDP传输操作
+    options:
+      - name: --host
+        type: string
+        default: localhost
+        description: 主机名
+      - name: --port
+        type: int
+        default: 8081
+        description: 端口号
+      - name: --message
+        type: string
+        description: 消息内容
+  - name: pipeline
+    description: 管道传输操作
+    options:
+      - name: --count
+        type: int
+        default: 10
+        description: 数据项数量
+  - name: channel
+    description: 通道传输操作
+    options:
+      - name: --count
+        type: int
+        default: 10
+        description: 消息数量
+  - name: buffer
+    description: 缓冲区操作
+    options:
+      - name: --size
+        type: int
+        default: 1024
+        description: 缓冲区大小
+  - name: scrutor
+    description: Scrutor依赖注入演示
+    options:
+      - name: --type
+        type: string
+        default: all
+        description: 演示类型
+
+files:
+  - path: scripts/transport_core.cs
+    type: script
+    description: 核心传输实现
+  - path: scripts/transport_core.setting.json
+    type: config
+    description: 核心编译配置
+  - path: scripts/transport_core.run.json
+    type: config
+    description: 核心运行配置
+  - path: scripts/transport_generator.cs
+    type: script
+    description: Scrutor演示实现
+  - path: scripts/transport_generator.setting.json
+    type: config
+    description: Scrutor编译配置
+  - path: scripts/transport_generator.run.json
+    type: config
+    description: Scrutor运行配置
+  - path: reference/README.md
+    type: documentation
+    description: 参考文档
+  - path: reference/examples.md
+    type: documentation
+    description: 使用示例
+
+publish:
+  include:
+    - "**/*.json"
+    - "**/*.md"
+  exclude:
+    - "**/bin/**"
+    - "**/obj/**"
+
+runtime:
+  environmentVariables:
+    DOTNET_ENVIRONMENT: Development
+    DOTNET_LOG_LEVEL: Information
+    TRANSPORT_MAX_BUFFER_SIZE: "65536"
+    TRANSPORT_TIMEOUT: "30000"
+
+performance:
+  enableMetrics: true
+  metricsPort: 5002
+  memoryLimitMB: 0
+  cpuLimitPercent: 0
+
+security:
+  inputValidation: true
+  exceptionHandling: true
+  resourceManagement: true
+
+deployment:
+  local: true
+  docker: true
+  cloud: true
+
+monitoring:
+  logging:
+    level: Information
+    format: json
+  healthCheck: true
+
+scaling:
+  horizontal: true
+  vertical: true
+
+compatibility:
+  os:
+    - windows
+    - linux
+    - macos
+  architecture:
+    - x64
+    - arm64
+
+maintenance:
+  support: true
+  updates: true
+  bugFixes: true
+
+license:
+  type: MIT
+  url: https://opensource.org/licenses/MIT

@@ -1,0 +1,49 @@
+# efcore Agent Skill - efcore 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 架构的高性能 efcore 技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.EntityFrameworkCore@10.0.0
+# - Microsoft.EntityFrameworkCore.InMemory@10.0.0
+# - Microsoft.EntityFrameworkCore.Relational@10.0.0
+# Application Scenarios: 数据库访问、ORM 映射、数据迁移、查询构建
+# Activation Conditions: 当需要 efcore 数据库功能时激活
+# Main Features:
+# - 数据库迁移
+# - 数据库创建和删除
+# - 数据查询
+# - 数据插入
+# - 数据更新
+# - 数据删除
+# - 版本信息查询
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 异步编程模型，提高系统响应性
+# - 低延迟设计，毫秒级数据访问
+# - 内存优化，减少 GC 压力
+# - 高性能数据库查询
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，便于测试和维护
+# - 异步编程模型，提高并发能力
+# - Options 配置模式，灵活配置
+# - 支持多种数据库提供程序
+# - 完善的错误处理和日志记录
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - migrate: 执行数据库迁移
+# - create-db: 创建数据库
+# - drop-db: 删除数据库
+# - query <type>: 查询数据
+# - insert [count]: 插入示例数据
+# - version: 显示版本信息
+# - help, --help, -h: 显示帮助信息

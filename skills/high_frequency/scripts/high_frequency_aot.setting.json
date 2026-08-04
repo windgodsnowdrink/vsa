@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json.schemastore.org/dotnet-tools.json",
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-compile-aot": {
+      "version": "10.0.0",
+      "commands": [
+        "dotnet-compile-aot"
+      ]
+    }
+  },
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "runtimeIdentifier": "win-x64",
+    "outputType": "Exe",
+    "publishAot": true,
+    "trimMode": "partial",
+    "enableCompilationRelaxations": true,
+    "enableAggressiveOptimization": true,
+    "optimize": true,
+    "debugType": "none",
+    "debugSymbols": false,
+    "emitEntryPoint": true,
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "memoryOptimizations": true,
+    "stringOptimizations": true,
+    "eventSourceSupport": false,
+    "httpClientSupport": false,
+    "jsonSerializerSupport": false,
+    "xmlSerializerSupport": false,
+    "wcfSupport": false
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "System.Threading.Channels": "8.0.0",
+    "System.Runtime.CompilerServices.Unsafe": "6.0.0",
+    "System.Buffers": "4.5.1",
+    "System.Memory": "4.5.5",
+    "System.Collections.Immutable": "8.0.0",
+    "MessagePack": "2.5.129",
+    "System.Diagnostics.Process": "8.0.0",
+    "System.Diagnostics.StackTrace": "4.3.0",
+    "System.IO.Pipelines": "8.0.0",
+    "System.Threading.Tasks.Extensions": "4.5.4",
+    "System.Runtime.Serialization.Primitives": "4.3.0"
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.GC.Concurrent": true,
+      "System.GC.RetainVM": true,
+      "System.Threading.ThreadPool.MinThreads": 10,
+      "System.Threading.ThreadPool.MaxThreads": 1000,
+      "System.Net.Sockets.UseOnlyOverlappedIO": true,
+      "System.IO.Pipelines.PooledBufferSize": 65536,
+      "System.IO.Pipelines.MinimumSegmentSize": 1024
+    }
+  },
+  "buildOptions": {
+    "allowUnsafeBlocks": true,
+    "define": [
+      "RELEASE",
+      "AOT",
+      "HIGH_PERFORMANCE"
+    ],
+    "additionalArguments": [
+      "/p:TieredCompilation=false",
+      "/p:TieredCompilationQuickJit=false",
+      "/p:Optimize=true",
+      "/p:DebugType=none",
+      "/p:DebugSymbols=false",
+      "/p:CopyLocalLockFileAssemblies=false",
+      "/p:GenerateRuntimeConfigurationFiles=false"
+    ]
+  },
+  "publishOptions": {
+    "include": [
+      "*.json"
+    ],
+    "exclude": [
+      "*.pdb",
+      "*.xml",
+      "*.deps.json",
+      "*.runtimeconfig.json"
+    ]
+  },
+  "performanceOptions": {
+    "enableTailCallOptimization": true,
+    "enableLoopUnrolling": true,
+    "enableInlineArrayOptimizations": true,
+    "enableVectorization": true,
+    "enableMemoryOptimizations": true,
+    "enableStringOptimizations": true,
+    "enableReflectionOptimizations": true
+  },
+  "memoryOptions": {
+    "enableMemoryPooling": true,
+    "enableBufferPooling": true,
+    "enableObjectPooling": true,
+    "maxPoolSize": 1000000,
+    "bufferPoolSize": 65536,
+    "objectPoolSize": 100000
+  },
+  "concurrencyOptions": {
+    "enableAsyncLocal": false,
+    "enableThreadStatic": true,
+    "enableThreadLocalStorage": true,
+    "enableConcurrentCollections": true,
+    "enableSpinLockOptimizations": true,
+    "enableLockFreeAlgorithms": true
+  }
+}

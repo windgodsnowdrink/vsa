@@ -1,0 +1,316 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package NAudio@2.2.1
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:package Accord.Audio@3.8.0  // FFT分析
+#:package Microsoft.CognitiveServices.Speech@1.32.1  // 语音识别
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Buffers;
+using System.Threading.Channels;
+using NAudio.Wave;
+using NAudio.CoreAudioApi;
+using Accord.Audio;  // FFT分析
+using Accord.Audio.Filters;
+using Microsoft.CognitiveServices.Speech;  // 语音识别
+using System.Runtime.CompilerServices;
+
+// 1. 音频分析接口定义
+public interface IAudioAnalyzer
+{
+    Task AnalyzeAsync(AudioFrame frame);
+    bool SupportsFormat(WaveFormat format);
+}
+
+// 2. 音频帧结构(零拷贝优化)
+[SkipLocalsInit]
+public readonly record struct AudioFrame(
+    nint BufferPtr,
+    int Length,
+    WaveFormat Format,
+    long Timestamp = 0)
+{
+    public unsafe Span<byte> AsSpan() => new((void*)BufferPtr, Length);
+}
+
+// 3. 音频处理管道(高性能实现)
+public sealed class AudioProcessingPipeline : IAsyncDisposable
+{
+    private readonly Channel<AudioFrame> _inputChannel;
+    private readonly List<IAudioAnalyzer> _analyzers;
+    private readonly ThreadLocal<Span<byte>> _processingBuffer;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly CancellationTokenSource _cts = new();
+
+    public AudioProcessingPipeline(
+        IEnumerable<IAudioAnalyzer> analyzers,
+        ObjectPool<Memory<byte>> memoryPool)
+    {
+        _analyzers = analyzers.ToList();
+        _memoryPool = memoryPool;
+        _inputChannel = Channel.CreateBounded<AudioFrame>(new BoundedChannelOptions(10_000)
+        {
+            SingleReader = false,
+            SingleWriter = false,
+            FullMode = BoundedChannelFullMode.Wait
+        });
+        
+        _processingBuffer = new(() => stackalloc byte[4096]);
+        _ = ProcessFramesAsync(_cts.Token);
+    }
+
+    public ValueTask SubmitFrameAsync(AudioFrame frame) => 
+        _inputChannel.Writer.WriteAsync(frame);
+
+    private async Task ProcessFramesAsync(CancellationToken ct)
+    {
+        await foreach (var frame in _inputChannel.Reader.ReadAllAsync(ct))
+        {
+            var memory = _memoryPool.Get();
+            try
+            {
+                // 零拷贝处理
+                fixed (byte* ptr = memory.Span)
+                {
+                    if ((long)ptr % 64 == 0) // Cache-line对齐
+                    {
+                        var tasks = _analyzers
+                            .Where(x => x.SupportsFormat(frame.Format))
+                            .Select(x => x.AnalyzeAsync(frame));
+                        await Task.WhenAll(tasks);
+                    }
+                }
+            }
+            finally
+            {
+                _memoryPool.Return(memory);
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _inputChannel.Writer.Complete();
+        await Task.WhenAll(_analyzers.OfType<IAsyncDisposable>().Select(x => x.DisposeAsync().AsTask()));
+    }
+}
+
+// 4. 音频处理器实现(支持多种格式)
+[SkipLocalsInit]
+public sealed class AudioProcessor : IDisposable
+{
+    private readonly AudioProcessingPipeline _pipeline;
+    private readonly MMDeviceEnumerator _deviceEnumerator;
+    private readonly ObjectPool<WaveStream> _waveStreamPool;
+    private readonly ThreadLocal<Span<byte>> _audioBuffer;
+
+    public AudioProcessor(IEnumerable<IAudioAnalyzer> analyzers, ObjectPool<Memory<byte>> memoryPool)
+    {
+        _pipeline = new AudioProcessingPipeline(analyzers, memoryPool);
+        _deviceEnumerator = new MMDeviceEnumerator();
+        _waveStreamPool = new DefaultObjectPool<WaveStream>(new WaveStreamPooledPolicy(), 4);
+        _audioBuffer = new(() => stackalloc byte[48000 * 2 * 2]); // 48kHz, 16bit, 立体声
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe void ProcessAudio(string filePath)
+    {
+        using var audioFile = _waveStreamPool.Get();
+        using var outputDevice = new WasapiOut(
+            _deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia), 
+            AudioClientShareMode.Shared, 
+            false, 
+            100);
+            
+        var waveProvider = new BufferedWaveProvider(audioFile.WaveFormat)
+        {
+            BufferDuration = TimeSpan.FromMilliseconds(500)
+        };
+        
+        outputDevice.Init(waveProvider);
+        outputDevice.Play();
+        
+        Span<byte> buffer = _audioBuffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            while (audioFile.Position < audioFile.Length)
+            {
+                int bytesRead = audioFile.Read(buffer);
+                if (bytesRead > 0)
+                {
+                    waveProvider.AddSamples(buffer[..bytesRead]);
+                    _pipeline.SubmitFrameAsync(new AudioFrame(
+                        (nint)ptr, 
+                        bytesRead, 
+                        audioFile.WaveFormat,
+                        DateTime.UtcNow.Ticks));
+                }
+            }
+        }
+    }
+
+    // 新增FFT分析器
+    private readonly ThreadLocal<ComplexSignal> _fftBuffer;
+    private readonly Channel<FFTResult> _fftChannel;
+    
+    // 新增语音识别器
+    private readonly SpeechRecognizer _speechRecognizer;
+    private readonly Channel<string> _speechRecognitionChannel;
+
+    public AudioProcessor()
+    {
+        _fftBuffer = new(() => 
+        {
+            var signal = new ComplexSignal(1, 4096, 44100); // 4096点FFT
+            return signal;
+        });
+        
+        _fftChannel = Channel.CreateBounded<FFTResult>(1000);
+
+        // 初始化语音识别组件
+        var speechConfig = SpeechConfig.FromSubscription("YOUR_KEY", "YOUR_REGION");
+        speechConfig.SpeechRecognitionLanguage = "zh-CN";
+        _speechRecognizer = new SpeechRecognizer(speechConfig);
+        _speechRecognitionChannel = Channel.CreateBounded<string>(1000);
+        
+        // 注册语音识别事件
+        _speechRecognizer.Recognized += (s, e) =>
+        {
+            if (e.Result.Reason == ResultReason.RecognizedSpeech)
+            {
+                _speechRecognitionChannel.Writer.TryWrite(e.Result.Text);
+            }
+        };
+    }
+
+    // 新增FFT分析方法
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private unsafe void PerformFFTAnalysis(Span<byte> audioData, WaveFormat format)
+    {
+        var signal = _fftBuffer.Value;
+        
+        // 将音频数据转换为复数信号
+        fixed (byte* ptr = audioData)
+        {
+            signal.FromArray((float*)ptr, audioData.Length / sizeof(float));
+        }
+        
+        // 执行FFT变换
+        signal.ForwardFourierTransform();
+        
+        // 计算幅度谱
+        var magnitudes = new float[signal.Length];
+        for (int i = 0; i < signal.Length; i++)
+        {
+            magnitudes[i] = (float)signal[i].Magnitude;
+        }
+        
+        // 发送FFT结果
+        _fftChannel.Writer.TryWrite(new FFTResult(
+            magnitudes,
+            DateTime.UtcNow,
+            format.SampleRate));
+    }
+
+    // 新增语音识别处理方法
+    private async Task ProcessSpeechRecognitionAsync()
+    {
+        await _speechRecognizer.StartContinuousRecognitionAsync();
+        
+        await foreach (var text in _speechRecognitionChannel.Reader.ReadAllAsync())
+        {
+            // 处理识别结果
+            Console.WriteLine($"识别结果: {text}");
+        }
+    }
+
+    public void Dispose() => _pipeline.DisposeAsync().AsTask().Wait();
+}
+
+// 5. 主程序集成
+var builder = WebApplication.CreateBuilder();
+
+// 内存池配置
+builder.Services.AddSingleton<ObjectPool<Memory<byte>>>(sp => 
+    new DefaultObjectPool<Memory<byte>>(new MemoryPooledObjectPolicy(), 1000));
+
+// 注册分析器
+builder.Services.AddSingleton<IAudioAnalyzer, SpectrumAnalyzer>();
+builder.Services.AddSingleton<IAudioAnalyzer, VoiceActivityDetector>();
+builder.Services.AddSingleton<IAudioAnalyzer, BeatDetector>();
+
+// 音频处理器
+builder.Services.AddSingleton<AudioProcessor>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Real-time Audio Analysis Ready");
+app.Run();
+
+// 3. 对象池策略
+internal sealed class WaveStreamPooledPolicy : PooledObjectPolicy<WaveStream>
+{
+    public override WaveStream Create()
+    {
+        return new MemoryStream();
+    }
+
+    public override bool Return(WaveStream obj)
+    {
+        obj.Position = 0;
+        return true;
+    }
+}
+
+// 音频帧数据结构
+public readonly record struct AudioFrame(
+    byte* Data,
+    int Length,
+    WaveFormat Format);
+
+// 新增FFT结果结构
+public record FFTResult(
+    float[] Magnitudes,
+    DateTime Timestamp,
+    int SampleRate);
+
+// 2. 主程序集成
+var builder = WebApplication.CreateBuilder();
+builder.Services.AddSingleton<AudioProcessor>();
+
+// 启动语音识别服务
+builder.Services.AddHostedService(sp => 
+    new SpeechRecognitionService(sp.GetRequiredService<AudioProcessor>()));
+
+var app = builder.Build();
+app.MapGet("/", () => "Audio Processing Ready");
+app.MapGet("/fft", async (AudioProcessor processor) => 
+{
+    // 获取最新的FFT结果
+    if (processor._fftChannel.Reader.TryRead(out var result))
+    {
+        return Results.Ok(result);
+    }
+    return Results.NoContent();
+});
+app.Run();
+
+// 语音识别后台服务
+public class SpeechRecognitionService : BackgroundService
+{
+    private readonly AudioProcessor _processor;
+
+    public SpeechRecognitionService(AudioProcessor processor)
+    {
+        _processor = processor;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await _processor.ProcessSpeechRecognitionAsync();
+    }
+}

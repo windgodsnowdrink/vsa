@@ -1,0 +1,63 @@
+{
+  "name": "Dataflow AOT",
+  "description": "Dataflow AOT高性能数据流处理运行时脚本",
+  "version": "1.0.0",
+  "dependencies": [
+    "Microsoft.Extensions.DependencyInjection@10.0.0",
+    "Microsoft.Extensions.Logging@10.0.0",
+    "Microsoft.Extensions.Hosting@10.0.0",
+    "Microsoft.Extensions.Options@10.0.0",
+    "System.Threading.Tasks.Dataflow@9.0.0"
+  ],
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Production",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+    "DATAFLOW_ENABLE_ENGINE": "true",
+    "DATAFLOW_DEFAULT_BATCH_SIZE": "100",
+    "DATAFLOW_DEFAULT_PARALLELISM": "8",
+    "DATAFLOW_DEFAULT_BUFFER_SIZE": "1000",
+    "DATAFLOW_ENABLE_DETAILED_LOGGING": "false",
+    "DATAFLOW_ENABLE_PERFORMANCE_MONITORING": "true"
+  },
+  "execution": {
+    "command": "dotnet run --project dataflow_aot.cs",
+    "workingDirectory": "./scripts",
+    "timeout": "300000",
+    "retryCount": 3
+  },
+  "aotCompilation": {
+    "enabled": true,
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "file": "dataflow_aot.log",
+    "maxFileSize": "10MB",
+    "maxRetainedFiles": 5
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "executionTime",
+      "memoryUsage",
+      "cpuUsage",
+      "successRate",
+      "processedRequests",
+      "successfulRequests",
+      "failedRequests",
+      "processedItems",
+      "activeDataflows"
+    ],
+    "alertThresholds": {
+      "executionTime": "10000",
+      "memoryUsage": "200MB",
+      "cpuUsage": "80",
+      "failedRequests": "5"
+    }
+  }
+}

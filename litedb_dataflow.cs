@@ -1,0 +1,47 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package LiteDB@5.0.17
+#:package System.Threading.Tasks.Dataflow@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Threading.Tasks.Dataflow;
+using LiteDB;
+
+public class DataflowEventProcessor
+{
+    private readonly TransformBlock<OutOfBandEvent, OutOfBandEvent> _processingBlock;
+    private readonly ActionBlock<OutOfBandEvent> _persistenceBlock;
+    private readonly ILiteDatabase _db;
+
+    public DataflowEventProcessor(ILiteDatabase db)
+    {
+        _db = db;
+        
+        var options = new ExecutionDataflowBlockOptions
+        {
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            EnsureOrdered = false
+        };
+
+        _processingBlock = new TransformBlock<OutOfBandEvent, OutOfBandEvent>(event =>
+        {
+            // 事件处理逻辑...
+            return event;
+        }, options);
+
+        _persistenceBlock = new ActionBlock<OutOfBandEvent>(async event =>
+        {
+            var collection = _db.GetCollection<OutOfBandEvent>("events");
+            collection.Insert(event);
+        }, options);
+
+        _processingBlock.LinkTo(_persistenceBlock);
+    }
+
+    public async Task ProcessAsync(OutOfBandEvent @event)
+    {
+        await _processingBlock.SendAsync(@event);
+    }
+}

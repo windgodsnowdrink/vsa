@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "warnAsError": false,
+    "optimize": true,
+    "debugType": "portable",
+    "platform": "anycpu",
+    "allowUnsafeBlocks": false
+  },
+  "packageReferences": [
+    {
+      "name": "ZstdSharp",
+      "version": "0.8.0"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scrutor",
+      "version": "4.2.2"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "9.0.0"
+    }
+  ],
+  "framework": {
+    "targetFramework": "net10.0"
+  },
+  "buildOptions": {
+    "outputType": "exe",
+    "emitEntryPoint": true,
+    "generateDocumentationFile": false,
+    "nowarn": [
+      "CS8600",
+      "CS8602",
+      "CS8603"
+    ]
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MinThreads": 2,
+      "System.Threading.ThreadPool.MaxThreads": 16
+    }
+  }
+}

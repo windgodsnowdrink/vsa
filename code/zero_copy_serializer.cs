@@ -1,0 +1,72 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package System.Text.Json@8.0.0
+#:package System.IO.Pipelines@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Text.Json;
+
+public class ZeroCopySerializer : IAsyncDisposable
+{
+    private readonly Pipe _pipe;
+    private readonly MemoryPool<byte> _memoryPool;
+    private readonly Task _processingTask;
+    private readonly CancellationTokenSource _cts = new();
+
+    public ZeroCopySerializer()
+    {
+        _memoryPool = MemoryPool<byte>.Shared;
+        _pipe = new Pipe(new PipeOptions(
+            pool: _memoryPool,
+            minimumSegmentSize: 4096,
+            pauseWriterThreshold: 1024 * 1024,
+            resumeWriterThreshold: 512 * 1024));
+
+        _processingTask = Task.Run(ProcessPipeAsync);
+    }
+
+    public async ValueTask SerializeAsync<T>(T value)
+    {
+        var writer = new Utf8JsonWriter(_pipe.Writer);
+        JsonSerializer.Serialize(writer, value, new JsonSerializerOptions
+        {
+            WriteIndented = false,
+            DefaultBufferSize = 4096,
+            MaxDepth = 64,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        });
+        await writer.FlushAsync(_cts.Token);
+        await _pipe.Writer.FlushAsync(_cts.Token);
+    }
+
+    public async ValueTask<T?> DeserializeAsync<T>()
+    {
+        var result = await JsonSerializer.DeserializeAsync<T>(_pipe.Reader.AsStream(), 
+            cancellationToken: _cts.Token);
+        return result;
+    }
+
+    private async Task ProcessPipeAsync()
+    {
+        while (!_cts.IsCancellationRequested)
+        {
+            var readResult = await _pipe.Reader.ReadAsync(_cts.Token);
+            if (readResult.IsCompleted || readResult.IsCanceled)
+                break;
+
+            _pipe.Reader.AdvanceTo(readResult.Buffer.End);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        await _processingTask;
+        _pipe.Reader.Complete();
+        _pipe.Writer.Complete();
+    }
+}

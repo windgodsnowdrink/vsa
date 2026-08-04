@@ -1,0 +1,73 @@
+{
+  "TodoSettings": {
+    "DatabaseConnection": "Server=localhost;Database=TodoDB;Trusted_Connection=true;MultipleActiveResultSets=true;",
+    "CacheExpiration": "00:15:00",
+    "MaxConcurrentTasks": 100,
+    "EnableRealTimeSync": true,
+    "EnableAnalytics": true,
+    "PriorityEngine": {
+      "DefaultStrategy": "UrgencyPriority",
+      "EnableDetailedCalculation": true,
+      "CacheResults": true,
+      "CalculationTimeout": "00:00:30"
+    },
+    "Repository": {
+      "StorageType": "FileSystem",
+      "StoragePath": "./data/todos",
+      "AutoBackup": true,
+      "BackupInterval": "01:00:00"
+    },
+    "EventBus": {
+      "EnableEventSourcing": true,
+      "MaxEventHandlers": 10,
+      "EventRetentionDays": 30
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "VSA.TodoSystem": "Debug"
+    },
+    "ApplicationInsights": {
+      "LogLevel": {
+        "Default": "Information"
+      }
+    }
+  },
+  "AllowedHosts": "*",
+  "Cors": {
+    "AllowedOrigins": [
+      "http://localhost:3000",
+      "http://localhost:8080"
+    ],
+    "AllowedMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "AllowedHeaders": ["*"]
+  },
+  "HealthChecks": {
+    "Enabled": true,
+    "Interval": "00:01:00",
+    "Timeout": "00:00:30"
+  },
+  "Metrics": {
+    "Enabled": true,
+    "Endpoint": "/metrics",
+    "IncludeHistograms": true
+  },
+  "Performance": {
+    "EnableResponseCaching": true,
+    "MaxResponseSize": "10MB",
+    "ConnectionPoolSize": 20,
+    "QueryTimeout": "00:00:30"
+  },
+  "Security": {
+    "EnableAuthentication": false,
+    "EnableAuthorization": false,
+    "JwtSettings": {
+      "Issuer": "TodoSystem",
+      "Audience": "TodoSystem",
+      "SecretKey": "your-secret-key-here",
+      "ExpirationMinutes": 60
+    }
+  }
+}

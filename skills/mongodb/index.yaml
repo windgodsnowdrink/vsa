@@ -1,0 +1,47 @@
+# MongoDB 智能体技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的 MongoDB 技能实现，支持高性能数据库操作，采用 AOT 编译优化
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - MongoDB.Driver@2.28.0
+# - MongoDB.Bson@2.28.0
+# 应用场景: MongoDB 数据库操作、数据存储、查询、聚合分析等
+# 激活条件: 当需要使用 MongoDB 功能时激活
+# 主要功能:
+# - 高性能 MongoDB 数据库操作
+# - 支持文档的增删改查
+# - 支持聚合查询和分析
+# - 支持事务操作
+# - 支持索引管理
+# 性能特性:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# 技术特性:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - AOT 编译优化
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

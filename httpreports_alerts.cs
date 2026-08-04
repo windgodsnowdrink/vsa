@@ -1,0 +1,37 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package HttpReports@3.0.0
+#:package HttpReports.Alert@3.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using HttpReports;
+using HttpReports.Alert;
+
+var builder = WebApplication.CreateBuilder();
+
+// 配置报警规则
+builder.Services.AddHttpReportsAlert(options =>
+{
+    options.AddRule(new AlertRule
+    {
+        Name = "高延迟报警",
+        CheckExpression = "ResponseTime > 1000", // 响应时间超过1秒
+        NotifyEmails = new List<string> { "devops@example.com" },
+        NotifyWebhooks = new List<string> { "https://alert.example.com/webhook" },
+        CheckInterval = TimeSpan.FromMinutes(5)
+    });
+
+    options.AddRule(new AlertRule
+    {
+        Name = "错误率报警",
+        CheckExpression = "ErrorRate > 0.05", // 错误率超过5%
+        NotifyEmails = new List<string> { "devops@example.com" }
+    });
+});
+
+var app = builder.Build();
+app.UseHttpReports();
+app.MapGet("/", () => "HttpReports with Alerts Ready");
+app.Run();

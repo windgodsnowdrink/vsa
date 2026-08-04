@@ -1,0 +1,168 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package OpenAuth.Net@4.0.0
+#:package OpenAuth.App@4.0.0
+#:package OpenAuth.Repository@4.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:package System.Threading.Channels@8.0.0
+#:package MassTransit@8.2.2
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Microsoft.Extensions.ObjectPool;
+using OpenAuth.App;
+using OpenAuth.Repository;
+using MassTransit;
+using System.Security.Claims;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
+
+// 1. OpenAuth适配器(高性能实现)
+[SkipLocalsInit]
+public sealed class OpenAuthAdapter : BackgroundService
+{
+    private readonly Channel<AuthRequest> _requestChannel;
+    private readonly ObjectPool<OpenAuthContext> _contextPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly IDistributedCache _cache;
+    private readonly IBus _bus;
+    private readonly OpenAuthApp _openAuthApp;
+
+    public OpenAuthAdapter(
+        OpenAuthApp openAuthApp,
+        IDistributedCache cache,
+        IBus bus)
+    {
+        _openAuthApp = openAuthApp;
+        _cache = cache;
+        _bus = bus;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _requestChannel = Channel.CreateBounded<AuthRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池(CPU cache-line对齐)
+        _contextPool = new DefaultObjectPool<OpenAuthContext>(
+            new OpenAuthContextPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task SendCommandAsync(AuthCommand command)
+    {
+        await _commandChannel.Writer.WriteAsync(command);
+    }
+
+    // 2. 认证授权核心方法(零拷贝优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<AuthResult> CheckPermissionAsync(ClaimsPrincipal user, string resource, string action)
+    {
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return new AuthResult(false);
+
+        // 检查Redis缓存
+        var cacheKey = $"openauth:{userId}:{resource}:{action}";
+        var cached = await _cache.GetAsync(cacheKey);
+        if (cached != null) return new AuthResult(BitConverter.ToBoolean(cached.Span));
+
+        // 调用OpenAuth核心服务
+        var result = await _openAuthApp.CheckPermissionAsync(userId, resource, action);
+        
+        // 缓存结果(5分钟)
+        await _cache.SetAsync(cacheKey, 
+            BitConverter.GetBytes(result),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+
+        return new AuthResult(result);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(ct))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                await context.ProcessAsync(request, _openAuthApp, _cache, _bus);
+                _latencyOptimizer.RecordLatency();
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 3. OpenAuth配置
+public static class OpenAuthConfig
+{
+    public static IServiceCollection AddOpenAuthServices(this IServiceCollection services)
+    {
+        // 配置事件总线
+        builder.Services.AddOpenAuthEventBus();
+
+        // 配置OpenAuth数据库上下文
+        services.AddScoped<OpenAuthDBContext>();
+
+        // 注册OpenAuth核心服务
+        services.AddScoped<OpenAuthApp>();
+
+        // 配置MassTransit事件总线
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        // 注册高性能适配器
+        services.AddSingleton<OpenAuthAdapter>();
+        services.AddHostedService<OpenAuthAdapter>();
+
+        return services;
+    }
+}
+
+// 4. 主程序配置
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Redis缓存
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "OpenAuth:";
+});
+
+// 添加OpenAuth服务
+builder.Services.AddOpenAuthServices();
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("/", () => "OpenAuth Service Ready");
+app.Run();
+
+// 辅助记录类型
+public record AuthRequest(ClaimsPrincipal User, string Resource, string Action);
+public record AuthResult(bool IsAuthorized);

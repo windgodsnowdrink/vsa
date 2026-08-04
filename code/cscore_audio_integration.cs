@@ -1,0 +1,140 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package CSCore@1.2.1.2
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using CSCore;
+using CSCore.Codecs;
+using CSCore.SoundIn;
+using CSCore.Streams;
+using System.Runtime.CompilerServices;
+using System.Buffers;
+using Microsoft.Extensions.ObjectPool;
+
+/*
+var config = new AudioPipelineConfig();
+var processor = new AudioProcessor(config);
+
+// 配置音频输入
+var soundIn = new WasapiCapture();
+await processor.ProcessInputAsync(soundIn);
+
+// 启动音频处理
+soundIn.Start();
+*/
+// 1. 音频处理管道配置
+public record AudioPipelineConfig(
+    int BufferSize = 48000 * 2 * 2, // 48kHz, 16bit, 立体声
+    int MaxConcurrentProcesses = 4,
+    int FftSize = 1024);
+
+// 2. 高性能音频处理器
+[SkipLocalsInit]
+public sealed class AudioProcessor : IAsyncDisposable
+{
+    private readonly Channel<AudioFrame> _inputChannel;
+    private readonly Channel<AudioFrame> _outputChannel;
+    private readonly ThreadLocal<Span<byte>> _audioBuffer;
+    private readonly ObjectPool<IWaveSource> _waveSourcePool;
+    private readonly MemoryPool<byte> _memoryPool;
+    private readonly AudioPipelineConfig _config;
+    private readonly CancellationTokenSource _cts = new();
+
+    public AudioProcessor(AudioPipelineConfig config)
+    {
+        _config = config;
+        _inputChannel = Channel.CreateBounded<AudioFrame>(1000);
+        _outputChannel = Channel.CreateBounded<AudioFrame>(1000);
+        _memoryPool = MemoryPool<byte>.Shared;
+        
+        _audioBuffer = new(() => stackalloc byte[_config.BufferSize]);
+        _waveSourcePool = new DefaultObjectPool<IWaveSource>(
+            new WaveSourcePooledPolicy(), 4);
+
+        // 启动处理任务
+        for (int i = 0; i < _config.MaxConcurrentProcesses; i++)
+        {
+            _ = ProcessAudioAsync();
+        }
+    }
+
+    // 3. 处理音频输入
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ProcessInputAsync(ISoundIn soundIn)
+    {
+        soundIn.DataAvailable += async (s, e) => 
+        {
+            using var memory = _memoryPool.Rent(e.ByteCount);
+            e.Data.AsSpan(0, e.ByteCount).CopyTo(memory.Memory.Span);
+            
+            await _inputChannel.Writer.WriteAsync(new AudioFrame(
+                memory.Memory.Span,
+                soundIn.WaveFormat));
+        };
+    }
+
+    // 4. 核心处理逻辑
+    private async Task ProcessAudioAsync()
+    {
+        await foreach (var frame in _inputChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            try
+            {
+                // 零拷贝处理
+                var buffer = _audioBuffer.Value;
+                frame.Data.CopyTo(buffer);
+                
+                // 应用音频处理
+                ApplyEffects(buffer);
+                
+                // 输出到管道
+                await _outputChannel.Writer.WriteAsync(new AudioFrame(
+                    buffer,
+                    frame.Format));
+            }
+            finally
+            {
+                if (frame.IsPooled)
+                {
+                    _memoryPool.Return(frame.Memory);
+                }
+            }
+        }
+    }
+
+    // 5. 音频效果处理
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private unsafe void ApplyEffects(Span<byte> buffer)
+    {
+        fixed (byte* ptr = buffer)
+        {
+            // 使用CSCore内置效果处理
+            using var source = new CSCore.Streams.SoundInSource(null);
+            using var effect = new DmoEffectWrapper(
+                source, 
+                new[] { new DmoCompressorEffect() });
+            
+            effect.Write(ptr, buffer.Length, true);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _inputChannel.Writer.Complete();
+        _outputChannel.Writer.Complete();
+    }
+}
+
+// 6. 主程序集成
+var builder = WebApplication.CreateBuilder();
+builder.Services.AddSingleton<AudioProcessor>();
+var app = builder.Build();
+app.MapGet("/", () => "CSCore Audio Processor Ready");
+app.Run();

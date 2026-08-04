@@ -1,0 +1,34 @@
+{
+  "NodaTimeOptions": {
+    "DefaultTimeZone": "UTC",
+    "EnableCache": true,
+    "CacheSize": 1000,
+    "Timeout": "00:00:30",
+    "EnableDetailedLogging": false
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "NodaTime": "Information"
+    }
+  },
+  "AotOptions": {
+    "PublishAot": true,
+    "ReadyToRun": true,
+    "TieredCompilation": true,
+    "SupportedRuntimes": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  },
+  "Performance": {
+    "EnableMemoryOptimization": true,
+    "EnableConcurrencyOptimization": true,
+    "MaxConcurrentRequests": 100,
+    "BufferSize": 4096
+  }
+}

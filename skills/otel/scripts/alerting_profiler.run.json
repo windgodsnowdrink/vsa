@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "alerting_profiler",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\otel\scripts\alerting_profiler.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\otel\scripts\alerting_profiler.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

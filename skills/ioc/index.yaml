@@ -1,0 +1,37 @@
+# IOC Agent Skill - 依赖注入技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的依赖注入技能实现，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Text.Json@8.0.0
+# - System.Reflection.MetadataLoadContext@8.0.0
+# - System.Collections.Immutable@8.0.0
+# - System.Linq.Expressions@8.0.0
+# - System.Reflection.Emit@8.0.0
+# Application Scenarios: 依赖注入相关功能
+# Activation Conditions: 当需要依赖注入功能时激活
+# Main Features:
+# - 服务注册
+# - 服务解析
+# - 容器构建
+# - 生命周期管理
+# - 配置管理
+# - 基准测试
+# Performance Features:
+# - AOT 编译优化
+# - 单文件发布
+# - 内存使用优化
+# - 并发处理支持
+# - 高性能解析
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 自动装配
+# - 循环依赖检测
+# - 日志记录
+# - 基准测试支持

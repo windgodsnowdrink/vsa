@@ -1,0 +1,106 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Gofer.NET@2.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Gofer.NET;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. 高性能任务处理器(Disruptor模式)
+[SkipLocalsInit]
+public sealed class GoferTaskProcessor : BackgroundService
+{
+    private readonly Channel<TaskItem> _taskChannel;
+    private readonly ObjectPool<TaskContext> _contextPool;
+    private readonly ITaskQueue _taskQueue;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public GoferTaskProcessor(ITaskQueue taskQueue)
+    {
+        _taskQueue = taskQueue;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _taskChannel = Channel.CreateBounded<TaskItem>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<TaskContext>(
+            new TaskContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task EnqueueTaskAsync(TaskItem item)
+    {
+        await _taskChannel.Writer.WriteAsync(item);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var item in _taskChannel.Reader.ReadAllAsync(stoppingToken))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Process(item, _taskQueue);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 2. 主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Gofer.NET
+builder.Services.AddSingleton<ITaskQueue>(sp => 
+    TaskQueue.Redis("localhost:6379"));
+
+// 注册任务处理器
+builder.Services.AddHostedService<GoferTaskProcessor>();
+
+var app = builder.Build();
+
+// 任务端点
+app.MapPost("/task", async (TaskItem item, GoferTaskProcessor processor) =>
+{
+    await processor.EnqueueTaskAsync(item);
+    return Results.Ok();
+});
+
+app.Run();
+
+// 3. 辅助类
+public record TaskItem(string Id, string Payload);
+public class TaskContext
+{
+    public void Process(TaskItem item, ITaskQueue queue)
+    {
+        queue.Enqueue(async () => 
+        {
+            Console.WriteLine($"Processing task: {item.Id}");
+            await Task.Delay(100); // 模拟任务处理
+        });
+    }
+}
+public class TaskContextPooledPolicy : IPooledObjectPolicy<TaskContext>
+{
+    public TaskContext Create() => new TaskContext();
+    public bool Return(TaskContext obj) => true;
+}

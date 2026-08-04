@@ -1,0 +1,319 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PagedList Integration Run Configuration",
+  "description": "PagedList 集成的运行环境配置",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "配置版本",
+      "default": "1.0"
+    },
+    "runtimeOptions": {
+      "type": "object",
+      "description": "运行时选项",
+      "properties": {
+        "tfm": {
+          "type": "string",
+          "description": "目标框架",
+          "default": "net10.0"
+        },
+        "framework": {
+          "type": "object",
+          "description": "框架配置",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "框架名称",
+              "default": "Microsoft.NETCore.App"
+            },
+            "version": {
+              "type": "string",
+              "description": "框架版本",
+              "default": "10.0.0"
+            }
+          },
+          "required": ["name", "version"]
+        },
+        "configProperties": {
+          "type": "object",
+          "description": "配置属性",
+          "properties": {
+            "System.GC.Server": {
+              "type": "boolean",
+              "description": "是否启用服务器 GC",
+              "default": true
+            },
+            "System.GC.Concurrent": {
+              "type": "boolean",
+              "description": "是否启用并发 GC",
+              "default": true
+            },
+            "System.GC.RetainVM": {
+              "type": "boolean",
+              "description": "是否保留虚拟机内存",
+              "default": true
+            },
+            "System.Threading.ThreadPool.MinThreads": {
+              "type": "integer",
+              "description": "线程池最小线程数",
+              "default": 10
+            },
+            "System.Threading.ThreadPool.MaxThreads": {
+              "type": "integer",
+              "description": "线程池最大线程数",
+              "default": 100
+            }
+          }
+        }
+      },
+      "required": ["tfm", "framework"]
+    },
+    "compilationOptions": {
+      "type": "object",
+      "description": "编译选项",
+      "properties": {
+        "publishAot": {
+          "type": "boolean",
+          "description": "是否启用 AOT 编译",
+          "default": true
+        },
+        "readyToRun": {
+          "type": "boolean",
+          "description": "是否启用 ReadyToRun 编译",
+          "default": true
+        },
+        "tieredCompilation": {
+          "type": "boolean",
+          "description": "是否启用分层编译",
+          "default": true
+        },
+        "trimMode": {
+          "type": "string",
+          "description": "剪裁模式",
+          "default": "partial",
+          "enum": ["copyused", "partial", "full"]
+        },
+        "optimize": {
+          "type": "boolean",
+          "description": "是否启用优化",
+          "default": true
+        },
+        "enableCompilationRelaxations": {
+          "type": "boolean",
+          "description": "是否启用编译松弛",
+          "default": true
+        },
+        "enableEnhancedNgen": {
+          "type": "boolean",
+          "description": "是否启用增强的 Ngen",
+          "default": true
+        }
+      },
+      "required": [
+        "publishAot",
+        "readyToRun",
+        "tieredCompilation",
+        "trimMode",
+        "optimize"
+      ]
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "依赖项配置",
+      "properties": {
+        "Microsoft.Extensions.DependencyInjection": {
+          "type": "string",
+          "description": "Microsoft.Extensions.DependencyInjection 版本",
+          "default": "10.0.0"
+        },
+        "Microsoft.Extensions.Logging": {
+          "type": "string",
+          "description": "Microsoft.Extensions.Logging 版本",
+          "default": "10.0.0"
+        },
+        "Microsoft.Extensions.Options": {
+          "type": "string",
+          "description": "Microsoft.Extensions.Options 版本",
+          "default": "10.0.0"
+        },
+        "X.PagedList": {
+          "type": "string",
+          "description": "X.PagedList 版本",
+          "default": "8.4.0"
+        },
+        "X.PagedList.Mvc.Core": {
+          "type": "string",
+          "description": "X.PagedList.Mvc.Core 版本",
+          "default": "8.4.0"
+        },
+        "System.Linq": {
+          "type": "string",
+          "description": "System.Linq 版本",
+          "default": "10.0.0"
+        },
+        "System.Collections.Generic": {
+          "type": "string",
+          "description": "System.Collections.Generic 版本",
+          "default": "10.0.0"
+        },
+        "System.Threading.Tasks": {
+          "type": "string",
+          "description": "System.Threading.Tasks 版本",
+          "default": "10.0.0"
+        },
+        "System.Threading.Channels": {
+          "type": "string",
+          "description": "System.Threading.Channels 版本",
+          "default": "10.0.0"
+        },
+        "System.Runtime.CompilerServices.Unsafe": {
+          "type": "string",
+          "description": "System.Runtime.CompilerServices.Unsafe 版本",
+          "default": "6.0.0"
+        },
+        "System.Buffers": {
+          "type": "string",
+          "description": "System.Buffers 版本",
+          "default": "4.5.1"
+        }
+      },
+      "required": [
+        "Microsoft.Extensions.DependencyInjection",
+        "Microsoft.Extensions.Logging",
+        "Microsoft.Extensions.Options",
+        "X.PagedList",
+        "X.PagedList.Mvc.Core"
+      ]
+    },
+    "buildOptions": {
+      "type": "object",
+      "description": "构建选项",
+      "properties": {
+        "langVersion": {
+          "type": "string",
+          "description": "语言版本",
+          "default": "preview"
+        },
+        "nullable": {
+          "type": "string",
+          "description": "可空引用类型",
+          "default": "enable"
+        },
+        "implicitUsings": {
+          "type": "boolean",
+          "description": "隐式 using 指令",
+          "default": true
+        },
+        "allowUnsafeBlocks": {
+          "type": "boolean",
+          "description": "允许不安全代码块",
+          "default": true
+        }
+      }
+    },
+    "publishOptions": {
+      "type": "object",
+      "description": "发布选项",
+      "properties": {
+        "include": {
+          "type": "array",
+          "description": "包含的文件",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/*.json", "**/*.yaml", "**/*.md"]
+        },
+        "exclude": {
+          "type": "array",
+          "description": "排除的文件",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/*.cs", "**/*.csproj", "**/*.sln"]
+        }
+      }
+    },
+    "runtimeIdentifiers": {
+      "type": "array",
+      "description": "运行时标识符",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "win-x64",
+        "linux-x64",
+        "osx-x64",
+        "win-arm64",
+        "linux-arm64",
+        "osx-arm64"
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "runtimeOptions",
+    "compilationOptions",
+    "dependencies",
+    "buildOptions",
+    "publishOptions",
+    "runtimeIdentifiers"
+  ],
+  "default": {
+    "version": "1.0",
+    "runtimeOptions": {
+      "tfm": "net10.0",
+      "framework": {
+        "name": "Microsoft.NETCore.App",
+        "version": "10.0.0"
+      },
+      "configProperties": {
+        "System.GC.Server": true,
+        "System.GC.Concurrent": true,
+        "System.GC.RetainVM": true,
+        "System.Threading.ThreadPool.MinThreads": 10,
+        "System.Threading.ThreadPool.MaxThreads": 100
+      }
+    },
+    "compilationOptions": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true,
+      "trimMode": "partial",
+      "optimize": true,
+      "enableCompilationRelaxations": true,
+      "enableEnhancedNgen": true
+    },
+    "dependencies": {
+      "Microsoft.Extensions.DependencyInjection": "10.0.0",
+      "Microsoft.Extensions.Logging": "10.0.0",
+      "Microsoft.Extensions.Options": "10.0.0",
+      "X.PagedList": "8.4.0",
+      "X.PagedList.Mvc.Core": "8.4.0",
+      "System.Linq": "10.0.0",
+      "System.Collections.Generic": "10.0.0",
+      "System.Threading.Tasks": "10.0.0",
+      "System.Threading.Channels": "10.0.0",
+      "System.Runtime.CompilerServices.Unsafe": "6.0.0",
+      "System.Buffers": "4.5.1"
+    },
+    "buildOptions": {
+      "langVersion": "preview",
+      "nullable": "enable",
+      "implicitUsings": true,
+      "allowUnsafeBlocks": true
+    },
+    "publishOptions": {
+      "include": ["**/*.json", "**/*.yaml", "**/*.md"],
+      "exclude": ["**/*.cs", "**/*.csproj", "**/*.sln"]
+    },
+    "runtimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64",
+      "win-arm64",
+      "linux-arm64",
+      "osx-arm64"
+    ]
+  }
+}

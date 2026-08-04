@@ -1,0 +1,23 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MagicOnion@5.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+
+// 混合缓存策略
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "redis:6379";
+    options.InstanceName = "MagicOnion_";
+});
+
+// 本地内存缓存
+builder.Services.AddSingleton<IMemoryCache>(sp =>
+    new MemoryCache(new MemoryCacheOptions
+    {
+        SizeLimit = 1024 * 1024 * 100 // 100MB
+    }));
+
+// 缓存感知的MagicOnion服务
+services.AddMagicOnion()
+    .WithCaching();

@@ -1,0 +1,295 @@
+using Confluent.Kafka;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Polly;
+using System.Buffers;
+using System.Diagnostics;
+using System.Threading.Channels;
+using System.Collections.Concurrent;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+
+namespace Trae.Vsa.Kafka
+{
+    /// <summary>
+    /// Kafka配置选项
+    /// </summary>
+    public class KafkaOptions
+    {
+        // 基础配置
+        public string BootstrapServers { get; set; } = "localhost:9092";
+        public string ClientId { get; set; } = "default-client";
+        public string GroupId { get; set; } = "default-group";
+        
+        // 消费者配置
+        public bool EnableAutoCommit { get; set; } = true;
+        public int AutoCommitIntervalMs { get; set; } = 5000;
+        public int SessionTimeoutMs { get; set; } = 6000;
+        
+        // 生产者配置
+        public int MessageTimeoutMs { get; set; } = 300000;
+        public int QueueBufferingMaxMessages { get; set; } = 100000;
+        public int QueueBufferingMaxKbytes { get; set; } = 1048576;
+        public int MessageSendMaxRetries { get; set; } = 3;
+        public int RetryBackoffMs { get; set; } = 100;
+        
+        // 高级配置
+        public bool EnableIdempotence { get; set; } = false;
+        public int MaxInFlight { get; set; } = 5;
+        public bool EnableTransactions { get; set; } = false;
+        public string TransactionalId { get; set; } = string.Empty;
+        public int TransactionTimeoutMs { get; set; } = 60000;
+        
+        // 压缩配置
+        public CompressionType CompressionType { get; set; } = CompressionType.None;
+        public int CompressionLevel { get; set; } = -1;
+        
+        // 内存管理
+        public int MemoryPoolSize { get; set; } = 1024 * 1024 * 100; // 100MB
+        
+        // 多租户支持
+        public bool MultiTenantEnabled { get; set; } = false;
+        public string TenantHeaderName { get; set; } = "X-Tenant-Id";
+        
+        // 监控配置
+        public int MetricsIntervalMs { get; set; } = 60000;
+        public double TracingSampleRate { get; set; } = 0.1;
+        
+        // 死信队列配置
+        public bool EnableDeadLetterQueue { get; set; } = false;
+        public string DeadLetterTopicPrefix { get; set; } = "dead-letter-";
+        public int DeadLetterMaxRetries { get; set; } = 3;
+        
+        // 消息追踪配置
+        public bool EnableMessageTracing { get; set; } = true;
+        public string TraceParentHeaderName { get; set; } = "traceparent";
+        public string TraceStateHeaderName { get; set; } = "tracestate";
+    }
+
+    /// <summary>
+    /// Kafka服务接口
+    /// </summary>
+    public interface IKafkaService
+    {
+        /// <summary>
+        /// 异步生产消息
+        /// </summary>
+        Task ProduceAsync<TKey, TValue>(string topic, Message<TKey, TValue> message);
+        
+        /// <summary>
+        /// 异步消费消息
+        /// </summary>
+        Task ConsumeAsync<TKey, TValue>(string topic, Func<Message<TKey, TValue>, Task> handler);
+        
+        /// <summary>
+        /// 开始事务
+        /// </summary>
+        Task BeginTransactionAsync();
+        
+        /// <summary>
+        /// 提交事务
+        /// </summary>
+        Task CommitTransactionAsync();
+        
+        /// <summary>
+        /// 中止事务
+        /// </summary>
+        Task AbortTransactionAsync();
+        
+        /// <summary>
+        /// 发送消息到死信队列
+        /// </summary>
+        Task SendToDeadLetterQueueAsync<TKey, TValue>(string originalTopic, Message<TKey, TValue> message, string reason);
+        
+        /// <summary>
+        /// 设置租户上下文
+        /// </summary>
+        Task SetTenantContextAsync(string tenantId);
+        
+        /// <summary>
+        /// 重置熔断器
+        /// </summary>
+        Task ResetCircuitBreakerAsync();
+        
+        /// <summary>
+        /// 获取内存池统计信息
+        /// </summary>
+        Task<MemoryPoolStatistics> GetMemoryPoolAsync();
+        
+        /// <summary>
+        /// 获取连接统计信息
+        /// </summary>
+        Task<ConnectionStatistics> GetConnectionStatsAsync();
+        
+        /// <summary>
+        /// 获取吞吐量统计信息
+        /// </summary>
+        Task<ThroughputStatistics> GetThroughputStatsAsync();
+        
+        /// <summary>
+        /// 获取消息追踪上下文
+        /// </summary>
+        ActivityContext GetMessageTraceContext();
+    }
+
+    /// <summary>
+    /// Kafka服务实现
+    /// </summary>
+    public class KafkaService : IKafkaService, IDisposable
+    {
+        private readonly IProducer<Null, string> _producer;
+        private readonly IConsumer<Null, string> _consumer;
+        private readonly IProducer<Null, string> _transactionalProducer;
+        private readonly MemoryPool<byte> _memoryPool;
+        private readonly AsyncPolicy _resiliencyPolicy;
+        private readonly IOptionsMonitor<KafkaOptions> _options;
+        private readonly ActivitySource _activitySource;
+        private readonly Meter _meter;
+        private readonly ConcurrentDictionary<string, int> _deadLetterCounts;
+        private string _currentTenantId = string.Empty;
+        private bool _inTransaction = false;
+
+        public KafkaService(IOptionsMonitor<KafkaOptions> options)
+        {
+            _options = options;
+            
+            var producerConfig = new ProducerConfig
+            {
+                BootstrapServers = options.CurrentValue.BootstrapServers,
+                ClientId = options.CurrentValue.ClientId,
+                MessageTimeoutMs = options.CurrentValue.MessageTimeoutMs,
+                QueueBufferingMaxMessages = options.CurrentValue.QueueBufferingMaxMessages,
+                QueueBufferingMaxKbytes = options.CurrentValue.QueueBufferingMaxKbytes,
+                MessageSendMaxRetries = options.CurrentValue.MessageSendMaxRetries,
+                RetryBackoffMs = options.CurrentValue.RetryBackoffMs,
+                EnableIdempotence = options.CurrentValue.EnableIdempotence,
+                MaxInFlight = options.CurrentValue.MaxInFlight
+            };
+
+            var consumerConfig = new ConsumerConfig
+            {
+                BootstrapServers = options.CurrentValue.BootstrapServers,
+                GroupId = options.CurrentValue.GroupId,
+                EnableAutoCommit = options.CurrentValue.EnableAutoCommit,
+                AutoCommitIntervalMs = options.CurrentValue.AutoCommitIntervalMs,
+                SessionTimeoutMs = options.CurrentValue.SessionTimeoutMs
+            };
+
+            _producer = new ProducerBuilder<Null, string>(producerConfig).Build();
+            _consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build();
+            
+            _memoryPool = MemoryPool<byte>.Shared;
+            
+            _resiliencyPolicy = Policy
+                .Handle<KafkaException>()
+                .WaitAndRetryAsync(3, retryAttempt => 
+                    TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * 100));
+                
+            _activitySource = new ActivitySource("Trae.Vsa.Kafka");
+        }
+
+        public async Task ProduceAsync<TKey, TValue>(string topic, Message<TKey, TValue> message)
+        {
+            using var activity = _activitySource.StartActivity($"Kafka.Produce.{topic}");
+            
+            if (_options.CurrentValue.MultiTenantEnabled && !string.IsNullOrEmpty(_currentTenantId))
+            {
+                message.Headers ??= new Headers();
+                message.Headers.Add(_options.CurrentValue.TenantHeaderName, 
+                    System.Text.Encoding.UTF8.GetBytes(_currentTenantId));
+            }
+            
+            await _resiliencyPolicy.ExecuteAsync(async () =>
+            {
+                await _producer.ProduceAsync(topic, message);
+            });
+        }
+
+        public async Task ConsumeAsync<TKey, TValue>(string topic, Func<Message<TKey, TValue>, Task> handler)
+        {
+            _consumer.Subscribe(topic);
+            
+            while (true)
+            {
+                try
+                {
+                    var consumeResult = _consumer.Consume();
+                    
+                    using var activity = _activitySource.StartActivity($"Kafka.Consume.{topic}");
+                    
+                    await _resiliencyPolicy.ExecuteAsync(async () =>
+                    {
+                        await handler(consumeResult.Message);
+                    });
+                }
+                catch (ConsumeException e)
+                {
+                    Debug.WriteLine($"Error consuming message: {e.Error.Reason}");
+                }
+            }
+        }
+
+        public Task SetTenantContextAsync(string tenantId)
+        {
+            _currentTenantId = tenantId;
+            return Task.CompletedTask;
+        }
+
+        public Task ResetCircuitBreakerAsync()
+        {
+            // Reset circuit breaker logic here
+            return Task.CompletedTask;
+        }
+
+        public Task<MemoryPoolStatistics> GetMemoryPoolAsync()
+        {
+            return Task.FromResult(new MemoryPoolStatistics
+            {
+                TotalMemory = _memoryPool.MaxBufferSize,
+                AvailableMemory = _memoryPool.MaxBufferSize - _memoryPool.BuffersInUse
+            });
+        }
+
+        public Task<ConnectionStatistics> GetConnectionStatsAsync()
+        {
+            // Return connection statistics
+            return Task.FromResult(new ConnectionStatistics());
+        }
+
+        public Task<ThroughputStatistics> GetThroughputStatsAsync()
+        {
+            // Return throughput statistics
+            return Task.FromResult(new ThroughputStatistics());
+        }
+
+        public void Dispose()
+        {
+            _producer?.Dispose();
+            _consumer?.Dispose();
+            _activitySource?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddKafkaService(this IServiceCollection services, 
+            Action<KafkaOptions> configureOptions)
+        {
+            services.Configure(configureOptions);
+            services.AddSingleton<IKafkaService, KafkaService>();
+            return services;
+        }
+    }
+
+    public class MemoryPoolStatistics
+    {
+        public long TotalMemory { get; set; }
+        public long AvailableMemory { get; set; }
+    }
+
+    public class ConnectionStatistics { }
+    
+    public class ThroughputStatistics { }
+}

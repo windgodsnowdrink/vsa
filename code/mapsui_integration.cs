@@ -1,0 +1,144 @@
+#:sdk Microsoft.NET.Sdk
+#:package Mapsui@4.0.0
+#:package Mapsui.UI.Wpf@4.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+
+using System;
+using System.Collections.Generic;
+using Mapsui;
+using Mapsui.Layers;
+using Mapsui.Projections;
+using Mapsui.Providers;
+using Mapsui.Styles;
+using Mapsui.UI;
+using Microsoft.Extensions.DependencyInjection;
+
+public class MapFeature
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public IStyle Style { get; set; }
+}
+
+public interface IMapService
+{
+    IMapControl CreateMapControl();
+    void AddLayer(ILayer layer);
+    void RemoveLayer(string layerName);
+    void AddPointFeature(MapFeature feature);
+    void ZoomTo(double lon, double lat, double resolution = 5000);
+    (double lon, double lat) ToMercator(double latitude, double longitude);
+}
+
+public class MapsuiMapService : IMapService
+{
+    private readonly IMapControl _mapControl;
+    private readonly Map _map;
+    
+    public MapsuiMapService()
+    {
+        _map = new Map
+        {
+            CRS = "EPSG:3857",
+            Transformation = new MinimalTransformation()
+        };
+        
+        // Add default OSM layer
+        AddLayer(CreateOsmLayer());
+    }
+
+    public IMapControl CreateMapControl()
+    {
+        var mapControl = new MapControl
+        {
+            Map = _map,
+            AllowDrop = true,
+            UseAnimations = true,
+            RenderMode = RenderMode.Skia,
+            ZoomMode = ZoomMode.MouseCenter
+        };
+        
+        return mapControl;
+    }
+
+    public void AddLayer(ILayer layer)
+    {
+        _map.Layers.Add(layer);
+    }
+
+    public void RemoveLayer(string layerName)
+    {
+        var layer = _map.Layers.FindLayer(layerName);
+        if (layer != null)
+        {
+            _map.Layers.Remove(layer);
+        }
+    }
+
+    public void AddPointFeature(MapFeature feature)
+    {
+        var layer = _map.Layers.FindLayer(feature.Id) as MemoryLayer;
+        if (layer == null)
+        {
+            layer = new MemoryLayer
+            {
+                Name = feature.Id,
+                DataSource = new MemoryProvider(),
+                Style = feature.Style ?? new SymbolStyle
+                {
+                    SymbolScale = 0.5,
+                    Fill = new Brush(Color.Red),
+                    Outline = new Pen(Color.Black)
+                }
+            };
+            _map.Layers.Add(layer);
+        }
+        
+        var (x, y) = ToMercator(feature.Latitude, feature.Longitude);
+        var point = new PointFeature(x, y)
+        {
+            ["Name"] = feature.Name
+        };
+        
+        ((MemoryProvider)layer.DataSource).Features.Add(point);
+        _map.Refresh();
+    }
+
+    public void ZoomTo(double lon, double lat, double resolution = 5000)
+    {
+        _map.NavigateTo(lon, lat, resolution);
+    }
+
+    public (double lon, double lat) ToMercator(double latitude, double longitude)
+    {
+        var (x, y) = SphericalMercator.FromLonLat(longitude, latitude);
+        return (x, y);
+    }
+    
+    private ILayer CreateOsmLayer()
+    {
+        return new TileLayer("OpenStreetMap")
+        {
+            Name = "BaseLayer",
+            DataSource = new Mapsui.Tiling.HttpTileSource(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                new []{"a", "b", "c"},
+                tileSize: 256,
+                minZoom: 0,
+                maxZoom: 19,
+                attribution: "© OpenStreetMap contributors")
+        };
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMapServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IMapService, MapsuiMapService>();
+        return services;
+    }
+}

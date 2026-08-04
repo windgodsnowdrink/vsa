@@ -1,0 +1,32 @@
+{
+  "Cscore": {
+    "EnableCache": true,
+    "CacheSize": 1000,
+    "Timeout": "00:00:30",
+    "EnableDetailedLogging": false,
+    "WorkerCount": 4,
+    "RetryCount": 3,
+    "RetryInterval": "00:00:00.5",
+    "SampleRate": 44100,
+    "ChannelCount": 2,
+    "BitsPerSample": 16
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Cscore.AOT": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning"
+    }
+  },
+  "Performance": {
+    "EnableMetrics": true,
+    "MetricsInterval": "00:00:10",
+    "EnableTracing": false
+  },
+  "Security": {
+    "EnableAuthentication": false,
+    "EnableAuthorization": false,
+    "AllowedOrigins": ["*"]
+  }
+}

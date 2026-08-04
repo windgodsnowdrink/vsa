@@ -1,0 +1,181 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package SIPSorcery.Net@6.0.0
+#:package ZstdNet@1.4.5  // 高性能压缩库
+#:package System.IO.Compression@8.0.0
+#:package System.Security.Cryptography@8.0.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+using System.Buffers;
+using System.Security.Cryptography;
+using System.Threading.Channels;
+using SIPSorcery.Net;
+using ZstdNet;  // 引入ZstdNet库
+using System.IO.Compression;  // 引入压缩库
+
+// 1. 加密配置
+public record EncryptionConfig(
+    AesGcmConfig AudioConfig,
+    AesGcmConfig VideoConfig,
+    CompressionConfig CompressionConfig,  // 新增压缩配置
+    int KeyRotationIntervalMs = 30000);
+
+public record AesGcmConfig(
+    int NonceSize = 12,
+    int TagSize = 16,
+    int KeySize = 32);
+
+public record CompressionConfig(
+    int Level = 3,        // 默认压缩级别
+    int Threshold = 1024  // 压缩阈值(字节)
+);
+
+// 2. 加密处理器 (零拷贝优化)
+[SkipLocalsInit]
+public sealed class MediaEncryptor : IAsyncDisposable
+{
+    private readonly Channel<EncryptedFrame> _encryptedChannel;
+    private readonly ThreadLocal<AesGcm> _aesGcm;
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    private readonly Timer _keyRotator;
+    private readonly ThreadLocal<Compressor> _compressor;
+    private readonly ThreadLocal<Decompressor> _decompressor;
+
+    public MediaEncryptor(EncryptionConfig config)
+    {
+        _encryptedChannel = Channel.CreateBounded<EncryptedFrame>(10000);
+        _buffer = new(() => stackalloc byte[4096]);
+        _compressor = new(() => new Compressor(new CompressionOptions(config.CompressionConfig.Level)));
+        _decompressor = new(() => new Decompressor());
+        
+        // 每线程独立的加密器
+        _aesGcm = new(() => 
+        {
+            var key = RandomNumberGenerator.GetBytes(config.AudioConfig.KeySize);
+            return new AesGcm(key, config.AudioConfig.TagSize);
+        });
+
+        // 定时密钥轮换
+        _keyRotator = new Timer(_ => 
+        {
+            foreach (var aes in _aesGcm.Values)
+            {
+                aes.Dispose();
+                _aesGcm.Value = new AesGcm(
+                    RandomNumberGenerator.GetBytes(config.AudioConfig.KeySize),
+                    config.AudioConfig.TagSize);
+            }
+        }, null, config.KeyRotationIntervalMs, config.KeyRotationIntervalMs);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe ValueTask EncryptAsync(RTPFrame frame)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0) // Cache-line对齐
+            {
+                // 压缩处理
+                var payload = frame.Payload.Length > config.CompressionConfig.Threshold 
+                    ? _compressor.Value.Wrap(frame.Payload)
+                    : frame.Payload;
+                
+                var nonce = RandomNumberGenerator.GetBytes(12);
+                var encrypted = buffer[..payload.Length];
+                
+                _aesGcm.Value.Encrypt(
+                    nonce,
+                    frame.Payload,
+                    encrypted,
+                    frame.Metadata);
+
+                return _encryptedChannel.Writer.WriteAsync(
+                    new EncryptedFrame(nonce, encrypted, frame.Metadata));
+            }
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _keyRotator.Dispose();
+        foreach (var aes in _aesGcm.Values) aes.Dispose();
+        _encryptedChannel.Writer.Complete();
+    }
+}
+
+// 3. 主程序集成
+var builder = WebApplication.CreateBuilder();
+
+// 配置加密通道
+var encryptionConfig = new EncryptionConfig(
+    new AesGcmConfig(),
+    new AesGcmConfig(TagSize: 16, KeySize: 32));
+
+builder.Services.AddSingleton<MediaEncryptor>(new MediaEncryptor(encryptionConfig));
+
+// 注册RTP处理器
+builder.Services.AddHostedService<RTPProcessor>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Secure Media Transport Ready");
+app.Run();
+
+// 4. RTP处理器实现
+public sealed class RTPProcessor : BackgroundService
+{
+    private readonly MediaEncryptor _encryptor;
+    private readonly Channel<RTPFrame> _rtpChannel;
+
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        await foreach (var frame in _rtpChannel.Reader.ReadAllAsync(ct))
+        {
+            // 解压处理
+            if (frame.IsCompressed)
+            {
+                frame.Payload = _decompressor.Value.Unwrap(frame.Payload);
+            }
+            
+            await _encryptor.EncryptAsync(frame);
+        }
+    }
+}
+
+
+// 量子安全加密选项
+public record QuantumEncryptionConfig(
+    int KeySize = 256,
+    int NonceSize = 32,
+    int PostQuantumAlgorithm = 1);  // 1=Kyber, 2=NTRU
+
+// 增强加密处理器
+public sealed class QuantumSafeEncryptor : MediaEncryptor
+{
+    private readonly ThreadLocal<Span<byte>> _pqBuffer;
+    
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override unsafe ValueTask EncryptAsync(RTPFrame frame)
+    {
+        Span<byte> buffer = _pqBuffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                // 先执行常规加密
+                await base.EncryptAsync(frame);
+                
+                // 添加量子安全层
+                ApplyPostQuantumSecurity(frame, buffer);
+            }
+        }
+    }
+    
+    // ... 量子加密实现 ...
+}
+
+// 主程序集成
+builder.Services.AddSingleton<QuantumSafeEncryptor>();

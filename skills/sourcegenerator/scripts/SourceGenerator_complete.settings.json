@@ -1,0 +1,38 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.Complete": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "Complete": {
+      "EnableAllFeatures": true,
+      "GenerateCodeDocumentation": true,
+      "GenerateUnitTests": true,
+      "GenerateIntegrationTests": false,
+      "OutputDirectory": "./generated-complete",
+      "CacheDirectory": "./cache-complete",
+      "CleanOutputDirectory": true,
+      "EnableIncrementalBuild": true,
+      "EnableParallelProcessing": true,
+      "MaxParallelTasks": 8,
+      "TimeoutSeconds": 60,
+      "EnableMemoryOptimization": true,
+      "EnableCodeOptimization": true,
+      "EnableErrorReporting": true,
+      "ErrorReportingEmail": "admin@example.com",
+      "EnableTelemetry": false
+    }
+  }
+}

@@ -1,0 +1,49 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.AspNetCore.Authentication.JwtBearer@8.0.0
+#:package Microsoft.IdentityModel.Tokens@8.0.0
+#:package StackExchange.Redis@2.7.121
+#:package System.IdentityModel.Tokens.Jwt@8.0.0
+#:package Keycloak.Net@22.0.0
+#:package Microsoft.AspNetCore.Authentication.OpenIdConnect@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+// 添加Keycloak配置
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = "https://keycloak.example.com/auth/realms/myrealm";
+    options.Audience = "myclient";
+    options.RequireHttpsMetadata = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromSeconds(5)
+    };
+})
+.AddOpenIdConnect("Keycloak", options =>
+{
+    options.Authority = "https://keycloak.example.com/auth/realms/myrealm";
+    options.ClientId = "myclient";
+    options.ClientSecret = "mysecret";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+});
+
+// 添加Keycloak管理客户端
+builder.Services.AddKeycloakAdminClient(options =>
+{
+    options.AuthServerUrl = "https://keycloak.example.com/auth/";
+    options.Realm = "master";
+    options.ClientId = "admin-cli";
+    options.ClientSecret = "myadminsecret";
+});

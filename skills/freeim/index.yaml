@@ -1,0 +1,33 @@
+# FreeIM Agent Skill - FreeIM 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 FreeIM 技能实现，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# Application Scenarios: 即时通讯相关功能
+# Activation Conditions: 当需要即时通讯功能时激活
+# Main Features:
+# - 消息发送与接收
+# - 用户连接管理
+# - 在线用户列表
+# - 版本信息查询
+# - AOT 编译优化
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - AOT 编译提升启动速度和运行性能
+# - 单文件部署减少依赖
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - AOT 编译技术
+# - 单文件执行脚本
+# - 完整的命令行支持
+# - 别名支持

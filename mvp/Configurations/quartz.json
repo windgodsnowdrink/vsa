@@ -1,0 +1,5 @@
+﻿{
+  "ResourceChangeJob": "0 0 12 * * ?",
+  "StreamStopPublishJob": "0 0/5 * * * ?",
+  "AIotSatokenCacheCheckJob": "0 0/5 * * * ?"
+}

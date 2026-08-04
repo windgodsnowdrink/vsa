@@ -1,0 +1,138 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package TheIdServer@5.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:package System.Threading.Channels@8.0.0
+#:package MassTransit@8.2.2
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using Microsoft.Extensions.ObjectPool;
+using TheIdServer.Models;
+using MassTransit;
+using System.Security.Claims;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
+
+// 1. TheIdServer适配器(高性能实现)
+[SkipLocalsInit]
+public sealed class TheIdServerAdapter : BackgroundService
+{
+    private readonly Channel<AuthRequest> _requestChannel;
+    private readonly ObjectPool<TheIdServerContext> _contextPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly IDistributedCache _cache;
+    private readonly IBus _bus;
+
+    public TheIdServerAdapter(
+        IDistributedCache cache,
+        IBus bus)
+    {
+        _cache = cache;
+        _bus = bus;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _requestChannel = Channel.CreateBounded<AuthRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池(CPU cache-line对齐)
+        _contextPool = new DefaultObjectPool<TheIdServerContext>(
+            new TheIdServerContextPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<AuthResult> ProcessRequestAsync(AuthRequest request)
+    {
+        await _requestChannel.Writer.WriteAsync(request);
+        return new AuthResult { Status = AuthStatus.Processing };
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(ct))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                await context.ProcessAsync(request, _cache, _bus);
+                _latencyOptimizer.RecordLatency();
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+}
+
+// 2. TheIdServer配置
+public static class TheIdServerConfig
+{
+    public static IServiceCollection AddTheIdServerServices(this IServiceCollection services)
+    {
+        services.AddTheIdServer(options =>
+        {
+            options.Events.RaiseErrorEvents = true;
+            options.Events.RaiseInformationEvents = true;
+            options.Events.RaiseSuccessEvents = true;
+            options.Events.RaiseFailureEvents = true;
+        })
+        .AddDeveloperSigningCredential()
+        .AddInMemoryIdentityResources(Config.GetIdentityResources())
+        .AddInMemoryApiResources(Config.GetApis())
+        .AddInMemoryClients(Config.GetClients());
+
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+            });
+        });
+
+        services.AddSingleton<TheIdServerAdapter>();
+        services.AddHostedService<TheIdServerAdapter>();
+
+        return services;
+    }
+}
+
+// 3. 主程序配置
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Redis缓存
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "TheIdServer:";
+});
+
+// 添加TheIdServer服务
+builder.Services.AddTheIdServerServices();
+
+var app = builder.Build();
+
+app.UseIdentityServer();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("/", () => "TheIdServer SSO Service Ready");
+app.Run();
+
+// 辅助记录类型
+public record AuthRequest(string ClientId, string Scope);
+public record AuthResult(string? Token = null, AuthStatus Status = AuthStatus.Pending);
+public enum AuthStatus { Pending, Processing, Completed, Failed }

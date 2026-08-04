@@ -1,0 +1,579 @@
+name: transport
+version: 1.0.0
+author: NET 专家
+description: 基于 .NET 10 的传输层实现，支持多种传输协议和高性能数据处理技术
+
+compilation:
+  options:
+    target_framework: net10.0
+    publish_aot: true
+    trim_mode: partial
+    self_contained: true
+    publish_single_file: true
+    runtime_identifier: win-x64
+    output_type: Exe
+    nullable: enable
+    implicit_usings: enable
+    lang_version: preview
+
+  dependencies:
+    - name: Microsoft.Extensions.DependencyInjection
+      version: 9.0.0
+    - name: Microsoft.Extensions.Logging
+      version: 9.0.0
+    - name: Microsoft.Extensions.Logging.Console
+      version: 9.0.0
+    - name: Microsoft.Extensions.Options
+      version: 9.0.0
+    - name: System.CommandLine
+      version: 2.0.0-beta4.22272.1
+    - name: System.Net.Http
+      version: 9.0.0
+    - name: System.Net.Sockets
+      version: 9.0.0
+    - name: System.IO.Pipelines
+      version: 9.0.0
+    - name: System.Threading.Channels
+      version: 9.0.0
+    - name: System.Buffers
+      version: 9.0.0
+    - name: Scrutor
+      version: 4.2.2
+    - name: System.Reflection.MetadataLoadContext
+      version: 9.0.0
+
+features:
+  - name: http_transport
+    description: HTTP 传输协议支持
+    enabled: true
+  - name: tcp_transport
+    description: TCP 传输协议支持
+    enabled: true
+  - name: udp_transport
+    description: UDP 传输协议支持
+    enabled: true
+  - name: pipeline_transport
+    description: 基于 System.IO.Pipelines 的高性能传输
+    enabled: true
+  - name: channel_transport
+    description: 基于 System.Threading.Channels 的异步传输
+    enabled: true
+  - name: buffer_management
+    description: 基于 System.Buffers 的缓冲区管理
+    enabled: true
+  - name: dependency_injection
+    description: 依赖注入支持
+    enabled: true
+  - name: scrutor_integration
+    description: Scrutor 装饰器模式支持
+    enabled: true
+  - name: command_line_interface
+    description: 命令行接口支持
+    enabled: true
+  - name: logging
+    description: 日志记录支持
+    enabled: true
+  - name: aot_compilation
+    description: AOT 编译支持
+    enabled: true
+
+commands:
+  - name: transport_core
+    description: 核心传输服务
+    path: scripts/transport_core.cs
+    arguments:
+      - name: --transport
+        description: 传输类型 (http, tcp, udp, pipeline, channel, buffer)
+        required: false
+        default: http
+      - name: --url
+        description: HTTP URL
+        required: false
+      - name: --method
+        description: HTTP 方法 (GET, POST, PUT, DELETE)
+        required: false
+        default: GET
+      - name: --host
+        description: TCP/UDP 主机
+        required: false
+        default: localhost
+      - name: --port
+        description: TCP/UDP 端口
+        required: false
+        default: 8080
+      - name: --data
+        description: 传输数据
+        required: false
+      - name: --input
+        description: 输入文件路径
+        required: false
+      - name: --output
+        description: 输出文件路径
+        required: false
+      - name: --capacity
+        description: 通道容量
+        required: false
+        default: -1
+      - name: --size
+        description: 缓冲区大小
+        required: false
+        default: 4096
+      - name: --verbose
+        description: 详细输出
+        required: false
+        default: false
+
+  - name: transport_generator
+    description: Scrutor 用法示例
+    path: scripts/transport_generator.cs
+    arguments:
+      - name: --demo
+        description: 演示类型 (basic, decorator, filter, lifetime, advanced, scanning, multiple, conditional, all)
+        required: false
+        default: all
+      - name: --assembly
+        description: 要扫描的程序集
+        required: false
+      - name: --pattern
+        description: 扫描模式
+        required: false
+        default: *Service*
+      - name: --verbose
+        description: 详细输出
+        required: false
+        default: false
+
+profiles:
+  - name: HttpTransport
+    description: HTTP 传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - http
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_HTTP_TIMEOUT: "30"
+
+  - name: TcpTransport
+    description: TCP 传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - tcp
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_TCP_BUFFER_SIZE: "8192"
+
+  - name: UdpTransport
+    description: UDP 传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - udp
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_UDP_BUFFER_SIZE: "8192"
+
+  - name: PipelineTransport
+    description: 管道传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - pipeline
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_PIPELINE_MIN_SIZE: "512"
+      TRANSPORT_PIPELINE_MAX_SIZE: "65536"
+
+  - name: ChannelTransport
+    description: 通道传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - channel
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_CHANNEL_CAPACITY: "1000"
+
+  - name: BufferTransport
+    description: 缓冲区传输配置文件
+    command: transport_core
+    arguments:
+      - --transport
+      - buffer
+    environment_variables:
+      DOTNET_ENVIRONMENT: Production
+      DOTNET_LOGGING_LEVEL: Information
+      TRANSPORT_BUFFER_POOL_SIZE: "1024"
+
+  - name: ScrutorBasic
+    description: Scrutor 基本用法配置文件
+    command: transport_generator
+    arguments:
+      - --demo
+      - basic
+    environment_variables:
+      DOTNET_ENVIRONMENT: Development
+      DOTNET_LOGGING_LEVEL: Debug
+      SCRUTOR_DEMO_MODE: "true"
+
+  - name: ScrutorDecorator
+    description: Scrutor 装饰器模式配置文件
+    command: transport_generator
+    arguments:
+      - --demo
+      - decorator
+    environment_variables:
+      DOTNET_ENVIRONMENT: Development
+      DOTNET_LOGGING_LEVEL: Debug
+      SCRUTOR_DEMO_MODE: "decorator"
+      SCRUTOR_DECORATOR_COUNT: "2"
+
+  - name: ScrutorAll
+    description: Scrutor 所有用法配置文件
+    command: transport_generator
+    arguments:
+      - --demo
+      - all
+    environment_variables:
+      DOTNET_ENVIRONMENT: Development
+      DOTNET_LOGGING_LEVEL: Information
+      SCRUTOR_DEMO_MODE: "true"
+      SCRUTOR_ASSEMBLY_SCAN: "true"
+      SCRUTOR_DECORATOR_ENABLED: "true"
+
+environment_variables:
+  DOTNET_ENVIRONMENT: Production
+  DOTNET_LOGGING_LEVEL: Information
+  DOTNET_AOT_ENABLED: "true"
+  TRANSPORT_HTTP_TIMEOUT: "30"
+  TRANSPORT_TCP_BUFFER_SIZE: "8192"
+  TRANSPORT_UDP_BUFFER_SIZE: "8192"
+  TRANSPORT_PIPELINE_MIN_SIZE: "512"
+  TRANSPORT_PIPELINE_MAX_SIZE: "65536"
+  TRANSPORT_CHANNEL_CAPACITY: "-1"
+  TRANSPORT_BUFFER_POOL_SIZE: "1024"
+  SCRUTOR_DEMO_MODE: "false"
+  SCRUTOR_ASSEMBLY_SCAN: "false"
+  SCRUTOR_DECORATOR_ENABLED: "false"
+  SCRUTOR_FILTER_CRITERIA: "Service"
+  SCRUTOR_LIFETIME_TEST: "false"
+  SCRUTOR_ADVANCED_FEATURES: "false"
+  SCRUTOR_SCAN_PATTERN: "*Service*"
+  SCRUTOR_DECORATOR_COUNT: "2"
+  SCRUTOR_CONDITIONAL_ENABLED: "true"
+
+build:
+  configuration: Release
+  platform: Any CPU
+  output_path: bin/Release/net10.0/win-x64/publish
+  publish_profile: Default
+
+debug:
+  enabled: true
+  port: 49152
+  suspend: false
+
+analysis:
+  enabled: true
+  rules:
+    - CA1000
+    - CA1001
+    - CA1002
+    - CA1003
+    - CA1005
+    - CA1010
+    - CA1012
+    - CA1020
+    - CA1021
+    - CA1024
+    - CA1027
+    - CA1028
+    - CA1030
+    - CA1031
+    - CA1032
+    - CA1033
+    - CA1034
+    - CA1035
+    - CA1036
+    - CA1038
+    - CA1040
+    - CA1041
+    - CA1043
+    - CA1044
+    - CA1045
+    - CA1046
+    - CA1047
+    - CA1048
+    - CA1049
+    - CA1050
+    - CA1051
+    - CA1052
+    - CA1053
+    - CA1054
+    - CA1055
+    - CA1056
+    - CA1057
+    - CA1058
+    - CA1059
+    - CA1060
+    - CA1061
+    - CA1062
+    - CA1063
+    - CA1064
+    - CA1065
+    - CA1066
+    - CA1067
+    - CA1068
+    - CA1069
+    - CA1070
+    - CA1071
+    - CA1072
+    - CA1073
+    - CA1074
+    - CA1075
+    - CA1076
+    - CA1077
+    - CA1078
+    - CA1079
+    - CA1080
+    - CA1081
+    - CA1082
+    - CA1083
+    - CA1084
+    - CA1085
+    - CA1086
+    - CA1087
+    - CA1088
+    - CA1089
+    - CA1090
+    - CA1091
+    - CA1092
+    - CA1093
+    - CA1094
+    - CA1095
+    - CA1096
+    - CA1097
+    - CA1098
+    - CA1099
+    - CA1100
+    - CA1101
+    - CA1102
+    - CA1103
+    - CA1104
+    - CA1105
+    - CA1106
+    - CA1107
+    - CA1108
+    - CA1109
+    - CA1110
+    - CA1111
+    - CA1112
+    - CA1113
+    - CA1114
+    - CA1115
+    - CA1116
+    - CA1117
+    - CA1118
+    - CA1119
+    - CA1120
+    - CA1121
+    - CA1122
+    - CA1123
+    - CA1124
+    - CA1125
+    - CA1126
+    - CA1127
+    - CA1128
+    - CA1129
+    - CA1130
+    - CA1131
+    - CA1132
+    - CA1133
+    - CA1134
+    - CA1135
+    - CA1136
+    - CA1137
+    - CA1138
+    - CA1139
+    - CA1140
+    - CA1141
+    - CA1142
+    - CA1143
+    - CA1144
+    - CA1145
+    - CA1146
+    - CA1147
+    - CA1148
+    - CA1149
+    - CA1150
+    - CA1151
+    - CA1152
+    - CA1153
+    - CA1154
+    - CA1155
+    - CA1156
+    - CA1157
+    - CA1158
+    - CA1159
+    - CA1160
+    - CA1161
+    - CA1162
+    - CA1163
+    - CA1164
+    - CA1165
+    - CA1166
+    - CA1167
+    - CA1168
+    - CA1169
+    - CA1170
+    - CA1171
+    - CA1172
+    - CA1173
+    - CA1174
+    - CA1175
+    - CA1176
+    - CA1177
+    - CA1178
+    - CA1179
+    - CA1180
+    - CA1181
+    - CA1182
+    - CA1183
+    - CA1184
+    - CA1185
+    - CA1186
+    - CA1187
+    - CA1188
+    - CA1189
+    - CA1190
+    - CA1191
+    - CA1192
+    - CA1193
+    - CA1194
+    - CA1195
+    - CA1196
+    - CA1197
+    - CA1198
+    - CA1199
+    - CA1200
+    - CA1201
+    - CA1202
+    - CA1203
+    - CA1204
+    - CA1205
+    - CA1206
+    - CA1207
+    - CA1208
+    - CA1209
+    - CA1210
+    - CA1211
+    - CA1212
+    - CA1213
+    - CA1214
+    - CA1215
+    - CA1216
+    - CA1217
+    - CA1218
+    - CA1219
+    - CA1220
+    - CA1221
+    - CA1222
+    - CA1223
+    - CA1224
+    - CA1225
+    - CA1226
+    - CA1227
+    - CA1228
+    - CA1229
+    - CA1230
+    - CA1231
+    - CA1232
+    - CA1233
+    - CA1234
+    - CA1235
+    - CA1236
+    - CA1237
+    - CA1238
+    - CA1239
+    - CA1240
+    - CA1241
+    - CA1242
+    - CA1243
+    - CA1244
+    - CA1245
+    - CA1246
+    - CA1247
+    - CA1248
+    - CA1249
+    - CA1250
+    - CA1251
+    - CA1252
+    - CA1253
+    - CA1254
+    - CA1255
+    - CA1256
+    - CA1257
+    - CA1258
+    - CA1259
+    - CA1260
+    - CA1261
+    - CA1262
+    - CA1263
+    - CA1264
+    - CA1265
+    - CA1266
+    - CA1267
+    - CA1268
+    - CA1269
+    - CA1270
+    - CA1271
+    - CA1272
+    - CA1273
+    - CA1274
+    - CA1275
+    - CA1276
+    - CA1277
+    - CA1278
+    - CA1279
+    - CA1280
+    - CA1281
+    - CA1282
+    - CA1283
+    - CA1284
+    - CA1285
+    - CA1286
+    - CA1287
+    - CA1288
+    - CA1289
+    - CA1290
+    - CA1291
+    - CA1292
+    - CA1293
+    - CA1294
+    - CA1295
+    - CA1296
+    - CA1297
+    - CA1298
+    - CA1299
+    - CA1300
+    - CA1301
+    - CA1302
+    - CA1303
+    - CA1304
+    - CA1305
+    - CA1306
+    - CA1307
+    - CA1308
+    - CA1309
+    - CA1310
+    - CA1311
+    - CA1312
+    - CA1313
+    - CA1314
+    - CA1315

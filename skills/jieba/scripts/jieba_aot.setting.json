@@ -1,0 +1,130 @@
+{
+  "name": "jieba_aot",
+  "description": "基于jieba.NET的AOT编译中文分词工具",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "commands": [
+    {
+      "name": "cut",
+      "alias": "c",
+      "description": "精确模式分词",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要分词的文本",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "cutall",
+      "alias": "ca",
+      "description": "全模式分词",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要分词的文本",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "cutforsearch",
+      "alias": "cfs",
+      "description": "搜索引擎模式分词",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要分词的文本",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "extract",
+      "alias": "e",
+      "description": "提取关键词",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要提取关键词的文本",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "pos",
+      "alias": "p",
+      "description": "词性标注",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要词性标注的文本",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "batch",
+      "alias": "b",
+      "description": "批量处理文本文件",
+      "arguments": [
+        {
+          "name": "input",
+          "description": "输入文件路径",
+          "required": true
+        },
+        {
+          "name": "output",
+          "description": "输出文件路径",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "benchmark",
+      "alias": "bm",
+      "description": "运行性能基准测试",
+      "arguments": []
+    },
+    {
+      "name": "help",
+      "alias": "h",
+      "description": "显示帮助信息",
+      "arguments": []
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "jieba.NET",
+      "version": "0.37.0"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0"
+    }
+  ],
+  "build": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "selfContained": true,
+    "runtimeIdentifier": "win-x64",
+    "optimizationLevel": "Release"
+  },
+  "execution": {
+    "timeout": 30000,
+    "memoryLimit": 512
+  }
+}

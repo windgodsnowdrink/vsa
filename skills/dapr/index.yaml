@@ -1,0 +1,40 @@
+# Dapr AOT Agent Skill - Dapr AOT高性能分布式应用运行时
+# 版本: 1.0.0
+# 作者: VSA Architecture Team
+# 描述: 基于.NET 10 AOT架构的高性能Dapr分布式应用运行时，为.NET开发者提供强大、高效的分布式应用开发能力
+# 技能类型: 系统功能
+# 依赖项:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Newtonsoft.Json@13.0.3
+# - Dapr.Client@1.14.0
+# - Dapr.AspNetCore@1.14.0
+# 应用场景:
+# - 微服务架构中的服务间通信
+# - 分布式应用的状态管理
+# - 事件驱动架构的发布订阅
+# - 云原生应用开发
+# - Serverless应用开发
+# - 边缘计算场景
+# 激活条件: 当需要使用Dapr功能时激活
+# 主要功能:
+# - 服务调用（HTTP和gRPC协议）
+# - 状态管理（保存、获取、删除）
+# - 发布订阅（发布消息）
+# - 绑定调用（连接外部系统）
+# - 分布式跟踪
+# 性能特性:
+# - .NET 10 AOT编译，提供原生性能
+# - 低启动时间和内存占用
+# - 高并发处理能力
+# - 优化的网络通信
+# 技术特性:
+# - 模块化设计
+# - 依赖注入
+# - 选项模式
+# - 异步编程
+# - 详细日志记录
+# - 命令行接口
+# - 灵活配置选项

@@ -1,0 +1,35 @@
+<ItemGroup>
+  <!-- Roslynator 配置 -->
+  <PackageReference Include="Roslynator.Analyzers" Version="4.8.0" PrivateAssets="all" />
+  <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.8.0" PrivateAssets="all" />
+  
+  <!-- SonarAnalyzer 配置 -->
+  <PackageReference Include="SonarAnalyzer.CSharp" Version="9.0.0" PrivateAssets="all" />
+  
+  <!-- StyleCop 配置 -->
+  <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="all" />
+  
+  <!-- SerilogAnalyzer 配置 -->
+  <PackageReference Include="SerilogAnalyzer" Version="1.4.0" PrivateAssets="all" />
+</ItemGroup>
+
+<PropertyGroup>
+  <!-- 启用所有分析器 -->
+  <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+  <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  
+  <!-- 配置分析器严重级别 -->
+  <AnalysisLevel>latest</AnalysisLevel>
+  <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+</PropertyGroup>
+
+<!-- StyleCop 规则配置文件 -->
+<ItemGroup>
+  <AdditionalFiles Include="stylecop.json" />
+</ItemGroup>
+
+<!-- 自定义规则配置文件 -->
+<ItemGroup>
+  <GlobalAnalyzerConfigFiles Include="GlobalAnalyzerConfig.globalconfig" />
+</ItemGroup>

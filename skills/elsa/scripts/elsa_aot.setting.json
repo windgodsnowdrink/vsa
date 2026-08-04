@@ -1,0 +1,19 @@
+{
+  "Elsa": {
+    "DefaultTimeoutMs": 30000,
+    "EnableWorkflowCache": true,
+    "MaxCacheSize": 1000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "StorageType": "Memory",
+    "StorageConnectionString": "MemoryStore"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Elsa.AOT": "Information"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "profiles": {
+    "iconpython_aot": {
+      "commandName": "Project",
+      "commandLineArgs": "help",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_TC_QuickJit": "1",
+        "DOTNET_TieredCompilation": "1"
+      }
+    },
+    "iconpython_aot_run": {
+      "commandName": "Project",
+      "commandLineArgs": "run test.py",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_eval": {
+      "commandName": "Project",
+      "commandLineArgs": "eval 1 + 1",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_repl": {
+      "commandName": "Project",
+      "commandLineArgs": "repl",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "benchmark 1000 1 + 1",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_module": {
+      "commandName": "Project",
+      "commandLineArgs": "module math",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_import": {
+      "commandName": "Project",
+      "commandLineArgs": "import math",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "iconpython_aot_config": {
+      "commandName": "Project",
+      "commandLineArgs": "config",
+      "workingDirectory": "d:\\Trae\\vsa\\skills\\iconpython\\scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

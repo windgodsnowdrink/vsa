@@ -1,0 +1,32 @@
+{
+  "compilationOptions": {
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true,
+    "optimize": true,
+    "langVersion": "preview",
+    "targetFramework": "net10.0",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "FluentValidation": "11.10.0"
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.Globalization.Invariant": true,
+      "System.Reflection.Metadata.MetadataUpdater.IsSupported": false
+    }
+  },
+  "publishOptions": {
+    "singleFile": true,
+    "selfContained": true,
+    "trimMode": "full",
+    "enableCompressionInSingleFile": true
+  }
+}

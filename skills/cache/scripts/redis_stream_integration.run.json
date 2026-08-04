@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "redis_stream_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\cache\scripts\redis_stream_integration.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\cache\scripts\redis_stream_integration.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

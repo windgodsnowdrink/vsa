@@ -1,0 +1,62 @@
+{
+  "runtime": {
+    "description": "动态路由脚本运行时配置",
+    "version": "1.0.0",
+    "sdk": "Microsoft.NET.Sdk.Web",
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "enablePreviewFeatures": true
+  },
+  "compilation": {
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "enableCompressionInSingleFile": true,
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "outputType": "Exe",
+    "assemblyName": "dynamic_router"
+  },
+  "packages": [
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Options",
+      "version": "10.0.0"
+    },
+    {
+      "name": "System.Collections.Concurrent",
+      "version": "8.0.0"
+    },
+    {
+      "name": "System.Threading.Tasks.Dataflow",
+      "version": "8.0.0"
+    }
+  ],
+  "features": {
+    "dynamicRouting": true,
+    "middlewareSupport": true,
+    "routeStatistics": true,
+    "routeParameters": true,
+    "httpMethods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+  },
+  "buildOptions": {
+    "allowUnsafeBlocks": false,
+    "define": ["RELEASE"],
+    "warnAsError": false,
+    "warningsAsErrors": []
+  },
+  "publishOptions": {
+    "include": ["**/*"],
+    "exclude": ["*.json", "*.md", "*.config"]
+  }
+}

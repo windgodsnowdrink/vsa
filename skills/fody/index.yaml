@@ -1,0 +1,32 @@
+# Fody Agent Skill - Fody 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 编译的 Fody 技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Mono.Cecil@0.11.5
+# Application Scenarios: 代码织入相关功能，如 AOP、INotifyPropertyChanged 自动实现、方法计时等
+# Activation Conditions: 当需要代码织入功能时激活
+# Main Features:
+# - 程序集织入：支持对 .NET 程序集进行织入操作，添加额外的功能
+# - 织入器管理：提供可用织入器的列表，包括 PropertyChanged、MethodTimer、NullGuard 等
+# - AOT 编译优化：使用 .NET 10 的 AOT 编译功能，减少启动时间和内存占用
+# - 详细的执行结果：返回详细的织入结果，包括执行时间、错误信息等
+# - 易用的命令行接口：支持多种命令别名，方便使用
+# Performance Features:
+# - AOT 编译优化：提前编译为本地代码，减少启动时间
+# - 内存优化：减少运行时内存占用
+# - 并发支持：异步编程模型，支持高并发操作
+# - 性能监控：内置性能计时器，可跟踪织入执行时间
+# Technical Features:
+# - 模块化设计：清晰的服务接口和实现分离
+# - 依赖注入：基于 Microsoft.Extensions.DependencyInjection 的服务管理
+# - 异步编程：使用 Task-based 异步模式
+# - 选项模式：通过 Microsoft.Extensions.Options 支持配置管理
+# - 日志记录：集成 Microsoft.Extensions.Logging
+# - 命令行引擎：支持多种命令别名和参数解析
+# - Mono.Cecil 集成：使用 Mono.Cecil 进行程序集操作

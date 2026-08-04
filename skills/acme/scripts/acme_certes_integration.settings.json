@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "ACME.Certes": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "ACME": {
+    "Certes": {
+      "ServerUrl": "https://acme-v02.api.letsencrypt.org/directory",
+      "Email": "admin@example.com",
+      "KeyAlgorithm": "ES256",
+      "ChallengeType": "http-01",
+      "HttpChallengePort": 80,
+      "HttpsChallengePort": 443,
+      "CertificatePath": "./certificates",
+      "PfxPassword": "YourStrongPassword123!",
+      "RenewalThresholdDays": 30
+    }
+  }
+}

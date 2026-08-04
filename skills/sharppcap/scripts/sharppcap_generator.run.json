@@ -1,0 +1,40 @@
+{
+  "profiles": [
+    {
+      "name": "Generate Parser",
+      "commandName": "Project",
+      "commandLineArgs": "generate --type parser --protocol TCP --output Parsers/TcpParser.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Generate Analyzer",
+      "commandName": "Project",
+      "commandLineArgs": "generate --type analyzer --protocol TCP --output Analyzers/TcpAnalyzer.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Generate UDP Parser",
+      "commandName": "Project",
+      "commandLineArgs": "generate --type parser --protocol UDP --output Parsers/UdpParser.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Generate UDP Analyzer",
+      "commandName": "Project",
+      "commandLineArgs": "generate --type analyzer --protocol UDP --output Analyzers/UdpAnalyzer.cs",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

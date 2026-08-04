@@ -1,0 +1,40 @@
+{
+  "compilationOptions": {
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "publishReadyToRun": true,
+    "optimize": true,
+    "langVersion": "preview",
+    "targetFramework": "net10.0",
+    "nullable": "enable",
+    "implicitUsings": "enable"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Mono.Cecil": "0.11.5"
+  },
+  "runtimeOptions": {
+    "configProperties": {
+      "System.Globalization.Invariant": true,
+      "System.Reflection.Metadata.MetadataUpdater.IsSupported": false
+    }
+  },
+  "publishOptions": {
+    "singleFile": true,
+    "selfContained": true,
+    "trimMode": "full",
+    "enableCompressionInSingleFile": true
+  },
+  "Fody": {
+    "WorkingDirectory": "",          // 工作目录
+    "EnableDetailedLogging": false,    // 是否启用详细日志
+    "EnablePerformanceMonitoring": true, // 是否启用性能监控
+    "RequestTimeoutMs": 30000,        // 请求超时时间（毫秒）
+    "EnableCache": true,              // 是否启用缓存
+    "CacheSize": 1000                // 缓存大小
+  }
+}

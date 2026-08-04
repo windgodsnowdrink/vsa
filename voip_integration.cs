@@ -1,0 +1,174 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package SIPSorcery@5.0.0
+#:package NAudio@2.1.0
+#:package Microsoft.Extensions.Hosting@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using SIPSorcery.Net;
+using SIPSorcery.Media;
+using NAudio.Wave;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Buffers;
+using System.Threading.Channels;
+
+public class VoipOptions
+{
+    public string SipServer { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public int AudioSampleRate { get; set; } = 16000;
+    public int AudioBufferSize { get; set; } = 1024;
+}
+
+public interface IVoipService
+{
+    Task StartCallAsync(string destination);
+    Task EndCallAsync();
+}
+
+public class VoipService : IVoipService, IAsyncDisposable
+{
+    private readonly VoipOptions _options;
+    private readonly IMemoryPool _memoryPool;
+    private readonly Channel<ReadOnlyMemory<byte>> _audioChannel;
+    private readonly ILogger<VoipService> _logger;
+    private readonly IMeter _meter;
+    private readonly Counter<int> _callCounter;
+    private readonly Histogram<double> _callDuration;
+    private RTCPeerConnection _peerConnection;
+    private AudioEncoder _audioEncoder;
+    private WaveInEvent _waveIn;
+    private readonly AsyncRetryPolicy _retryPolicy;
+    
+    public VoipService(VoipOptions options, ILogger<VoipService> logger, IMeterFactory meterFactory)
+    {
+        _options = options;
+        _logger = logger;
+        _memoryPool = new MemoryPool();
+        _audioChannel = Channel.CreateBounded<ReadOnlyMemory<byte>>(100);
+        
+        _meter = meterFactory.Create("VoipService");
+        _callCounter = _meter.CreateCounter<int>("voip.calls.total");
+        _callDuration = _meter.CreateHistogram<double>("voip.call.duration.seconds");
+        
+        _retryPolicy = Policy
+            .Handle<Exception>(ex => !(ex is SIPTransportException))
+            .WaitAndRetryAsync(3, retryAttempt => 
+                TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (ex, time, retryCount, context) => 
+                {
+                    _logger.LogWarning(ex, $"Call attempt {retryCount} failed. Retrying in {time.TotalSeconds} seconds.");
+                });
+    }
+
+    public async Task StartCallAsync(string destination)
+    {
+        using var callDurationTimer = _callDuration.NewTimer();
+        _callCounter.Add(1, new("destination", destination));
+        
+        _logger.LogInformation("Starting call to {Destination}", destination);
+        
+        await _retryPolicy.ExecuteAsync(async () =>
+        {
+            _peerConnection = new RTCPeerConnection();
+            _audioEncoder = new AudioEncoder(_options.AudioSampleRate);
+        
+        // 设置音频输入
+        _waveIn = new WaveInEvent
+        {
+            WaveFormat = new WaveFormat(_options.AudioSampleRate, 16, 1),
+            BufferMilliseconds = 50
+        };
+        _waveIn.DataAvailable += OnAudioDataAvailable;
+        _waveIn.StartRecording();
+        
+        // SIP呼叫逻辑
+        var sipTransport = new SIPTransport();
+        var sipChannel = new SIPUDPChannel(IPAddress.Any, 5060);
+        sipTransport.AddSIPChannel(sipChannel);
+        
+        // 创建SIP请求
+        var inviteRequest = new SIPRequest(
+            SIPMethodsEnum.INVITE,
+            SIPURI.ParseSIPURI(destination));
+            
+        // 设置SDP媒体描述
+        var sdp = new SDP(
+            IPAddress.Loopback,
+            new SDPMediaFormat(SDPMediaFormatsEnum.PCMU, 0));
+            
+        inviteRequest.Body = sdp.ToString();
+        inviteRequest.Header.ContentType = SIPContentTypesEnum.SDP;
+        
+        // 发送INVITE请求
+        var inviteTask = sipTransport.SendRequestAsync(inviteRequest);
+        
+        // 处理SIP响应
+        sipTransport.SIPTransportRequestReceived += (localEndPoint, remoteEndPoint, sipRequest) =>
+        {
+            if (sipRequest.Method == SIPMethodsEnum.BYE)
+            {
+                // 处理挂断请求
+                var okResponse = sipRequest.GetResponse(SIPResponseStatusCodesEnum.Ok, null);
+                sipTransport.SendResponse(okResponse);
+            }
+        };
+    }
+
+    private void OnAudioDataAvailable(object sender, WaveInEventArgs e)
+    {
+        var buffer = _memoryPool.Rent(e.BytesRecorded);
+        e.Buffer.AsSpan().CopyTo(buffer.Memory.Span);
+        _audioChannel.Writer.TryWrite(buffer.Memory);
+    }
+
+    public async Task EndCallAsync()
+    {
+        _waveIn?.StopRecording();
+        _waveIn?.Dispose();
+        _peerConnection?.Close();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await EndCallAsync();
+        _memoryPool.Dispose();
+    }
+}
+
+public static class VoipExtensions
+{
+    public static IServiceCollection AddVoipService(this IServiceCollection services, Action<VoipOptions> configure)
+    {
+        services.Configure(configure);
+        services.AddSingleton<IVoipService, VoipService>();
+        services.AddSingleton<IMemoryPool, MemoryPool>();
+        services.AddLogging();
+        services.AddMetrics();
+        return services;
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var host = Host.CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.AddVoipService(options =>
+                {
+                    options.SipServer = "sip.example.com";
+                    options.Username = "user";
+                    options.Password = "pass";
+                });
+            })
+            .Build();
+
+        host.Run();
+    }
+}

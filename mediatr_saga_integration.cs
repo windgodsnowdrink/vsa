@@ -1,0 +1,357 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MediatR@12.1.1
+#:package Microsoft.EntityFrameworkCore@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+// Saga状态实体
+public class SagaState
+{
+    public Guid CorrelationId { get; set; }
+    public string CurrentState { get; set; }
+    public bool IsCompleted { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset? CompletedAt { get; set; }
+}
+
+// Saga数据库上下文
+public class SagaDbContext : DbContext
+{
+    public DbSet<SagaState> SagaStates { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<SagaState>().HasKey(x => x.CorrelationId);
+    }
+}
+
+// Saga协调器基类
+// 1. 定义Saga步骤接口
+public interface ISagaStep<TCommand> 
+    where TCommand : IRequest<Unit>
+{
+    Task<Unit> Execute(TCommand command, SagaState state, CancellationToken ct);
+    Task Compensate(TCommand command, SagaState state, CancellationToken ct);
+}
+
+// 2. 实现具体Saga步骤
+public class CreateOrderStep : ISagaStep<CreateOrderCommand>
+{
+    private readonly OrderDbContext _dbContext;
+
+    public CreateOrderStep(OrderDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<Unit> Execute(CreateOrderCommand command, SagaState state, CancellationToken ct)
+    {
+        var order = new Order(command.UserId, command.Amount);
+        _dbContext.Orders.Add(order);
+        await _dbContext.SaveChangesAsync(ct);
+        return Unit.Value;
+    }
+
+    public async Task Compensate(CreateOrderCommand command, SagaState state, CancellationToken ct)
+    {
+        var order = await _dbContext.Orders
+            .FirstOrDefaultAsync(o => o.UserId == command.UserId && o.Amount == command.Amount, ct);
+        
+        if (order != null)
+        {
+            _dbContext.Orders.Remove(order);
+            await _dbContext.SaveChangesAsync(ct);
+        }
+    }
+}
+
+// 3. 增强Saga协调器
+public abstract class SagaCoordinator<TCommand> : IRequestHandler<TCommand, Unit> 
+    where TCommand : IRequest<Unit>
+{
+    private readonly SagaDbContext _dbContext;
+    private readonly IMediator _mediator;
+    private readonly IEnumerable<ISagaStep<TCommand>> _steps;
+
+    protected SagaCoordinator(
+        SagaDbContext dbContext, 
+        IMediator mediator,
+        IEnumerable<ISagaStep<TCommand>> steps)
+    {
+        _dbContext = dbContext;
+        _mediator = mediator;
+        _steps = steps;
+    }
+
+    // 在Saga步骤处理器中添加幂等性检查
+    public async Task Handle(ProcessPayment message, IMessageHandlerContext context)
+    {
+        var saga = context.Saga;
+        
+        // 幂等性检查
+        if(saga.PaymentProcessed) 
+            return;
+            
+        // 处理支付逻辑
+        // ...
+        
+        saga.PaymentProcessed = true;
+        await _mediator.Publish(new PaymentProcessed { OrderId = saga.OrderId });
+    }
+
+    public async Task<Unit> Handle(TCommand command, CancellationToken ct)
+    {
+        var state = new SagaState
+        {
+            CorrelationId = Guid.NewGuid(),
+            CurrentState = "Started",
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+
+        _dbContext.SagaStates.Add(state);
+        await _dbContext.SaveChangesAsync(ct);
+
+        try
+        {
+            foreach (var step in _steps)
+            {
+                await step.Execute(command, state, ct);
+                state.CurrentState = $"{step.GetType().Name}Completed";
+                await _dbContext.SaveChangesAsync(ct);
+            }
+
+            state.IsCompleted = true;
+            state.CompletedAt = DateTimeOffset.UtcNow;
+            await _dbContext.SaveChangesAsync(ct);
+        }
+        catch
+        {
+            // 执行补偿
+            foreach (var step in _steps.Reverse())
+            {
+                try
+                {
+                    await step.Compensate(command, state, ct);
+                    state.CurrentState = $"{step.GetType().Name}Compensated";
+                    await _dbContext.SaveChangesAsync(ct);
+                }
+                catch (Exception ex)
+                {
+                    // 记录补偿失败
+                    state.CurrentState = $"{step.GetType().Name}CompensationFailed";
+                    await _dbContext.SaveChangesAsync(ct);
+                    throw new SagaCompensationException(step.GetType().Name, ex);
+                }
+            }
+            throw;
+        }
+
+        return Unit.Value;
+    }
+}
+
+// 增强协调器的事务管理能力
+public class SagaOrchestrator
+{
+    private readonly ILogger<SagaOrchestrator> _logger;
+    private readonly ISagaRepository _repository;
+    private readonly IRetryPolicy _retryPolicy;
+    
+    public async Task ProcessSagaStep(SagaStep step)
+    {
+        await _retryPolicy.ExecuteAsync(async () => 
+        {
+            using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            
+            // 获取Saga状态
+            var saga = await _repository.Get(step.CorrelationId);
+            
+            // 执行步骤
+            var result = await step.ExecuteAsync(saga);
+            
+            // 更新状态
+            await _repository.Update(saga);
+            
+            transaction.Complete();
+        });
+    }
+}
+
+// 4. 更新DI扩展
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddSagaServices(this IServiceCollection services)
+    {
+        services.AddDbContext<SagaDbContext>();
+        
+        // 注册所有Saga步骤
+        services.Scan(scan => scan
+            .FromAssemblyOf<CreateOrderStep>()
+            .AddClasses(c => c.AssignableTo(typeof(ISagaStep<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
+        services.AddMassTransit(x =>
+        {
+            x.AddSaga<OrderSaga>()
+                .InMemoryRepository();
+                
+            x.AddSagaStateMachine<OrderSagaStateMachine, OrderSaga>();
+        });
+        
+        services.AddSingleton<IRetryPolicy>(new ExponentialBackoffRetryPolicy(
+            maxRetryCount: 5, 
+            minBackoff: TimeSpan.FromSeconds(1),
+            maxBackoff: TimeSpan.FromSeconds(30)));
+                
+            return services;
+        }
+}
+
+// 1. 定义Saga状态
+public class OrderProcessingSagaState : SagaStateMachineInstance
+{
+    public Guid CorrelationId { get; set; }
+    public string CurrentState { get; set; }
+    public Guid OrderId { get; set; }
+    public Guid PaymentId { get; set; }
+    public Guid InventoryId { get; set; }
+    public bool PaymentCompleted { get; set; }
+    public bool InventoryReserved { get; set; }
+}
+// 使用乐观并发控制
+public class OrderSagaState : 
+    SagaStateMachineInstance,
+    IVersionedSaga
+{
+    public Guid CorrelationId { get; set; }
+    public int Version { get; set; } // 乐观并发控制版本号
+    // ...其他状态字段
+}
+
+// 2. 定义Saga状态机
+public class OrderProcessingSaga : 
+    MassTransitStateMachine<OrderProcessingSagaState>
+{
+    public State Processing { get; private set; }
+    public State Completed { get; private set; }
+    public State Compensating { get; private set; }
+
+    public Event<OrderCreated> OrderCreatedEvent { get; private set; }
+    public Event<PaymentCompleted> PaymentCompletedEvent { get; private set; }
+    public Event<InventoryReserved> InventoryReservedEvent { get; private set; }
+    public Event<OrderFailed> OrderFailedEvent { get; private set; }
+
+    public OrderProcessingSaga()
+    {
+        InstanceState(x => x.CurrentState);
+
+        Event(() => OrderCreatedEvent, 
+            x => x.CorrelateById(context => context.Message.OrderId));
+        
+        Initially(
+            When(OrderCreatedEvent)
+                .Then(context => 
+                {
+                    context.Instance.OrderId = context.Data.OrderId;
+                })
+                .Publish(context => new ProcessPaymentCommand(context.Instance.OrderId))
+                .TransitionTo(Processing));
+        // 在Saga状态机中配置超时
+        During(OrderProcessing,
+    When(OrderTimeout.Received)
+        .ThenAsync(async context => 
+        {
+            // 补偿事务处理
+            await context.Publish<OrderCancelled>(new { context.Saga.OrderId });
+            context.SetCompleted();
+        })
+        .Schedule(OrderTimeout, 
+            context => context.Init<OrderTimeout>(),
+            context => TimeSpan.FromMinutes(30)));
+
+        During(Processing,
+            When(PaymentCompletedEvent)
+                .Then(context => 
+                {
+                    context.Instance.PaymentCompleted = true;
+                    context.Instance.PaymentId = context.Data.PaymentId;
+                })
+                .Publish(context => new ReserveInventoryCommand(context.Instance.OrderId))
+                .If(context => context.Instance.InventoryReserved,
+                    then => then.TransitionTo(Completed)),
+                
+            When(InventoryReservedEvent)
+                .Then(context => 
+                {
+                    context.Instance.InventoryReserved = true;
+                    context.Instance.InventoryId = context.Data.InventoryId;
+                })
+                .If(context => context.Instance.PaymentCompleted,
+                    then => then.TransitionTo(Completed)),
+                
+            When(OrderFailedEvent)
+                .Then(context => 
+                {
+                    // 补偿逻辑
+                    if (context.Instance.PaymentCompleted)
+                        context.Publish(new RefundPaymentCommand(context.Instance.PaymentId));
+                        
+                    if (context.Instance.InventoryReserved)
+                        context.Publish(new ReleaseInventoryCommand(context.Instance.InventoryId));
+                })
+                .TransitionTo(Compensating));
+    }
+}
+
+// 3. 定义命令和事件
+public record OrderCreated(Guid OrderId);
+public record ProcessPaymentCommand(Guid OrderId);
+public record PaymentCompleted(Guid OrderId, Guid PaymentId);
+public record ReserveInventoryCommand(Guid OrderId);
+public record InventoryReserved(Guid OrderId, Guid InventoryId);
+public record OrderFailed(Guid OrderId);
+public record RefundPaymentCommand(Guid PaymentId);
+public record ReleaseInventoryCommand(Guid InventoryId);
+
+// 4. DI扩展方法
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMediatRSaga(this IServiceCollection services)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.AddSaga<OrderProcessingSaga>()
+                .InMemoryRepository();
+                
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+                
+                cfg.ReceiveEndpoint("order-processing-saga", e =>
+                {
+                    e.ConfigureSaga<OrderProcessingSagaState>(context);
+                });
+            });
+        });
+        
+        services.AddMediatR(cfg => 
+            cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            
+        return services;
+    }
+}
+
+// 5. 启动配置
+var builder = WebApplication.CreateBuilder();
+builder.Services.AddMediatRSaga();
+
+var app = builder.Build();
+app.Run();

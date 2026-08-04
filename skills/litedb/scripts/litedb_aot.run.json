@@ -1,0 +1,91 @@
+{
+  "version": "1.0.0",
+  "description": "LiteDB AOT 工具运行环境配置",
+  "runtime": {
+    "framework": "net10.0",
+    "os": ["windows", "linux", "macos"],
+    "architecture": ["x64"],
+    "singleFile": true,
+    "selfContained": true
+  },
+  "environmentVariables": {
+    "LITEDB_LOG_LEVEL": "Information",
+    "LITEDB_CACHE_SIZE": "1024",
+    "LITEDB_TIMEOUT": "60000",
+    "LITEDB_JOURNAL": "true"
+  },
+  "timeouts": {
+    "commandTimeout": 300000,
+    "operationTimeout": 60000
+  },
+  "commandProfiles": [
+    {
+      "name": "create-collection",
+      "command": "create-collection",
+      "description": "创建集合",
+      "arguments": ["--database", "--collection"]
+    },
+    {
+      "name": "insert",
+      "command": "insert",
+      "description": "插入文档",
+      "arguments": ["--database", "--collection", "--document"]
+    },
+    {
+      "name": "query",
+      "command": "query",
+      "description": "查询文档",
+      "arguments": ["--database", "--collection", "--query"]
+    },
+    {
+      "name": "update",
+      "command": "update",
+      "description": "更新文档",
+      "arguments": ["--database", "--collection", "--id", "--document"]
+    },
+    {
+      "name": "delete",
+      "command": "delete",
+      "description": "删除文档",
+      "arguments": ["--database", "--collection", "--id"]
+    },
+    {
+      "name": "drop-collection",
+      "command": "drop-collection",
+      "description": "删除集合",
+      "arguments": ["--database", "--collection"]
+    },
+    {
+      "name": "list-collections",
+      "command": "list-collections",
+      "description": "列出所有集合",
+      "arguments": ["--database"]
+    },
+    {
+      "name": "backup",
+      "command": "backup",
+      "description": "备份数据库",
+      "arguments": ["--database", "--backup"]
+    },
+    {
+      "name": "compact",
+      "command": "compact",
+      "description": "压缩数据库",
+      "arguments": ["--database"]
+    },
+    {
+      "name": "info",
+      "command": "info",
+      "description": "获取数据库信息",
+      "arguments": ["--database"]
+    }
+  ],
+  "validation": {
+    "enabled": true,
+    "required": true,
+    "parameters": {
+      "name": "validation",
+      "description": "验证配置是否正确"
+    }
+  }
+}

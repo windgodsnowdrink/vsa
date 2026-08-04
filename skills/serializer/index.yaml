@@ -1,0 +1,164 @@
+name: serializer
+version: 1.0.0
+description: 一个强大的序列化工具，支持 JSON、XML、YAML、Protobuf 等多种序列化格式，提供代码生成功能
+
+# 依赖项配置
+dependencies:
+  - name: System.Text.Json
+    version: 8.0.0
+  - name: Newtonsoft.Json
+    version: 13.0.3
+  - name: YamlDotNet
+    version: 13.7.1
+  - name: protobuf-net
+    version: 3.2.30
+  - name: Microsoft.Extensions.Configuration
+    version: 8.0.0
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 8.0.0
+  - name: Microsoft.Extensions.Logging
+    version: 8.0.0
+  - name: CommandLineParser
+    version: 2.9.1
+
+# 功能配置
+features:
+  - name: json-serialization
+    description: JSON 序列化和反序列化
+  - name: xml-serialization
+    description: XML 序列化和反序列化
+  - name: yaml-serialization
+    description: YAML 序列化和反序列化
+  - name: protobuf-serialization
+    description: Protobuf 序列化和反序列化
+  - name: code-generation
+    description: 生成序列化相关的代码
+  - name: schema-generation
+    description: 生成序列化模式（如 JSON Schema）
+  - name: performance-testing
+    description: 序列化性能测试和比较
+
+# AOT 编译配置
+aot:
+  enabled: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  runtimeIdentifier: win-x64
+  targetFramework: net10.0
+
+# 命令行接口配置
+cli:
+  commands:
+    - name: json
+      description: JSON 序列化和反序列化
+      parameters:
+        - name: serialize
+          description: 序列化对象为 JSON
+          arguments:
+            - name: input
+              description: 输入对象或文件路径
+            - name: output
+              description: 输出文件路径
+        - name: deserialize
+          description: 反序列化 JSON 为对象
+          arguments:
+            - name: input
+              description: 输入 JSON 或文件路径
+            - name: type
+              description: 目标类型
+    - name: xml
+      description: XML 序列化和反序列化
+      parameters:
+        - name: serialize
+          description: 序列化对象为 XML
+          arguments:
+            - name: input
+              description: 输入对象或文件路径
+            - name: output
+              description: 输出文件路径
+        - name: deserialize
+          description: 反序列化 XML 为对象
+          arguments:
+            - name: input
+              description: 输入 XML 或文件路径
+            - name: type
+              description: 目标类型
+    - name: yaml
+      description: YAML 序列化和反序列化
+      parameters:
+        - name: serialize
+          description: 序列化对象为 YAML
+          arguments:
+            - name: input
+              description: 输入对象或文件路径
+            - name: output
+              description: 输出文件路径
+        - name: deserialize
+          description: 反序列化 YAML 为对象
+          arguments:
+            - name: input
+              description: 输入 YAML 或文件路径
+            - name: type
+              description: 目标类型
+    - name: protobuf
+      description: Protobuf 序列化和反序列化
+      parameters:
+        - name: serialize
+          description: 序列化对象为 Protobuf
+          arguments:
+            - name: input
+              description: 输入对象或文件路径
+            - name: output
+              description: 输出文件路径
+        - name: deserialize
+          description: 反序列化 Protobuf 为对象
+          arguments:
+            - name: input
+              description: 输入 Protobuf 或文件路径
+            - name: type
+              description: 目标类型
+    - name: generate
+      description: 生成序列化相关的代码
+      parameters:
+        - name: schema
+          description: 生成序列化模式（如 JSON Schema）
+          arguments:
+            - name: type
+              description: 目标类型
+            - name: output
+              description: 输出文件路径
+        - name: converter
+          description: 生成类型转换器
+          arguments:
+            - name: source
+              description: 源类型
+            - name: target
+              description: 目标类型
+            - name: output
+              description: 输出文件路径
+    - name: test
+      description: 序列化性能测试
+      parameters:
+        - name: performance
+          description: 测试序列化性能
+          arguments:
+            - name: type
+              description: 测试类型
+            - name: iterations
+              description: 迭代次数
+            - name: formats
+              description: 测试的序列化格式（json,xml,yaml,proto）
+
+# 配置文件路径
+config:
+  settingFiles:
+    - scripts/serializer_core.setting.json
+    - scripts/serializer_generator.setting.json
+  runFiles:
+    - scripts/serializer_core.run.json
+    - scripts/serializer_generator.run.json
+
+# 示例文件路径
+examples:
+  - reference/examples.md

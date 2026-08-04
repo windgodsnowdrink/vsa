@@ -1,0 +1,47 @@
+{
+  "runtime": {
+    "environment": "Development",
+    "command": "dotnet run --project rate_limiter.cs",
+    "args": []
+  },
+  "compilation": {
+    "targetFramework": "net10.0",
+    "publishAot": true,
+    "trimMode": "partial",
+    "readyToRun": true,
+    "tieredCompilation": true,
+    "optimize": true,
+    "enableCompressionInSingleFile": true,
+    "selfContained": true
+  },
+  "dependencies": {
+    "System.Threading.RateLimiting": "8.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "System.Buffers": "4.5.1"
+  },
+  "configuration": {
+    "RateLimiter": {
+      "TokenLimit": 100,
+      "TokensPerPeriod": 100,
+      "ReplenishmentPeriod": "00:00:01",
+      "QueueLimit": 50,
+      "QueueProcessingOrder": "OldestFirst",
+      "WindowLimit": 100,
+      "Window": "00:00:01",
+      "AutoReplenishment": true,
+      "PermitLimit": 100,
+      "HealthCheckInterval": "00:01:00",
+      "EnableHealthCheck": true,
+      "EnableTelemetry": true
+    },
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "System": "Warning",
+        "Microsoft": "Warning"
+      }
+    },
+    "AllowedHosts": "*"
+  }
+}

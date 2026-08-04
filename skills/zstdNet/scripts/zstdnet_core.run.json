@@ -1,0 +1,48 @@
+{
+  "commandName": "Project",
+  "workingDirectory": "$(ProjectDir)",
+  "launchBrowser": false,
+  "applicationUrl": "",
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_LOG_LEVEL": "Information",
+    "ZSTDNET_COMPRESSION_LEVEL": "3",
+    "ZSTDNET_MAX_PARALLELISM": "4"
+  },
+  "commandLineArgs": "",
+  "dotnetRunMessages": true,
+  "hotReload": true,
+  "nativeDebugging": false,
+  "profiles": {
+    "Default": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "PerformanceTest": {
+      "commandName": "Project",
+      "commandLineArgs": "--performance-test",
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Warning",
+        "ZSTDNET_TEST_DATA_SIZE": "1048576",
+        "ZSTDNET_TEST_ITERATIONS": "100"
+      }
+    },
+    "FileCompressionTest": {
+      "commandName": "Project",
+      "commandLineArgs": "--file-test",
+      "environmentVariables": {
+        "ZSTDNET_TEST_FILE_SIZE": "10485760"
+      }
+    },
+    "ParallelTest": {
+      "commandName": "Project",
+      "commandLineArgs": "--parallel-test",
+      "environmentVariables": {
+        "ZSTDNET_MAX_PARALLELISM": "8",
+        "ZSTDNET_TEST_BLOCKS": "20",
+        "ZSTDNET_TEST_BLOCK_SIZE": "524288"
+      }
+    }
+  }
+}

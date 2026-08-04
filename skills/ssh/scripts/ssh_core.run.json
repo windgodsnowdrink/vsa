@@ -1,0 +1,88 @@
+{
+  "profiles": {
+    "Connect to SSH": {
+      "commandName": "Project",
+      "commandLineArgs": "connect --host example.com --port 22 --username user --password pass",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Execute Command": {
+      "commandName": "Project",
+      "commandLineArgs": "execute --host example.com --port 22 --username user --password pass --command ls -la",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Upload File": {
+      "commandName": "Project",
+      "commandLineArgs": "upload --host example.com --port 22 --username user --password pass --local-path ./localfile.txt --remote-path /remotefile.txt",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Download File": {
+      "commandName": "Project",
+      "commandLineArgs": "download --host example.com --port 22 --username user --password pass --remote-path /remotefile.txt --local-path ./localfile.txt",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Connect with Key": {
+      "commandName": "Project",
+      "commandLineArgs": "connect --host example.com --port 22 --username user --keyfile ./id_rsa",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Scrutor Demo": {
+      "commandName": "Project",
+      "commandLineArgs": "scrutor-demo",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information",
+        "SCRUTOR_DEMO_ENABLED": "true"
+      }
+    },
+    "Execute Batch Command": {
+      "commandName": "Project",
+      "commandLineArgs": "execute-batch --hosts example.com,test.com --command ls -la",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    },
+    "Upload Batch File": {
+      "commandName": "Project",
+      "commandLineArgs": "upload-batch --hosts example.com,test.com --local-path ./script.sh --remote-path /tmp/script.sh",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SSH_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "commonOptions": {
+    "verbose": false,
+    "debug": false,
+    "timeout": 30000,
+    "retries": 3
+  },
+  "compilationOptions": {
+    "optimize": true,
+    "debugSymbols": false,
+    "warningsAsErrors": false
+  }
+}

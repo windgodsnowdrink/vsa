@@ -1,0 +1,117 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package HotChocolate.AspNetCore@13.0.0
+#:package HotChocolate.Data@13.0.0
+#:package HotChocolate.Types@13.0.0
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.7.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using HotChocolate.Types;
+using HotChocolate.Execution;
+using OpenTelemetry.Metrics;
+using System.Security.Claims;
+
+var builder = WebApplication.CreateBuilder();
+
+// 1. 缓存分区策略
+builder.Services.AddSingleton<ICachePartitionStrategy>(sp => 
+    new HashBasedPartitionStrategy(
+        new ThreadLocal<Span<byte>>(() => stackalloc byte[256])));
+
+// 2. 细粒度权限控制
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Todo.Read", policy => 
+        policy.RequireClaim("permission", "todo.read"));
+    
+    options.AddPolicy("Todo.Write", policy => 
+        policy.RequireClaim("permission", "todo.write"));
+});
+
+// 3. 数据加载器性能监控
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics => metrics
+        .AddMeter("DataLoader.Metrics")
+        .AddOtlpExporter());
+
+// ... existing code ...
+
+// 哈希分区策略
+[SkipLocalsInit]
+public class HashBasedPartitionStrategy : ICachePartitionStrategy
+{
+    private readonly ThreadLocal<Span<byte>> _buffer;
+    
+    public HashBasedPartitionStrategy(ThreadLocal<Span<byte>> buffer)
+    {
+        _buffer = buffer;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public unsafe string GetPartitionKey(string baseKey, object partitionValue)
+    {
+        Span<byte> buffer = _buffer.Value;
+        fixed (byte* ptr = buffer)
+        {
+            if ((long)ptr % 64 == 0)
+            {
+                // SIMD优化哈希计算
+                return $"{baseKey}:{partitionValue.GetHashCode() % 16}";
+            }
+        }
+        return baseKey;
+    }
+}
+
+// 权限指令
+public class PermissionDirectiveType : DirectiveType<PermissionDirective>
+{
+    protected override void Configure(IDirectiveTypeDescriptor descriptor)
+    {
+        descriptor
+            .Name("permission")
+            .Location(DirectiveLocation.FieldDefinition)
+            .Use(next => async context =>
+            {
+                var user = context.ContextData["User"] as ClaimsPrincipal;
+                var permission = context.Directive.GetArgument<string>("name");
+                
+                if (!user?.HasClaim("permission", permission) ?? true)
+                    throw new GraphQLException("Forbidden");
+                
+                await next(context);
+            });
+    }
+}
+
+public class PermissionDirective
+{
+    public string Name { get; set; }
+}
+
+// 数据加载器监控
+[SkipLocalsInit]
+public class MonitoredDataLoader<TKey, TValue> : DataLoaderBase<TKey, TValue>
+{
+    private readonly ActivitySource _source = new("DataLoader");
+    
+    public MonitoredDataLoader(
+        IBatchScheduler scheduler,
+        DataLoaderOptions options)
+        : base(scheduler, options)
+    {
+    }
+
+    protected override async Task FetchAsync(
+        IReadOnlyList<TKey> keys,
+        Memory<Result<TValue>> results,
+        CancellationToken ct)
+    {
+        using var activity = _source.StartActivity("DataLoader.Batch");
+        activity?.SetTag("keys.count", keys.Count);
+        
+        // ... existing code ...
+    }
+}

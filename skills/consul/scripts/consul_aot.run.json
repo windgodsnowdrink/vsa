@@ -1,0 +1,50 @@
+{
+  "name": "Consul AOT Runner",
+  "description": "Consul AOT脚本运行配置",
+  "version": "1.0.0",
+  "runtime": {
+    "framework": "net10.0",
+    "aot": true,
+    "invariantGlobalization": true,
+    "publishReadyToRun": true
+  },
+  "execution": {
+    "command": "dotnet run --project consul_aot.cs",
+    "arguments": ["discover", "web-service"],
+    "workingDirectory": "./skills/consul/scripts",
+    "timeout": 300000
+  },
+  "dependencies": {
+    "packages": [
+      {
+        "name": "Consul",
+        "version": "1.7.10.1"
+      },
+      {
+        "name": "Microsoft.Extensions.DependencyInjection",
+        "version": "10.0.0"
+      },
+      {
+        "name": "Microsoft.Extensions.Logging",
+        "version": "10.0.0"
+      },
+      {
+        "name": "Microsoft.Extensions.Hosting",
+        "version": "10.0.0"
+      },
+      {
+        "name": "Microsoft.Extensions.Options",
+        "version": "10.0.0"
+      }
+    ]
+  },
+  "logging": {
+    "level": "Information",
+    "providers": ["Console"]
+  },
+  "environmentVariables": {
+    "DOTNET_ENVIRONMENT": "Production",
+    "DOTNET_PUBLISH_AOT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1"
+  }
+}

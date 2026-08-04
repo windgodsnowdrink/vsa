@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "netpro_plugin_service",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "d:\\Trae\\vsa\\skills\\netpro\\scripts\\netpro_plugin_service.cs",
+      "args": [
+        "--settings",
+        "d:\\Trae\\vsa\\skills\\netpro\\scripts\\netpro_plugin_service.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_PUBLISH_AOT": "1"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

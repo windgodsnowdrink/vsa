@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "P2PIntegration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "P2POptions": {
+    "Enabled": true,
+    "MaxConnections": 100,
+    "Port": 8080,
+    "BufferSize": 8192,
+    "Timeout": "00:01:00",
+    "EnableEncryption": true,
+    "EnableDiscovery": true,
+    "DiscoveryInterval": "00:00:30",
+    "EnableParallelProcessing": true,
+    "MaxDegreeOfParallelism": 4,
+    "EnableBatching": true,
+    "BatchSize": 100,
+    "EnableCaching": true,
+    "CacheSize": 1000,
+    "CacheDuration": "00:05:00"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "P2P": "Debug"
+    }
+  }
+}

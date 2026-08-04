@@ -1,0 +1,49 @@
+# Reactive Agent Skill - Reactive Skill
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: High performance reactive skill based on .NET 10, providing powerful reactive functionality for .NET developers
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - ReactiveUI@18.3.1
+# - System.Reactive@6.0.0
+# - System.Threading.Channels@8.0.0
+# - System.Runtime.CompilerServices.Unsafe@6.0.0
+# Application Scenarios: Reactive programming, MVVM pattern, event handling, data binding
+# Activation Conditions: Activate when reactive functionality is needed
+# Main Features:
+# - ReactiveUI integration
+# - MVVM pattern support
+# - Reactive commands and properties
+# - Event handling with Rx
+# - Data binding and validation
+# - Async programming support
+# - Memory management optimization
+# - Performance Features:
+# - High performance design
+# - Memory optimization with object pooling
+# - Concurrency support
+# - Asynchronous operations
+# - Technical Features:
+# - Modular design
+# - Dependency injection
+# - Async programming
+# - High performance algorithms
+# - Reactive programming patterns
+# AOT Compilation Options:
+# - PublishAot: true
+# - TrimMode: partial
+# - ReadyToRun: true
+# - TieredCompilation: true
+# - Optimize: true
+# Target Framework:
+# - TargetFramework: net10.0
+# Platform Support:
+# - Windows
+# - Linux
+# - macOS
+# Runtime Requirements:
+# - .NET 10.0 or higher
+# - ReactiveUI compatible platform

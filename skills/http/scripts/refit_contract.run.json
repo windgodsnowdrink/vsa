@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "refit_contract",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\http\scripts\refit_contract.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\http\scripts\refit_contract.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

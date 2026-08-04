@@ -1,0 +1,116 @@
+name: "NRules"
+description: "NRules 规则引擎集成技能，提供完整的规则定义、执行和管理功能"
+author: "Trae IDE"
+version: "1.0.0"
+tags:
+  - "nrules"
+  - "rule-engine"
+  - "aot"
+  - "dotnet"
+  - "csharp"
+
+# 依赖项
+dependencies:
+  - name: "NRules"
+    version: "1.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.DependencyInjection"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.Logging"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.Options"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "System.Threading.Channels"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "System.Buffers"
+    version: "4.5.1"
+    type: "nuget"
+
+# 主要特性
+features:
+  - name: "规则引擎集成"
+    description: "提供完整的 NRules 规则引擎功能"
+  - name: "AOT 编译支持"
+    description: "优化运行时性能和内存使用"
+  - name: "依赖注入"
+    description: "无缝集成到 .NET 依赖注入系统"
+  - name: "配置管理"
+    description: "通过 Options 模式管理规则引擎配置"
+  - name: "日志集成"
+    description: "与 Microsoft.Extensions.Logging 集成"
+  - name: "高性能设计"
+    description: "支持规则缓存、批处理和内存优化"
+
+# AOT 编译选项
+aot:
+  enabled: true
+  options:
+    PublishAot: true
+    ReadyToRun: true
+    TieredCompilation: true
+  runtimes:
+    - "win-x64"
+    - "linux-x64"
+    - "osx-x64"
+
+# 脚本信息
+scripts:
+  - name: "nrules_extensions.cs"
+    description: "NRules 核心实现，包含规则引擎服务、规则仓储和规则会话等"
+    type: "csharp"
+    targetFramework: "net10.0"
+    configFiles:
+      - "nrules_extensions.setting.json"
+      - "nrules_extensions.run.json"
+
+# 参考文档
+documentation:
+  - name: "README.md"
+    path: "reference/README.md"
+    description: "详细参考文档"
+  - name: "examples.md"
+    path: "reference/examples.md"
+    description: "使用示例"
+
+# 性能特性
+performance:
+  startupTime: "快速"
+  memoryUsage: "低"
+  throughput: "高"
+  scalability: "良好"
+
+# 兼容性
+compatibility:
+  dotnetVersions:
+    - "net10.0"
+  operatingSystems:
+    - "Windows"
+    - "Linux"
+    - "macOS"
+  architectures:
+    - "x64"
+    - "arm64"
+
+# 许可证
+license:
+  type: "MIT"
+  url: "https://opensource.org/licenses/MIT"
+
+# 支持信息
+support:
+  issues: "https://github.com/nrules/nrules/issues"
+  documentation: "https://nrules.net/"
+
+# 发布信息
+release:
+  date: "2026-01-24"
+  notes: "Initial release with AOT support"
+
+# 安全信息
+security:
+  vulnerabilities: "无已知漏洞"
+  bestPractices: "符合 .NET 安全最佳实践"

@@ -1,0 +1,149 @@
+name: silky
+version: 1.0.0
+author: VSA Architecture Team
+description: 基于 .NET 10 的 silky 技能实现，提供高性能的微服务框架功能
+skillType: System Function
+
+# 依赖项
+dependencies:
+  - name: Silky.Core
+    version: 3.3.0
+    source: nuget
+  - name: Silky.Http.Core
+    version: 3.3.0
+    source: nuget
+  - name: Silky.Rpc
+    version: 3.3.0
+    source: nuget
+  - name: Silky.Registry
+    version: 3.3.0
+    source: nuget
+  - name: Silky.Swagger
+    version: 3.3.0
+    source: nuget
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+    source: nuget
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+    source: nuget
+  - name: System.CommandLine
+    version: 2.0.0
+    source: nuget
+  - name: System.Text.Json
+    version: 10.0.0
+    source: nuget
+
+# 功能特性
+features:
+  - name: micro-service
+    description: 微服务框架功能
+  - name: rpc
+    description: 远程过程调用功能
+  - name: registry
+    description: 服务注册与发现功能
+  - name: configuration
+    description: 分布式配置功能
+  - name: gateway
+    description: API 网关功能
+  - name: code-generation
+    description: 代码生成功能
+
+# AOT 编译选项
+aot:
+  enabled: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  runtimeIdentifier: win-x64
+  targetFramework: net10.0
+
+# CLI 命令
+cli:
+  commands:
+    - name: create
+      description: 创建 silky 项目
+      parameters:
+        - name: type
+          description: 项目类型（service/gateway/module）
+        - name: name
+          description: 项目名称
+        - name: output
+          description: 输出目录
+    - name: start
+      description: 启动 silky 服务
+      parameters:
+        - name: project
+          description: 项目路径
+        - name: environment
+          description: 环境变量
+    - name: build
+      description: 构建 silky 项目
+      parameters:
+        - name: project
+          description: 项目路径
+        - name: configuration
+          description: 构建配置
+    - name: registry
+      description: 服务注册管理
+      parameters:
+        - name: list
+          description: 列出所有注册的服务
+        - name: health
+          description: 检查服务健康状态
+    - name: generate
+      description: 代码生成
+      parameters:
+        - name: type
+          description: 生成类型（api/impl/dto）
+        - name: service
+          description: 服务名称
+        - name: output
+          description: 输出目录
+
+# 文件路径
+filePaths:
+  - path: scripts/silky_core.cs
+    description: silky 核心功能实现
+  - path: scripts/silky_generator.cs
+    description: silky 代码生成功能实现
+  - path: scripts/silky_core.setting.json
+    description: silky_core.cs 编译配置
+  - path: scripts/silky_core.run.json
+    description: silky_core.cs 运行配置
+  - path: scripts/silky_generator.setting.json
+    description: silky_generator.cs 编译配置
+  - path: scripts/silky_generator.run.json
+    description: silky_generator.cs 运行配置
+  - path: reference/README.md
+    description: 技术参考文档
+  - path: reference/examples.md
+    description: 使用示例文档
+
+# 应用场景
+applicationScenarios:
+  - 微服务架构开发
+  - 分布式系统构建
+  - API 网关实现
+  - 服务注册与发现
+  - 配置中心管理
+
+# 激活条件
+activationConditions:
+  - 当需要微服务框架功能时激活
+
+# 性能特性
+performanceFeatures:
+  - 高性能 RPC 调用
+  - 服务注册与发现优化
+  - 负载均衡
+  - 熔断与限流
+  - 分布式事务支持
+
+# 技术特性
+technicalFeatures:
+  - 模块化设计
+  - 依赖注入
+  - 异步编程
+  - 高性能网络通信
+  - AOT 编译优化

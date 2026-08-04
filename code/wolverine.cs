@@ -1,0 +1,495 @@
+﻿#:sdk Microsoft.NET.Sdk.Web
+#:package Wolverine@1.0.0
+#:package Microsoft.EntityFrameworkCore.Sqlite@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property UserSecretsId 210f4926-30c7-45ca-a020-391f82b3b3a1
+#:property DockerDefaultTargetOS Linux
+#:property DockerComposeProjectPath ..\docker-compose.dcproj
+
+using Microsoft.EntityFrameworkCore;
+using Wolverine;
+using Wolverine.Http;
+using Wolverine.Persistence.EntityFrameworkCore;
+using Wolverine.Sagas;
+
+// 数据模型
+public class TodoItem
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public bool IsCompleted { get; set; }
+}
+
+// 数据库上下文
+public class TodoDbContext : DbContext
+{
+    public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options) { }
+    public DbSet<TodoItem> Todos { get; set; }
+}
+
+// ========== CQRS 命令和查询 ==========
+// 创建待办事项命令
+public record CreateTodoCommand(string Title) : IMessage;
+
+// 创建待办事项响应
+public record CreateTodoResponse(int Id, string Title);
+
+// 查询待办事项命令
+public record GetTodoQuery(int Id) : IMessage;
+
+// 查询待办事项响应
+public record GetTodoResponse(int Id, string Title, bool IsCompleted);
+
+// ========== CQRS 处理程序 ==========
+// 创建待办事项处理程序
+public class CreateTodoHandler
+{
+    public async Task<CreateTodoResponse> Handle(CreateTodoCommand command, TodoDbContext dbContext)
+    {
+        var todo = new TodoItem { Title = command.Title, IsCompleted = false };
+        dbContext.Todos.Add(todo);
+        await dbContext.SaveChangesAsync();
+        return new CreateTodoResponse(todo.Id, todo.Title);
+    }
+}
+
+// 查询待办事项处理程序
+public class GetTodoHandler
+{
+    public async Task<GetTodoResponse> Handle(GetTodoQuery query, TodoDbContext dbContext)
+    {
+        var todo = await dbContext.Todos.FindAsync(query.Id);
+        return todo == null ? null : new GetTodoResponse(todo.Id, todo.Title, todo.IsCompleted);
+    }
+}
+
+// ========== 事件定义 ==========
+// 待办事项创建事件
+public record TodoCreated(int Id, string Title);
+
+// 待办事项完成事件
+public record TodoCompleted(int Id);
+
+// ========== 内存事件总线订阅者 ==========
+public class TodoEventHandler
+{
+    private static readonly Channel<TodoCreated> _createdChannel = Channel.CreateUnbounded<TodoCreated>();
+    private static readonly Channel<TodoCompleted> _completedChannel = Channel.CreateUnbounded<TodoCompleted>();
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public TodoEventHandler(ObjectPool<Memory<byte>> memoryPool, TailLatencyOptimizer latencyOptimizer)
+    {
+        _memoryPool = memoryPool;
+        _latencyOptimizer = latencyOptimizer;
+        StartConsuming();
+    }
+
+    private void StartConsuming()
+    {
+        _ = ConsumeCreatedEvents();
+        _ = ConsumeCompletedEvents();
+    }
+
+    private async Task ConsumeCreatedEvents()
+    {
+        await foreach (var created in _createdChannel.Reader.ReadAllAsync())
+        {
+            _latencyOptimizer.Optimize(() =>
+            {
+                // 使用零拷贝内存共享技术处理事件
+                var memory = _memoryPool.Get();
+                try
+                {
+                    var data = Encoding.UTF8.GetBytes($"待办事项已创建: ID={created.Id}, 标题={created.Title}");
+                    data.AsSpan().CopyTo(memory.Span);
+                    Console.WriteLine(Encoding.UTF8.GetString(memory.Span.Slice(0, data.Length)));
+                }
+                finally
+                {
+                    _memoryPool.Return(memory);
+                }
+            });
+        }
+    }
+
+    private async Task ConsumeCompletedEvents()
+    {
+        await foreach (var completed in _completedChannel.Reader.ReadAllAsync())
+        {
+            _latencyOptimizer.Optimize(() =>
+            {
+                Console.WriteLine($"待办事项已完成: ID={completed.Id}");
+            });
+        }
+    }
+
+    [WolverineHandler]
+    public async Task Handle(TodoCreated created)
+    {
+        await _createdChannel.Writer.WriteAsync(created);
+    }
+
+    [WolverineHandler]
+    public async Task Handle(TodoCompleted completed)
+    {
+        await _completedChannel.Writer.WriteAsync(completed);
+    }
+}
+
+// ========== 自定义对象池 ==========
+public class MemoryObjectPool : ObjectPool<Memory<byte>>
+{
+    private readonly int _size;
+
+    public MemoryObjectPool(int size) : base(() => new Memory<byte>(new byte[size])) { }
+}
+
+// ========== 尾延迟优化器 ==========
+public class TailLatencyOptimizer
+{
+    public void Optimize(Action action)
+    {
+        // 简化的尾延迟优化逻辑
+        ThreadPool.QueueUserWorkItem(_ => action());
+    }
+}
+
+// ========== 配置服务 ==========
+private static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureServices((hostContext, services) =>
+        {
+            // 配置数据库连接
+            services.AddDbContext<TodoDbContext>(options =>
+                options.UseSqlite(hostContext.Configuration.GetConnectionString("DefaultConnection")));
+
+            // 配置 Wolverine
+            services.AddWolverine(opts =>
+            {
+                opts.PublishAllMessages().ToInMemory();
+            });
+
+            // 配置对象池
+            services.AddSingleton<ObjectPool<Memory<byte>>>(new MemoryObjectPool(1024));
+            services.AddSingleton<TailLatencyOptimizer>();
+
+            // 配置内存管理相关服务
+            services.AddSingleton<PoolingManager>();
+            services.AddSingleton<ThreadLocal<Span<byte>>>(_ => new ThreadLocal<Span<byte>>(() => stackalloc byte[256]));
+
+            // 配置 Wolverine Saga 持久化
+            services.AddWolverine(opts =>
+            {
+                opts.PublishAllMessages().ToInMemory();
+                opts.PersistSagasWith<TodoDbContext>();
+                opts.UseEntityFrameworkCoreTransactions();
+            });
+        });
+
+// ========== 启动应用 ==========
+var host = CreateHostBuilder(args).Build();
+using var scope = host.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
+dbContext.Database.EnsureCreated();
+
+// ========== HTTP 端点 ==========
+var app = host.Services.GetRequiredService<WebApplication>();
+
+app.MapPost("/todos", async ([FromBody] CreateTodoCommand command, IMessageBus bus) =>
+{
+    var response = await bus.InvokeAsync<CreateTodoResponse>(command);
+    return Results.Created($"/todos/{response.Id}", response);
+});
+
+app.MapGet("/todos/{id}", async (int id, IMessageBus bus) =>
+{
+    var response = await bus.InvokeAsync<GetTodoResponse>(new GetTodoQuery(id));
+    return response != null ? Results.Ok(response) : Results.NotFound();
+});
+
+app.Run();
+
+// ========== 内存管理相关类 ==========
+public class PoolingManager
+{
+    private readonly ConcurrentDictionary<int, Stack<byte[]>> _pool = new();
+
+    public byte[] Rent(int size)
+    {
+        if (_pool.TryGetValue(size, out var stack) && stack.TryPop(out var buffer))
+        {
+            return buffer;
+        }
+        return new byte[size];
+    }
+
+    public void Return(byte[] buffer)
+    {
+        _pool.GetOrAdd(buffer.Length, _ => new Stack<byte[]>()).Push(buffer);
+    }
+}
+
+/*
+如何运行此示例：
+1. 确保已安装 .NET 10 SDK.
+2. 在 appsettings.json 中配置数据库连接字符串，例如：
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=Todo.db"
+  }
+}
+3. 打开命令行或终端，导航到包含此文件的目录.
+4. 运行应用程序：dotnet run
+5. 使用 HTTP 客户端（如 Postman）测试 API：
+   - 创建待办事项：POST /todos，请求体：{ "Title": "学习 Wolverine" }
+   - 获取待办事项：GET /todos/{id}
+*/
+
+// ========== Saga 状态 ==========
+public class TodoSagaState
+{
+    public Guid Id { get; set; }
+    public int TodoId { get; set; }
+    public string Title { get; set; }
+    public SagaStatus Status { get; set; } = SagaStatus.Pending;
+}
+
+public enum SagaStatus
+{
+    Pending,
+    Processing,
+    Completed,
+    RolledBack
+}
+
+// ========== Saga 命令和事件 ==========
+public record StartTodoSagaCommand(int TodoId, string Title);
+public record ReserveResourcesEvent(int TodoId);
+public record ResourcesReservedEvent(int TodoId);
+public record CreateTodoItemEvent(int TodoId, string Title);
+public record TodoItemCreatedEvent(int TodoId);
+public record NotifyUserEvent(int TodoId);
+public record UserNotifiedEvent(int TodoId);
+public record RollbackResourcesEvent(int TodoId);
+public record ResourcesRolledBackEvent(int TodoId);
+
+// ========== Saga 编排 ==========
+[WolverineHandler] // 标记为 Wolverine 处理器
+public class TodoSaga : Saga<TodoSagaState>
+{
+    public TodoSagaState State { get; set; }
+
+    // 启动 Saga
+    public static TodoSagaState Start(StartTodoSagaCommand command)
+    {
+        return new TodoSagaState
+        {
+            Id = Guid.NewGuid(),
+            TodoId = command.TodoId,
+            Title = command.Title,
+            Status = SagaStatus.Pending
+        };
+    }
+
+    // 处理资源预留命令
+    public async Task Handle(StartTodoSagaCommand command, IMessageBus bus)
+    {
+        State.Status = SagaStatus.Processing;
+        await bus.PublishAsync(new ReserveResourcesEvent(command.TodoId));
+    }
+
+    // 处理资源预留完成事件
+    public async Task Handle(ResourcesReservedEvent @event, IMessageBus bus)
+    {
+        await bus.PublishAsync(new CreateTodoItemEvent(State.TodoId, State.Title));
+    }
+
+    // 处理待办事项创建完成事件
+    public async Task Handle(TodoItemCreatedEvent @event, IMessageBus bus)
+    {
+        await bus.PublishAsync(new NotifyUserEvent(State.TodoId));
+    }
+
+    // 处理用户通知完成事件
+    public async Task Handle(UserNotifiedEvent @event)
+    {
+        State.Status = SagaStatus.Completed;
+        MarkCompleted();
+    }
+
+    // 错误处理：回滚资源
+    public async Task Handle(Exception exception, IMessageBus bus)
+    {
+        if (State.Status == SagaStatus.Processing)
+        {
+            await bus.PublishAsync(new RollbackResourcesEvent(State.TodoId));
+            State.Status = SagaStatus.RolledBack;
+        }
+    }
+
+    // 处理资源回滚完成事件
+    public async Task Handle(ResourcesRolledBackEvent @event)
+    {
+        MarkCompleted();
+    }
+}
+
+// ========== 资源服务 ==========
+public class ResourceService
+{
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public ResourceService(ObjectPool<Memory<byte>> memoryPool, TailLatencyOptimizer latencyOptimizer)
+    {
+        _memoryPool = memoryPool;
+        _latencyOptimizer = latencyOptimizer;
+    }
+
+    [WolverineHandler] // 标记为 Wolverine 处理器
+    public async Task<ResourcesReservedEvent> Handle(ReserveResourcesEvent @event)
+    {
+        // 使用零拷贝内存共享技术记录日志
+        _latencyOptimizer.Optimize(() =>
+        {
+            var memory = _memoryPool.Get();
+            try
+            {
+                var data = Encoding.UTF8.GetBytes($"正在为待办事项 { @event.TodoId } 预留资源");
+                data.AsSpan().CopyTo(memory.Span);
+                Console.WriteLine(Encoding.UTF8.GetString(memory.Span.Slice(0, data.Length)));
+            }
+            finally
+            {
+                _memoryPool.Return(memory);
+            }
+        });
+
+        // 模拟资源预留耗时操作
+        await Task.Delay(500);
+        return new ResourcesReservedEvent(@event.TodoId);
+    }
+
+    [WolverineHandler] // 标记为 Wolverine 处理器
+    public async Task<ResourcesRolledBackEvent> Handle(RollbackResourcesEvent @event)
+    {
+        _latencyOptimizer.Optimize(() =>
+        {
+            Console.WriteLine($"正在为待办事项 { @event.TodoId } 回滚资源");
+        });
+
+        // 模拟资源回滚耗时操作
+        await Task.Delay(500);
+        return new ResourcesRolledBackEvent(@event.TodoId);
+    }
+}
+
+// ========== 待办事项服务 ==========
+public class TodoService
+{
+    private readonly TodoDbContext _dbContext;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public TodoService(TodoDbContext dbContext, ObjectPool<Memory<byte>> memoryPool, TailLatencyOptimizer latencyOptimizer)
+    {
+        _dbContext = dbContext;
+        _memoryPool = memoryPool;
+        _latencyOptimizer = latencyOptimizer;
+    }
+
+    [WolverineHandler] // 标记为 Wolverine 处理器
+    public async Task<TodoItemCreatedEvent> Handle(CreateTodoItemEvent @event)
+    {
+        _latencyOptimizer.Optimize(() =>
+        {
+            var memory = _memoryPool.Get();
+            try
+            {
+                var data = Encoding.UTF8.GetBytes($"正在创建待办事项 { @event.Title }");
+                data.AsSpan().CopyTo(memory.Span);
+                Console.WriteLine(Encoding.UTF8.GetString(memory.Span.Slice(0, data.Length)));
+            }
+            finally
+            {
+                _memoryPool.Return(memory);
+            }
+        });
+
+        var todo = new TodoItem { Id = @event.TodoId, Title = @event.Title, IsCompleted = false };
+        _dbContext.Todos.Add(todo);
+        await _dbContext.SaveChangesAsync();
+        return new TodoItemCreatedEvent(@event.TodoId);
+    }
+}
+
+// ========== 通知服务 ==========
+public class NotificationService
+{
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public NotificationService(ObjectPool<Memory<byte>> memoryPool, TailLatencyOptimizer latencyOptimizer)
+    {
+        _memoryPool = memoryPool;
+        _latencyOptimizer = latencyOptimizer;
+    }
+
+    [WolverineHandler] // 标记为 Wolverine 处理器
+    public async Task<UserNotifiedEvent> Handle(NotifyUserEvent @event)
+    {
+        _latencyOptimizer.Optimize(() =>
+        {
+            var memory = _memoryPool.Get();
+            try
+            {
+                var data = Encoding.UTF8.GetBytes($"正在通知用户待办事项 { @event.TodoId } 已创建");
+                data.AsSpan().CopyTo(memory.Span);
+                Console.WriteLine(Encoding.UTF8.GetString(memory.Span.Slice(0, data.Length)));
+            }
+            finally
+            {
+                _memoryPool.Return(memory);
+            }
+        });
+
+        // 模拟通知耗时操作
+        await Task.Delay(500);
+        return new UserNotifiedEvent(@event.TodoId);
+    }
+}
+
+// ========== 更新 Wolverine 配置 ==========
+private static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureServices((hostContext, services) =>
+        {
+            // 配置数据库连接
+            services.AddDbContext<TodoDbContext>(options =>
+                options.UseSqlite(hostContext.Configuration.GetConnectionString("DefaultConnection")));
+
+            // 配置 Wolverine
+            services.AddWolverine(opts =>
+            {
+                opts.PublishAllMessages().ToInMemory();
+            });
+
+            // 配置对象池
+            services.AddSingleton<ObjectPool<Memory<byte>>>(new MemoryObjectPool(1024));
+            services.AddSingleton<TailLatencyOptimizer>();
+
+            // 配置内存管理相关服务
+            services.AddSingleton<PoolingManager>();
+            services.AddSingleton<ThreadLocal<Span<byte>>>(_ => new ThreadLocal<Span<byte>>(() => stackalloc byte[256]));
+        });
+
+// ========== 添加新的 API 端点来启动 Saga ==========
+app.MapPost("/todos/saga", async ([FromBody] StartTodoSagaCommand command, IMessageBus bus) =>
+{
+    await bus.InvokeAsync(command);
+    return Results.Accepted($"/todos/saga/{command.TodoId}");
+});

@@ -1,0 +1,54 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package System.Threading.Tasks.Dataflow@8.0.0
+#:package System.Text.Json@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Buffers;
+using System.Threading.Tasks.Dataflow;
+
+public class RealtimeEtlProcessor
+{
+    private readonly TransformBlock<byte[], ParsedData> _parseBlock;
+    private readonly TransformBlock<ParsedData, TransformedData> _transformBlock;
+    private readonly ActionBlock<TransformedData> _loadBlock;
+    private readonly ObjectPool<Memory<byte>> _memoryPool;
+
+    public RealtimeEtlProcessor()
+    {
+        _memoryPool = new DefaultObjectPool<Memory<byte>>(
+            new DefaultPooledObjectPolicy<Memory<byte>>(), 1000);
+
+        var options = new ExecutionDataflowBlockOptions
+        {
+            BoundedCapacity = 10000,
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            EnsureOrdered = false
+        };
+
+        _parseBlock = new TransformBlock<byte[], ParsedData>(data =>
+        {
+            // 解析逻辑
+            return System.Text.Json.JsonSerializer.Deserialize<ParsedData>(data);
+        }, options);
+
+        _transformBlock = new TransformBlock<ParsedData, TransformedData>(data =>
+        {
+            // 转换逻辑
+            return new TransformedData(data);
+        }, options);
+
+        _loadBlock = new ActionBlock<TransformedData>(async data =>
+        {
+            // 加载逻辑
+        }, options);
+
+        _parseBlock.LinkTo(_transformBlock);
+        _transformBlock.LinkTo(_loadBlock);
+    }
+}
+
+public record ParsedData;
+public record TransformedData(ParsedData Original);

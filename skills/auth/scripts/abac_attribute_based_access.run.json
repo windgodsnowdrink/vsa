@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "abac_attribute_based_access",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\auth\scripts\abac_attribute_based_access.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\auth\scripts\abac_attribute_based_access.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

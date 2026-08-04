@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "command": "dotnet",
+  "args": ["run", "--project", "resilient_polly_integration.cs"],
+  "options": {
+    "cwd": "d:\\Trae\\vsa\\skills\\resilient\\scripts",
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_RUNNING_IN_CONTAINER": "false"
+    },
+    "shell": true,
+    "timeout": 300000
+  },
+  "settings": {
+    "resilient": {
+      "retry": {
+        "count": 3,
+        "minBackoff": "00:00:01",
+        "maxBackoff": "00:00:10",
+        "maxRetryDelay": "00:00:30"
+      },
+      "circuitBreaker": {
+        "failureThreshold": 0.5,
+        "samplingDuration": "00:00:30",
+        "minimumThroughput": 10,
+        "breakDuration": "00:00:30"
+      },
+      "rateLimiter": {
+        "permitsPerSecond": 100,
+        "queueLimit": 50
+      },
+      "timeout": "00:00:30",
+      "bulkhead": {
+        "maxParallelization": 10,
+        "maxQueuedActions": 50
+      }
+    },
+    "logging": {
+      "level": "Information",
+      "file": "logs\\resilient_polly_integration.log",
+      "console": true
+    }
+  }
+}

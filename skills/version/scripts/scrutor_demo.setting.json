@@ -1,0 +1,24 @@
+{
+  "compilationOptions": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "optimize": true,
+    "debugSymbols": false
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "8.0.0",
+    "Scrutor": "4.2.2"
+  },
+  "runtimeOptions": {
+    "args": [],
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development"
+    }
+  },
+  "buildOptions": {
+    "outputPath": "bin",
+    "cleanOutput": true
+  }
+}

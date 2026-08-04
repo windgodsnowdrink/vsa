@@ -1,0 +1,112 @@
+name: sourcegenerator
+version: 1.0.0
+author: NET专家
+description: 基于.NET 10的Source Generator技能，支持AOT编译，提供代码生成、模板生成、反射增强等功能
+
+compilation:
+  targetFramework: net10.0
+  publishAot: true
+  trimMode: partial
+  selfContained: true
+  publishSingleFile: true
+  langVersion: latest
+  nullable: enable
+  implicitUsings: enable
+
+dependencies:
+  - name: Microsoft.CodeAnalysis.Analyzers
+    version: 4.10.0
+    description: Roslyn分析器包
+  - name: Microsoft.CodeAnalysis.CSharp
+    version: 4.10.0
+    description: Roslyn C#编译器
+  - name: Microsoft.Extensions.DependencyInjection
+    version: 10.0.0
+    description: 依赖注入框架
+  - name: Scrutor
+    version: 4.0.0
+    description: 高级服务注册和装饰器模式库
+  - name: System.CommandLine
+    version: 2.0.0
+    description: 命令行接口框架
+  - name: Microsoft.Extensions.Options
+    version: 10.0.0
+    description: 配置选项管理
+  - name: Microsoft.Extensions.Logging
+    version: 10.0.0
+    description: 日志记录框架
+  - name: Newtonsoft.Json
+    version: 13.0.3
+    description: JSON序列化库
+
+features:
+  - id: source-generation
+    name: 代码生成
+    description: 支持基于Source Generator的代码生成
+  - id: template-generation
+    name: 模板生成
+    description: 支持代码模板的生成和管理
+  - id: reflection-enhancement
+    name: 反射增强
+    description: 提供编译时反射信息生成
+  - id: attribute-processing
+    name: 特性处理
+    description: 支持自定义特性的处理和代码生成
+  - id: incremental-generation
+    name: 增量生成
+    description: 支持增量编译和代码生成
+  - id: code-analysis
+    name: 代码分析
+    description: 支持编译时代码分析和验证
+
+cli:
+  commands:
+    - name: generate
+      description: 生成代码
+      arguments:
+        - name: type
+          description: 生成类型
+          required: true
+        - name: output
+          description: 输出文件路径
+          required: true
+    - name: analyze
+      description: 分析代码
+      arguments:
+        - name: file
+          description: 要分析的文件
+          required: true
+    - name: template
+      description: 管理代码模板
+      subcommands:
+        - name: create
+          description: 创建代码模板
+        - name: list
+          description: 列出所有代码模板
+        - name: delete
+          description: 删除代码模板
+    - name: attribute
+      description: 管理自定义特性
+      subcommands:
+        - name: create
+          description: 创建自定义特性
+        - name: list
+          description: 列出所有自定义特性
+
+files:
+  - path: scripts/sourcegenerator_core.cs
+    description: Source Generator核心功能实现
+  - path: scripts/sourcegenerator_core.setting.json
+    description: Source Generator核心功能编译配置
+  - path: scripts/sourcegenerator_core.run.json
+    description: Source Generator核心功能运行配置
+  - path: scripts/sourcegenerator_generator.cs
+    description: 代码生成和Scrutor用法示例
+  - path: scripts/sourcegenerator_generator.setting.json
+    description: 代码生成编译配置
+  - path: scripts/sourcegenerator_generator.run.json
+    description: 代码生成运行配置
+  - path: reference/README.md
+    description: 参考文档
+  - path: reference/examples.md
+    description: 使用示例文档

@@ -1,0 +1,29 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package App.Metrics@4.3.0
+#:package App.Metrics.InfluxDB@4.3.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using App.Metrics;
+using App.Metrics.Formatters.InfluxDB;
+
+var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddMetrics(metrics =>
+{
+    metrics.Report.ToInfluxDb(options =>
+    {
+        options.InfluxDb.BaseUri = new Uri("http://localhost:8086");
+        options.InfluxDb.Database = "appmetrics";
+        options.InfluxDb.UserName = "admin";
+        options.InfluxDb.Password = "admin";
+        options.HttpPolicy.Timeout = TimeSpan.FromSeconds(10);
+        options.MetricsOutputFormatter = new MetricsInfluxDbLineProtocolOutputFormatter();
+    });
+});
+
+var app = builder.Build();
+app.MapGet("/", () => "InfluxDB Metrics Ready");
+app.Run();

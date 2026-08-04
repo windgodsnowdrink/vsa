@@ -1,0 +1,59 @@
+{
+  "$schema": "https://trae-ai.bytedance.net/schema/runfile.setting.json",
+  "description": "FreeIM AOT 编译配置",
+  "compilation": {
+    "language": "csharp",
+    "sdk": "Microsoft.NET.Sdk",
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": true,
+    "implicitUsings": true,
+    "publishAot": true,
+    "invariantGlobalization": true,
+    "enableCompilationRelaxations": true,
+    "enableUnsafeBinaryFormatterSerialization": false
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.Extensions.Configuration": "10.0.0",
+    "Microsoft.Extensions.Configuration.Json": "10.0.0"
+  },
+  "runtime": {
+    "workingDirectory": "$(ProjectDir)",
+    "environmentVariables": {
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1",
+      "DOTNET_PUBLISH_AOT": "1"
+    },
+    "commandLineArgs": [],
+    "executionMode": "console"
+  },
+  "build": {
+    "outputPath": "$(ProjectDir)bin\$(Configuration)\$(TargetFramework)",
+    "configuration": "Release",
+    "platform": "Any CPU",
+    "additionalArguments": [
+      "/p:PublishAot=true",
+      "/p:InvariantGlobalization=true",
+      "/p:EnableCompilationRelaxations=true",
+      "/p:EnableUnsafeBinaryFormatterSerialization=false"
+    ]
+  },
+  "publish": {
+    "outputPath": "$(ProjectDir)publish",
+    "selfContained": true,
+    "trimMode": "full",
+    "enableCompressionInSingleFile": true,
+    "singleFile": true,
+    "additionalArguments": [
+      "/p:PublishAot=true",
+      "/p:InvariantGlobalization=true",
+      "/p:EnableCompilationRelaxations=true",
+      "/p:EnableUnsafeBinaryFormatterSerialization=false",
+      "/p:TrimMode=full",
+      "/p:EnableCompressionInSingleFile=true"
+    ]
+  }
+}

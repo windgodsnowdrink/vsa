@@ -1,0 +1,142 @@
+{
+  "runtime": {
+    "command": "torchsharp_generator",
+    "arguments": [],
+    "working_directory": "../",
+    "exit_code_success": 0,
+    "timeout_seconds": 120,
+    "restart_on_crash": false,
+    "max_restarts": 3
+  },
+  "environment_variables": {
+    "DOTNET_ENVIRONMENT": "Development",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+    "SCRUTOR_DEMO": "true",
+    "IS_PREMIUM": "false",
+    "GENERATOR_OUTPUT_PATH": "../generated",
+    "LOG_LEVEL": "Information"
+  },
+  "memory": {
+    "max_working_set": "2048",
+    "min_working_set": "256",
+    "gc_heap_limit": "1024",
+    "gc_server": true,
+    "gc_concurrent": true,
+    "gc_retention": "LowLatency"
+  },
+  "cpu": {
+    "affinity": "0-1",
+    "priority": "Normal",
+    "max_processes": 1
+  },
+  "io": {
+    "buffer_size": 4096,
+    "max_open_files": 512,
+    "file_access_timeout": 15,
+    "directory_cache_enabled": true
+  },
+  "logging": {
+    "enabled": true,
+    "level": "Information",
+    "format": "json",
+    "file_path": "../logs/torchsharp_generator.log",
+    "max_file_size": 5242880,
+    "max_retained_files": 3,
+    "console_output": true,
+    "console_format": "simple"
+  },
+  "metrics": {
+    "enabled": false,
+    "interval_seconds": 60,
+    "collect_memory": false,
+    "collect_cpu": false,
+    "collect_io": false,
+    "collect_gpu": false
+  },
+  "security": {
+    "enable_sandbox": false,
+    "restricted_folders": [],
+    "allowed_folders": [
+      "../generated",
+      "../logs",
+      "../temp"
+    ],
+    "network_access": false,
+    "environment_variables_access": true
+  },
+  "deployment": {
+    "type": "standalone",
+    "target_platform": "windows-x64",
+    "require_admin": false,
+    "install_service": false,
+    "service_name": "TorchSharpGenerator",
+    "service_description": "TorchSharp 代码生成器服务"
+  },
+  "profiles": {
+    "default": {
+      "description": "默认运行配置",
+      "environment_variables": {},
+      "arguments": []
+    },
+    "development": {
+      "description": "开发环境配置",
+      "environment_variables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug"
+      },
+      "arguments": [],
+      "logging": {
+        "level": "Debug",
+        "console_output": true
+      }
+    },
+    "production": {
+      "description": "生产环境配置",
+      "environment_variables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Warning"
+      },
+      "arguments": [],
+      "logging": {
+        "level": "Warning",
+        "console_output": false
+      }
+    },
+    "basic_demo": {
+      "description": "基本演示配置",
+      "arguments": ["--demo", "basic"]
+    },
+    "decorator_demo": {
+      "description": "装饰器模式演示配置",
+      "arguments": ["--demo", "decorator"]
+    },
+    "all_demos": {
+      "description": "运行所有演示配置",
+      "arguments": ["--demo", "all"]
+    },
+    "premium_mode": {
+      "description": "高级模式演示配置",
+      "environment_variables": {
+        "IS_PREMIUM": "true"
+      },
+      "arguments": ["--demo", "conditional"]
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "check_dependencies": true,
+    "check_environment": true,
+    "check_disk_space": true,
+    "min_disk_space_mb": 50,
+    "check_memory": true,
+    "min_memory_mb": 256
+  },
+  "recovery": {
+    "enabled": true,
+    "auto_recovery": false,
+    "recovery_points": [],
+    "max_recovery_attempts": 3,
+    "recovery_delay_seconds": 3
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "todo_service",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "d:\\Trae\\vsa\\skills\\todo\\scripts\\todo_service.cs",
+      "args": [
+        "--settings",
+        "d:\\Trae\\vsa\\skills\\todo\\scripts\\todo_service.settings.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Mapperly": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Mapperly": {
+    "Enabled": true,
+    "CodeGeneration": {
+      "NullableReferenceTypes": true,
+      "UseDeepCloning": true
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

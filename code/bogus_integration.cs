@@ -1,0 +1,104 @@
+#:sdk Microsoft.NET.Sdk
+#:package Bogus@35.4.0
+#:package Microsoft.Extensions.DependencyInjection@7.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+
+using Bogus;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
+
+// 测试数据模型
+public record User(int Id, string Name, string Email, DateTime CreatedAt);
+public record Product(int Id, string Name, decimal Price, int Stock);
+public record Order(int Id, int UserId, List<OrderItem> Items, DateTime OrderDate);
+public record OrderItem(int ProductId, int Quantity, decimal UnitPrice);
+
+// Bogus生产级集成方案
+public static class BogusServiceExtensions
+{
+    public static IServiceCollection AddBogusDataGenerator(this IServiceCollection services)
+    {
+        // 使用线程安全的缓存存储生成器实例
+        var generators = new ConcurrentDictionary<Type, object>();
+        
+        // 用户数据生成器
+        var userFaker = new Faker<User>()
+            .UseSeed(123) // 固定种子保证可重复性
+            .RuleFor(u => u.Id, f => f.IndexGlobal + 1)
+            .RuleFor(u => u.Name, f => f.Name.FullName())
+            .RuleFor(u => u.Email, (f, u) => f.Internet.Email(u.Name))
+            .RuleFor(u => u.CreatedAt, f => f.Date.Past(2));
+        
+        // 产品数据生成器
+        var productFaker = new Faker<Product>()
+            .UseSeed(456)
+            .RuleFor(p => p.Id, f => f.IndexGlobal + 1)
+            .RuleFor(p => p.Name, f => f.Commerce.ProductName())
+            .RuleFor(p => p.Price, f => f.Random.Decimal(1, 1000))
+            .RuleFor(p => p.Stock, f => f.Random.Int(0, 100));
+        
+        // 注册生成器
+        generators.TryAdd(typeof(User), userFaker);
+        generators.TryAdd(typeof(Product), productFaker);
+        
+        // 高性能批量生成方法
+        services.AddSingleton<IDataGenerator>(provider => new BogusDataGenerator(generators));
+        
+        return services;
+    }
+}
+
+// 数据生成接口
+public interface IDataGenerator
+{
+    IEnumerable<T> Generate<T>(int count) where T : class;
+    T GenerateOne<T>() where T : class;
+}
+
+// Bogus数据生成实现
+public class BogusDataGenerator : IDataGenerator
+{
+    private readonly ConcurrentDictionary<Type, object> _generators;
+    
+    public BogusDataGenerator(ConcurrentDictionary<Type, object> generators)
+    {
+        _generators = generators;
+    }
+    
+    public IEnumerable<T> Generate<T>(int count) where T : class
+    {
+        if (_generators.TryGetValue(typeof(T), out var generator))
+        {
+            return ((Faker<T>)generator).Generate(count);
+        }
+        
+        throw new InvalidOperationException($"No generator registered for type {typeof(T).Name}");
+    }
+    
+    public T GenerateOne<T>() where T : class
+    {
+        return Generate<T>(1).First();
+    }
+}
+
+// 示例用法
+public static class Program
+{
+    public static void Main()
+    {
+        var services = new ServiceCollection();
+        services.AddBogusDataGenerator();
+        
+        var provider = services.BuildServiceProvider();
+        var generator = provider.GetRequiredService<IDataGenerator>();
+        
+        // 生成测试数据
+        var users = generator.Generate<User>(1000);
+        var products = generator.Generate<Product>(500);
+        
+        Console.WriteLine($"Generated {users.Count()} users and {products.Count()} products");
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "OneRemote": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "OneRemote": {
+    "ConnectionPoolSize": 100,
+    "Timeout": "00:00:30",
+    "RetryCount": 3,
+    "CircuitBreakerFailureThreshold": 0.5,
+    "CircuitBreakerDurationOfBreak": "00:00:30",
+    "EnableCompression": true,
+    "EnableEncryption": true,
+    "MaxConcurrentConnections": 10,
+    "BatchSize": 100,
+    "EnableDebugLogging": false
+  },
+  "RuntimeOptions": {
+    "Tfm": "net10.0",
+    "PublishAot": true,
+    "TrimMode": "partial",
+    "ReadyToRun": true,
+    "TieredCompilation": true,
+    "Optimize": true,
+    "EnableCompressionInSingleFile": true,
+    "SelfContained": true
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "name": "linkers_aot",
+  "description": "AOT编译的链接器工具运行配置",
+  "version": "1.0.0",
+  "author": "Trae AI",
+  "created_at": "2026-01-22",
+  "runtime_settings": {
+    "dotnet_version": "10.0",
+    "runtime_identifier": "win-x64",
+    "self_contained": true,
+    "publish_single_file": true,
+    "optimize": true,
+    "publish_trimmed": true,
+    "debug_type": "portable",
+    "emit_debug_symbols": true,
+    "use_app_host": true,
+    "roll_forward": "LatestMajor",
+    "allow_unsafe_blocks": false,
+    "nullable": "enable",
+    "implicit_usings": true
+  },
+  "execution_settings": {
+    "working_directory": ".",
+    "command_prefix": "dotnet",
+    "command_arguments": ["run", "--project", "scripts/linkers_aot.cs"],
+    "wait_for_exit": true,
+    "timeout_ms": 300000,
+    "capture_output": true,
+    "redirect_stderr_to_stdout": true,
+    "use_shell_execution": false,
+    "create_no_window": false,
+    "priority_class": "Normal",
+    "affinity_mask": 0
+  },
+  "environment_variables": {
+    "LINKERS_LOG_LEVEL": {
+      "description": "日志级别",
+      "value": "INFO",
+      "required": false
+    },
+    "LINKERS_CACHE_DIR": {
+      "description": "缓存目录",
+      "value": "%LOCALAPPDATA%\\Linkers\\Cache",
+      "required": false
+    },
+    "LINKERS_TEMP_DIR": {
+      "description": "临时目录",
+      "value": "%TEMP%\\Linkers",
+      "required": false
+    },
+    "LINKERS_MAX_THREADS": {
+      "description": "最大线程数",
+      "value": "4",
+      "required": false
+    },
+    "LINKERS_ASSEMBLY_LOAD_TIMEOUT": {
+      "description": "程序集加载超时（毫秒）",
+      "value": "30000",
+      "required": false
+    },
+    "LINKERS_SYMBOL_RESOLUTION_TIMEOUT": {
+      "description": "符号解析超时（毫秒）",
+      "value": "60000",
+      "required": false
+    },
+    "LINKERS_OPTIMIZATION_TIMEOUT": {
+      "description": "优化超时（毫秒）",
+      "value": "120000",
+      "required": false
+    },
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": {
+      "description": "禁用全球化",
+      "value": "false",
+      "required": false
+    },
+    "DOTNET_CLI_TELEMETRY_OPTOUT": {
+      "description": "禁用遥测",
+      "value": "1",
+      "required": false
+    }
+  },
+  "memory_settings": {
+    "max_memory_mb": 2048,
+    "memory_limit_exceeded_action": "Warning",
+    "gc_mode": "Server",
+    "gc_latency_mode": "Interactive",
+    "gc_server": true,
+    "gc_concurrent": true,
+    "gc_retail": true
+  },
+  "threading_settings": {
+    "max_threads": 4,
+    "min_threads": 1,
+    "thread_pool_min_size": 4,
+    "thread_pool_max_size": 32,
+    "apartment_state": "MTA",
+    "use_thread_local_storage": true
+  },
+  "logging_settings": {
+    "log_level": "Information",
+    "log_file": "%TEMP%\\Linkers\\linkers.log",
+    "log_rotation": "Daily",
+    "max_log_size_mb": 10,
+    "max_log_files": 5,
+    "include_timestamp": true,
+    "include_process_id": true,
+    "include_thread_id": false,
+    "include_stack_trace": false,
+    "enable_console_logging": true,
+    "enable_file_logging": true,
+    "enable_event_logging": false,
+    "log_format": "[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}"
+  },
+  "error_handling": {
+    "fail_fast_on_critical_error": false,
+    "retry_count": 3,
+    "retry_delay_ms": 1000,
+    "retry_exponential_backoff": true,
+    "max_retry_delay_ms": 10000,
+    "handle_unhandled_exceptions": true,
+    "crash_dump_enabled": false,
+    "crash_dump_path": "%TEMP%\\Linkers\\dumps",
+    "crash_dump_type": "Mini"
+  },
+  "performance_settings": {
+    "enable_performance_counters": false,
+    "enable_memory_profiling": false,
+    "enable_cpu_profiling": false,
+    "performance_data_path": "%TEMP%\\Linkers\\performance",
+    "collect_gc_stats": false,
+    "collect_thread_stats": false,
+    "collect_io_stats": false,
+    "sample_interval_ms": 1000
+  },
+  "security_settings": {
+    "enable_appdomain_isolation": false,
+    "enable_sandbox": false,
+    "restricted_permissions": false,
+    "enable_code_verification": true,
+    "enable_signature_validation": false,
+    "disable_pinvoke": false,
+    "disable_reflection": false,
+    "allowed_assembly_paths": ["*"],
+    "allowed_native_libraries": ["*"]
+  },
+  "command_profiles": {
+    "analyze": {
+      "description": "分析程序集",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "analyze"],
+      "timeout_ms": 60000,
+      "max_memory_mb": 1024
+    },
+    "resolve": {
+      "description": "解析符号",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "resolve"],
+      "timeout_ms": 30000,
+      "max_memory_mb": 512
+    },
+    "list-dependencies": {
+      "description": "列出依赖项",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "list-dependencies"],
+      "timeout_ms": 45000,
+      "max_memory_mb": 768
+    },
+    "optimize": {
+      "description": "优化程序集",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "optimize"],
+      "timeout_ms": 120000,
+      "max_memory_mb": 2048
+    },
+    "verify": {
+      "description": "验证程序集",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "verify"],
+      "timeout_ms": 30000,
+      "max_memory_mb": 512
+    },
+    "extract": {
+      "description": "提取程序集内容",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "extract"],
+      "timeout_ms": 45000,
+      "max_memory_mb": 768
+    },
+    "generate-bindings": {
+      "description": "生成原生库绑定",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "generate-bindings"],
+      "timeout_ms": 60000,
+      "max_memory_mb": 1024
+    },
+    "benchmark": {
+      "description": "运行性能基准测试",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "benchmark"],
+      "timeout_ms": 180000,
+      "max_memory_mb": 1536
+    },
+    "help": {
+      "description": "显示帮助信息",
+      "command_arguments": ["run", "--project", "scripts/linkers_aot.cs", "help"],
+      "timeout_ms": 5000,
+      "max_memory_mb": 256
+    }
+  },
+  "validation_rules": {
+    "required_files": [
+      "scripts/linkers_aot.cs",
+      "scripts/linkers_aot.setting.json"
+    ],
+    "required_directories": [
+      "scripts",
+      "%TEMP%\\Linkers"
+    ],
+    "file_permissions": {
+      "scripts/linkers_aot.cs": "ReadWrite",
+      "scripts/linkers_aot.setting.json": "ReadWrite",
+      "scripts/linkers_aot.run.json": "ReadWrite"
+    },
+    "directory_permissions": {
+      "scripts": "ReadWrite",
+      "%TEMP%\\Linkers": "ReadWrite"
+    },
+    "minimum_dotnet_version": "10.0.0",
+    "maximum_dotnet_version": "",
+    "supported_platforms": [
+      "Windows",
+      "Linux",
+      "macOS"
+    ],
+    "required_environment_variables": [],
+    "required_software": [
+      {
+        "name": "dotnet",
+        "version": ">=10.0.0",
+        "check_command": "dotnet --version",
+        "required": true
+      }
+    ]
+  },
+  "deployment_settings": {
+    "publish_profile": "Release",
+    "output_directory": "bin\\Release\\net10.0\\win-x64\\publish",
+    "delete_existing_files": true,
+    "preserve_newest": false,
+    "include_symbols": true,
+    "include_source": false,
+    "exclude_files": [
+      "*.pdb",
+      "*.xml",
+      "*.config"
+    ],
+    "exclude_directories": [
+      "obj",
+      "bin\\Debug"
+    ],
+    "zip_output": false,
+    "zip_file_name": "linkers_aot.zip",
+    "sign_files": false,
+    "sign_certificate": "",
+    "sign_timestamp_url": ""
+  },
+  "monitoring_settings": {
+    "enable_health_checks": false,
+    "health_check_interval_ms": 30000,
+    "enable_heartbeat": false,
+    "heartbeat_interval_ms": 60000,
+    "heartbeat_endpoint": "",
+    "enable_metrics": false,
+    "metrics_endpoint": "",
+    "metrics_prefix": "linkers",
+    "enable_tracing": false,
+    "tracing_endpoint": "",
+    "tracing_sampler_rate": 0.1,
+    "tracing_provider": "OpenTelemetry"
+  }
+}

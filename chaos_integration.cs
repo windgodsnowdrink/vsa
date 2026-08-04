@@ -1,0 +1,240 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Microsoft.Extensions.Hosting@8.0.0
+#:package Polly@8.0.0
+#:package ChaosMonkey@1.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Polly;
+using ChaosMonkey;
+
+/// <summary>
+/// Chaos配置选项类，用于管理混沌工程的各种参数设置
+/// </summary>
+public class ChaosOptions
+{
+    /// <summary>是否启用混沌注入</summary>
+    public bool Enabled { get; set; } = true;
+    /// <summary>故障注入概率(0-1)</summary>
+    public double FailureRate { get; set; } = 0.1;
+    /// <summary>模拟的延迟时间</summary>
+    public TimeSpan Latency { get; set; } = TimeSpan.FromMilliseconds(500);
+    /// <summary>最大重试次数</summary>
+    public int MaxRetryCount { get; set; } = 3;
+    /// <summary>重试延迟时间</summary>
+    public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(1);
+    /// <summary>断路器触发阈值(错误次数)</summary>
+    public int CircuitBreakerThreshold { get; set; } = 5;
+    /// <summary>断路器打开持续时间</summary>
+    public TimeSpan CircuitBreakerDuration { get; set; } = TimeSpan.FromMinutes(1);
+    
+    // 新增配置项
+    /// <summary>是否启用内存泄漏模拟</summary>
+    public bool EnableMemoryLeak { get; set; } = false;
+    /// <summary>内存泄漏大小(KB)</summary>
+    public int MemoryLeakSize { get; set; } = 1024;
+    /// <summary>是否启用CPU峰值模拟</summary>
+    public bool EnableCpuSpike { get; set; } = false;
+    /// <summary>CPU峰值持续时间(ms)</summary>
+    public int CpuSpikeDuration { get; set; } = 5000;
+    /// <summary>是否启用网络故障模拟</summary>
+    public bool EnableNetworkFailure { get; set; } = false;
+    /// <summary>网络故障概率(0-1)</summary>
+    public double NetworkFailureRate { get; set; } = 0.2;
+    /// <summary>是否启用磁盘延迟模拟</summary>
+    public bool EnableDiskLatency { get; set; } = false;
+    /// <summary>磁盘延迟时间</summary>
+    public TimeSpan DiskLatency { get; set; } = TimeSpan.FromMilliseconds(1000);
+}
+
+/// <summary>
+/// 混沌服务接口，定义混沌注入的核心方法
+/// </summary>
+public interface IChaosService
+{
+    /// <summary>
+    /// 应用混沌策略执行操作
+    /// </summary>
+    /// <param name="operation">要执行的操作</param>
+    Task ApplyChaosAsync(Func<Task> operation);
+}
+
+public class ChaosService : IChaosService
+{
+    private readonly ChaosOptions _options;
+    private readonly IChaosMonkey _chaosMonkey;
+    private readonly Counter<int> _chaosCounter; // 混沌操作计数器
+    private readonly Histogram<double> _latencyHistogram; // 延迟直方图
+    
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public ChaosService(
+        IOptions<ChaosOptions> options,
+        IMeterFactory meterFactory,
+        IChaosMonkey chaosMonkey)
+    {
+        _options = options.Value;
+        _chaosMonkey = chaosMonkey;
+        
+        // 创建监控指标
+        var meter = meterFactory.Create("ChaosService");
+        _chaosCounter = meter.CreateCounter<int>("chaos_operations");
+        _latencyHistogram = meter.CreateHistogram<double>("chaos_latency", "ms");
+    }
+    
+    /// <summary>
+    /// 应用混沌策略执行操作
+    /// </summary>
+    public async Task ApplyChaosAsync(Func<Task> operation)
+    {
+        using var activity = new ActivityScope("ChaosOperation");
+        using var timer = new Stopwatch();
+        
+        // 创建重试策略
+        var policy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(
+                _options.MaxRetryCount,
+                attempt => _options.RetryDelay,
+                (exception, delay, attempt, context) => 
+                {
+                    _chaosCounter.Add(1, new("type", "retry"), new("attempt", attempt));
+                });
+            
+        // 创建断路器策略
+        var circuitBreaker = Policy
+            .Handle<Exception>()
+            .CircuitBreakerAsync(
+                _options.CircuitBreakerThreshold,
+                _options.CircuitBreakerDuration,
+                (exception, duration) => 
+                {
+                    _chaosCounter.Add(1, new("type", "circuit_breaker_open"));
+                },
+                () => 
+                {
+                    _chaosCounter.Add(1, new("type", "circuit_breaker_closed"));
+                });
+        
+        // 组合策略
+        var chaosPolicy = Policy.WrapAsync(circuitBreaker, policy);
+        
+        // 执行策略
+        await chaosPolicy.ExecuteAsync(async () => 
+        {
+            timer.Start();
+            
+            if (_options.Enabled)
+            {
+                // 注入混沌
+                _chaosMonkey.InjectChaos(_options.FailureRate, _options.Latency);
+            }
+            
+            await operation();
+            
+            timer.Stop();
+            _latencyHistogram.Record(timer.ElapsedMilliseconds);
+        });
+    }
+}
+
+public static class ChaosExtensions
+{
+    /// <summary>
+    /// 添加混沌服务到DI容器
+    /// </summary>
+    public static IServiceCollection AddChaosService(this IServiceCollection services, Action<ChaosOptions>? configure = null)
+    {
+        services.AddOptions<ChaosOptions>()
+            .Configure(configure ?? (opt => { }));
+            
+        services.AddSingleton<IChaosMonkey, ChaosMonkey>();
+        services.AddSingleton<IChaosService, ChaosService>();
+        
+        // 添加健康检查
+        services.AddHealthChecks()
+            .AddCheck<ChaosHealthCheck>("chaos_health");
+            
+        // 添加分布式追踪
+        services.AddOpenTelemetry()
+            .WithTracing(builder => 
+                builder.AddSource("ChaosService"));
+        
+        return services;
+    }
+    
+    /// <summary>
+    /// 使用混沌仪表板中间件
+    /// </summary>
+    public static IApplicationBuilder UseChaosDashboard(this IApplicationBuilder app)
+    {
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHealthChecks("/health");
+            endpoints.MapChaosDashboard();
+        });
+        
+        return app;
+    }
+}
+
+public class ChaosBackgroundService : BackgroundService
+{
+    private readonly IChaosService _chaosService;
+    private readonly ILogger<ChaosBackgroundService> _logger;
+    private readonly ActivitySource _activitySource;
+    private readonly ObjectPool<MemoryStream> _memoryPool; // 内存流对象池
+    
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public ChaosBackgroundService(
+        IChaosService chaosService,
+        ILogger<ChaosBackgroundService> logger,
+        ActivitySource activitySource,
+        ObjectPool<MemoryStream> memoryPool)
+    {
+        _chaosService = chaosService;
+        _logger = logger;
+        _activitySource = activitySource;
+        _memoryPool = memoryPool;
+    }
+    
+    /// <summary>
+    /// 执行后台任务
+    /// </summary>
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            using var activity = _activitySource.StartActivity("ChaosBackground");
+            
+            await _chaosService.ApplyChaosAsync(async () => 
+            {
+                // 使用对象池优化内存分配
+                var stream = _memoryPool.Get();
+                try 
+                {
+                    // 模拟内存操作
+                    await stream.WriteAsync(new byte[1024], 0, 1024, stoppingToken);
+                    
+                    // 模拟后台任务
+                    await Task.Delay(1000, stoppingToken);
+                }
+                finally 
+                {
+                    _memoryPool.Return(stream);
+                }
+            });
+            
+            await Task.Delay(5000, stoppingToken);
+        }
+    }
+}

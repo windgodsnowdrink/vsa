@@ -1,0 +1,65 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package FluentValidation@11.9.0
+#:package System.Threading.Channels@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+
+using System.Threading.Channels;
+using FluentValidation;
+using FluentValidation.Results;
+
+public class StreamingValidator<T> : IStreamingValidator<T>
+{
+    private readonly IValidator<T> _validator;
+    private readonly Channel<ValidationResult> _resultChannel;
+
+    public StreamingValidator(IValidator<T> validator)
+    {
+        _validator = validator;
+        _resultChannel = Channel.CreateUnbounded<ValidationResult>();
+    }
+
+    public async Task ValidateAsync(T instance, CancellationToken ct = default)
+    {
+        var result = await _validator.ValidateAsync(instance, ct);
+        await _resultChannel.Writer.WriteAsync(result, ct);
+    }
+
+    public IAsyncEnumerable<ValidationResult> GetValidationResults() =>
+        _resultChannel.Reader.ReadAllAsync();
+}
+
+// 增强版：带内存池的流式验证
+public class PooledStreamingValidator<T> : IStreamingValidator<T>
+{
+    private readonly ObjectPool<ValidationContext<T>> _contextPool;
+    private readonly IValidator<T> _validator;
+    private readonly Channel<ValidationResult> _resultChannel;
+
+    public PooledStreamingValidator(
+        IValidator<T> validator, 
+        ObjectPool<ValidationContext<T>> contextPool)
+    {
+        _validator = validator;
+        _contextPool = contextPool;
+        _resultChannel = Channel.CreateBounded<ValidationResult>(
+            new BoundedChannelOptions(1000)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait
+            });
+    }
+
+    public async Task ValidateAsync(T instance, CancellationToken ct = default)
+    {
+        var context = _contextPool.Get();
+        context.InstanceToValidate = instance;
+        
+        var result = await _validator.ValidateAsync(context, ct);
+        await _resultChannel.Writer.WriteAsync(result, ct);
+        
+        _contextPool.Return(context);
+    }
+}

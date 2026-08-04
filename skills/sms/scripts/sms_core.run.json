@@ -1,0 +1,48 @@
+{
+  "profiles": {
+    "Send SMS": {
+      "commandName": "Project",
+      "commandLineArgs": "send --to \"+1234567890\" --message \"Hello from SMS Skill!\"",
+      "workingDirectory": "$(ProjectDir)",
+      "environmentVariables": {
+        "TWILIO_ACCOUNT_SID": "your-twilio-account-sid",
+        "TWILIO_AUTH_TOKEN": "your-twilio-auth-token",
+        "TWILIO_FROM_NUMBER": "your-twilio-phone-number"
+      }
+    },
+    "Create Template": {
+      "commandName": "Project",
+      "commandLineArgs": "template create --name \"welcome\" --content \"欢迎 {{name}} 使用我们的服务！您的验证码是：{{code}}\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "template list",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Batch Send": {
+      "commandName": "Project",
+      "commandLineArgs": "batch --file \"recipients.txt\" --message \"重要通知：系统将于明天进行维护升级\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Schedule SMS": {
+      "commandName": "Project",
+      "commandLineArgs": "schedule --to \"+1234567890\" --message \"提醒：您的会议将在 30 分钟后开始\" --time \"{{datetime.now | date('yyyy-MM-dd HH:mm:ss')}}\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "View Analytics": {
+      "commandName": "Project",
+      "commandLineArgs": "analytics --start \"{{datetime.now | date('yyyy-MM-dd', -30)}}\" --end \"{{datetime.now | date('yyyy-MM-dd')}}\"",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  },
+  "commonOptions": {
+    "dotnetRunMessages": true,
+    "launchBrowser": false,
+    "applicationUrl": "",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "LOG_LEVEL": "Information"
+    }
+  }
+}

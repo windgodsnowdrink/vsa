@@ -1,0 +1,9 @@
+﻿{
+  "Default": {
+    "BaseAddress": "127.0.0.1:9000",
+    "AgentAddress": "127.0.0.1:9001",
+    "UserName": "adminmax",
+    "Password": "maxVision#98666",
+    "Bucket": "pfile"
+  }
+}

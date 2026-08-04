@@ -1,0 +1,101 @@
+{
+  "runtime": {
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "DOTNET_TieredCompilation": "1",
+      "DOTNET_gcServer": "1",
+      "DOTNET_gcConcurrent": "1",
+      "DOTNET_gcHeapCount": "0",
+      "TPL_MAX_DEGREE_OF_PARALLELISM": "-1"
+    },
+    "commandLineArgs": [],
+    "workingDirectory": "%SCRIPT_DIR%",
+    "outputEncoding": "utf-8",
+    "errorEncoding": "utf-8",
+    "exitCode": 0
+  },
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug"
+      },
+      "commandLineArgs": []
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning",
+        "DOTNET_TieredCompilation": "1",
+        "DOTNET_gcServer": "1"
+      },
+      "commandLineArgs": []
+    },
+    "TaskDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["task", "--count", "10"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "DataflowDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["dataflow", "--count", "20"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "ParallelDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["parallel", "--count", "1000"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "AsyncDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["async", "--simulate", "test operation", "--delay", "2000"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "debug": {
+    "enable": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "exceptions": {
+      "breakOnAllExceptions": false,
+      "breakOnUserUnhandledExceptions": true
+    }
+  },
+  "performance": {
+    "enableMetrics": true,
+    "metricsPort": 5000,
+    "enableProfiling": false,
+    "profilerPath": "",
+    "memoryLimitMB": 0,
+    "cpuLimitPercent": 0
+  },
+  "logging": {
+    "logLevel": {
+      "Default": "Information",
+      "System": "Warning",
+      "Microsoft": "Warning"
+    },
+    "console": {
+      "enable": true,
+      "format": "json",
+      "includeScopes": true
+    },
+    "file": {
+      "enable": false,
+      "path": "logs/tpl_core.log",
+      "rollingInterval": "Day",
+      "retainedFileCountLimit": 7
+    }
+  }
+}

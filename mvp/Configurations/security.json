@@ -1,0 +1,36 @@
+﻿{
+  "SecuritySettings": {
+    "Provider": "Jwt",
+    "RequireConfirmedAccount": false,
+    "JwtSettings": {
+        "key": "KZ1WI2YLJLABCPNK1!MAG1C!1!",
+        "tokenExpirationInMinutes": 43200,
+        "refreshTokenExpirationInDays": 365,
+        "Issuer": "http://127.0.0.1:*;https://127.0.0.1:*",
+        "Audience": "http://127.0.0.1:*;https://127.0.0.1:*"
+    },
+    "OidcOptions": {
+      "authorize": "/connect/authorize",
+      "logout": "/connect/logout",
+      "introspect": "/connect/introspect",
+      "token": "/connect/token",
+      "userinfo": "/connect/userinfo",
+      "verify": "/connect/verify"
+    },
+    "Swagger": {
+      "AuthorizationUrl": "https://127.0.0.1:10006/bp-cleanrebot/connect/authorize",
+      "TokenUrl": "https://127.0.0.1:10006/bp-cleanrebot/connect/token",
+      "ApiScope": "maxvision",
+      "OpenIdClientId": "maxvisionapp"
+    },
+    "IdentityServer": {
+      "Master": "https://127.0.01:5000/master",
+      "WebSite": "https://127.0.01:8081",
+      "Schemas": "https://127.0.01:5000/Schemas",
+      "Issuer": "https://127.0.01:8081",
+      "IdServer": "ba521b3b-02f7-4a37-b03c-58f713bf88e7",
+      "Username": "admin",
+      "Password": "admin@123"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ACME Certes Integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "${workspaceFolder}/skills/acme/scripts/acme_certes_integration.cs",
+      "args": [
+        "--settings",
+        "${workspaceFolder}/skills/acme/scripts/acme_certes_integration.settings.json"
+      ],
+      "cwd": "${workspaceFolder}",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_WATCH_RESTART": "1"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "ACME Certes Integration (Production)",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "${workspaceFolder}/skills/acme/scripts/acme_certes_integration.cs",
+      "args": [
+        "--settings",
+        "${workspaceFolder}/skills/acme/scripts/acme_certes_integration.settings.json"
+      ],
+      "cwd": "${workspaceFolder}",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "state_machine_flow",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\dataflow\scripts\state_machine_flow.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\dataflow\scripts\state_machine_flow.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

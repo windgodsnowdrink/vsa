@@ -1,0 +1,46 @@
+# disruptor Agent Skill - 高性能事件处理技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 AOT 架构的高性能 Disruptor 事件处理技能实现
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Threading.Channels@8.0.0
+# Application Scenarios: 高并发事件处理、低延迟消息传递、事件驱动架构、实时数据处理、分布式系统通信
+# Activation Conditions: 当需要高性能事件处理功能时激活
+# Main Features:
+# - 基于 .NET 10 AOT 编译的高性能实现
+# - 高效的环形缓冲区设计，减少内存分配
+# - 支持多消费者并行处理
+# - 批量事件处理优化
+# - 优先级事件支持
+# - 自动重试机制
+# - 详细的状态监控和性能指标
+# - 灵活的配置选项
+# Performance Features:
+# - AOT 预编译，极致启动速度
+# - 优化的内存管理，减少 GC 压力
+# - 高并发支持，可处理大量事件
+# - 低延迟设计，事件处理延迟毫秒级
+# - 批量处理，提高吞吐量
+# Technical Features:
+# - 模块化设计，易于扩展
+# - 依赖注入，便于测试和维护
+# - 异步编程模型，提高系统响应性
+# - Options 配置模式，灵活配置
+# - 基于 Channels 的高效事件传递
+# - 完善的错误处理和日志记录
+# AOT Features:
+# - 支持 .NET 10 PublishAot=true
+# - 支持 InvariantGlobalization
+# - 支持 PublishReadyToRun
+# - 优化的 AOT 编译配置
+# Command Line Support:
+# - start: 启动 Disruptor 服务
+# - stop: 停止 Disruptor 服务
+# - status: 查看 Disruptor 服务状态
+# - reset: 重置 Disruptor 服务状态
+# - demo: 运行 Disruptor 演示程序

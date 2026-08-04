@@ -1,0 +1,55 @@
+{
+  "Dataflow": {
+    "EnableDataflowEngine": true,
+    "DefaultBatchSize": 100,
+    "DefaultMaxDegreeOfParallelism": 8,
+    "DefaultBufferSize": 1000,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "Timeout": "00:00:30",
+    "MaxRetryCount": 3,
+    "RetryInterval": "00:00:00.5",
+    "EnableBackpressure": true,
+    "BackpressureThreshold": 800
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Dataflow.AOT": "Information",
+      "Microsoft": "Warning",
+      "System": "Warning",
+      "System.Threading.Tasks.Dataflow": "Information"
+    }
+  },
+  "Performance": {
+    "EnableMetrics": true,
+    "MetricsInterval": "00:00:10",
+    "EnableTracing": true,
+    "TraceLevel": "Information"
+  },
+  "Security": {
+    "EnableAuthentication": false,
+    "EnableAuthorization": false,
+    "AllowedOrigins": ["*"]
+  },
+  "Monitoring": {
+    "Enabled": true,
+    "Metrics": [
+      "executionTime",
+      "memoryUsage",
+      "cpuUsage",
+      "successRate",
+      "processedRequests",
+      "successfulRequests",
+      "failedRequests",
+      "processedItems",
+      "activeDataflows"
+    ],
+    "AlertThresholds": {
+      "executionTime": 10000,
+      "memoryUsage": 209715200,
+      "cpuUsage": 80,
+      "failedRequests": 5
+    }
+  }
+}

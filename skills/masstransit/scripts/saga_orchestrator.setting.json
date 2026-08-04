@@ -1,0 +1,34 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MassTransit": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Saga": {
+    "Enabled": true,
+    "Options": {
+      "MaxConcurrency": 1,
+      "EnableCompensation": true,
+      "CompensationTimeout": "00:30:00",
+      "EnablePersistence": true
+    },
+    "Dataflow": {
+      "BoundedCapacity": 10000,
+      "MaxDegreeOfParallelism": 1,
+      "EnsureOrdered": true
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

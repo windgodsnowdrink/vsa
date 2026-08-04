@@ -1,0 +1,208 @@
+{
+  "opentelemetry": {
+    "options": {
+      "enabled": true,
+      "serviceName": "OpenTelemetry-Example",
+      "serviceVersion": "1.0.0",
+      "environment": "Development",
+      "enableTracing": true,
+      "enableMetrics": true,
+      "enableLogging": true,
+      "enableAlerting": true,
+      "enableParallelProcessing": true,
+      "maxDegreeOfParallelism": 4
+    },
+    "tracing": {
+      "enabled": true,
+      "samplingRate": 1.0,
+      "maxAttributesPerSpan": 128,
+      "maxEventsPerSpan": 128,
+      "maxLinksPerSpan": 128,
+      "exporters": {
+        "jaeger": {
+          "enabled": true,
+          "endpoint": "http://localhost:14268/api/traces",
+          "maxPacketSize": 65000,
+          "exportProcessorType": "batch",
+          "batchExportProcessor": {
+            "maxQueueSize": 2048,
+            "scheduledDelayMilliseconds": 5000,
+            "exporterTimeoutMilliseconds": 30000,
+            "maxExportBatchSize": 512
+          }
+        },
+        "zipkin": {
+          "enabled": false,
+          "endpoint": "http://localhost:9411/api/v2/spans",
+          "exportProcessorType": "batch"
+        },
+        "console": {
+          "enabled": true,
+          "exportProcessorType": "simple"
+        }
+      },
+      "instrumentations": {
+        "http": {
+          "enabled": true,
+          "recordException": true
+        },
+        "aspnetcore": {
+          "enabled": true,
+          "recordException": true
+        },
+        "sqlclient": {
+          "enabled": true,
+          "recordException": true
+        }
+      }
+    },
+    "metrics": {
+      "enabled": true,
+      "exporters": {
+        "prometheus": {
+          "enabled": true,
+          "endpoint": "/metrics",
+          "scrapeResponseCacheDurationMilliseconds": 0
+        },
+        "console": {
+          "enabled": true,
+          "exportIntervalMilliseconds": 10000
+        }
+      },
+      "instrumentations": {
+        "runtime": {
+          "enabled": true
+        },
+        "http": {
+          "enabled": true
+        },
+        "aspnetcore": {
+          "enabled": true
+        }
+      },
+      "views": {
+        "requestDuration": {
+          "name": "request.duration",
+          "description": "Request duration in milliseconds",
+          "aggregation": "histogram",
+          "histogram": {
+            "boundaries": [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000]
+          }
+        },
+        "cpuUsage": {
+          "name": "system.cpu.usage",
+          "description": "CPU usage percentage",
+          "aggregation": "gauge"
+        },
+        "memoryUsage": {
+          "name": "system.memory.usage",
+          "description": "Memory usage in bytes",
+          "aggregation": "gauge"
+        }
+      }
+    },
+    "logging": {
+      "enabled": true,
+      "minimumLevel": "Information",
+      "exporters": {
+        "console": {
+          "enabled": true,
+          "formatter": "json"
+        },
+        "otlp": {
+          "enabled": false,
+          "endpoint": "http://localhost:4317"
+        }
+      },
+      "includeScopes": true,
+      "includeExceptionStackTrace": true,
+      "includeEventId": true,
+      "includeCategoryName": true
+    },
+    "alerting": {
+      "enabled": true,
+      "evaluationInterval": "00:00:10",
+      "resolverTimeout": "00:01:00",
+      "groupWait": "00:00:30",
+      "groupInterval": "00:05:00",
+      "repeatInterval": "00:10:00",
+      "notificationChannels": {
+        "email": {
+          "enabled": false,
+          "smtpServer": "smtp.example.com",
+          "smtpPort": 587,
+          "username": "",
+          "password": "",
+          "from": "alerts@example.com",
+          "to": ["admin@example.com"]
+        },
+        "slack": {
+          "enabled": false,
+          "webhookUrl": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+          "channel": "#alerts",
+          "username": "OpenTelemetry Alert"
+        },
+        "webhook": {
+          "enabled": false,
+          "url": "http://example.com/webhook",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "rules": [
+        {
+          "name": "HighCPUUsage",
+          "description": "CPU usage exceeds threshold",
+          "condition": "system.cpu.usage > 80",
+          "severity": "High",
+          "threshold": 80,
+          "evaluationPeriod": "00:01:00",
+          "notificationChannels": ["email", "slack"]
+        },
+        {
+          "name": "HighMemoryUsage",
+          "description": "Memory usage exceeds threshold",
+          "condition": "system.memory.usage > 90",
+          "severity": "Medium",
+          "threshold": 90,
+          "evaluationPeriod": "00:01:00",
+          "notificationChannels": ["email"]
+        },
+        {
+          "name": "HighRequestLatency",
+          "description": "Request latency exceeds threshold",
+          "condition": "request.duration > 1000",
+          "severity": "Medium",
+          "threshold": 1000,
+          "evaluationPeriod": "00:01:00",
+          "notificationChannels": ["slack"]
+        }
+      ]
+    },
+    "aot": {
+      "publishAot": true,
+      "readyToRun": true,
+      "tieredCompilation": true,
+      "optimizeForSize": false,
+      "trimMode": "partial"
+    },
+    "performance": {
+      "enableCaching": true,
+      "cacheDuration": "00:05:00",
+      "cacheSize": 1000,
+      "enableBatching": true,
+      "batchSize": 100,
+      "maxConcurrentRequests": 100,
+      "requestTimeout": "00:00:30"
+    },
+    "security": {
+      "enableTls": false,
+      "certificatePath": "",
+      "certificatePassword": "",
+      "enableAuthentication": false,
+      "apiKey": ""
+    }
+  }
+}

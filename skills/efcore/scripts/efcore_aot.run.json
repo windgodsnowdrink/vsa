@@ -1,0 +1,22 @@
+{
+  "$schema": "https://dot.net/v1/dotnet.run.schema.json",
+  "framework": "net10.0",
+  "options": {
+    "PublishAot": true,
+    "InvariantGlobalization": true,
+    "EnableCompilationRelaxations": true,
+    "PublishReadyToRun": true,
+    "LangVersion": "preview",
+    "Nullable": true,
+    "ImplicitUsings": true
+  },
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "10.0.0",
+    "Microsoft.Extensions.Hosting": "10.0.0",
+    "Microsoft.Extensions.Logging": "10.0.0",
+    "Microsoft.Extensions.Options": "10.0.0",
+    "Microsoft.EntityFrameworkCore": "10.0.0",
+    "Microsoft.EntityFrameworkCore.InMemory": "10.0.0",
+    "Microsoft.EntityFrameworkCore.Relational": "10.0.0"
+  }
+}

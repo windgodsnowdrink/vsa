@@ -1,0 +1,222 @@
+#:package MQTTnet@4.1.5
+#:package WolverineFx@1.7.0
+#:property TargetFramework net8.0
+
+using MQTTnet;
+using MQTTnet.Client;
+using Wolverine;
+using Microsoft.Extensions.DependencyInjection;
+
+// 1. 定义MQTT消息处理器
+public class MqttMessageHandlers
+{
+    private readonly IMessageBus _bus;
+
+    public MqttMessageHandlers(IMessageBus bus)
+    {
+        _bus = bus;
+    }
+
+    public async Task Handle(MqttApplicationMessage message)
+    {
+        var topic = message.Topic;
+        var payload = Encoding.UTF8.GetString(message.Payload);
+        
+        if(topic.StartsWith("commands/"))
+        {
+            var commandType = Type.GetType(topic.Replace("commands/", ""));
+            var command = JsonSerializer.Deserialize(payload, commandType);
+            
+            await _bus.SendAsync(command);
+        }
+    }
+}
+
+// 2. DI扩展方法
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddWolverineMqttIntegration(this IServiceCollection services)
+    {
+        // 配置MQTT客户端
+        var factory = new MqttFactory();
+        var mqttClient = factory.CreateMqttClient();
+        
+        services.AddSingleton(mqttClient);
+        services.AddSingleton<MqttMessageHandlers>();
+        
+        return services;
+    }
+
+    public static WolverineOptions UseMqttTransport(this WolverineOptions options, Action<MqttOptions> configure)
+    {
+        options.Services.Configure(configure);
+        
+        // 配置Wolverine使用MQTT传输
+        options.UseTransport<MqttTransport>();
+        
+        // 配置重试策略
+        options.Policies.RetryOnException<MqttCommunicationException>()
+            .MaximumAttempts(3)
+            .Wait(100.Milliseconds(), 1.Seconds(), 5.Seconds());
+            
+        // 配置死信队列
+        options.Policies.OnException<MqttCommunicationException>()
+            .MoveToErrorQueue();
+            
+        return options;
+    }
+}
+
+// 3. MQTT传输实现
+public class MqttTransport : ITransport
+{
+    private readonly IMqttClient _mqttClient;
+    private readonly MqttOptions _options;
+    
+    public MqttTransport(IMqttClient mqttClient, IOptions<MqttOptions> options)
+    {
+        _mqttClient = mqttClient;
+        _options = options.Value;
+    }
+    
+    public async ValueTask InitializeAsync()
+    {
+        var optionsBuilder = new MqttClientOptionsBuilder()
+            .WithTcpServer(_options.Server, _options.Port)
+            .WithClientId(_options.ClientId)
+            .WithCleanSession();
+            
+        if (!string.IsNullOrEmpty(_options.Username))
+            optionsBuilder.WithCredentials(_options.Username, _options.Password);
+            
+        await _mqttClient.ConnectAsync(optionsBuilder.Build());
+    }
+    
+    public async ValueTask SendAsync(Envelope envelope)
+    {
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(_options.TopicPrefix + envelope.Message.GetType().Name)
+            .WithPayload(JsonSerializer.Serialize(envelope.Message))
+            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+            .Build();
+            
+        await _mqttClient.PublishAsync(message);
+    }
+}
+
+// 4. 分布式事务中间件
+public class MqttTransactionalMiddleware
+{
+    private readonly ITransactionCoordinator _coordinator;
+    private readonly IMqttClient _mqttClient;
+    
+    public MqttTransactionalMiddleware(ITransactionCoordinator coordinator, IMqttClient mqttClient)
+    {
+        _coordinator = coordinator;
+        _mqttClient = mqttClient;
+    }
+    
+    public async Task BeforeAsync(IMessageContext context, Envelope envelope)
+    {
+        using var transaction = await _coordinator.BeginTransactionAsync();
+        
+        try
+        {
+            await context.InvokeAsync();
+            
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic("transactions/" + envelope.Message.GetType().Name)
+                .WithPayload(JsonSerializer.Serialize(envelope.Message))
+                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                .Build();
+                
+            await transaction.EnlistAsync(async () => 
+            {
+                await _mqttClient.PublishAsync(message);
+            });
+            
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+}
+
+// 5. 消息可靠性服务
+public class MqttReliabilityService : BackgroundService
+{
+    private readonly IMqttClient _mqttClient;
+    private readonly IMessageStore _messageStore;
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            var pendingMessages = await _messageStore.GetPendingMessagesAsync();
+            
+            foreach (var message in pendingMessages)
+            {
+                try
+                {
+                    await _mqttClient.PublishAsync(message.ToMqttMessage(), stoppingToken);
+                    await _messageStore.MarkAsDeliveredAsync(message.Id);
+                }
+                catch (Exception ex)
+                {
+                    await _messageStore.RecordFailureAsync(message.Id, ex);
+                }
+            }
+            
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        }
+    }
+}
+
+// 6. 性能优化 - 使用Span和MemoryPool
+public class MqttPayloadSerializer
+{
+    private readonly MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
+    
+    public IMemoryOwner<byte> Serialize<T>(T obj)
+    {
+        var buffer = _memoryPool.Rent(1024);
+        try
+        {
+            var span = buffer.Memory.Span;
+            if (Utf8Json.JsonSerializer.TrySerialize(obj, span, out var bytesWritten))
+            {
+                return new TruncatedMemoryOwner(buffer, bytesWritten);
+            }
+            
+            // 处理大对象
+            var largeBuffer = _memoryPool.Rent(8192);
+            span = largeBuffer.Memory.Span;
+            bytesWritten = Utf8Json.JsonSerializer.Serialize(obj, span);
+            return new TruncatedMemoryOwner(largeBuffer, bytesWritten);
+        }
+        catch
+        {
+            buffer.Dispose();
+            throw;
+        }
+    }
+    
+    private class TruncatedMemoryOwner : IMemoryOwner<byte>
+    {
+        private readonly IMemoryOwner<byte> _owner;
+        private readonly int _length;
+        
+        public TruncatedMemoryOwner(IMemoryOwner<byte> owner, int length)
+        {
+            _owner = owner;
+            _length = length;
+        }
+        
+        public Memory<byte> Memory => _owner.Memory.Slice(0, _length);
+        
+        public void Dispose() => _owner.Dispose();
+    }
+}

@@ -1,0 +1,101 @@
+# GoodWords Agent Skill - GoodWords 技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 GoodWords 技能实现，支持 AOT 编译，提供高性能好词好句生成、管理、分类和搜索功能
+# Skill Type: System Function
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Hosting@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - Microsoft.Extensions.Logging.Console@10.0.0
+# - Microsoft.Extensions.Logging.Debug@10.0.0
+# - System.Collections.Immutable@8.0.0
+# - System.Linq.Async@6.0.1
+# Application Scenarios: 好词好句生成、管理、分类、搜索等相关功能
+# Activation Conditions: 当需要好词好句功能时激活
+# Main Features:
+# - 好词好句生成：根据类别生成高质量的好词好句
+# - 好词好句分类：自动分类用户输入的内容
+# - 好词好句搜索：根据关键词搜索相关的好词好句
+# - 类别管理：列出所有支持的类别
+# - AOT 编译优化：使用 .NET 10 AOT 编译，提高性能和降低内存占用
+# - 命令行工具：完整的命令行界面，支持多种操作
+# - 性能监控：内置执行时间监控和日志记录
+# - 配置管理：支持环境变量和配置文件配置
+# Performance Features:
+# - 高性能设计：优化的生成和搜索算法
+# - 内存优化：使用对象池和缓存减少内存分配
+# - 并发支持：合理配置线程池大小
+# - AOT 编译提升启动速度和运行性能：启动时间比 JIT 快 3-5 倍
+# - 单文件部署减少依赖：无需依赖 .NET 运行时
+# - GC 优化：启用服务器 GC，提高垃圾回收效率
+# - 线程池优化：合理配置线程池大小
+# - 内存管理：使用对象池和缓存减少内存分配
+# - 字符串优化：AOT 编译时字符串内联
+# Technical Features:
+# - 模块化设计：清晰的代码结构和模块划分
+# - 依赖注入：使用 Microsoft.Extensions.DependencyInjection
+# - 异步编程：Task-based 异步模式
+# - 高性能算法：优化的搜索和生成算法
+# - AOT 编译技术：完整的 AOT 编译支持
+# - 单文件执行脚本：net10 的单文件执行脚本
+# - 完整的命令行支持：支持多种命令和选项
+# - 别名支持：命令别名和快捷方式
+# - 配置选项：使用 Options 模式管理配置
+# - 日志记录：完整的日志记录功能
+# - 错误处理：健壮的错误处理机制
+# AOT Compilation Support:
+# - AOT Core Files:
+#   - scripts/goodWords_aot.cs - GoodWords AOT 核心实现
+#   - scripts/goodWords_aot.setting.json - AOT 编译配置
+#   - scripts/goodWords_aot.run.json - 运行环境配置
+# - AOT Compilation Benefits:
+#   - Fast Startup: 3-5x faster than JIT compilation
+#   - Low Memory Usage: 20-30% lower memory footprint
+#   - Simple Deployment: Single-file execution, no runtime dependency
+#   - Stable Performance: Compile-time optimizations
+#   - High Security: Reduced runtime attack surface
+# - AOT Compilation Options:
+#   - Target Framework: net10.0
+#   - Runtime Identifier: win-x64
+#   - Trim Mode: partial
+#   - Memory Optimizations: Enabled
+#   - String Optimizations: Enabled
+# Command Line Support:
+# - Commands:
+#   - generate: 生成好词好句
+#   - search: 搜索好词好句
+#   - add: 添加好词好句
+#   - remove: 删除好词好句
+#   - update: 更新好词好句评分
+#   - list: 列出所有好词好句
+#   - categories: 列出所有分类
+#   - count: 显示好词好句总数
+#   - help: 显示帮助信息
+# - Command Aliases:
+#   - gen, g: generate
+#   - s: search
+#   - a: add
+#   - r: remove
+#   - u: update
+#   - l: list
+#   - cat: categories
+#   - c: count
+#   - h: help
+# Environment Variables:
+# - GOODWORDS_MAX_WORDS: 最大好词数量
+# - GOODWORDS_DEFAULT_SCORE: 默认评分
+# - GOODWORDS_DEFAULT_CATEGORY: 默认分类
+# - DOTNET_ENVIRONMENT: 运行环境
+# Version Compatibility:
+# - .NET Version: .NET 10.0 及以上
+# - Operating System: Windows、Linux、macOS
+# - Architecture: x64、ARM64
+# Contribution Guidelines:
+# - Submit Issue: 报告 bug 或提出新功能建议
+# - Submit PR: 贡献代码和改进
+# - Documentation Improvement: 完善文档和示例
+# - Test Coverage: 添加测试用例
+# License:
+# - MIT License

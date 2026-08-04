@@ -1,0 +1,101 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MiniExcel@1.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using MiniExcelLibs;
+using Microsoft.Extensions.ObjectPool;
+
+[SkipLocalsInit]
+public sealed class FullFeatureExcelService : IAsyncDisposable
+{
+    // ... existing code ...
+
+    // 新增动态列处理功能
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task GenerateDynamicColumnsExcelAsync<T>(IEnumerable<T> data, 
+        Dictionary<string, Func<T, object>> columnMappings, string filePath)
+    {
+        var request = new ExcelRequest(new { Data = data, Mappings = columnMappings }, filePath);
+        await _requestChannel.Writer.WriteAsync(request, _cts.Token);
+    }
+
+    // 新增自定义格式化功能
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task ApplyCustomFormattingAsync(string filePath, 
+        Dictionary<string, Action<ICell>> formatRules)
+    {
+        var operation = new ExcelOperation(filePath, ws => {
+            foreach (var rule in formatRules)
+            {
+                var range = ws.Range(rule.Key);
+                rule.Value(range);
+            }
+        });
+        await _operationChannel.Writer.WriteAsync(operation, _cts.Token);
+    }
+
+    // 新增数据验证功能
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task AddDataValidationAsync(string filePath, 
+        string rangeAddress, string validationFormula)
+    {
+        var operation = new ExcelOperation(filePath, ws => {
+            var range = ws.Range(rangeAddress);
+            range.DataValidation.Formula1 = validationFormula;
+        });
+        await _operationChannel.Writer.WriteAsync(operation, _cts.Token);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessRequestsAsync()
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            using var latencyToken = _latencyOptimizer.BeginOperation();
+            var stream = _streamPool.Get();
+            try
+            {
+                if (request.Data is { } data && data.GetType().GetProperty("Mappings") != null)
+                {
+                    // 处理动态列
+                    var dynamicData = ProcessDynamicColumns(data);
+                    MiniExcel.SaveAs(stream, dynamicData);
+                }
+                else
+                {
+                    MiniExcel.SaveAs(stream, request.Data);
+                }
+                
+                await WriteToFileAsync(stream, request.FilePath);
+            }
+            finally
+            {
+                _streamPool.Return(stream);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private object ProcessDynamicColumns(dynamic requestData)
+    {
+        // 动态列处理逻辑
+        return requestData;
+    }
+
+    // ... existing code ...
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<FullFeatureExcelService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Full Feature Excel Service");
+app.Run();

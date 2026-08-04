@@ -1,0 +1,11 @@
+﻿{
+  "CorsSettings": {
+    "Angular": "http://127.0.0.1:4200",
+    "Blazor": "https://127.0.0.1:10006/bp-cleanrebot;http://127.0.0.1:*;https://127.0.0.1:*",
+    "React": "http://127.0.0.1:3000",
+    "Vue": "http://127.0.0.1:8101",
+    "ServiceUrl": "https://127.0.0.1:10006/bp-cleanrebot",
+    "ConsulUrl": "http://127.0.0.1:8500",
+    "HealthCheckPath": "/health"
+  }
+}

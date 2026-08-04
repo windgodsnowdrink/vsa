@@ -1,0 +1,14 @@
+﻿{
+    "MailSettings": {
+        "DisplayName": "盛视科技",
+        "From": "maxvisioncloud@maxvision.com.cn",
+        "Host": "smtp.mxhichina.com",
+        "Password": "",
+        "Port": 587,
+        "UserName": "maxvisioncloud@maxvision.com.cn",
+        "limit-attach-num": 5,
+        "limit-attach-type": "png,jpg,jpeg,zip,rar,doc,docx,ppt,pptx,xls,xlsx,pdf,mp4,txt,licence:null",
+        "limit-single-attach-size": 1,
+        "limit-total-attach-size": 10
+    }
+}

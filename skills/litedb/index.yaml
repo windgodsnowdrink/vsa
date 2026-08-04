@@ -1,0 +1,271 @@
+name: "litedb"
+title: "LiteDB 技能"
+description: "轻量级 .NET NoSQL 嵌入式数据库工具，支持集合管理、文档 CRUD 操作、备份和压缩等功能"
+author: "NET 专家"
+version: "1.0.0"
+published: "2026-01-22"
+category: "database"
+tags:
+  - "litedb"
+  - "nosql"
+  - "embedded"
+  - "database"
+  - ".net"
+  - "aot"
+
+icon: "database"
+color: "#4CAF50"
+
+# 技术信息
+technical:
+  type: ".net"
+  framework: "net10.0"
+  compilation: "aot"
+  deployment: "single-file"
+  selfContained: true
+  runtimeIdentifiers:
+    - "win-x64"
+    - "linux-x64"
+    - "osx-x64"
+
+# 依赖项
+dependencies:
+  - name: "LiteDB"
+    version: "5.0.16"
+    type: "nuget"
+  - name: "System.CommandLine"
+    version: "2.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.DependencyInjection"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.Caching.Memory"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.Logging"
+    version: "10.0.0"
+    type: "nuget"
+  - name: "Microsoft.Extensions.Options"
+    version: "10.0.0"
+    type: "nuget"
+
+# 功能列表
+features:
+  - name: "集合管理"
+    description: "创建和删除集合，列出所有集合"
+    commands:
+      - "create-collection"
+      - "drop-collection"
+      - "list-collections"
+  - name: "文档操作"
+    description: "插入、查询、更新和删除文档"
+    commands:
+      - "insert"
+      - "query"
+      - "update"
+      - "delete"
+  - name: "数据库维护"
+    description: "备份和压缩数据库，获取数据库信息"
+    commands:
+      - "backup"
+      - "compact"
+      - "info"
+
+# 命令列表
+commands:
+  - name: "create-collection"
+    description: "创建集合"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+  - name: "insert"
+    description: "插入文档"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+      - name: "--document"
+        description: "文档内容"
+        required: true
+  - name: "query"
+    description: "查询文档"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+      - name: "--query"
+        description: "查询条件"
+        required: false
+  - name: "update"
+    description: "更新文档"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+      - name: "--id"
+        description: "文档ID"
+        required: true
+      - name: "--document"
+        description: "文档内容"
+        required: true
+  - name: "delete"
+    description: "删除文档"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+      - name: "--id"
+        description: "文档ID"
+        required: true
+  - name: "drop-collection"
+    description: "删除集合"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--collection"
+        description: "集合名称"
+        required: true
+  - name: "list-collections"
+    description: "列出所有集合"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+  - name: "backup"
+    description: "备份数据库"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+      - name: "--backup"
+        description: "备份路径"
+        required: true
+  - name: "compact"
+    description: "压缩数据库"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+  - name: "info"
+    description: "获取数据库信息"
+    arguments:
+      - name: "--database"
+        description: "数据库路径"
+        required: true
+
+# 配置选项
+configuration:
+  environmentVariables:
+    - name: "LITEDB_LOG_LEVEL"
+      default: "Information"
+      description: "日志级别"
+    - name: "LITEDB_CACHE_SIZE"
+      default: "1024"
+      description: "缓存大小 (KB)"
+    - name: "LITEDB_TIMEOUT"
+      default: "60000"
+      description: "超时时间 (毫秒)"
+    - name: "LITEDB_JOURNAL"
+      default: "true"
+      description: "是否启用日志"
+
+# 性能特性
+performance:
+  startupTime: "快速 (< 100ms)"
+  memoryUsage: "低 (< 50MB)"
+  fileSize: "小 (< 10MB)"
+  concurrency: "中等"
+
+# 适用场景
+useCases:
+  - "小型应用程序的数据存储"
+  - "原型开发和测试"
+  - "嵌入式系统"
+  - "本地缓存"
+  - "配置存储"
+
+# 限制
+limitations:
+  - "单个数据库文件大小建议不超过 1GB"
+  - "不建议用于大型生产环境"
+  - "高并发场景下可能需要额外的同步措施"
+
+# 示例
+examples:
+  - name: "基本用法"
+    description: "创建集合并插入文档"
+    commands:
+      - "litedb_aot.exe create-collection --database \"data.db\" --collection \"users\""
+      - "litedb_aot.exe insert --database \"data.db\" --collection \"users\" --document '{\"name\": \"张三\", \"age\": 30, \"email\": \"zhangsan@example.com\"}'"
+  - name: "查询和更新"
+    description: "查询文档并更新"
+    commands:
+      - "litedb_aot.exe query --database \"data.db\" --collection \"users\""
+      - "litedb_aot.exe update --database \"data.db\" --collection \"users\" --id \"5f8d0d5a-1234-4567-89ab-cdef01234567\" --document '{\"name\": \"张三\", \"age\": 31, \"email\": \"zhangsan@example.com\"}'"
+  - name: "数据库维护"
+    description: "备份和压缩数据库"
+    commands:
+      - "litedb_aot.exe backup --database \"data.db\" --backup \"backup/data_backup.db\""
+      - "litedb_aot.exe compact --database \"data.db\""
+
+# 文档链接
+documentation:
+  - name: "使用指南"
+    url: "reference/README.md"
+  - name: "示例"
+    url: "reference/examples.md"
+
+# 系统要求
+systemRequirements:
+  os:
+    - "Windows"
+    - "Linux"
+    - "macOS"
+  architecture:
+    - "x64"
+  framework:
+    - ".NET 10.0"
+
+# 安装说明
+installation:
+  - "下载对应平台的单文件可执行文件"
+  - "直接运行，无需安装"
+  - "可根据需要设置环境变量"
+
+# 支持的文件格式
+supportedFileFormats:
+  - ".db" (LiteDB 数据库文件)
+
+# 安全特性
+security:
+  - "数据库文件可设置访问权限"
+  - "支持独占模式，防止并发冲突"
+  - "启用日志，确保数据一致性"
+
+# 故障排除
+troubleshooting:
+  - name: "数据库文件被占用"
+    solution: "确保没有其他进程正在使用该数据库文件"
+  - name: "文档插入失败"
+    solution: "检查文档格式是否正确（有效的 JSON）"
+  - name: "查询返回空结果"
+    solution: "检查查询条件是否正确"
+  - name: "备份失败"
+    solution: "确保备份目录存在且可写"

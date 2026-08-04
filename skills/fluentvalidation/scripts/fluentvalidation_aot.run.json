@@ -1,0 +1,58 @@
+{
+  "runOptions": {
+    "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Production",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1"
+    },
+    "commandLineArgs": [],
+    "launchBrowser": false,
+    "applicationUrl": "",
+    "nativeDebugging": false
+  },
+  "debugOptions": {
+    "enabled": false,
+    "debuggerType": "vsdbg",
+    "launchSettings": {
+      "profiles": {
+        "Validate": {
+          "commandName": "Project",
+          "commandLineArgs": "validate '{\"name\":\"张三\",\"age\":25,\"email\":\"zhangsan@example.com\"}'",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation"
+        },
+        "ValidateModel": {
+          "commandName": "Project",
+          "commandLineArgs": "validatemodel 张三 25 zhangsan@example.com 13800138000 password123 password123",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation"
+        },
+        "GetValidators": {
+          "commandName": "Project",
+          "commandLineArgs": "validators",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation"
+        },
+        "VersionInfo": {
+          "commandName": "Project",
+          "commandLineArgs": "version",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation"
+        },
+        "Help": {
+          "commandName": "Project",
+          "commandLineArgs": "help",
+          "workingDirectory": "d:\\Trae\\vsa\\skills\\fluentvalidation"
+        }
+      }
+    }
+  },
+  "buildOptions": {
+    "buildBeforeRun": true,
+    "outputPath": "bin\\Release\\net10.0",
+    "configuration": "Release",
+    "publishProfile": "Default"
+  },
+  "validationOptions": {
+    "enableScriptAnalysis": true,
+    "enableRuntimeValidation": true,
+    "enablePerformanceCounters": false
+  }
+}

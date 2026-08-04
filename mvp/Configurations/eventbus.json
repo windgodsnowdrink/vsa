@@ -1,0 +1,21 @@
+﻿{
+  "RabbitMQ": {
+    "Connections": {
+      "Default": {
+        "HostAddress": "amqp://admin:admin123@127.0.0.1:5672",
+        "HostName": "127.0.0.1",
+        "Port": 5672,
+        "UserName": "admin",
+        "Password": "admin123",
+        "VirtualHost": "/",
+        "Topic": [ "RobotServiceTopic" ]
+      }
+    },
+    "EventBus": {
+      "ClientName": "RobotService",
+      "QueueName": "RobotQueue",
+      "ExchangeName": "RobotServiceExchange",
+      "ConnectionName": "Default"
+    }
+  }
+}

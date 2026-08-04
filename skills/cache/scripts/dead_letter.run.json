@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "dead_letter",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\cache\scripts\dead_letter.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\cache\scripts\dead_letter.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

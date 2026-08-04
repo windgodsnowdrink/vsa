@@ -1,0 +1,247 @@
+#:sdk Microsoft.NET.Sdk
+#:package MQTTnet@4.1.5
+#:package MediatR@12.1.1
+#:property TargetFramework net8.0
+
+using MQTTnet;
+using MQTTnet.Client;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+
+// 1. 定义MQTT消息发布行为
+public class MqttPublishBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+{
+    private readonly IMqttClient _mqttClient;
+
+    public MqttPublishBehavior(IMqttClient mqttClient)
+    {
+        _mqttClient = mqttClient;
+    }
+
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        var response = await next();
+        
+        // 发布消息到MQTT
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic("commands/" + typeof(TRequest).Name)
+            .WithPayload(JsonSerializer.Serialize(request))
+            .Build();
+            
+        await _mqttClient.PublishAsync(message, cancellationToken);
+        
+        return response;
+    }
+}
+
+// 2. 定义MQTT订阅处理器
+public class MqttSubscriptionHandler : IMqttApplicationMessageReceivedHandler
+{
+    private readonly IMediator _mediator;
+
+    public MqttSubscriptionHandler(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    public async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
+    {
+        var topic = eventArgs.ApplicationMessage.Topic;
+        var payload = Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload);
+        
+        // 根据topic路由到对应的MediatR命令
+        if(topic.StartsWith("commands/"))
+        {
+            var commandType = Type.GetType(topic.Replace("commands/", ""));
+            var command = JsonSerializer.Deserialize(payload, commandType);
+            
+            await _mediator.Send(command);
+        }
+    }
+}
+
+// 3. DI扩展方法
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddMediatRMqttIntegration(this IServiceCollection services)
+    {
+        // 配置MQTT客户端
+        var factory = new MqttFactory();
+        var mqttClient = factory.CreateMqttClient();
+        
+        services.AddSingleton(mqttClient);
+        services.AddSingleton<MqttSubscriptionHandler>();
+        
+        // 注册MediatR行为
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MqttPublishBehavior<,>));
+        
+        return services;
+    }
+}
+
+// 4. 分布式事务集成
+public class MqttTransactionalBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+{
+    private readonly IMqttClient _mqttClient;
+    private readonly ITransactionCoordinator _coordinator;
+
+    public MqttTransactionalBehavior(IMqttClient mqttClient, ITransactionCoordinator coordinator)
+    {
+        _mqttClient = mqttClient;
+        _coordinator = coordinator;
+    }
+
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        using var transaction = await _coordinator.BeginTransactionAsync();
+        
+        try
+        {
+            var response = await next();
+            
+            // 准备MQTT消息
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic("transactions/" + typeof(TRequest).Name)
+                .WithPayload(JsonSerializer.Serialize(request))
+                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                .Build();
+                
+            // 将MQTT发布操作加入事务
+            await transaction.EnlistAsync(async () => 
+            {
+                await _mqttClient.PublishAsync(message, cancellationToken);
+            });
+            
+            await transaction.CommitAsync();
+            return response;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+}
+
+// 5. 消息可靠性保证
+public class MqttReliabilityService : BackgroundService
+{
+    private readonly IMqttClient _mqttClient;
+    private readonly IMessageStore _messageStore;
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        // 重试未确认的消息
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            var pendingMessages = await _messageStore.GetPendingMessagesAsync();
+            
+            foreach (var message in pendingMessages)
+            {
+                try
+                {
+                    await _mqttClient.PublishAsync(message.ToMqttMessage(), stoppingToken);
+                    await _messageStore.MarkAsDeliveredAsync(message.Id);
+                }
+                catch (Exception ex)
+                {
+                    await _messageStore.RecordFailureAsync(message.Id, ex);
+                }
+            }
+            
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        }
+    }
+}
+
+// 6. 性能优化 - 使用Span和MemoryPool
+public class MqttPayloadSerializer
+{
+    private readonly MemoryPool<byte> _memoryPool = MemoryPool<byte>.Shared;
+    
+    public IMemoryOwner<byte> Serialize<T>(T obj)
+    {
+        var buffer = _memoryPool.Rent(1024);
+        try
+        {
+            var span = buffer.Memory.Span;
+            if (Utf8Json.JsonSerializer.TrySerialize(obj, span, out var bytesWritten))
+            {
+                return new TruncatedMemoryOwner(buffer, bytesWritten);
+            }
+            
+            // 处理大对象
+            var largeBuffer = _memoryPool.Rent(8192);
+            span = largeBuffer.Memory.Span;
+            bytesWritten = Utf8Json.JsonSerializer.Serialize(obj, span);
+            return new TruncatedMemoryOwner(largeBuffer, bytesWritten);
+        }
+        catch
+        {
+            buffer.Dispose();
+            throw;
+        }
+    }
+    
+    private class TruncatedMemoryOwner : IMemoryOwner<byte>
+    {
+        private readonly IMemoryOwner<byte> _owner;
+        private readonly int _length;
+        
+        public TruncatedMemoryOwner(IMemoryOwner<byte> owner, int length)
+        {
+            _owner = owner;
+            _length = length;
+        }
+        
+        public Memory<byte> Memory => _owner.Memory.Slice(0, _length);
+        
+        public void Dispose() => _owner.Dispose();
+    }
+}
+
+// 7. DI扩展方法增强
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddAdvancedMediatRMqttIntegration(this IServiceCollection services, Action<MqttOptions> configureOptions)
+    {
+        // 配置选项
+        services.Configure(configureOptions);
+        
+        // 注册MQTT客户端
+        services.AddSingleton<IMqttClient>(sp => 
+        {
+            var factory = new MqttFactory();
+            var client = factory.CreateMqttClient();
+            
+            // 配置连接
+            var options = sp.GetRequiredService<IOptions<MqttOptions>>().Value;
+            var optionsBuilder = new MqttClientOptionsBuilder()
+                .WithTcpServer(options.Server, options.Port)
+                .WithClientId(options.ClientId)
+                .WithCleanSession();
+                
+            if (!string.IsNullOrEmpty(options.Username))
+                optionsBuilder.WithCredentials(options.Username, options.Password);
+                
+            client.ConnectAsync(optionsBuilder.Build()).Wait();
+            
+            // 订阅主题
+            var subscriptionHandler = sp.GetRequiredService<MqttSubscriptionHandler>();
+            client.ApplicationMessageReceivedAsync += subscriptionHandler.HandleApplicationMessageReceivedAsync;
+            
+            return client;
+        });
+        
+        // 注册事务行为
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MqttTransactionalBehavior<,>));
+        
+        // 注册可靠性服务
+        services.AddHostedService<MqttReliabilityService>();
+        
+        // 注册性能优化组件
+        services.AddSingleton<MqttPayloadSerializer>();
+        
+        return services;
+    }
+}

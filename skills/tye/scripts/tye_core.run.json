@@ -1,0 +1,279 @@
+{
+  "runtime": {
+    "working_directory": ".",
+    "output_directory": "./output",
+    "environment_variables": [
+      {
+        "name": "TYE_DASHBOARD_PORT",
+        "value": "8000",
+        "description": "仪表板端口"
+      },
+      {
+        "name": "TYE_KUBE_CONFIG",
+        "value": "~/.kube/config",
+        "description": "Kubernetes配置文件路径"
+      },
+      {
+        "name": "TYE_LOG_LEVEL",
+        "value": "Information",
+        "description": "日志级别"
+      },
+      {
+        "name": "TYE_NAMESPACE",
+        "value": "default",
+        "description": "默认Kubernetes命名空间"
+      },
+      {
+        "name": "TYE_REGISTRY",
+        "value": "",
+        "description": "容器镜像仓库"
+      },
+      {
+        "name": "TYE_PROJECT_ROOT",
+        "value": ".",
+        "description": "项目根目录"
+      },
+      {
+        "name": "ASPNETCORE_ENVIRONMENT",
+        "value": "Development",
+        "description": "ASP.NET Core环境"
+      },
+      {
+        "name": "DOTNET_ENVIRONMENT",
+        "value": "Development",
+        "description": ".NET环境"
+      },
+      {
+        "name": "DOTNET_CLI_TELEMETRY_OPTOUT",
+        "value": "1",
+        "description": "禁用.NET CLI遥测"
+      }
+    ],
+    "config_files": [
+      {
+        "path": "appsettings.json",
+        "optional": true,
+        "description": "应用配置文件"
+      },
+      {
+        "path": "tye.yaml",
+        "optional": true,
+        "description": "Tye配置文件"
+      },
+      {
+        "path": "appsettings.{environment}.json",
+        "optional": true,
+        "description": "环境特定配置文件"
+      }
+    ],
+    "command_line_arguments": [],
+    "working_directory": ".",
+    "output_directory": "./output",
+    "error_output_path": "./logs/error.log",
+    "standard_output_path": "./logs/output.log",
+    "process_priority": "Normal",
+    "windows_service": {
+      "enabled": false,
+      "service_name": "TyeService",
+      "display_name": "Tye服务管理",
+      "description": "Tye服务管理工具"
+    }
+  },
+  "profiles": {
+    "development": {
+      "environment_variables": [
+        {
+          "name": "TYE_LOG_LEVEL",
+          "value": "Debug"
+        },
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Development"
+        },
+        {
+          "name": "DOTNET_ENVIRONMENT",
+          "value": "Development"
+        }
+      ],
+      "command_line_arguments": [
+        "--dashboard",
+        "--port",
+        "8000"
+      ],
+      "description": "开发环境配置"
+    },
+    "production": {
+      "environment_variables": [
+        {
+          "name": "TYE_LOG_LEVEL",
+          "value": "Information"
+        },
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Production"
+        },
+        {
+          "name": "DOTNET_ENVIRONMENT",
+          "value": "Production"
+        }
+      ],
+      "command_line_arguments": [
+        "--dashboard",
+        "--port",
+        "8080"
+      ],
+      "description": "生产环境配置"
+    },
+    "kubernetes": {
+      "environment_variables": [
+        {
+          "name": "TYE_LOG_LEVEL",
+          "value": "Information"
+        },
+        {
+          "name": "TYE_NAMESPACE",
+          "value": "tye-system"
+        },
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Production"
+        }
+      ],
+      "command_line_arguments": [
+        "--dashboard",
+        "--port",
+        "8080"
+      ],
+      "description": "Kubernetes环境配置"
+    },
+    "minimal": {
+      "environment_variables": [
+        {
+          "name": "TYE_LOG_LEVEL",
+          "value": "Warning"
+        }
+      ],
+      "command_line_arguments": [],
+      "description": "最小化配置，仅启动核心服务"
+    }
+  },
+  "deployment": {
+    "kubernetes": {
+      "enabled": true,
+      "namespace": "tye-system",
+      "service_account": "tye-service-account",
+      "resources": {
+        "cpu_request": "100m",
+        "cpu_limit": "500m",
+        "memory_request": "256Mi",
+        "memory_limit": "512Mi"
+      },
+      "replicas": 1,
+      "labels": {
+        "app": "tye",
+        "component": "service-management"
+      },
+      "annotations": {
+        "description": "Tye服务管理工具",
+        "version": "1.0.0"
+      },
+      "ports": [
+        {
+          "name": "dashboard",
+          "container_port": 8000,
+          "service_port": 80,
+          "protocol": "TCP"
+        }
+      ],
+      "volumes": [
+        {
+          "name": "kubeconfig",
+          "host_path": "~/.kube/config",
+          "mount_path": "/root/.kube/config",
+          "read_only": true
+        }
+      ],
+      "env_from": [
+        {
+          "secret_ref": "tye-secrets"
+        }
+      ]
+    },
+    "docker": {
+      "enabled": true,
+      "image_name": "tye-service",
+      "image_tag": "latest",
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "build_args": [
+        {
+          "name": "DOTNET_VERSION",
+          "value": "10.0"
+        }
+      ],
+      "ports": [
+        {
+          "host_port": 8000,
+          "container_port": 8000
+        }
+      ],
+      "volumes": [
+        {
+          "host_path": ".",
+          "container_path": "/app",
+          "read_only": false
+        },
+        {
+          "host_path": "~/.kube",
+          "container_path": "/root/.kube",
+          "read_only": true
+        }
+      ],
+      "environment_variables": [
+        {
+          "name": "TYE_DOCKERIZED",
+          "value": "1"
+        }
+      ]
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "log_level": "Information",
+    "log_files": [
+      {
+        "path": "./logs/tye-{date}.log",
+        "roll_over": "Daily",
+        "file_size_limit": "10MB",
+        "retained_file_count_limit": 7
+      }
+    ],
+    "console_logging": true,
+    "json_output": false,
+    "include_scopes": true,
+    "include_exception_details": true
+  },
+  "performance": {
+    "gc_settings": {
+      "server_gc": true,
+      "concurrent_gc": true,
+      "gc_latency_mode": "Interactive"
+    },
+    "thread_pool": {
+      "min_threads": 10,
+      "max_threads": 100
+    },
+    "memory": {
+      "large_object_heap_compaction_mode": "Default"
+    },
+    "async_local_storage": {
+      "enabled": true
+    }
+  },
+  "security": {
+    "enable_telemetry": false,
+    "enable_crash_reporting": false,
+    "disable_appdomain_unload": false,
+    "sandbox_mode": false
+  }
+}

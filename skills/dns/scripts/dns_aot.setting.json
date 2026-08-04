@@ -1,0 +1,12 @@
+{
+  "Dns": {
+    "DnsServers": ["8.8.8.8", "8.8.4.4", "1.1.1.1"],
+    "TimeoutMs": 5000,
+    "EnableCache": true,
+    "CacheSize": 1000,
+    "CacheExpirationSeconds": 300,
+    "EnableDetailedLogging": false,
+    "EnablePerformanceMonitoring": true,
+    "UseSystemDns": true
+  }
+}

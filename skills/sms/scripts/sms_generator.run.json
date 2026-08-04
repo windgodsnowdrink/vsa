@@ -1,0 +1,33 @@
+{
+  "profiles": {
+    "Generate Interface": {
+      "commandName": "Project",
+      "commandLineArgs": "generate-interface --name \"TestService\" --methods \"TestMethod1Async(CancellationToken cancellationToken)\",\"TestMethod2Async(string parameter, CancellationToken cancellationToken)\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Generate Implementation": {
+      "commandName": "Project",
+      "commandLineArgs": "generate-implementation --name \"TestService\" --interface \"ITestService\" --methods \"TestMethod1Async(CancellationToken cancellationToken)\",\"TestMethod2Async(string parameter, CancellationToken cancellationToken)\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Generate Decorator": {
+      "commandName": "Project",
+      "commandLineArgs": "generate-decorator --name \"TestService\" --interface \"ITestService\"",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Generate Scrutor Registration": {
+      "commandName": "Project",
+      "commandLineArgs": "generate-scrutor --assembly \"SmsSkill\"",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  },
+  "commonOptions": {
+    "dotnetRunMessages": true,
+    "launchBrowser": false,
+    "applicationUrl": "",
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "LOG_LEVEL": "Information"
+    }
+  }
+}

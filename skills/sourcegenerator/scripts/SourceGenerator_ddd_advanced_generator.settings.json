@@ -1,0 +1,47 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "SourceGenerator.DDD.Advanced": "Debug"
+    },
+    "Console": {
+      "FormatterName": "simple",
+      "FormatterOptions": {
+        "IncludeScopes": true,
+        "SingleLine": true,
+        "TimestampFormat": "yyyy-MM-dd HH:mm:ss "
+      }
+    }
+  },
+  "SourceGenerator": {
+    "DDD": {
+      "Advanced": {
+        "EnableDomainEventGeneration": true,
+        "EnableAggregateRootGeneration": true,
+        "EnableValueObjectGeneration": true,
+        "EnableEntityGeneration": true,
+        "EnableRepositoryGeneration": true,
+        "EnableServiceGeneration": true,
+        "EnableCommandGeneration": true,
+        "EnableQueryGeneration": true,
+        "EnableHandlerGeneration": true,
+        "EnableSpecificationGeneration": true,
+        "EnableEventSourcing": true,
+        "EnableCQRS": true,
+        "OutputDirectory": "./generated-ddd",
+        "CacheDirectory": "./cache-ddd",
+        "NamespacePrefix": "MyDomain",
+        "GenerateDocumentation": true,
+        "GenerateUnitTests": true,
+        "EnableValidation": true,
+        "EnableAuthorization": true,
+        "EnableAuditing": true,
+        "EnableSoftDeletion": true,
+        "EnableDomainEvents": true,
+        "EnableIntegrationEvents": true
+      }
+    }
+  }
+}

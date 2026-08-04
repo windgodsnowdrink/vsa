@@ -1,0 +1,36 @@
+# IP2Region 技能 - IP 地址查询技能
+# Version: 1.0.0
+# Author: VSA Architecture Team
+# Description: 基于 .NET 10 的 IP 地址查询技能实现，支持 AOT 编译
+# Skill Type: System Function
+# Dependencies:
+# - IP2Region@2.11.0
+# - Microsoft.Extensions.Caching.Memory@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - Microsoft.Extensions.Options@10.0.0
+# - System.Text.Json@4.7.2
+# - System.Collections.Immutable@4.5.3
+# Application Scenarios: IP 地址查询、地理位置定位
+# Activation Conditions: 当需要 IP 地址查询功能时激活
+# Main Features:
+# - IP 地址查询
+# - 详细地理位置信息
+# - 批量查询
+# - 缓存机制
+# - 基准测试
+# - 多线程并发处理
+# Performance Features:
+# - AOT 编译优化
+# - 单文件发布
+# - 内存使用优化
+# - 并发处理支持
+# - 高性能查询
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 缓存管理
+# - 错误处理
+# - 日志记录
+# - 基准测试支持
+# - 多线程并发

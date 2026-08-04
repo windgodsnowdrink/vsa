@@ -1,0 +1,111 @@
+{
+  "runtime": {
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_LOG_LEVEL": "Information",
+      "DOTNET_TieredCompilation": "1",
+      "DOTNET_gcServer": "1",
+      "SCRUTOR_DEMO_MODE": "all"
+    },
+    "commandLineArgs": [],
+    "workingDirectory": "%SCRIPT_DIR%",
+    "outputEncoding": "utf-8",
+    "errorEncoding": "utf-8",
+    "exitCode": 0
+  },
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_LOG_LEVEL": "Debug"
+      },
+      "commandLineArgs": []
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_LOG_LEVEL": "Warning"
+      },
+      "commandLineArgs": []
+    },
+    "AllDemos": {
+      "commandName": "Project",
+      "commandLineArgs": ["demo", "--type", "all"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "BasicDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["demo", "--type", "basic"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "DecoratorDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["demo", "--type", "decorator"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "LifetimeDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["demo", "--type", "lifetime"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "ScanningDemo": {
+      "commandName": "Project",
+      "commandLineArgs": ["demo", "--type", "scanning"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    },
+    "Info": {
+      "commandName": "Project",
+      "commandLineArgs": ["info"],
+      "environmentVariables": {
+        "DOTNET_LOG_LEVEL": "Information"
+      }
+    }
+  },
+  "debug": {
+    "enable": true,
+    "waitForDebugger": false,
+    "launchBrowser": false,
+    "exceptions": {
+      "breakOnAllExceptions": false,
+      "breakOnUserUnhandledExceptions": true
+    }
+  },
+  "performance": {
+    "enableMetrics": true,
+    "metricsPort": 5001,
+    "enableProfiling": false,
+    "profilerPath": "",
+    "memoryLimitMB": 0,
+    "cpuLimitPercent": 0
+  },
+  "logging": {
+    "logLevel": {
+      "Default": "Information",
+      "System": "Warning",
+      "Microsoft": "Warning"
+    },
+    "console": {
+      "enable": true,
+      "format": "json",
+      "includeScopes": true
+    },
+    "file": {
+      "enable": false,
+      "path": "logs/tpl_generator.log",
+      "rollingInterval": "Day",
+      "retainedFileCountLimit": 7
+    }
+  }
+}

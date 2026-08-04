@@ -1,0 +1,55 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Papercut": "Information",
+      "MailKit": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Papercut": {
+    "Smtp": {
+      "Ip": "0.0.0.0",
+      "Port": 25,
+      "MaxConnections": 100,
+      "MaxMessageSize": 20971520, // 20MB
+      "EnableTls": false,
+      "IdleTimeoutSeconds": 300
+    },
+    "MessageStore": {
+      "Path": "./mailstore",
+      "MaxMessages": 10000,
+      "CleanupIntervalHours": 24,
+      "EnableCompression": true
+    }
+  },
+  "EmailProcessing": {
+    "BatchSize": 100,
+    "MaxRetries": 5,
+    "RetryDelaySeconds": 60,
+    "EnableMonitoring": true,
+    "MetricsIntervalSeconds": 30
+  },
+  "Channel": {
+    "Capacity": 10000,
+    "FullMode": "DropOldest",
+    "SingleReader": true,
+    "SingleWriter": false
+  },
+  "ObjectPool": {
+    "SmtpClientPoolSize": 16,
+    "BufferPoolSize": 65536,
+    "MaxRetries": 3
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

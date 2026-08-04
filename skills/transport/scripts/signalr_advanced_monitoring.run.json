@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "signalr_advanced_monitoring",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\transport\scripts\signalr_advanced_monitoring.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\transport\scripts\signalr_advanced_monitoring.setting.json"
+      ],
+      "cwd": "d:\\Trae\\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    }
+  ]
+}
+

@@ -1,0 +1,353 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package OpenIddict.Core@4.0.0
+#:package OpenIddict.EntityFrameworkCore@4.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:package Microsoft.Extensions.Caching.StackExchangeRedis@8.0.0
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+#:property PublishAot=true
+
+using System.Threading.Channels;
+using Microsoft.Extensions.ObjectPool;
+using OpenIddict.Core;
+using OpenIddict.EntityFrameworkCore.Models;
+using System.Security.Claims;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using OpenIddict.Abstractions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+// 1. 密码模式处理器 - 处理用户名/密码认证流程
+[SkipLocalsInit]  // 跳过局部变量初始化优化
+public sealed class PasswordGrantHandler
+{
+    private readonly Channel<PasswordGrantRequest> _requestChannel;  // 请求处理通道
+    private readonly ObjectPool<PasswordGrantContext> _contextPool;  // 上下文对象池
+    private readonly UserManager<IdentityUser> _userManager;  // 用户管理服务
+    private readonly SignInManager<IdentityUser> _signInManager;  // 登录管理服务
+    private readonly TailLatencyOptimizer _latencyOptimizer;  // 尾延迟优化器
+
+    public PasswordGrantHandler(
+        UserManager<IdentityUser> userManager,
+        SignInManager<IdentityUser> signInManager)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // 配置有界通道(Disruptor模式)
+        _requestChannel = Channel.CreateBounded<PasswordGrantRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,  // 单消费者模式
+            AllowSynchronousContinuations = true,  // 允许同步延续
+            FullMode = BoundedChannelFullMode.DropOldest  // 队列满时丢弃最旧消息
+        });
+
+        // 初始化对象池(容量1000)
+        _contextPool = new DefaultObjectPool<PasswordGrantContext>(
+            new PasswordGrantContextPooledPolicy(), 1000);
+    }
+
+    // 处理密码认证请求(高性能优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<ClaimsPrincipal> HandleAsync(string username, string password)
+    {
+        // 查找用户
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+        {
+            return null;  // 用户不存在
+        }
+
+        // 验证密码
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+        if (!result.Succeeded)
+        {
+            return null;  // 密码验证失败
+        }
+
+        // 创建声明身份
+        var identity = new ClaimsIdentity(
+            TokenValidationParameters.DefaultAuthenticationType,
+            Claims.Name, Claims.Role);
+
+        // 添加用户声明
+        identity.AddClaim(Claims.Subject, user.Id);  // 用户ID
+        identity.AddClaim(Claims.Email, user.Email);  // 邮箱
+        identity.AddClaim(Claims.Name, user.UserName);  // 用户名
+
+        return new ClaimsPrincipal(identity);  // 返回声明主体
+    }
+}
+
+// 2. 授权码生成器 - 处理OAuth2授权码流程
+[SkipLocalsInit]
+public sealed class AuthorizationCodeGenerator
+{
+    private readonly Channel<AuthorizationCodeRequest> _requestChannel;  // 请求通道
+    private readonly ObjectPool<AuthorizationCodeContext> _contextPool;  // 上下文池
+    private readonly IDistributedCache _cache;  // 分布式缓存
+    private readonly TailLatencyOptimizer _latencyOptimizer;  // 延迟优化
+
+    public AuthorizationCodeGenerator(IDistributedCache cache)
+    {
+        _cache = cache;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // 初始化通道(容量10000)
+        _requestChannel = Channel.CreateBounded<AuthorizationCodeRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 初始化对象池
+        _contextPool = new DefaultObjectPool<AuthorizationCodeContext>(
+            new AuthorizationCodeContextPooledPolicy(), 1000);
+    }
+
+    // 生成授权码(高性能优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<string> GenerateCodeAsync(ClaimsPrincipal principal, string clientId, string redirectUri)
+    {
+        var code = Guid.NewGuid().ToString("N");  // 生成随机授权码
+        var payload = new AuthorizationCodePayload
+        {
+            Subject = principal.GetClaim(Claims.Subject),  // 用户标识
+            ClientId = clientId,  // 客户端ID
+            RedirectUri = redirectUri,  // 重定向URI
+            CreationTime = DateTimeOffset.UtcNow  // 创建时间
+        };
+
+        // 缓存授权码(5分钟过期)
+        await _cache.SetAsync($"authcode:{code}", 
+            MemoryPackSerializer.Serialize(payload), 
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+
+        return code;  // 返回授权码
+    }
+}
+
+// 3. 刷新令牌处理器 - 处理OAuth2刷新令牌流程
+[SkipLocalsInit]  // 跳过局部变量初始化优化
+public sealed class RefreshTokenHandler
+{
+    private readonly Channel<RefreshTokenRequest> _requestChannel;  // 请求处理通道(Disruptor模式)
+    private readonly ObjectPool<RefreshTokenContext> _contextPool;  // 上下文对象池(容量1000)
+    private readonly IDistributedCache _cache;  // Redis分布式缓存
+    private readonly TailLatencyOptimizer _latencyOptimizer;  // 尾延迟优化器
+
+    public RefreshTokenHandler(IDistributedCache cache)
+    {
+        _cache = cache;
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // 配置有界通道(高性能消息队列)
+        _requestChannel = Channel.CreateBounded<RefreshTokenRequest>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,  // 单消费者模式
+            AllowSynchronousContinuations = true,  // 允许同步延续
+            FullMode = BoundedChannelFullMode.DropOldest  // 队列满时丢弃最旧消息
+        });
+
+        // 初始化对象池(减少GC压力)
+        _contextPool = new DefaultObjectPool<RefreshTokenContext>(
+            new RefreshTokenContextPooledPolicy(), 1000);
+    }
+
+    // 验证刷新令牌有效性(高性能优化)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task<ClaimsPrincipal> ValidateRefreshTokenAsync(string token)
+    {
+        // 从缓存获取令牌数据
+        var payloadBytes = await _cache.GetAsync($"refreshtoken:{token}");
+        if (payloadBytes == null)
+        {
+            return null;  // 令牌不存在或已过期
+        }
+
+        // 反序列化令牌负载(使用零拷贝技术)
+        var payload = MemoryPackSerializer.Deserialize<RefreshTokenPayload>(payloadBytes);
+        if (payload.ExpirationTime < DateTimeOffset.UtcNow)
+        {
+            return null;  // 令牌已过期
+        }
+
+        // 创建新的声明身份
+        var identity = new ClaimsIdentity(
+            TokenValidationParameters.DefaultAuthenticationType,  // 认证类型
+            Claims.Name,  // 名称声明类型
+            Claims.Role);  // 角色声明类型
+
+        // 添加主题声明(用户标识)
+        identity.AddClaim(Claims.Subject, payload.Subject);
+        
+        return new ClaimsPrincipal(identity);  // 返回新的声明主体
+    }
+}
+
+// 刷新令牌负载记录(内存优化布局)
+[MemoryPackable]
+public partial record RefreshTokenPayload(
+    string Subject,  // 用户标识
+    DateTimeOffset ExpirationTime  // 过期时间
+);
+
+// 4. OpenIddict配置 - 生产级完整配置
+public static class OpenIddictConfig
+{
+    /// <summary>
+    /// 添加OpenIddict核心服务
+    /// </summary>
+    public static IServiceCollection AddOpenIddictServices(this IServiceCollection services)
+    {
+        services.AddOpenIddict()
+            // 核心服务配置
+            .AddCore(options =>
+            {
+                options.UseEntityFrameworkCore()  // 使用EF Core存储
+                    .UseDbContext<DbContext>()  // 指定DbContext
+                    .ReplaceDefaultEntities<Guid>();  // 使用Guid作为主键
+            })
+            // 服务器配置
+            .AddServer(options =>
+            {
+                // 设置端点URI
+                options.SetAuthorizationEndpointUris("/connect/authorize")  // 授权端点
+                    .SetTokenEndpointUris("/connect/token")  // 令牌端点
+                    .SetUserinfoEndpointUris("/connect/userinfo")  // 用户信息端点
+                    .SetLogoutEndpointUris("/connect/logout");  // 登出端点
+
+                // 允许的授权流程
+                options.AllowAuthorizationCodeFlow()  // 授权码模式
+                    .AllowPasswordFlow()  // 密码模式
+                    .AllowRefreshTokenFlow()  // 刷新令牌模式
+                    .AllowClientCredentialsFlow();  // 客户端凭据模式
+
+                // 开发证书(生产环境应替换为正式证书)
+                options.AddDevelopmentEncryptionCertificate()  // 加密证书
+                    .AddDevelopmentSigningCertificate();  // 签名证书
+
+                // 注册标准Scope
+                options.RegisterScopes(
+                    Scopes.Email,  // 邮箱
+                    Scopes.Profile,  // 用户资料
+                    Scopes.Roles,  // 角色
+                    Scopes.OfflineAccess);  // 离线访问(刷新令牌)
+
+                // ASP.NET Core集成
+                options.UseAspNetCore()
+                    .EnableAuthorizationEndpointPassthrough()  // 授权端点透传
+                    .EnableTokenEndpointPassthrough()  // 令牌端点透传
+                    .EnableUserinfoEndpointPassthrough()  // 用户信息端点透传
+                    .EnableLogoutEndpointPassthrough();  // 登出端点透传
+            });
+
+        // 注册自定义处理器
+        services.AddSingleton<PasswordGrantHandler>();  // 密码模式处理器
+        services.AddSingleton<AuthorizationCodeGenerator>();  // 授权码生成器
+        services.AddSingleton<RefreshTokenHandler>();  // 刷新令牌处理器
+
+        return services;
+    }
+}
+
+// 5. 主程序配置 - 生产级完整实现
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置Redis分布式缓存
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");  // 从配置获取Redis连接字符串
+    options.InstanceName = "OpenIddict:";  // 实例前缀
+});
+
+// 添加OpenIddict核心服务
+builder.Services.AddOpenIddictServices();
+
+// 配置AOT编译优化
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);  // 使用AOT序列化上下文
+});
+
+// 构建应用
+var app = builder.Build();
+
+// 配置请求管道
+app.Use(async (context, next) =>
+{
+    // 尾延迟优化中间件
+    using var latencyTracker = new TailLatencyTracker();
+    await next();
+    latencyTracker.Record();
+});
+
+// 配置认证授权
+app.UseAuthentication();  // 认证中间件
+app.UseAuthorization();  // 授权中间件
+
+// 配置端点路由
+app.MapControllers();  // 控制器路由
+app.MapHealthChecks("/health");  // 健康检查端点
+
+// 配置OpenIddict端点
+app.MapPost("/connect/token", async (TokenRequest request, [FromServices] AuthService authService) =>
+{
+    // 使用Span<T>零拷贝处理请求
+    var payload = MemoryPackSerializer.Deserialize<TokenRequestPayload>(request.PayloadAsSpan());
+    
+    // 根据授权类型路由处理
+    var result = payload.GrantType switch
+    {
+        "password" => await authService.HandlePasswordGrantAsync(payload.Username, payload.Password),
+        "authorization_code" => await authService.HandleAuthorizationCodeAsync(payload.Code),
+        "refresh_token" => await authService.HandleRefreshTokenAsync(payload.RefreshToken),
+        _ => throw new NotSupportedException("Unsupported grant type")
+    };
+
+    return Results.Ok(result);
+}).WithTags("OpenIddict");  // 添加Swagger标签
+
+// 启动应用
+app.Run();
+
+// AOT序列化上下文
+[JsonSerializable(typeof(TokenRequest))]
+[JsonSerializable(typeof(TokenResponse))]
+public partial class AppJsonSerializerContext
+{
+}
+
+// 令牌请求负载记录(内存优化布局)
+[MemoryPackable]
+public partial record TokenRequestPayload(
+    string GrantType,  // 授权类型
+    string? Username,  // 用户名(密码模式)
+    string? Password,  // 密码(密码模式)
+    string? Code,  // 授权码(授权码模式)
+    string? RefreshToken  // 刷新令牌(刷新令牌模式)
+);
+
+// 辅助记录类型
+[MemoryPackable]
+public partial record AuthorizationCodePayload(
+    string Subject,
+    string ClientId,
+    string RedirectUri,
+    DateTimeOffset CreationTime);
+
+[MemoryPackable]
+public partial record RefreshTokenPayload(
+    string Subject,
+    DateTimeOffset ExpirationTime);

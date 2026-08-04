@@ -1,0 +1,28 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Mapster": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Mapster": {
+    "Enabled": true,
+    "GlobalSettings": {
+      "IgnoreNullValues": true,
+      "PreserveReferenceBehavior": true,
+      "MaxDepth": 10
+    }
+  },
+  "AOT": {
+    "Enable": true,
+    "PublishSingleFile": true,
+    "SelfContained": true,
+    "RuntimeIdentifiers": [
+      "win-x64",
+      "linux-x64",
+      "osx-x64"
+    ]
+  }
+}

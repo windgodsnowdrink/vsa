@@ -1,0 +1,48 @@
+# MimeKit 智能体技能 - 邮件处理技能
+# Version: 1.0.0
+# Author: VSA 架构团队
+# Description: 基于 .NET 10 的 MimeKit 邮件处理技能实现，支持邮件解析、构建、发送等功能
+# Skill Type: 系统功能
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# - MimeKit@4.0.0
+# - MailKit@4.0.0
+# Application Scenarios: 邮件解析、邮件构建、邮件发送、邮件附件处理等
+# Activation Conditions: 当需要使用邮件处理功能时激活
+# Main Features:
+# - 邮件解析
+# - 邮件构建
+# - 邮件发送
+# - 邮件附件处理
+# - 邮件加密/解密
+# - 邮件签名/验证
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# - 批处理
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# - AOT 编译优化
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64
+
+#:property PublishAot=true
+#:property IncludeNativeLibrariesForSelfExtract=true
+#:property EnableCppCodeGen=true
+#:property PublishSingleFile=true
+#:property SelfContained=true
+#:property RuntimeIdentifier=win-x64
+#:property RuntimeIdentifier=linux-x64
+#:property RuntimeIdentifier=osx-x64

@@ -1,0 +1,105 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package MiniExcel@1.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using MiniExcelLibs;
+using Microsoft.Extensions.ObjectPool;
+
+[SkipLocalsInit]
+public sealed class ExcelGenerationService : IAsyncDisposable
+{
+    private readonly Channel<ExcelRequest> _requestChannel;
+    private readonly ObjectPool<MemoryStream> _streamPool;
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+    private readonly CancellationTokenSource _cts;
+
+    public ExcelGenerationService()
+    {
+        _latencyOptimizer = new TailLatencyOptimizer();
+        _cts = new CancellationTokenSource();
+        
+        _requestChannel = Channel.CreateBounded<ExcelRequest>(
+            new BoundedChannelOptions(10_000)
+            {
+                SingleReader = true,
+                AllowSynchronousContinuations = true,
+                FullMode = BoundedChannelFullMode.DropOldest
+            });
+        
+        _streamPool = new DefaultObjectPool<MemoryStream>(
+            new MemoryStreamPooledPolicy(), 
+            Environment.ProcessorCount * 2);
+        
+        _ = Task.Run(ProcessRequestsAsync);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async ValueTask GenerateExcelAsync<T>(IEnumerable<T> data, string filePath)
+    {
+        var request = new ExcelRequest(data, filePath);
+        await _requestChannel.Writer.WriteAsync(request, _cts.Token);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task ProcessRequestsAsync()
+    {
+        await foreach (var request in _requestChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            using var latencyToken = _latencyOptimizer.BeginOperation();
+            var stream = _streamPool.Get();
+            try
+            {
+                MiniExcel.SaveAs(stream, request.Data);
+                await WriteToFileAsync(stream, request.FilePath);
+            }
+            finally
+            {
+                _streamPool.Return(stream);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private async Task WriteToFileAsync(MemoryStream stream, string filePath)
+    {
+        using var fileStream = new FileStream(filePath, FileMode.Create);
+        await stream.CopyToAsync(fileStream);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _requestChannel.Writer.Complete();
+        await _requestChannel.Reader.Completion;
+    }
+}
+
+[SkipLocalsInit]
+internal sealed class MemoryStreamPooledPolicy : PooledObjectPolicy<MemoryStream>
+{
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override MemoryStream Create() => new MemoryStream(1024 * 1024);
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public override bool Return(MemoryStream obj)
+    {
+        obj.Position = 0;
+        obj.SetLength(0);
+        return true;
+    }
+}
+
+// 启动配置
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<ExcelGenerationService>();
+
+var app = builder.Build();
+app.MapGet("/", () => "Excel Generation Service");
+app.Run();

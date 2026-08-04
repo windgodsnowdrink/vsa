@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "remotely_integration",
+      "type": "dotnet",
+      "request": "launch",
+      "program": "D:\Trae\vsa\skills\remote\scripts\remotely_integration.cs",
+      "args": [
+        "--settings",
+        "D:\Trae\vsa\skills\remote\scripts\remotely_integration.setting.json"
+      ],
+      "cwd": "d:\Trae\vsa",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_TARGET_FRAMEWORK": "net10.0",
+        "DOTNET_PUBLISH_AOT": "true",
+        "DOTNET_TRIM_MODE": "partial",
+        "DOTNET_READY_TO_RUN": "true",
+        "DOTNET_TIERED_COMPILATION": "true",
+        "DOTNET_OPTIMIZE": "true"
+      },
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "symbolOptions": {
+        "searchMicrosoftSymbolServer": true
+      }
+    }
+  ]
+}
+

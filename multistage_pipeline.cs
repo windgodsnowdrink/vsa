@@ -1,0 +1,49 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package System.Threading.Tasks.Dataflow@8.0.0
+#:package MemoryPack@1.9.11
+#:property LangVersion=preview
+#:property TargetFramework=net10.0
+#:property Nullable=enable
+#:property ImplicitUsings=enable
+
+using System.Buffers;
+using System.Threading.Tasks.Dataflow;
+
+public class MultiStagePipeline
+{
+    private readonly TransformBlock<TodoEvent, TodoEvent> _validationStage;
+    private readonly TransformBlock<TodoEvent, ReadOnlyMemory<byte>> _serializationStage;
+    private readonly ActionBlock<ReadOnlyMemory<byte>> _persistenceStage;
+
+    public MultiStagePipeline()
+    {
+        var options = new ExecutionDataflowBlockOptions
+        {
+            BoundedCapacity = 10000,
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            EnsureOrdered = false
+        };
+
+        _validationStage = new TransformBlock<TodoEvent, TodoEvent>(todo =>
+        {
+            if (string.IsNullOrEmpty(todo.Title))
+                throw new ArgumentException("Title不能为空");
+            return todo;
+        }, options);
+
+        _serializationStage = new TransformBlock<TodoEvent, ReadOnlyMemory<byte>>(todo =>
+        {
+            using var memory = MemoryPool<byte>.Shared.Rent(1024);
+            var bytesWritten = MemoryPackSerializer.Serialize(memory.Memory.Span, todo);
+            return memory.Memory[..bytesWritten];
+        }, options);
+
+        _persistenceStage = new ActionBlock<ReadOnlyMemory<byte>>(async data =>
+        {
+            // 持久化逻辑
+        }, options);
+
+        _validationStage.LinkTo(_serializationStage);
+        _serializationStage.LinkTo(_persistenceStage);
+    }
+}

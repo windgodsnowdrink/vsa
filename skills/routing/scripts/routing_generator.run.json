@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "Generate ASP.NET Core Routes": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --framework aspnetcore --input routes.json --output RoutesGenerated.cs --format csharp",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate FastEndpoints Routes": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --framework fastendpoints --input routes.json --output FastEndpointsGenerated.cs --format csharp",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Generate Minimal API Routes": {
+      "commandName": "Project",
+      "commandLineArgs": "generate --framework minimalapi --input routes.json --output MinimalApiGenerated.cs --format csharp",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "List Templates": {
+      "commandName": "Project",
+      "commandLineArgs": "template list",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Validate Configuration": {
+      "commandName": "Project",
+      "commandLineArgs": "validate --input routes.json",
+      "workingDirectory": "scripts",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

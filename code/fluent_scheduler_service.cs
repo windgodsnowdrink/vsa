@@ -1,0 +1,155 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package FluentScheduler@6.0.0
+#:package System.Threading.Channels@8.0.0
+#:package Microsoft.Extensions.ObjectPool@8.0.0
+#:property LangVersion preview
+#:property TargetFramework net10.0
+#:property Nullable enable
+#:property ImplicitUsings enable
+#:property PublishAot true
+
+using System.Threading.Channels;
+using FluentScheduler;
+using Microsoft.Extensions.ObjectPool;
+
+// 1. 高性能Job处理器(Disruptor模式)
+[SkipLocalsInit]
+public sealed class ScheduledJobProcessor : IAsyncDisposable
+{
+    private readonly Channel<JobItem> _jobChannel;
+    private readonly ObjectPool<JobContext> _contextPool;
+    private readonly CancellationTokenSource _cts = new();
+    private readonly TailLatencyOptimizer _latencyOptimizer;
+
+    public ScheduledJobProcessor()
+    {
+        _latencyOptimizer = new TailLatencyOptimizer();
+        
+        // Disruptor模式通道配置
+        _jobChannel = Channel.CreateBounded<JobItem>(new BoundedChannelOptions(10000)
+        {
+            SingleReader = true,
+            AllowSynchronousContinuations = true,
+            FullMode = BoundedChannelFullMode.DropOldest
+        });
+
+        // 上下文对象池
+        _contextPool = new DefaultObjectPool<JobContext>(
+            new JobContextPooledPolicy(), 1000);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public async Task EnqueueJobAsync(JobItem job)
+    {
+        await _jobChannel.Writer.WriteAsync(job);
+    }
+
+    private async Task ProcessJobsAsync()
+    {
+        await foreach (var job in _jobChannel.Reader.ReadAllAsync(_cts.Token))
+        {
+            var context = _contextPool.Get();
+            try
+            {
+                _latencyOptimizer.Optimize(() => 
+                {
+                    context.Execute(job);
+                });
+            }
+            finally
+            {
+                _contextPool.Return(context);
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _cts.Cancel();
+        _jobChannel.Writer.Complete();
+    }
+}
+
+// 2. FluentScheduler扩展
+public static class FluentSchedulerExtensions
+{
+    public static IServiceCollection AddFluentScheduler(
+        this IServiceCollection services,
+        Action<JobRegistry> configureRegistry)
+    {
+        var registry = new JobRegistry();
+        configureRegistry(registry);
+        
+        // 注册Job处理器
+        services.AddSingleton<ScheduledJobProcessor>();
+        
+        // 初始化调度器
+        services.AddHostedService(sp => 
+            new FluentSchedulerHostedService(registry, sp.GetRequiredService<ScheduledJobProcessor>()));
+            
+        return services;
+    }
+}
+
+// 3. 调度器托管服务
+public class FluentSchedulerHostedService : IHostedService
+{
+    private readonly JobRegistry _registry;
+    private readonly ScheduledJobProcessor _processor;
+
+    public FluentSchedulerHostedService(JobRegistry registry, ScheduledJobProcessor processor)
+    {
+        _registry = registry;
+        _processor = processor;
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        JobManager.Initialize(_registry);
+        JobManager.JobStart += info => 
+            _processor.EnqueueJobAsync(new JobItem(info.Name));
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        JobManager.Stop();
+        return Task.CompletedTask;
+    }
+}
+
+// 4. 主程序集成
+var builder = WebApplication.CreateBuilder(args);
+
+// 配置FluentScheduler
+builder.Services.AddFluentScheduler(registry =>
+{
+    // 每5分钟执行的任务
+    registry.Schedule<SampleJob>()
+        .WithName("SampleJob")
+        .ToRunEvery(5).Minutes();
+});
+
+var app = builder.Build();
+
+app.MapGet("/", () => "FluentScheduler Service Running");
+
+app.Run();
+
+// 5. 辅助类
+public record JobItem(string Name);
+public class JobContext
+{
+    public void Execute(JobItem job) => Console.WriteLine($"Executing job: {job.Name}");
+}
+public class JobContextPooledPolicy : IPooledObjectPolicy<JobContext>
+{
+    public JobContext Create() => new JobContext();
+    public bool Return(JobContext obj) => true;
+}
+
+// 示例Job
+public class SampleJob : IJob
+{
+    public void Execute() => Console.WriteLine("SampleJob executed at: " + DateTime.Now);
+}

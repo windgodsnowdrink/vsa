@@ -1,0 +1,325 @@
+#:sdk Microsoft.NET.Sdk.Web
+#:package Prometheus.Client.AspNetCore@5.0.0
+#:package Prometheus.Client.HttpRequestDurations@5.0.0
+#:package OpenTelemetry.Exporter.Prometheus.AspNetCore@1.6.0
+#:property TargetFramework net8.0
+#:property Nullable enable
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Prometheus;
+using OpenTelemetry.Metrics;
+
+public static class PrometheusExtensions
+{
+    public static IServiceCollection AddPrometheusMetrics(this IServiceCollection services, Action<PrometheusOptions>? configureOptions = null)
+    {
+        services.AddHttpClient<GrafanaDashboardSyncService>();
+        services.AddSingleton<GrafanaDashboardSyncService>();
+        services.AddHostedService<GrafanaDashboardSyncService>(provider => 
+            provider.GetRequiredService<GrafanaDashboardSyncService>());
+
+        services.Configure<GrafanaOptions>(options =>
+        {
+            options.ApiEndpoint = "http://grafana:3000/api";
+            options.Tags = new[] { "prometheus", "production" };
+        });
+    {
+        services.AddSingleton<PrometheusAlertRuleManager>();
+        services.AddHostedService<PrometheusAlertRuleWatcher>();
+        return services;
+{
+    services.AddHttpClient<PrometheusRemoteStorageWriter>();
+    services.AddSingleton<PrometheusRemoteStorageWriter>();
+
+    // 配置远程存储选项
+    services.Configure<PrometheusOptions>(options =>
+    {
+        options.RemoteWriteEndpoint = "http://thanos:10908/api/v1/receive";
+        options.CompressionLevel = CompressionLevel.Optimal;
+        options.DownsampleResolution = TimeSpan.FromMinutes(5);
+        options.UseArrayPool = true;
+        options.EnableZeroCopy = true;
+        options.EnableMTLS = true;
+        options.SensitiveLabelPatterns = new[] {"password", "token", "secret"};
+    }
+
+    public class PrometheusAlertRuleManager
+    {
+        private readonly ConcurrentDictionary<string, AlertRule> _rules = new();
+        private readonly ILogger<PrometheusAlertRuleManager> _logger;
+        private readonly IFileSystemWatcher _watcher;
+
+        public PrometheusAlertRuleManager(ILogger<PrometheusAlertRuleManager> logger, IFileSystemWatcher watcher)
+        {
+            _logger = logger;
+            _watcher = watcher;
+        }
+
+        public void LoadRules(string path)
+        {
+            // 实现动态加载规则逻辑
+        }
+
+        public void EnableCanaryRelease(string ruleName, double percentage)
+        {
+            // 实现灰度发布逻辑
+        }
+
+        public void RollbackVersion(string ruleName, string version)
+        {
+            // 实现版本回滚逻辑
+        }
+    }
+
+    public class PrometheusAlertRuleWatcher : BackgroundService
+    {
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            // 实现规则文件监控
+            return Task.CompletedTask;
+        }
+    }
+
+    public class GrafanaDashboardSyncService : BackgroundService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<GrafanaDashboardSyncService> _logger;
+        private readonly IOptions<GrafanaOptions> _options;
+
+        public GrafanaDashboardSyncService(
+            HttpClient httpClient,
+            ILogger<GrafanaDashboardSyncService> logger,
+            IOptions<GrafanaOptions> options)
+        {
+            _httpClient = httpClient;
+            _logger = logger;
+            _options = options;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await SyncDashboardsAsync(stoppingToken);
+                    await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to sync Grafana dashboards");
+                }
+            }
+        }
+
+        private async Task SyncDashboardsAsync(CancellationToken cancellationToken)
+        {
+            // 实现仪表板同步逻辑
+        }
+
+        private async Task DiscoverDashboardsByTagsAsync(IEnumerable<string> tags, CancellationToken cancellationToken)
+        {
+            // 实现基于标签的仪表板发现
+        }
+    }
+
+    public class GrafanaOptions
+    {
+        public string ApiEndpoint { get; set; } = "http://grafana:3000/api";
+        public string ApiKey { get; set; } = string.Empty;
+        public string[] Tags { get; set; } = Array.Empty<string>();
+        public TimeSpan SyncInterval { get; set; } = TimeSpan.FromMinutes(5);
+    }
+});
+{
+    services.AddSingleton<PrometheusAggregatorService>();
+    services.AddHostedService<PrometheusAggregatorService>(provider => 
+        provider.GetRequiredService<PrometheusAggregatorService>());
+
+    // Histogram/Summary自动分桶配置
+    services.Configure<PrometheusOptions>(options =>
+    {
+        options.DefaultHistogramBuckets = new[] { 0.1, 0.5, 1, 2.5, 5, 10 };
+        options.DefaultSummaryQuantiles = new[] { 0.5, 0.9, 0.95, 0.99 };
+    });
+    {
+        // 基础指标
+        var registry = Metrics.DefaultRegistry;
+        
+        // 自定义业务指标
+        var requestCounter = Metrics.CreateCounter(
+            "http_requests_total", 
+            "Total HTTP requests", 
+            new CounterConfiguration
+            {
+                LabelNames = new[] { "method", "endpoint", "status" }
+            });
+            
+        var durationHistogram = Metrics.CreateHistogram(
+            "http_request_duration_seconds",
+            "HTTP request duration in seconds",
+            new HistogramConfiguration
+            {
+                Buckets = Histogram.ExponentialBuckets(0.01, 2, 10),
+                LabelNames = new[] { "method", "endpoint" }
+            });
+            
+        // OpenTelemetry集成
+        if (options.EnableOpenTelemetry)
+        {
+            services.AddOpenTelemetry()
+                .WithMetrics(metrics => metrics
+                    .AddPrometheusExporter()
+                    .AddMeter(options.OpenTelemetrySources))
+                .WithTracing(tracing => tracing
+                    .AddSource(options.OpenTelemetrySources)
+                    .AddPrometheusExporter());
+        }
+                
+        return services;
+    }
+    
+    public static IApplicationBuilder UsePrometheusMetrics(this IApplicationBuilder app)
+    {
+        // 暴露/metrics端点
+        app.UseMetricServer("/metrics");
+        
+        // HTTP请求指标中间件
+        app.UseHttpMetrics(options =>
+        {
+            options.InProgress.Enabled = true;
+            options.RequestCount.Enabled = true;
+            options.RequestDuration.Enabled = true;
+        });
+        
+        return app;
+    }
+}
+
+public class PrometheusRemoteStorageWriter
+{
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<PrometheusRemoteStorageWriter> _logger;
+    private readonly IOptions<PrometheusOptions> _options;
+
+    public PrometheusRemoteStorageWriter(
+        HttpClient httpClient,
+        ILogger<PrometheusRemoteStorageWriter> logger,
+        IOptions<PrometheusOptions> options)
+    {
+        _httpClient = httpClient;
+        _logger = logger;
+        _options = options;
+    }
+
+    public async Task WriteAsync(IEnumerable<Metric> metrics, CancellationToken cancellationToken = default)
+    {
+        // 实现压缩和降采样策略
+        var compressedData = CompressData(metrics);
+        var downsampledData = DownsampleData(compressedData);
+
+        await _httpClient.PostAsync(
+            _options.Value.RemoteWriteEndpoint,
+            new ByteArrayContent(downsampledData),
+            cancellationToken);
+    }
+
+    private byte[] CompressData(IEnumerable<Metric> metrics)
+    {
+        // 实现压缩逻辑
+    }
+
+    private byte[] DownsampleData(byte[] compressedData)
+    {
+        // 实现降采样逻辑
+    }
+}
+
+public class PrometheusAggregatorService
+{
+    private readonly Channel<Metric> _metricsChannel;
+    private readonly ILogger<PrometheusAggregatorService> _logger;
+
+    public PrometheusAggregatorService(ILogger<PrometheusAggregatorService> logger)
+    {
+        _logger = logger;
+        _metricsChannel = Channel.CreateBounded<Metric>(new BoundedChannelOptions(10000)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = true,
+            SingleWriter = false
+        });
+    }
+
+    public async ValueTask AddMetricAsync(Metric metric, CancellationToken cancellationToken = default)
+    {
+        await _metricsChannel.Writer.WriteAsync(metric, cancellationToken);
+    }
+
+    public async Task ProcessMetricsAsync(CancellationToken cancellationToken = default)
+    {
+        await foreach (var metric in _metricsChannel.Reader.ReadAllAsync(cancellationToken))
+        {
+            // 批处理逻辑
+        }
+    }
+}
+
+public class PrometheusBackgroundService : BackgroundService
+{
+    private readonly Gauge _memoryGauge = Metrics.CreateGauge(
+        "process_working_set_bytes", 
+        "Process working set");
+        
+    private readonly Counter _processedItems = Metrics.CreateCounter(
+        "items_processed_total", 
+        "Total items processed");
+        
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            _memoryGauge.Set(GC.GetTotalMemory(false));
+            _processedItems.Inc();
+            await Task.Delay(5000, stoppingToken);
+        }
+    }
+}
+
+public class PrometheusMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly Counter _requestCounter;
+    private readonly Histogram _durationHistogram;
+    
+    public PrometheusMiddleware(RequestDelegate next)
+    {
+        _next = next;
+        _requestCounter = Metrics.DefaultRegistry
+            .GetOrCreate<Counter>("http_requests_total");
+        _durationHistogram = Metrics.DefaultRegistry
+            .GetOrCreate<Histogram>("http_request_duration_seconds");
+    }
+    
+    public async Task Invoke(HttpContext context)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        
+        try
+        {
+            await _next(context);
+            
+            _requestCounter
+                .WithLabels(context.Request.Method, context.Request.Path, context.Response.StatusCode.ToString())
+                .Inc();
+        }
+        finally
+        {
+            stopwatch.Stop();
+            _durationHistogram
+                .WithLabels(context.Request.Method, context.Request.Path)
+                .Observe(stopwatch.Elapsed.TotalSeconds);
+        }
+    }
+}

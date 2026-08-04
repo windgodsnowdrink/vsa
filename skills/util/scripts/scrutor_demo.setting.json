@@ -1,0 +1,27 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Util": "Debug"
+    }
+  },
+  "RepositorySettings": {
+    "EnableCaching": true,
+    "CacheExpirationMinutes": 30,
+    "MaxCacheSize": 1000
+  },
+  "ServiceSettings": {
+    "EnableValidation": true,
+    "EnableAuditing": false,
+    "DefaultTimeoutSeconds": 30
+  },
+  "CacheSettings": {
+    "DefaultExpirationMinutes": 60,
+    "MaxCacheSize": 5000,
+    "EnableMemoryCache": true,
+    "EnableDistributedCache": false
+  },
+  "AllowedHosts": "*"
+}

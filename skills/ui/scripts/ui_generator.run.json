@@ -1,0 +1,72 @@
+{
+  "runtime": {
+    "environmentVariables": {
+      "DOTNET_ENVIRONMENT": "Development",
+      "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false",
+      "LOG_LEVEL": "Information"
+    },
+    "commandLineArgs": [],
+    "workingDirectory": "../bin/Release/net10.0/win-x64/publish",
+    "applicationName": "ui_generator",
+    "processName": "ui_generator.exe",
+    "exitCodes": {
+      "success": 0,
+      "error": 1
+    }
+  },
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_LEVEL": "Debug"
+      },
+      "commandLineArgs": []
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production",
+        "LOG_LEVEL": "Warning"
+      },
+      "commandLineArgs": []
+    },
+    "AotPublish": {
+      "commandName": "Publish",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Production"
+      },
+      "publishProfile": "Default",
+      "commandLineArgs": []
+    }
+  },
+  "debug": {
+    "enableLogging": true,
+    "logFile": "ui_generator.log",
+    "logLevel": "Debug",
+    "enableDiagnostics": true,
+    "diagnosticsPort": 0,
+    "waitForDebugger": false
+  },
+  "performance": {
+    "gcServer": true,
+    "gcConcurrent": true,
+    "gcRetainVM": true,
+    "threadPoolMinThreads": 2,
+    "threadPoolMaxThreads": 16,
+    "maxDegreeOfParallelism": 2,
+    "enableTailLatencyOptimization": false,
+    "enableTieredCompilation": true
+  },
+  "deployment": {
+    "type": "SelfContained",
+    "targetRuntime": "win-x64",
+    "publishSingleFile": true,
+    "publishTrimmed": true,
+    "publishAot": true,
+    "includeNativeLibrariesForSelfExtract": true,
+    "copyOutputToOutputDirectory": true,
+    "outputType": "Exe"
+  }
+}

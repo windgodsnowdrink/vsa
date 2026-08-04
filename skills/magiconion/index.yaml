@@ -1,0 +1,32 @@
+# magiconion Agent Skill - magiconion 技能
+# Version: 1.0.0
+# Author: VSA 架构团队
+# Description: 基于 .NET 10 的 magiconion 技能实现
+# Skill Type: 系统功能
+# Dependencies:
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# Application Scenarios: magiconion 相关功能
+# Activation Conditions: 当需要 magiconion 功能时激活
+# Main Features:
+# - magiconion 核心功能 1
+# - magiconion 核心功能 2
+# - magiconion 核心功能 3
+# Performance Features:
+# - 高性能设计
+# - 内存优化
+# - 并发支持
+# Technical Features:
+# - 模块化设计
+# - 依赖注入
+# - 异步编程
+# - 高性能算法
+# AOT 编译配置:
+# - PublishAot=true
+# - IncludeNativeLibrariesForSelfExtract=true
+# - EnableCppCodeGen=true
+# - PublishSingleFile=true
+# - SelfContained=true
+# - RuntimeIdentifier=win-x64
+# - RuntimeIdentifier=linux-x64
+# - RuntimeIdentifier=osx-x64

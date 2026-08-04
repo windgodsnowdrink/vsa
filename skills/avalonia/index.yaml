@@ -1,0 +1,40 @@
+# avalonia Agent Skill - avalonia 技能
+# 版本: 1.0.0
+# 作者: VSA 架构团队
+# 描述: 基于 .NET 10 的高性能 Avalonia UI 框架技能，提供跨平台桌面应用开发功能，支持 AOT 编译优化
+# 技能类型: UI 框架
+# 依赖项:
+# - Avalonia@11.0.0
+# - Avalonia.Desktop@11.0.0
+# - Avalonia.Themes.Fluent@11.0.0
+# - Microsoft.Extensions.DependencyInjection@10.0.0
+# - Microsoft.Extensions.Logging@10.0.0
+# 应用场景: 跨平台桌面应用开发、现代化 UI 设计、高性能桌面应用、MVVM 应用开发等
+# 激活条件: 需要 Avalonia UI 框架功能时激活
+# 主要功能:
+# - 跨平台支持：支持 Windows、macOS、Linux 等多种平台
+# - 现代化 UI 设计：提供现代化的 UI 控件和主题
+# - 高性能渲染：基于 Direct2D、Skia 等高性能渲染引擎
+# - MVVM 支持：内置 MVVM 框架支持
+# - XAML 支持：支持 XAML 标记语言
+# - 响应式设计：支持响应式布局和自适应设计
+# - 主题支持：支持多种主题，包括 Fluent、Material 等
+# - 控件库丰富：提供丰富的 UI 控件库
+# - AOT 编译优化：支持将 Avalonia 应用编译为本机代码，提高启动速度和运行性能
+# 性能特性:
+# - 高性能设计，支持高并发场景
+# - 内存优化，减少内存占用和拷贝
+# - 并发支持，充分利用多核 CPU
+# - 低延迟设计，优化 UI 渲染延迟
+# - AOT 编译优化，提高启动速度和运行性能
+# - 高性能渲染引擎，优化图形渲染性能
+# 技术特性:
+# - 模块化设计，便于扩展和维护
+# - 依赖注入，提高代码的可测试性
+# - 异步编程，避免阻塞 UI 线程
+# - 高性能算法，优化 UI 渲染效率
+# - 支持 XAML 和 C# 混合开发
+# - 支持 MVVM 设计模式
+# - 可扩展架构，支持自定义扩展
+# - 与 .NET 生态系统无缝集成
+# AOT 编译支持: 支持将 Avalonia 应用编译为本机代码，提高启动速度和运行性能，减少内存占用

@@ -1,0 +1,66 @@
+{
+  "compilation": {
+    "targetFramework": "net10.0",
+    "langVersion": "preview",
+    "nullable": "enable",
+    "implicitUsings": "enable",
+    "publishAot": true,
+    "trimMode": "partial",
+    "selfContained": true,
+    "publishSingleFile": true,
+    "optimize": true,
+    "debugType": "portable"
+  },
+  "dependencies": [
+    {
+      "name": "System.CommandLine",
+      "version": "2.0.0-beta4.22272.1"
+    },
+    {
+      "name": "Microsoft.Extensions.DependencyInjection",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Microsoft.Extensions.Logging.Console",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Scrutor",
+      "version": "4.2.0"
+    }
+  ],
+  "buildOptions": {
+    "allowUnsafeBlocks": false,
+    "define": [
+      "DEBUG",
+      "RELEASE"
+    ],
+    "warnAsError": true,
+    "warningsAsErrors": [
+      "CS8600",
+      "CS8602",
+      "CS8603"
+    ]
+  },
+  "publishOptions": {
+    "include": [
+      "**/*.json",
+      "**/*.md"
+    ],
+    "exclude": [
+      "**/bin/**",
+      "**/obj/**"
+    ]
+  },
+  "runtimeOptions": {
+    "tfm": "net10.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "10.0.0"
+    }
+  }
+}
