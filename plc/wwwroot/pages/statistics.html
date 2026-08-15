@@ -1,0 +1,33 @@
+<div data-page="statistics">
+  <div class="page-head">
+    <div><h1>统计</h1><p>采集吞吐 · 设备分布 · 告警趋势 · OEE</p></div>
+  </div>
+
+  <div class="kpi-grid" id="statKpis" style="margin-bottom:18px"></div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <h3>7 日点位吞吐</h3>
+      <div class="chart" id="trendLine"></div>
+    </div>
+    <div class="card hover">
+      <h3>设备状态占比</h3>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <div id="donutChart"></div>
+        <div class="legend" id="donutLegend" style="flex-direction:column;align-items:flex-start"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <h3>近 7 日告警趋势</h3>
+      <div class="chart" id="alarmBar"></div>
+    </div>
+    <div class="card hover">
+      <h3>OEE 综合设备效率</h3>
+      <div style="font-size:36px;font-weight:800;color:var(--ok);margin-top:8px">87.2%</div>
+      <p class="sub" id="oeeNote"></p>
+    </div>
+  </div>
+</div>

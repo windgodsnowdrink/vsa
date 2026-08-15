@@ -1,0 +1,44 @@
+<div data-page="account/members">
+  <div class="scope-bar"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-building-2"/></svg><span>当前数据范围：<b id="sbTenant">—</b></span></div>
+
+  <div class="page-head">
+    <div>
+      <h1>成员与角色</h1>
+      <p>管理本组织成员及其访问角色</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary" id="inviteBtn"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-plus"/></svg> 邀请成员</button>
+    </div>
+  </div>
+
+  <div class="scope-bar" id="memberPerm" hidden style="border-color:var(--warn)">
+    <svg class="ico ico-sm" style="color:var(--warn)" aria-hidden="true"><use href="#i-lock"/></svg>
+    <span>你仅可查看成员，邀请需由组织管理员操作</span>
+  </div>
+
+  <div class="card">
+    <table class="tbl card-stack">
+      <thead><tr><th scope="col">成员</th><th scope="col">角色</th><th scope="col">状态</th><th scope="col">最近活跃</th><th scope="col">操作</th></tr></thead>
+      <tbody id="memberRows"></tbody>
+    </table>
+    <div id="memberEmpty" class="empty-state" hidden></div>
+  </div>
+
+  <div class="mask" id="inviteMask" aria-hidden="true"></div>
+  <aside class="drawer glass" id="inviteDrawer" role="dialog" aria-modal="true" aria-labelledby="invTitle">
+    <div class="dh">
+      <div id="invTitle" style="font-weight:700">邀请成员</div>
+      <button class="icon-btn" id="invClose" style="width:32px;height:32px" aria-label="关闭邀请"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="db scroll-thin" style="display:flex;flex-direction:column;gap:14px">
+      <label class="field"><span class="field-label">姓名</span><input id="invName" class="select" placeholder="如 孙工" aria-label="姓名" /></label>
+      <label class="field"><span class="field-label">邮箱</span><input id="invEmail" class="select" placeholder="name@company.com" aria-label="邮箱" /></label>
+      <label class="field"><span class="field-label">角色</span>
+        <select id="invRole" class="select" aria-label="角色">
+          <option>管理员</option><option>分析师</option><option>操作员</option><option>设备工程师</option>
+        </select>
+      </label>
+      <button class="btn btn-primary" id="invSubmit">发送邀请</button>
+    </div>
+  </aside>
+</div>

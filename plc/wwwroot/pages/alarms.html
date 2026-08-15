@@ -1,0 +1,22 @@
+<div data-page="alarms">
+  <div class="page-head">
+    <div>
+      <h1>告警</h1>
+      <p>FaultEvent 全生命周期（Open → Ack → Resolved → Closed）</p>
+    </div>
+    <div class="seg" id="almFilter">
+      <button class="on" data-s="all">全部</button>
+      <button data-s="active">活跃</button>
+      <button data-s="resolved">已解决</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="almStats" style="margin-bottom:18px"></div>
+
+  <div class="card hover">
+    <table class="tbl">
+      <thead><tr><th>时间</th><th>设备</th><th>级别</th><th>描述</th><th>状态</th><th style="text-align:right">操作</th></tr></thead>
+      <tbody id="almBody"></tbody>
+    </table>
+  </div>
+</div>

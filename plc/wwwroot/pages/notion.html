@@ -1,0 +1,36 @@
+<div data-page="notion">
+  <div class="page-head">
+    <div>
+      <h1>团队协作仪表板</h1>
+      <p>Notion 风格 · 关联任务与设备</p>
+    </div>
+    <span class="pill" id="notionSync">同步：—</span>
+  </div>
+
+  <div class="kpi-grid" id="notionKpis"></div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <h3>近 7 天趋势</h3>
+      <div class="chart" id="notionTrend"></div>
+    </div>
+    <div class="card hover">
+      <h3><svg class="ico ico-sm" aria-hidden="true"><use href="#i-activity"/></svg> 实时活动流 <span class="badge ok">LIVE</span></h3>
+      <div id="notionStream" class="stream"></div>
+    </div>
+  </div>
+
+  <div class="card hover">
+    <h3><svg class="ico ico-sm" aria-hidden="true"><use href="#i-kanban"/></svg> 关联任务表</h3>
+    <table class="tbl">
+      <thead><tr><th>任务</th><th>负责人</th><th>状态</th><th>关联设备</th><th>截止</th></tr></thead>
+      <tbody id="notionTasks"></tbody>
+    </table>
+  </div>
+
+  <div class="card hover">
+    <h3><svg class="ico ico-sm" aria-hidden="true"><use href="#i-boxes"/></svg> Composio 连接器</h3>
+    <p class="sub">点击绑定连接器后将自动拉取真实数据；未绑定时使用模拟数据，可离线使用。</p>
+    <div class="conn" id="notionConn"></div>
+  </div>
+</div>

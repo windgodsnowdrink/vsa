@@ -1,0 +1,20 @@
+<div data-page="ops/tenants">
+  <div class="page-head">
+    <div>
+      <h1>组织管理</h1>
+      <p>平台运营视角的全部租户与运营健康</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary" id="createTenant"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-plus"/></svg> 开通组织</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="tbl card-stack">
+      <thead><tr><th scope="col">组织</th><th scope="col">套餐档</th><th scope="col">席位用量</th><th scope="col">状态</th><th scope="col">续费日</th><th scope="col">操作</th></tr></thead>
+      <tbody id="tenantRows"></tbody>
+    </table>
+  </div>
+
+  <div id="opsToast" class="toast" role="status" aria-live="polite" hidden></div>
+</div>

@@ -1,0 +1,23 @@
+<div data-page="account/billing">
+  <div class="scope-bar"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-building-2"/></svg><span>当前数据范围：<b id="sbTenant">—</b></span></div>
+
+  <div class="page-head">
+    <div>
+      <h1>账单与发票</h1>
+      <p>计费功能上线前不生成账单，当前按用量计量免费使用</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>当期用量回顾</h3>
+    <div id="billingReview" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h3>发票</h3>
+    <table class="tbl" style="margin-top:10px">
+      <thead><tr><th scope="col">账期</th><th scope="col">金额</th><th scope="col">状态</th><th scope="col">操作</th></tr></thead>
+      <tbody id="invoiceBody"></tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div data-page="devices">
+  <div class="page-head">
+    <div>
+      <h1>设备</h1>
+      <p>全部 PLC / 边缘网关 / 采集代理</p>
+    </div>
+    <div class="head-actions">
+      <select class="select" id="devFilter">
+        <option value="">全部状态</option>
+        <option>在线</option><option>预警</option><option>告警</option><option>离线</option>
+      </select>
+      <span id="devCount" style="font-size:12px;color:var(--text-3)"></span>
+      <button class="btn btn-primary">+ 注册设备</button>
+    </div>
+  </div>
+
+  <div class="dev-grid" id="devGrid"></div>
+</div>

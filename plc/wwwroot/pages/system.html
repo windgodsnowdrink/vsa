@@ -1,0 +1,22 @@
+<div data-page="system">
+  <div class="page-head">
+    <div><h1>系统</h1><p>服务健康 · 资源 · 边缘数据链路配置</p></div>
+  </div>
+
+  <div class="grid-3" id="svcGrid" style="margin-bottom:18px"></div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <h3>资源占用</h3>
+      <div id="resGrid"></div>
+    </div>
+    <div class="card hover">
+      <h3>边缘数据链路</h3>
+      <pre class="pill" style="white-space:pre-wrap;line-height:1.8;font-family:var(--mono)">边缘库  : SQLite   (plc-edge.db, EF Core + DapperAOT)
+边缘MQTT: Mosquitto (本地订阅/发布/桥接转发)
+桥接至  : EMQX 集群 (cloud://emqx:8883)
+同步平台: CommunityToolkit.Datasync (离线优先增量同步)
+主题树  : devices/{洲}/{国}/{省}/{市}/{区}/{线}/{批}/{设备}/{类型}</pre>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div data-page="dashboard">
+  <div class="page-head">
+    <div>
+      <h1>运营驾驶舱</h1>
+      <p>郑州 · 富士康园区 · 产线 A1 / A2 · 实时刷新</p>
+    </div>
+    <div class="head-actions">
+      <span class="pill">最后同步 <span id="lastSync">刚刚</span></span>
+      <button class="btn btn-primary" onclick="location.reload()"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-refresh-cw"/></svg> 刷新</button>
+    </div>
+  </div>
+
+  <div class="alert-cta" id="alertCta" role="button" tabindex="0" aria-label="去处理未决告警"></div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <div class="row" style="align-items:center;justify-content:space-between">
+        <h3>实时点位吞吐</h3>
+        <div class="seg"><button class="on">1h</button><button>24h</button><button>7d</button></div>
+      </div>
+      <div class="chart" id="throughputChart"></div>
+      <div class="legend" id="throughputLegend"></div>
+    </div>
+    <div class="card hover">
+      <h3>按设备聚合</h3>
+      <div class="chart" id="aggregateChart"></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <h3>实时活动流 <span class="badge ok">● LIVE</span></h3>
+      <ul class="stream" id="stream"></ul>
+    </div>
+    <div class="card hover">
+      <h3>设备状态分布</h3>
+      <div id="statusList"></div>
+      <div class="pill" style="margin-top:12px"><code>devices/.../#/telemetry</code></div>
+    </div>
+  </div>
+</div>

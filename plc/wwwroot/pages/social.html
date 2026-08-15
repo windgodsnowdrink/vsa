@@ -1,0 +1,31 @@
+<div data-page="social">
+  <div class="page-head">
+    <div>
+      <h1>社媒矩阵追踪</h1>
+      <p>多平台声量 · 互动 · 涨粉（内网可见）</p>
+    </div>
+    <div class="seg" id="socialRanges">
+      <button class="on" data-r="7">7天</button>
+      <button data-r="30">30天</button>
+      <button data-r="90">90天</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="socialKpis"></div>
+
+  <div class="card hover">
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <h3>曝光 / 互动趋势</h3>
+      <span class="badge info" id="rangeLabel">近 7 天</span>
+    </div>
+    <div class="chart" id="socialChart" style="height:240px"></div>
+  </div>
+
+  <div class="card hover">
+    <h3>平台明细</h3>
+    <table class="tbl">
+      <thead><tr><th>平台</th><th>曝光</th><th>互动</th><th>涨粉</th><th>互动率</th></tr></thead>
+      <tbody id="socialTable"></tbody>
+    </table>
+  </div>
+</div>

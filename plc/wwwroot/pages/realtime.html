@@ -1,0 +1,22 @@
+<div data-page="realtime">
+  <div class="page-head">
+    <div>
+      <h1>实时看板 · PLC 结构透视</h1>
+      <p>悬停模块查看遥测 · 模型可由 Blender MCP 生成后导出 glTF 加载</p>
+    </div>
+    <div class="seg"><button class="on">自动旋转</button><button>手动</button></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card hover">
+      <div class="chart" id="plcRack"></div>
+    </div>
+    <div class="card hover">
+      <h3>模块实时遥测</h3>
+      <div id="plcInfo"></div>
+      <hr style="border:0;border-top:1px solid var(--border);margin:14px 0" />
+      <h3 style="font-size:13px">模块图例</h3>
+      <div class="legend" id="plcLegend" style="flex-direction:column;align-items:flex-start"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,198 @@
+/* =========================================================
+   PLC·AIOT — design-tokens.css（生产版，SaaS 多租户增量）
+   链接顺序：在 styles.css 之后引入（仅扩展，不重置既有规则）。
+   依据：DESIGN.md §10（SSOT） + SaaS-Spec.md §8（锁定） + docs/design-tokens.css
+   原则：
+     - 不新增主色（MVP 单品牌，科技天蓝唯一）
+     - 禁硬编码颜色（例外 #fff / #000，见 --surface-sunken / --avatar-solid）
+     - 禁紫→粉渐变；图标统一 Lucide（16/20/24px）
+   ========================================================= */
+
+/* ---------- 1. SaaS 令牌扩展（仅新增变量；基础令牌见 styles.css :root） ---------- */
+:root {
+  /* 租户上下文（MVP 单品牌：禁第二主色，无租户自定义色相） */
+  --tenant-dot: var(--brand-500);                  /* 当前租户指示点，统一品牌色 */
+  --border-strong: color-mix(in srgb, var(--text-2) 30%, var(--border)); /* 计费/审计/角色/租户敏感边界 */
+  --surface-sunken: color-mix(in srgb, var(--bg) 55%, #000 10%);          /* 表单内嵌 / 代码块 / 数据范围条（#000 为 P0 允许例外） */
+
+  /* 配额 / 进度轨道（复用既有语义，不引入图表专属色） */
+  --quota-track: color-mix(in srgb, var(--text-3) 22%, transparent);      /* meter 轨道 */
+
+  /* 图标尺寸令牌（Lucide 锁定，全项目统一） */
+  --icon-sm: 16px; --icon-md: 20px; --icon-lg: 24px; --icon-stroke: 2px;
+
+  /* 状态扩展（复用既有语义色，MVP 单品牌不改色相） */
+  --state-active: var(--ok);
+  --state-suspended: var(--text-3);
+  --state-trial: var(--warn);
+
+  /* 套餐档徽章：统一品牌蓝，档位仅文字区分，禁上色、禁紫色 */
+  --tier-badge-fg: var(--brand-700);
+
+  /* 语义徽章文字色（从 styles.css 提取为令牌，消除组件内硬编码 hex） */
+  --ok-fg: #047857;
+  --warn-fg: #b45309;
+  --bad-fg: #be123c;
+  --info-fg: #1d4ed8;
+}
+
+/* ---------- 2. Lucide 雪碧图图标类（配合 wwwroot/css/icons.svg <symbol id="i-xxx">） ----------
+   用法：<svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg>
+   尺寸全项目统一 16/20/24px；stroke 随 currentColor 自动换色，零硬编码。            */
+.ico, .ico-sm, .ico-md, .ico-lg {
+  display: inline-block; vertical-align: middle; flex: none;
+  stroke: currentColor; stroke-width: var(--icon-stroke);
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.ico-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.ico, .ico-md { width: var(--icon-md); height: var(--icon-md); }
+.ico-lg { width: var(--icon-lg); height: var(--icon-lg); }
+.ico use { pointer-events: none; }
+
+/* 图标色调（dashboard 活动流等用：tone-ok/warn/bad/info/brand） */
+.tone-ok    { color: var(--ok); }
+.tone-warn  { color: var(--warn); }
+.tone-bad   { color: var(--bad); }
+.tone-info  { color: var(--text-3); }
+.tone-brand { color: var(--brand-500); }
+
+/* ---------- 3. 基础工具类（styles.css 未定义，本扩展层补齐） ---------- */
+.row   { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.value { font-size: 24px; font-weight: 800; line-height: 1; }
+.label { color: var(--text-2); font-size: 13px; }
+.sub   { color: var(--text-2); font-size: 12px; margin-top: 2px; }
+.btn-sm { padding: 6px 10px; font-size: 12px; min-height: 32px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-label { font-size: 12px; color: var(--text-2); }
+.card-stack { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* 通用计数徽标（侧栏告警角标兜底） */
+.badge-count {
+  position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; line-height: 1; color: #fff;
+  background: var(--bad); border-radius: 999px; border: 2px solid var(--surface-solid);
+}
+
+/* ---------- 4. 配额 meter（AC-11：progressbar + 文本值；阈值色用既有语义色） ---------- */
+.meter > i { background: var(--brand-400); }                 /* 正常 */
+.meter > i.is-warn { background: var(--warn); }              /* ≥80% */
+.meter > i.is-bad  { background: var(--bad); }               /* ≥95% */
+.meter-sm { height: 4px; margin-top: 4px; }                  /* 表格行内紧凑型 */
+.meter-sm > i { height: 100%; }
+
+/* ---------- 5. 数据范围边界条（敏感区常驻，防误操错租户） ---------- */
+.scope-bar {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-sunken);
+  color: var(--text-2); font-size: 12px; padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+.scope-bar .ico { color: var(--tenant-dot); flex: none; }
+.scope-bar b { color: var(--text); }
+/* 健康页状态变体（scope-bar 子类，覆盖边框/底色，图标色随之变化） */
+.ok-bar   { border-color: color-mix(in srgb, var(--ok) 40%, var(--border)); background: color-mix(in srgb, var(--ok) 10%, var(--surface-sunken)); color: var(--text); }
+.ok-bar   .ico { color: var(--ok); }
+.warn-bar { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); background: color-mix(in srgb, var(--warn) 12%, var(--surface-sunken)); color: var(--text); }
+.warn-bar .ico { color: var(--warn); }
+
+/* ---------- 6. 套餐档徽章（单品牌：统一品牌蓝，档位仅文字区分） ---------- */
+.badge.tier { background: color-mix(in srgb, var(--brand-500) 18%, transparent); color: var(--tier-badge-fg); }
+
+/* ---------- 7. 租户切换器（顶栏常驻，SaaS 上下文开关） ---------- */
+.tenant-switcher { position: relative; flex: none; }
+.ts-trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 7px 12px; font-size: 13px; color: var(--text); cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.ts-trigger:hover { background: var(--brand-50); border-color: var(--brand-400); }
+.ts-trigger:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
+.ts-name { font-weight: 600; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ts-menu {
+  display: none; position: absolute; top: calc(100% + 8px); left: 0;
+  min-width: 288px; max-width: 90vw; z-index: 55;
+  background: var(--surface-solid); border: 1px solid var(--border-strong);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 8px;
+}
+.ts-menu.open { display: block; }
+.ts-search { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; }
+.ts-search .ico { color: var(--text-3); flex: none; }
+.ts-search input { border: none; background: transparent; outline: none; color: var(--text); font-size: 13px; width: 100%; }
+.ts-list { display: flex; flex-direction: column; gap: 2px; max-height: 320px; overflow: auto; }
+.ts-item {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  background: transparent; border: none; border-radius: var(--radius-sm);
+  padding: 9px 10px; font-size: 13px; color: var(--text); cursor: pointer;
+  transition: background .12s;
+}
+.ts-item:hover, .ts-item.sel { background: var(--brand-50); }
+.ts-item-name { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ts-item .badge.tier { flex: none; }
+.ts-check { color: var(--ok); flex: none; }
+.ts-empty { padding: 14px; text-align: center; color: var(--text-3); font-size: 13px; }
+
+/* ---------- 8. 通用确认弹窗（alertdialog，高成本操作） ---------- */
+.dialog {
+  display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(440px, calc(100vw - 32px)); z-index: 60;
+  background: var(--surface-solid); border: 1px solid var(--border-strong);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 0;
+}
+.dialog.open { display: block; }
+.dialog .dh { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.dialog .dh h3 { font-size: 16px; margin: 0; }
+.dialog .sub { margin: 12px 18px 0; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 18px; }
+.ts-dlg-target { margin: 14px 18px 0; padding: 12px 14px; background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; }
+.ts-dlg-row { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ---------- 9. 轻提示（toast） ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(8px);
+  background: var(--surface-solid); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  padding: 12px 18px; font-size: 14px; box-shadow: var(--shadow);
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 10. 空状态 ---------- */
+.empty-state {
+  display: flex; align-items: center; gap: 16px; padding: 28px; text-align: left;
+  border: 1px dashed var(--border-strong); background: var(--surface-sunken);
+  border-radius: var(--radius);
+}
+.empty-state .ico { color: var(--text-3); flex: none; }
+.empty-state b { font-size: 15px; }
+.empty-state .sub { margin-top: 2px; }
+
+/* ---------- 11. 套餐卡（账户 / 订阅） ---------- */
+.kpi-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap); }
+.kpi-value-sm { font-size: 22px; font-weight: 800; line-height: 1; }
+.plan-card { display: flex; flex-direction: column; }
+.plan-card.is-current { border-color: var(--brand-500); box-shadow: 0 0 0 1px var(--brand-500); }
+.plan-meters { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.plan-pick { margin-top: auto; align-self: stretch; }
+.feat { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.feat li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); }
+.feat li .ico { color: var(--ok); flex: none; }
+.feat-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2); margin-right: 14px; }
+.feat-inline .ico { color: var(--ok); flex: none; }
+
+/* ---------- 12. 平台健康卡（状态色左缘强调，禁发光） ---------- */
+.card.ok      { border-color: color-mix(in srgb, var(--ok) 40%, var(--border)); }
+.card.is-warn { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); }
+.card.is-bad  { border-color: color-mix(in srgb, var(--bad) 45%, var(--border)); }
+.dot-ok, .dot-warn, .dot-bad { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.dot-ok   { background: var(--ok); }
+.dot-warn { background: var(--warn); }
+.dot-bad  { background: var(--bad); }
+
+/* ---------- 13. 响应式（移动端收敛） ---------- */
+@media (max-width: 640px) {
+  .ts-name { max-width: 92px; }
+  .kpi-grid-2 { grid-template-columns: 1fr; }
+  .ts-menu { min-width: min(288px, calc(100vw - 24px)); }
+}

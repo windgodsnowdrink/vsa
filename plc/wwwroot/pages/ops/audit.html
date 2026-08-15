@@ -1,0 +1,24 @@
+<div data-page="ops/audit">
+  <div class="scope-bar"><svg class="ico ico-sm" style="color:var(--tenant-dot)" aria-hidden="true"><use href="#i-building-2"/></svg><span>当前租户：<b id="auditTenant">—</b>（超管可切全局）</span></div>
+
+  <div class="page-head">
+    <div>
+      <h1>审计日志</h1>
+      <p>跨租户操作追溯（功能待启用）</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="search" style="max-width:none;margin-bottom:12px">
+      <span class="mag"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-search"/></svg></span>
+      <input placeholder="搜索操作人 / 操作类型…" aria-label="搜索审计" disabled />
+    </div>
+    <div class="seg" style="margin-bottom:12px" aria-label="筛选">
+      <button class="on" disabled>全部</button><button disabled>登录</button><button disabled>成员</button><button disabled>计费</button>
+    </div>
+    <table class="tbl">
+      <thead><tr><th scope="col">组织</th><th scope="col">操作人</th><th scope="col">操作类型</th><th scope="col">时间</th><th scope="col">对象</th></tr></thead>
+      <tbody id="auditBody"></tbody>
+    </table>
+  </div>
+</div>

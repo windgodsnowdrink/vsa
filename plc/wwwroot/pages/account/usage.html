@@ -1,0 +1,30 @@
+<div data-page="account/usage">
+  <div class="scope-bar"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-building-2"/></svg><span>当前数据范围：<b id="sbTenant">—</b>（仅展示该组织数据）</span></div>
+
+  <div class="page-head">
+    <div>
+      <h1>用量与配额</h1>
+      <p>本组织当期资源消耗与配额剩余</p>
+    </div>
+    <div class="head-actions">
+      <div class="seg" id="usageRange" role="group" aria-label="时间范围">
+        <button class="on" aria-pressed="true">7天</button>
+        <button aria-pressed="false">30天</button>
+        <button aria-pressed="false">90天</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="usageKpis"></div>
+
+  <div class="card hover">
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <h3>用量趋势</h3>
+      <span class="badge info" id="usagePeriod">—</span>
+    </div>
+    <div class="chart" id="usageChart"></div>
+    <div class="legend"><span><i style="background:var(--brand-400)"></i> 日均遥测点（百万）</span></div>
+  </div>
+
+  <div id="usageEmpty" hidden></div>
+</div>
