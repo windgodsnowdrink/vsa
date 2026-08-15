@@ -13,6 +13,7 @@ public static class DbSeeder
         var cfg = sp.GetRequiredService<IConfiguration>();
 
         await db.Database.EnsureCreatedAsync(); // 开发期建表；生产用迁移（见报告）
+        await SaasRls.ApplyAsync(sp, db);        // 可选 RLS（Saas:ApplyRlsOnStartup）
 
         if (!await db.Plans.IgnoreQueryFilters().AnyAsync())
         {

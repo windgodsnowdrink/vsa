@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Data.Common;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -502,6 +503,54 @@ public static class EndpointHelpers
         for (var ex = e.InnerException; ex is not null; ex = ex.InnerException)
             if (ex is PostgresException pg && pg.SqlState == "23505") return true;
         return false;
+    }
+}
+
+// ===================== RLS 自动应用（ADR-103 ③.4；部署可选，默认关闭）=====================
+// 纵深防御：即便代码误用 IgnoreQueryFilters() 或原始 SQL，RLS 仍强制租户隔离。
+// rls.sql 已幂等（DROP POLICY IF EXISTS + CREATE POLICY；ENABLE ROW LEVEL SECURITY 可重跑）。
+// 仅当 Saas:ApplyRlsOnStartup=true 时执行；连接角色权限不足（非迁移角色）时记录告警并跳过，不阻断启动。
+// 生产连接约定：租户作用域角色 + 平台/计量用 BYPASSRLS 角色（见 rls.sql §2）。
+public static class SaasRls
+{
+    public static async Task ApplyAsync(IServiceProvider sp, BaseDbContext db, CancellationToken ct = default)
+    {
+        var cfg = sp.GetRequiredService<IConfiguration>();
+        if (!string.Equals(cfg["Saas:ApplyRlsOnStartup"], "true", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var sql = ResolveSql(sp.GetService<IHostEnvironment>());
+        if (sql is null)
+        {
+            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.RLS")
+              ?.LogWarning("Saas:ApplyRlsOnStartup=true 但未找到 sql/rls.sql，跳过 RLS 应用。");
+            return;
+        }
+
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync(sql, ct);
+        }
+        catch (Exception ex)
+        {
+            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.RLS")
+              ?.LogError(ex, "应用 RLS 失败（连接角色权限不足？）。请由具备 ALTER/CREATE POLICY 权限的迁移角色手动执行 sql/rls.sql。");
+        }
+    }
+
+    private static string? ResolveSql(IHostEnvironment? env)
+    {
+        var candidates = new List<string>(capacity: 5);
+        if (env is not null)
+            candidates.Add(Path.Combine(env.ContentRootPath, "sql", "rls.sql"));
+        candidates.Add(Path.Combine(AppContext.BaseDirectory, "sql", "rls.sql"));
+        candidates.Add(Path.Combine(Directory.GetCurrentDirectory(), "sql", "rls.sql"));
+        candidates.Add(Path.Combine(AppContext.BaseDirectory, "..", "sql", "rls.sql"));
+        candidates.Add(Path.Combine(AppContext.BaseDirectory, "..", "..", "sql", "rls.sql"));
+        foreach (var c in candidates)
+            if (File.Exists(c))
+                return File.ReadAllText(c);
+        return null;
     }
 }
 #endif
