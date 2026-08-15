@@ -506,39 +506,45 @@ public static class EndpointHelpers
     }
 }
 
-// ===================== RLS 自动应用（ADR-103 ③.4；部署可选，默认关闭）=====================
-// 纵深防御：即便代码误用 IgnoreQueryFilters() 或原始 SQL，RLS 仍强制租户隔离。
-// rls.sql 已幂等（DROP POLICY IF EXISTS + CREATE POLICY；ENABLE ROW LEVEL SECURITY 可重跑）。
-// 仅当 Saas:ApplyRlsOnStartup=true 时执行；连接角色权限不足（非迁移角色）时记录告警并跳过，不阻断启动。
-// 生产连接约定：租户作用域角色 + 平台/计量用 BYPASSRLS 角色（见 rls.sql §2）。
-public static class SaasRls
+// ===================== 启动期幂等建表 + RLS 自动应用（ADR-103 ③.4）=====================
+// 每次启动执行一次，二者均幂等：
+//   a) EnsureCreatedAsync —— 预览版不使用 Migrations，仅创建缺失的表（已存在则无操作）。
+//   b) 读取并执行 sql/rls.sql —— DO 块已幂等（DROP POLICY IF EXISTS + CREATE POLICY；
+//      ENABLE ROW LEVEL SECURITY 可重跑），可安全每启动重跑。
+// BYPASS/隔离假设（intranet 工具；ADR-103 ③.4）：bootstrap 与 DbSeeder 在本进程的平台服务连接下运行；
+// 根行（平台超管/目录表）TenantId=Guid.Empty，TenantConnectionInterceptor 在连接打开时
+// SET app.tenant_id=Guid.Empty，满足 RLS WITH CHECK(tenant_id = current_setting('app.tenant_id'))。
+// 即便配置角色非 BYPASSRLS，仅写入 root 行时该不变式仍成立；租户作用域写由请求级拦截器设置各自
+// app.tenant_id。RLS 策略本身绝不被削弱（未放宽 USING/WITH CHECK）。
+public static class SaasSchemaBootstrap
 {
-    public static async Task ApplyAsync(IServiceProvider sp, BaseDbContext db, CancellationToken ct = default)
+    public static async Task BootstrapAsync(IServiceProvider sp, CancellationToken ct = default)
     {
-        var cfg = sp.GetRequiredService<IConfiguration>();
-        if (!string.Equals(cfg["Saas:ApplyRlsOnStartup"], "true", StringComparison.OrdinalIgnoreCase))
-            return;
+        var db = sp.GetRequiredService<BaseDbContext>();
 
-        var sql = ResolveSql(sp.GetService<IHostEnvironment>());
+        await db.Database.EnsureCreatedAsync(ct); // 幂等：仅建缺失表
+
+        var sql = ResolveRlsSql(sp.GetService<IHostEnvironment>());
         if (sql is null)
         {
-            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.RLS")
-              ?.LogWarning("Saas:ApplyRlsOnStartup=true 但未找到 sql/rls.sql，跳过 RLS 应用。");
+            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.Schema")
+              ?.LogWarning("未找到 sql/rls.sql，跳过 RLS 应用（schema 已建表；需在具权限角色下手动执行 rls.sql 启用纵深防御）。");
             return;
         }
 
         try
         {
-            await db.Database.ExecuteSqlRawAsync(sql, ct);
+            await db.Database.ExecuteSqlRawAsync(sql, ct); // 幂等 DO 块，可每启动重跑
         }
         catch (Exception ex)
         {
-            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.RLS")
-              ?.LogError(ex, "应用 RLS 失败（连接角色权限不足？）。请由具备 ALTER/CREATE POLICY 权限的迁移角色手动执行 sql/rls.sql。");
+            // 连接角色权限不足（非迁移角色）时不阻断启动；记录后由具 ALTER/CREATE POLICY 权限角色补执行。
+            sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.Schema")
+              ?.LogError(ex, "应用 RLS 失败（连接角色权限不足？）。请由具 ALTER/CREATE POLICY 权限的迁移角色手动执行 sql/rls.sql。");
         }
     }
 
-    private static string? ResolveSql(IHostEnvironment? env)
+    private static string? ResolveRlsSql(IHostEnvironment? env)
     {
         var candidates = new List<string>(capacity: 5);
         if (env is not null)

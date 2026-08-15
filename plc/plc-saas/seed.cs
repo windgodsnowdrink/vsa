@@ -12,8 +12,7 @@ public static class DbSeeder
         var roles = sp.GetRequiredService<RoleManager<ApplicationRole>>();
         var cfg = sp.GetRequiredService<IConfiguration>();
 
-        await db.Database.EnsureCreatedAsync(); // 开发期建表；生产用迁移（见报告）
-        await SaasRls.ApplyAsync(sp, db);        // 可选 RLS（Saas:ApplyRlsOnStartup）
+        // schema 建表 + RLS 策略已由 Program.cs 中 SaasSchemaBootstrap.BootstrapAsync 幂等应用（先于本 Seed）。
 
         if (!await db.Plans.IgnoreQueryFilters().AnyAsync())
         {

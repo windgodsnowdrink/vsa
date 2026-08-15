@@ -64,9 +64,10 @@ OpsHealthApi.Map(api);
 
 app.MapHub<FaultsHub>("/hubs/faults"); // Hub 名 faults；协商 /hubs/faults/negotiate
 
-// 启动：幂等种子（套餐/配额策略/平台超管）
+// 启动：幂等建表 + RLS 自动应用（先于种子，确保表与行级安全就绪）
 using (var scope = app.Services.CreateScope())
 {
+    await SaasSchemaBootstrap.BootstrapAsync(scope.ServiceProvider);
     await DbSeeder.SeedAsync(scope.ServiceProvider);
 }
 
