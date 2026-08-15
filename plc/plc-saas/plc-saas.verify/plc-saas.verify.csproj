@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS1591;AD0001;CS0169</NoWarn>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.6.26359.118" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+    <PackageReference Include="Mediator.Abstractions" Version="3.0.2" />
+    <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="3.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+  </ItemGroup>
+
+  <!-- 源快照：供 ADR-108 红线静态校验测试读取（仅复制为内容，不参与编译；排除 verify 自身文件） -->
+  <ItemGroup>
+    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\*.cs">
+      <Link>saas-src/%(Filename)%(Extension)</Link>
+    </_SaasSrc>
+    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\slices\*.cs">
+      <Link>saas-src/slices/%(Filename)%(Extension)</Link>
+    </_SaasSrc>
+    <Content Include="@(_SaasSrc)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="VerifyTests.cs" />
+  </ItemGroup>
+
+  <!-- File-based 源 → 剥离 #include/#r → 编译（ADR-101 的工程化 typecheck） -->
+  <Target Name="PrepareStrippedSources" BeforeTargets="CoreCompile">
+    <RemoveDir Directories="$(IntermediateOutputPath)stripped" Condition="Exists('$(IntermediateOutputPath)stripped')" />
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-sources.ps1&quot; &quot;$(MSBuildThisFileDirectory)..&quot; &quot;$(IntermediateOutputPath)stripped&quot;" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)stripped\**\*.cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>
