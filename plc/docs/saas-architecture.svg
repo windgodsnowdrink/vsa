@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 880" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <!-- background -->
+  <rect x="0" y="0" width="1240" height="880" fill="#f8fafc"/>
+
+  <!-- title -->
+  <text x="620" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#0f172a">PLC·AIOT 多租户 SaaS — 架构图（控制面 + 租户隔离）</text>
+  <text x="620" y="52" text-anchor="middle" font-size="12" fill="#64748b">.NET 11 Preview 6 · VSA + DDD 清洁架构 + CQRS · File-based App · 共享 PostgreSQL + RLS 兜底</text>
+
+  <!-- ===================== BAND 1: CLIENTS ===================== -->
+  <text x="40" y="74" font-size="12" font-weight="700" fill="#475569">① 客户端层</text>
+  <rect x="60" y="84" width="210" height="96" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="165" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">运营后台（平台超管）</text>
+  <text x="165" y="134" text-anchor="middle" font-size="10" fill="#475569">租户/套餐/角色/健康 管理</text>
+  <text x="165" y="152" text-anchor="middle" font-size="10" fill="#2563eb">HTTPS · REST + SignalR</text>
+
+  <rect x="320" y="84" width="250" height="96" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="445" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">租户前台（四角色）</text>
+  <text x="445" y="134" text-anchor="middle" font-size="10" fill="#475569">管理员 / 分析师 / 值守 / 设备工程师</text>
+  <text x="445" y="152" text-anchor="middle" font-size="10" fill="#2563eb">HTTPS · REST + SignalR + MQTT.js</text>
+
+  <rect x="650" y="84" width="240" height="96" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="770" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">边缘网关 / 设备</text>
+  <text x="770" y="134" text-anchor="middle" font-size="10" fill="#475569">Mosquitto→EMQX 桥接（租户凭据）</text>
+  <text x="770" y="152" text-anchor="middle" font-size="10" fill="#16a34a">MQTT · 九段主题（ADR-107）</text>
+
+  <!-- connectors clients -> control plane -->
+  <line x1="165" y1="180" x2="300" y2="232" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="445" y1="180" x2="450" y2="232" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="770" y1="180" x2="760" y2="232" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- ===================== BAND 2: CONTROL PLANE ===================== -->
+  <rect x="40" y="212" width="1160" height="264" rx="12" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="56" y="234" font-size="13" font-weight="700" fill="#4338ca">② SaaS 控制面 · plc-saas（File-based App · 顶层 Program.cs + #include 拼装）</text>
+
+  <!-- access layer -->
+  <rect x="60" y="250" width="190" height="200" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="155" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">接入管线</text>
+  <text x="155" y="296" text-anchor="middle" font-size="10" fill="#334155">ASP.NET Core Identity</text>
+  <text x="155" y="314" text-anchor="middle" font-size="10" fill="#334155">+ JWT Bearer (tid 声明)</text>
+  <text x="155" y="336" text-anchor="middle" font-size="10" fill="#334155">TenantMiddleware</text>
+  <text x="155" y="354" text-anchor="middle" font-size="10" fill="#334155">(Scoped ICurrentTenant)</text>
+  <text x="155" y="376" text-anchor="middle" font-size="10" fill="#334155">RateLimiter + CORS</text>
+  <text x="155" y="400" text-anchor="middle" font-size="10" fill="#334155">UseRouting→Auth→</text>
+  <text x="155" y="418" text-anchor="middle" font-size="10" fill="#334155">Tenant→Authz→RateLimit</text>
+  <text x="155" y="440" text-anchor="middle" font-size="9" fill="#64748b">root 旁路 BYPASSRLS</text>
+
+  <!-- VSA slices container -->
+  <rect x="270" y="250" width="620" height="200" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="580" y="270" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">VSA 垂直切片（21 端点 / 7 组，每片自含 Endpoint+Handler+DTO）</text>
+
+  <!-- row1 cards -->
+  <rect x="282" y="280" width="140" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="352" y="300" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Tenant</text>
+  <text x="352" y="318" text-anchor="middle" font-size="9" fill="#334155">注册/激活/暂停/恢复</text>
+  <text x="352" y="334" text-anchor="middle" font-size="9" fill="#64748b">4 端点</text>
+
+  <rect x="435" y="280" width="140" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="505" y="300" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Identity</text>
+  <text x="505" y="318" text-anchor="middle" font-size="9" fill="#334155">登录/刷新/成员/角色/MQTT</text>
+  <text x="505" y="334" text-anchor="middle" font-size="9" fill="#64748b">5 端点</text>
+
+  <rect x="588" y="280" width="140" height="76" rx="8" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="658" y="300" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">Billing</text>
+  <text x="658" y="318" text-anchor="middle" font-size="9" fill="#334155">用量/套餐/配额（ADR-108）</text>
+  <text x="658" y="334" text-anchor="middle" font-size="9" fill="#64748b">3 端点·仅计量</text>
+
+  <rect x="741" y="280" width="140" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="811" y="300" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Ops</text>
+  <text x="811" y="318" text-anchor="middle" font-size="9" fill="#334155">租户/定价/角色/健康</text>
+  <text x="811" y="334" text-anchor="middle" font-size="9" fill="#64748b">4 端点</text>
+
+  <!-- row2 cards -->
+  <rect x="282" y="362" width="140" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="352" y="382" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Devices</text>
+  <text x="352" y="400" text-anchor="middle" font-size="9" fill="#334155">设备列表（租户作用域）</text>
+  <text x="352" y="416" text-anchor="middle" font-size="9" fill="#64748b">1 端点</text>
+
+  <rect x="435" y="362" width="140" height="76" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="505" y="382" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">Faults</text>
+  <text x="505" y="400" text-anchor="middle" font-size="9" fill="#334155">确认/实时流（ADR-105）</text>
+  <text x="505" y="416" text-anchor="middle" font-size="9" fill="#64748b">2 端点</text>
+
+  <rect x="588" y="362" width="140" height="76" rx="8" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="658" y="382" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309">Metering</text>
+  <text x="658" y="400" text-anchor="middle" font-size="9" fill="#334155">Agent 轮询 Outbox 聚合</text>
+  <text x="658" y="416" text-anchor="middle" font-size="9" fill="#64748b">后台 HostedService</text>
+
+  <!-- SignalR Hub -->
+  <rect x="910" y="250" width="200" height="90" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="1010" y="276" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">SignalR Hub</text>
+  <text x="1010" y="296" text-anchor="middle" font-size="10" fill="#334155">/hubs/faults</text>
+  <text x="1010" y="316" text-anchor="middle" font-size="9" fill="#16a34a">实时告警/配额热路径</text>
+
+  <!-- infra row: Mediator / Outbox / MeteringAgent -->
+  <rect x="282" y="402" width="190" height="48" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="377" y="420" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">Mediator（MIT 源码生成）</text>
+  <text x="377" y="438" text-anchor="middle" font-size="9" fill="#64748b">进程内 CQRS 派发</text>
+
+  <rect x="490" y="402" width="190" height="48" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="585" y="420" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">Outbox（自建事务表）</text>
+  <text x="585" y="438" text-anchor="middle" font-size="9" fill="#64748b">同 UoW 写集成事件</text>
+
+  <rect x="698" y="402" width="190" height="48" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="793" y="420" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">MeteringAgent</text>
+  <text x="793" y="438" text-anchor="middle" font-size="9" fill="#64748b">轮询→聚合→评配额</text>
+
+  <!-- connector control plane -> data -->
+  <line x1="250" y1="450" x2="250" y2="512" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="1010" y1="430" x2="1010" y2="512" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- ===================== BAND 3: DATA / MESSAGING ===================== -->
+  <rect x="40" y="492" width="1160" height="244" rx="12" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="56" y="514" font-size="13" font-weight="700" fill="#166534">③ 数据 / 消息层</text>
+
+  <!-- PostgreSQL -->
+  <rect x="60" y="524" width="380" height="200" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="250" y="546" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">PostgreSQL（共享 DB）</text>
+  <text x="78" y="568" font-size="10" fill="#334155">ITenantEntity 表（TenantId 行级）：</text>
+  <text x="78" y="586" font-size="9.5" fill="#475569">tenants · subscriptions · devices · fault_events</text>
+  <text x="78" y="604" font-size="9.5" fill="#475569">usage_meters · outbox_messages · refresh_tokens</text>
+  <text x="78" y="626" font-size="10" fill="#334155">目录表（无 RLS）：plans · quota_policies</text>
+  <text x="78" y="644" font-size="10" fill="#334155">平台级：audit_logs（tenant_id 可空）</text>
+  <rect x="78" y="656" width="344" height="50" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="92" y="676" font-size="10" font-weight="700" fill="#b91c1c">RLS 兜底（ADR-103）</text>
+  <text x="92" y="694" font-size="9" fill="#7f1d1d">ENABLE RLS + POLICY USING/WITH CHECK</text>
+  <text x="92" y="708" font-size="9" fill="#7f1d1d">(tenant_id = current_setting('app.tenant_id'))</text>
+
+  <!-- InfluxDB -->
+  <rect x="480" y="544" width="200" height="96" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="580" y="568" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">InfluxDB</text>
+  <text x="580" y="588" text-anchor="middle" font-size="10" fill="#334155">遥测时序（落库）</text>
+  <text x="580" y="608" text-anchor="middle" font-size="9" fill="#64748b">telemetry_points 计量源</text>
+  <text x="580" y="626" text-anchor="middle" font-size="9" fill="#64748b">最终一致</text>
+
+  <!-- EMQX -->
+  <rect x="720" y="524" width="410" height="150" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="925" y="546" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">EMQX（MQTT Broker）</text>
+  <text x="738" y="568" font-size="10" fill="#334155">ADR-107 方案 B：租户级 MQTT 凭据 + ACL</text>
+  <text x="738" y="586" font-size="9.5" fill="#475569">· JWT 认证（校验 IdP 签发、含 tid）</text>
+  <text x="738" y="604" font-size="9.5" fill="#475569">· HTTP AuthZ ACL 按 tid 返回设备主题白名单</text>
+  <text x="738" y="622" font-size="9.5" fill="#475569">· 九段主题不变（DeviceId 全局唯一）</text>
+  <text x="738" y="644" font-size="9.5" fill="#475569">· 租户间完全隔离，前端/边缘零改造</text>
+  <text x="738" y="664" font-size="9" fill="#16a34a">隔离在 Broker 层强制，无法绕过</text>
+
+  <!-- ===================== BAND 4: ISOLATION + ADR ===================== -->
+  <rect x="40" y="752" width="1160" height="118" rx="12" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="56" y="774" font-size="13" font-weight="700" fill="#9a3412">④ 租户隔离纵深（defense-in-depth）</text>
+  <text x="56" y="796" font-size="10.5" fill="#7c2d12">JWT tid 声明 → TenantMiddleware(Scoped ICurrentTenant) → EF 全局查询过滤器 →</text>
+  <text x="56" y="814" font-size="10.5" fill="#7c2d12">TenantStampInterceptor(盖戳防越权写) → TenantConnectionInterceptor(SET app.tenant_id) →</text>
+  <text x="56" y="832" font-size="10.5" fill="#7c2d12">PostgreSQL RLS（即便 IgnoreQueryFilters/原始 SQL 仍强制）。超管 root 旁路 BYPASSRLS。</text>
+
+  <!-- ADR chips -->
+  <g font-size="9" font-weight="700" text-anchor="middle">
+    <rect x="760" y="780" width="78" height="22" rx="6" fill="#dbeafe" stroke="#93c5fd"/><text x="799" y="795" fill="#1e40af">ADR-103 隔离</text>
+    <rect x="846" y="780" width="78" height="22" rx="6" fill="#dbeafe" stroke="#93c5fd"/><text x="885" y="795" fill="#1e40af">ADR-104 认证</text>
+    <rect x="932" y="780" width="86" height="22" rx="6" fill="#dbeafe" stroke="#93c5fd"/><text x="975" y="795" fill="#1e40af">ADR-105 SignalR</text>
+    <rect x="760" y="810" width="86" height="22" rx="6" fill="#dcfce7" stroke="#86efac"/><text x="803" y="825" fill="#166534">ADR-107 MQTT</text>
+    <rect x="854" y="810" width="100" height="22" rx="6" fill="#fef3c7" stroke="#fcd34d"/><text x="904" y="825" fill="#92400e">ADR-108 仅计量</text>
+    <rect x="962" y="810" width="120" height="22" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/><text x="1022" y="825" fill="#334155">详见 ADR-100~108</text>
+  </g>
+
+  <text x="620" y="868" text-anchor="middle" font-size="9" fill="#94a3b8">图与 SaaS-Architecture-Spec.md / SaaS-Spec.md §5 一致 · 构建态：后端 0cd0f31 + 594ebe9 / 前端 df668f0 · 通过 Phase 3 门禁</text>
+</svg>
