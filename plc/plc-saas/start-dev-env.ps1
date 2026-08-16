@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 # 用 wslc（WSL 预览版容器 CLI）拉起 PostgreSQL + EMQX 两个本地容器，
 # 供 plc-saas 后端运行期验证（health 端点 + 核心多租户流程 + V1-now MQTT 桥）。
+# 镜像源：Docker Hub(registry-1.docker.io) 在本机/沙箱不可达，统一改用 docker.1ms.run 镜像加速器。
 #
 # 凭据（按总监裁定）：
 #   PostgreSQL : localhost:5432  postgres / postgres   （库 plc_aiot_saas）
@@ -18,8 +19,8 @@ $ErrorActionPreference = 'Continue'
 
 $PG_NAME    = 'plc-saas-postgres'
 $EMQX_NAME  = 'plc-saas-emqx'
-$PG_IMAGE   = 'postgres:16'
-$EMQX_IMAGE = 'emqx/emqx:5.8.1'
+$PG_IMAGE   = 'docker.1ms.run/library/postgres:18-alpine3.23'  # docker.1ms.run 镜像源（Docker Hub 不可达）
+$EMQX_IMAGE = 'docker.1ms.run/emqx/emqx:6.1.4'                # docker.1ms.run 镜像源（EMQX 6.x）
 $PG_VOLUME  = 'plc-saas-pgdata'
 
 function Container-Exists($name) {
