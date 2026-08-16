@@ -1,0 +1,19 @@
+# Build outputs (.NET)
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# Agent internal directory (never commit)
+.workbuddy/
+
+# Build artifacts
+Live-Artifact.zip
+
+# IDE / OS
+.vs/
+*.user
+.DS_Store
+
+# Node (if any)
+node_modules/

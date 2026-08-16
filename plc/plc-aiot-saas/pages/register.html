@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC·AIOT 用户注册</title>
+    <style id="theme-vars">
+/*
+ * PLC·AIOT Design Tokens
+ * Reference: Apple Design Library (restrained, precise, editorial)
+ * Domain: Industrial IoT / PLC Edge Device SaaS
+ * Primary: Tech sky blue (#0ea5e9) with glassmorphism surfaces
+ * Theme modes: light / dark
+ */
+
+:root {
+  /* Primitive — brand sky */
+  --plca-brand-50: #f0f9ff;
+  --plca-brand-100: #e0f2fe;
+  --plca-brand-200: #bae6fd;
+  --plca-brand-300: #7dd3fc;
+  --plca-brand-400: #38bdf8;
+  --plca-brand-500: #0ea5e9;
+  --plca-brand-600: #0284c7;
+  --plca-brand-700: #0369a1;
+  --plca-brand-800: #075985;
+  --plca-brand-900: #0c4a6e;
+
+  /* Primitive — slate neutrals */
+  --plca-slate-50: #f8fafc;
+  --plca-slate-100: #f1f5f9;
+  --plca-slate-200: #e2e8f0;
+  --plca-slate-300: #cbd5e1;
+  --plca-slate-400: #94a3b8;
+  --plca-slate-500: #64748b;
+  --plca-slate-600: #475569;
+  --plca-slate-700: #334155;
+  --plca-slate-800: #1e293b;
+  --plca-slate-900: #0f172a;
+
+  /* Primitive — semantic scales */
+  --plca-background: var(--plca-slate-50);
+  --plca-foreground: var(--plca-slate-900);
+  --plca-card: rgba(255, 255, 255, 0.78);
+  --plca-card-foreground: var(--plca-slate-900);
+  --plca-popover: #ffffff;
+  --plca-popover-foreground: var(--plca-slate-900);
+
+  --plca-primary: var(--plca-brand-500);
+  --plca-primary-foreground: #ffffff;
+  --plca-secondary: var(--plca-slate-100);
+  --plca-secondary-foreground: var(--plca-slate-800);
+  --plca-muted: var(--plca-slate-100);
+  --plca-muted-foreground: var(--plca-slate-500);
+  --plca-accent: var(--plca-brand-100);
+  --plca-accent-foreground: var(--plca-brand-900);
+  --plca-destructive: #ef4444;
+  --plca-destructive-foreground: #ffffff;
+  --plca-success: #10b981;
+  --plca-success-foreground: #ffffff;
+  --plca-warning: #f59e0b;
+  --plca-warning-foreground: #ffffff;
+  --plca-border: var(--plca-slate-200);
+  --plca-input: var(--plca-slate-300);
+  --plca-ring: var(--plca-brand-500);
+
+  --plca-icon: var(--plca-slate-800);
+  --plca-icon-muted: var(--plca-slate-500);
+
+  /* Chart */
+  --plca-chart-1: var(--plca-brand-500);
+  --plca-chart-2: #10b981;
+  --plca-chart-3: #f59e0b;
+  --plca-chart-4: #8b5cf6;
+  --plca-chart-5: #ec4899;
+
+  /* Sidebar */
+  --plca-sidebar: rgba(255, 255, 255, 0.72);
+  --plca-sidebar-foreground: var(--plca-slate-800);
+  --plca-sidebar-primary: var(--plca-brand-500);
+  --plca-sidebar-primary-foreground: #ffffff;
+  --plca-sidebar-accent: var(--plca-slate-100);
+  --plca-sidebar-accent-foreground: var(--plca-slate-800);
+  --plca-sidebar-border: var(--plca-slate-200);
+  --plca-sidebar-ring: var(--plca-brand-500);
+
+  /* Typography */
+  --plca-font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --plca-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --plca-tracking-tight: -0.02em;
+  --plca-tracking-normal: 0em;
+
+  /* Radius */
+  --plca-radius-sm: 0.5rem;
+  --plca-radius-md: 0.75rem;
+  --plca-radius-lg: 1rem;
+  --plca-radius-xl: 1.25rem;
+
+  /* Shadows */
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(2, 8, 20, 0.04);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(2, 8, 20, 0.05), 0 1px 3px -1px rgba(2, 8, 20, 0.05);
+  --plca-shadow-md: 0 4px 8px -2px rgba(2, 8, 20, 0.06), 0 2px 4px -2px rgba(2, 8, 20, 0.04);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(2, 8, 20, 0.10), 0 4px 8px -4px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(2, 8, 20, 0.12), 0 8px 16px -8px rgba(2, 8, 20, 0.06);
+
+  /* Spacing base */
+  --plca-spacing: 0.25rem;
+}
+
+.dark {
+  --plca-background: #030711;
+  --plca-foreground: #f8fafc;
+  --plca-card: rgba(15, 23, 42, 0.72);
+  --plca-card-foreground: #f8fafc;
+  --plca-popover: #0f172a;
+  --plca-popover-foreground: #f8fafc;
+
+  --plca-primary: #38bdf8;
+  --plca-primary-foreground: #0f172a;
+  --plca-secondary: #1e293b;
+  --plca-secondary-foreground: #f8fafc;
+  --plca-muted: #1e293b;
+  --plca-muted-foreground: #94a3b8;
+  --plca-accent: #0c4a6e;
+  --plca-accent-foreground: #e0f2fe;
+  --plca-border: rgba(148, 163, 184, 0.2);
+  --plca-input: rgba(148, 163, 184, 0.25);
+  --plca-ring: #38bdf8;
+
+  --plca-sidebar: rgba(15, 23, 42, 0.72);
+  --plca-sidebar-foreground: #f8fafc;
+  --plca-sidebar-primary: #38bdf8;
+  --plca-sidebar-primary-foreground: #0f172a;
+  --plca-sidebar-accent: #1e293b;
+  --plca-sidebar-accent-foreground: #f8fafc;
+  --plca-sidebar-border: rgba(148, 163, 184, 0.16);
+
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --plca-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.32);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.36);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.40);
+}
+
+    </style>
+    <style id="component-vars">
+/* PLC·AIOT Component Layer — plain CSS, no @apply referencing local classes */
+
+/* Glass surfaces */
+.plca-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.dark .plca-glass {
+  background: rgba(15, 23, 42, 0.60);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.plca-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.dark .plca-glass-strong {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+/* Cards */
+.plca-card {
+  background: var(--plca-card);
+  color: var(--plca-card-foreground);
+  border: 1px solid var(--plca-border);
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-sm);
+  transition: box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1), transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.plca-card-hover:hover {
+  box-shadow: var(--plca-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.plca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-btn-primary {
+  background: var(--plca-primary);
+  color: var(--plca-primary-foreground);
+  box-shadow: 0 4px 14px -4px rgba(14, 165, 233, 0.35);
+}
+
+.plca-btn-primary:hover {
+  background: var(--plca-brand-600);
+  box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.42);
+}
+
+.plca-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.plca-btn-secondary {
+  background: var(--plca-secondary);
+  color: var(--plca-secondary-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-secondary:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-ghost {
+  background: transparent;
+  color: var(--plca-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-ghost:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Forms */
+.plca-input {
+  width: 100%;
+  background: var(--plca-background);
+  color: var(--plca-foreground);
+  border: 1px solid var(--plca-input);
+  border-radius: var(--plca-radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plca-input::placeholder {
+  color: var(--plca-muted-foreground);
+}
+
+.plca-input:focus {
+  border-color: var(--plca-ring);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+}
+
+.plca-input-error {
+  border-color: var(--plca-destructive);
+}
+
+.plca-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+
+.plca-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--plca-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.plca-error {
+  font-size: 0.75rem;
+  color: var(--plca-destructive);
+  margin-top: 0.25rem;
+}
+
+/* Badges */
+.plca-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.dark .plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+.plca-badge-rose {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.dark .plca-badge-rose {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.plca-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.dark .plca-badge-amber {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.plca-badge-sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.dark .plca-badge-sky {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+}
+
+/* Navigation */
+.plca-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 4rem;
+}
+
+.plca-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--plca-radius-md);
+  transition: color 150ms ease, background-color 150ms ease;
+  text-decoration: none;
+}
+
+.plca-nav-link:hover {
+  color: var(--plca-foreground);
+  background: var(--plca-muted);
+}
+
+/* Sidebar */
+.plca-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-sidebar-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.plca-sidebar-item:hover {
+  background: var(--plca-sidebar-accent);
+}
+
+.plca-sidebar-item-active {
+  background: rgba(14, 165, 233, 0.10);
+  color: var(--plca-primary);
+  border-left: 3px solid var(--plca-primary);
+}
+
+/* KPI */
+.plca-kpi {
+  padding: 1rem;
+  border-radius: var(--plca-radius-lg);
+  min-width: 140px;
+}
+
+.plca-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--plca-tracking-tight);
+  white-space: nowrap;
+}
+
+.plca-kpi-label {
+  font-size: 0.8125rem;
+  color: var(--plca-muted-foreground);
+}
+
+/* Tables */
+.plca-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.plca-table th,
+.plca-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--plca-border);
+  white-space: nowrap;
+}
+
+.plca-table th {
+  font-weight: 600;
+  color: var(--plca-muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plca-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+/* Tabs */
+.plca-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+  width: fit-content;
+}
+
+.plca-tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-tab:hover {
+  color: var(--plca-foreground);
+}
+
+.plca-tab-active {
+  background: var(--plca-card);
+  color: var(--plca-foreground);
+  box-shadow: var(--plca-shadow-xs);
+}
+
+/* Timeline */
+.plca-timeline-item {
+  position: relative;
+  padding-left: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-left: 1px solid var(--plca-border);
+}
+
+.plca-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -0.25rem;
+  top: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plca-primary);
+}
+
+.plca-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+/* Avatar */
+.plca-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+  color: #fff;
+}
+
+/* Scrollbar */
+.plca-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.plca-scroll::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 3px;
+}
+
+/* Map placeholder */
+.plca-map {
+  background:
+    radial-gradient(circle at 25% 35%, rgba(14, 165, 233, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 70% 65%, rgba(16, 185, 129, 0.12) 0%, transparent 26%),
+    var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+}
+
+/* Toast / notification panel */
+.plca-notification-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: 22rem;
+  z-index: 40;
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-xl);
+}
+
+/* Section shells */
+.plca-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.plca-page-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.plca-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pricing card highlight */
+.plca-pricing-featured {
+  border: 2px solid var(--plca-primary);
+  box-shadow: var(--plca-shadow-lg);
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--plca-background);
+    --color-foreground: var(--plca-foreground);
+    --color-card: var(--plca-card);
+    --color-card-foreground: var(--plca-card-foreground);
+    --color-popover: var(--plca-popover);
+    --color-popover-foreground: var(--plca-popover-foreground);
+    --color-primary: var(--plca-primary);
+    --color-primary-foreground: var(--plca-primary-foreground);
+    --color-secondary: var(--plca-secondary);
+    --color-secondary-foreground: var(--plca-secondary-foreground);
+    --color-muted: var(--plca-muted);
+    --color-muted-foreground: var(--plca-muted-foreground);
+    --color-accent: var(--plca-accent);
+    --color-accent-foreground: var(--plca-accent-foreground);
+    --color-destructive: var(--plca-destructive);
+    --color-destructive-foreground: var(--plca-destructive-foreground);
+    --color-border: var(--plca-border);
+    --color-input: var(--plca-input);
+    --color-ring: var(--plca-ring);
+    --color-chart-1: var(--plca-chart-1);
+    --color-chart-2: var(--plca-chart-2);
+    --color-chart-3: var(--plca-chart-3);
+    --color-chart-4: var(--plca-chart-4);
+    --color-chart-5: var(--plca-chart-5);
+    --color-sidebar: var(--plca-sidebar);
+    --color-sidebar-foreground: var(--plca-sidebar-foreground);
+    --color-sidebar-primary: var(--plca-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--plca-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--plca-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--plca-sidebar-accent-foreground);
+    --radius-sm: var(--plca-radius-sm);
+    --radius-md: var(--plca-radius-md);
+    --radius-lg: var(--plca-radius-lg);
+    --radius-xl: var(--plca-radius-xl);
+  }
+  @layer base {
+    body { background: var(--plca-background); color: var(--plca-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--plca-background); }
+      .text-background { color: var(--plca-background); }
+      .border-background { border-color: var(--plca-background); }
+      .ring-background { --tw-ring-color: var(--plca-background); }
+      .bg-foreground { background-color: var(--plca-foreground); }
+      .text-foreground { color: var(--plca-foreground); }
+      .border-foreground { border-color: var(--plca-foreground); }
+      .ring-foreground { --tw-ring-color: var(--plca-foreground); }
+      .bg-card { background-color: var(--plca-card); }
+      .text-card { color: var(--plca-card); }
+      .border-card { border-color: var(--plca-card); }
+      .ring-card { --tw-ring-color: var(--plca-card); }
+      .bg-card-foreground { background-color: var(--plca-card-foreground); }
+      .text-card-foreground { color: var(--plca-card-foreground); }
+      .border-card-foreground { border-color: var(--plca-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--plca-card-foreground); }
+      .bg-popover { background-color: var(--plca-popover); }
+      .text-popover { color: var(--plca-popover); }
+      .border-popover { border-color: var(--plca-popover); }
+      .ring-popover { --tw-ring-color: var(--plca-popover); }
+      .bg-popover-foreground { background-color: var(--plca-popover-foreground); }
+      .text-popover-foreground { color: var(--plca-popover-foreground); }
+      .border-popover-foreground { border-color: var(--plca-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--plca-popover-foreground); }
+      .bg-primary { background-color: var(--plca-primary); }
+      .text-primary { color: var(--plca-primary); }
+      .border-primary { border-color: var(--plca-primary); }
+      .ring-primary { --tw-ring-color: var(--plca-primary); }
+      .bg-primary-foreground { background-color: var(--plca-primary-foreground); }
+      .text-primary-foreground { color: var(--plca-primary-foreground); }
+      .border-primary-foreground { border-color: var(--plca-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--plca-primary-foreground); }
+      .bg-secondary { background-color: var(--plca-secondary); }
+      .text-secondary { color: var(--plca-secondary); }
+      .border-secondary { border-color: var(--plca-secondary); }
+      .ring-secondary { --tw-ring-color: var(--plca-secondary); }
+      .bg-secondary-foreground { background-color: var(--plca-secondary-foreground); }
+      .text-secondary-foreground { color: var(--plca-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--plca-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--plca-secondary-foreground); }
+      .bg-muted { background-color: var(--plca-muted); }
+      .text-muted { color: var(--plca-muted); }
+      .border-muted { border-color: var(--plca-muted); }
+      .ring-muted { --tw-ring-color: var(--plca-muted); }
+      .bg-muted-foreground { background-color: var(--plca-muted-foreground); }
+      .text-muted-foreground { color: var(--plca-muted-foreground); }
+      .border-muted-foreground { border-color: var(--plca-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--plca-muted-foreground); }
+      .bg-accent { background-color: var(--plca-accent); }
+      .text-accent { color: var(--plca-accent); }
+      .border-accent { border-color: var(--plca-accent); }
+      .ring-accent { --tw-ring-color: var(--plca-accent); }
+      .bg-accent-foreground { background-color: var(--plca-accent-foreground); }
+      .text-accent-foreground { color: var(--plca-accent-foreground); }
+      .border-accent-foreground { border-color: var(--plca-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--plca-accent-foreground); }
+      .bg-destructive { background-color: var(--plca-destructive); }
+      .text-destructive { color: var(--plca-destructive); }
+      .border-destructive { border-color: var(--plca-destructive); }
+      .ring-destructive { --tw-ring-color: var(--plca-destructive); }
+      .bg-destructive-foreground { background-color: var(--plca-destructive-foreground); }
+      .text-destructive-foreground { color: var(--plca-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--plca-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--plca-destructive-foreground); }
+      .bg-border { background-color: var(--plca-border); }
+      .text-border { color: var(--plca-border); }
+      .border-border { border-color: var(--plca-border); }
+      .ring-border { --tw-ring-color: var(--plca-border); }
+      .bg-input { background-color: var(--plca-input); }
+      .text-input { color: var(--plca-input); }
+      .border-input { border-color: var(--plca-input); }
+      .ring-input { --tw-ring-color: var(--plca-input); }
+      .bg-ring { background-color: var(--plca-ring); }
+      .text-ring { color: var(--plca-ring); }
+      .border-ring { border-color: var(--plca-ring); }
+      .ring-ring { --tw-ring-color: var(--plca-ring); }
+      .bg-chart-1 { background-color: var(--plca-chart-1); }
+      .text-chart-1 { color: var(--plca-chart-1); }
+      .border-chart-1 { border-color: var(--plca-chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--plca-chart-1); }
+      .bg-chart-2 { background-color: var(--plca-chart-2); }
+      .text-chart-2 { color: var(--plca-chart-2); }
+      .border-chart-2 { border-color: var(--plca-chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--plca-chart-2); }
+      .bg-chart-3 { background-color: var(--plca-chart-3); }
+      .text-chart-3 { color: var(--plca-chart-3); }
+      .border-chart-3 { border-color: var(--plca-chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--plca-chart-3); }
+      .bg-chart-4 { background-color: var(--plca-chart-4); }
+      .text-chart-4 { color: var(--plca-chart-4); }
+      .border-chart-4 { border-color: var(--plca-chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--plca-chart-4); }
+      .bg-chart-5 { background-color: var(--plca-chart-5); }
+      .text-chart-5 { color: var(--plca-chart-5); }
+      .border-chart-5 { border-color: var(--plca-chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--plca-chart-5); }
+      .bg-sidebar { background-color: var(--plca-sidebar); }
+      .text-sidebar { color: var(--plca-sidebar); }
+      .border-sidebar { border-color: var(--plca-sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--plca-sidebar); }
+      .bg-sidebar-foreground { background-color: var(--plca-sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--plca-sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--plca-sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--plca-sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--plca-sidebar-primary); }
+      .text-sidebar-primary { color: var(--plca-sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--plca-sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--plca-sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--plca-sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--plca-sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--plca-sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--plca-sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--plca-sidebar-accent); }
+      .text-sidebar-accent { color: var(--plca-sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--plca-sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--plca-sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--plca-sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--plca-sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--plca-sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--plca-sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+
+      /* Register page specific styles */
+      .register-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.18) 0%, transparent 45%),
+          radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.12) 0%, transparent 45%),
+          linear-gradient(180deg, var(--plca-slate-50) 0%, var(--plca-brand-50) 100%);
+      }
+
+      .register-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 1.75rem;
+      }
+
+      .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .input-group .plca-input {
+        padding-right: 5.5rem;
+      }
+
+      .input-group-action {
+        position: absolute;
+        right: 0.375rem;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 0.625rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--plca-muted-foreground);
+        cursor: pointer;
+        padding: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .password-toggle:hover {
+        color: var(--plca-foreground);
+      }
+
+      .strength-bar {
+        height: 0.25rem;
+        border-radius: 9999px;
+        background: var(--plca-slate-200);
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
+
+      .strength-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 9999px;
+        transition: width 200ms ease, background-color 200ms ease;
+      }
+
+      .strength-weak { width: 33.33%; background: var(--plca-destructive); }
+      .strength-medium { width: 66.66%; background: var(--plca-warning); }
+      .strength-strong { width: 100%; background: var(--plca-success); }
+
+      .strength-text {
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        color: var(--plca-muted-foreground);
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--plca-muted-foreground);
+        font-size: 0.75rem;
+        margin: 1.25rem 0;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--plca-border);
+      }
+
+      .oauth-btn {
+        flex: 1;
+        min-height: 2.75rem;
+      }
+
+      .spinner {
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .checkbox-wrap {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--plca-muted-foreground);
+        cursor: pointer;
+      }
+
+      .checkbox-wrap input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 0.125rem;
+        accent-color: var(--plca-primary);
+        cursor: pointer;
+      }
+
+      .checkbox-wrap a {
+        color: var(--plca-primary);
+        text-decoration: none;
+      }
+
+      .checkbox-wrap a:hover {
+        text-decoration: underline;
+      }
+
+      .logo-mark {
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--plca-radius-lg);
+        background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 8px 24px -8px rgba(14, 165, 233, 0.45);
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <div class="register-page">
+      <main class="plca-card register-card plca-glass-strong">
+        <div class="text-center mb-6">
+          <div class="logo-mark mb-4 mx-auto">
+            <i data-lucide="cpu" class="w-7 h-7"></i>
+          </div>
+          <h1 class="text-xl font-bold tracking-tight text-foreground">注册账号</h1>
+          <p class="text-sm text-muted-foreground mt-1">加入 PLC·AIOT 工业物联网平台</p>
+        </div>
+
+        <form id="registerForm" novalidate>
+          <!-- 手机号 -->
+          <div class="mb-4">
+            <label for="phone" class="plca-label">手机号</label>
+            <div class="input-group">
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputmode="tel"
+                maxlength="11"
+                class="plca-input"
+                placeholder="请输入 11 位手机号"
+                autocomplete="tel"
+              />
+              <button
+                type="button"
+                id="sendCodeBtn"
+                class="plca-btn plca-btn-secondary input-group-action"
+              >
+                获取验证码
+              </button>
+            </div>
+            <p id="phoneError" class="plca-error hidden"></p>
+          </div>
+
+          <!-- 短信验证码 -->
+          <div class="mb-4">
+            <label for="smsCode" class="plca-label">短信验证码</label>
+            <input
+              id="smsCode"
+              name="smsCode"
+              type="text"
+              inputmode="numeric"
+              maxlength="6"
+              class="plca-input"
+              placeholder="请输入 6 位验证码"
+              autocomplete="one-time-code"
+            />
+            <p id="smsCodeError" class="plca-error hidden"></p>
+          </div>
+
+          <!-- 设置密码 -->
+          <div class="mb-4">
+            <label for="password" class="plca-label">设置密码</label>
+            <div class="input-group">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="plca-input"
+                placeholder="8-20 位字母、数字及符号组合"
+                autocomplete="new-password"
+                style="padding-right: 2.5rem;"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                data-toggle="password"
+                aria-label="显示密码"
+              >
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="strength-bar">
+              <div id="strengthFill" class="strength-fill"></div>
+            </div>
+            <p id="strengthText" class="strength-text">密码强度：未输入</p>
+            <p id="passwordError" class="plca-error hidden"></p>
+          </div>
+
+          <!-- 确认密码 -->
+          <div class="mb-5">
+            <label for="confirmPassword" class="plca-label">确认密码</label>
+            <div class="input-group">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                class="plca-input"
+                placeholder="请再次输入密码"
+                autocomplete="new-password"
+                style="padding-right: 2.5rem;"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                data-toggle="confirmPassword"
+                aria-label="显示密码"
+              >
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <p id="confirmPasswordError" class="plca-error hidden"></p>
+          </div>
+
+          <!-- 用户协议 -->
+          <div class="mb-5">
+            <label class="checkbox-wrap">
+              <input type="checkbox" id="agreement" name="agreement" />
+              <span>我已阅读并同意 <a href="#" target="_blank">《用户服务协议》</a> 和 <a href="#" target="_blank">《隐私政策》</a></span>
+            </label>
+            <p id="agreementError" class="plca-error hidden"></p>
+          </div>
+
+          <!-- 注册按钮 -->
+          <button
+            type="submit"
+            id="submitBtn"
+            class="plca-btn plca-btn-primary w-full"
+            style="min-height: 2.75rem;"
+            disabled
+          >
+            <span id="btnText">立即注册</span>
+            <span id="btnSpinner" class="spinner hidden"></span>
+          </button>
+        </form>
+
+        <div class="divider">或使用第三方账号登录</div>
+
+        <div class="flex gap-3">
+          <button type="button" class="plca-btn plca-btn-ghost oauth-btn" aria-label="微信登录">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.5 13a1 1 0 100-2 1 1 0 000 2zm5 0a1 1 0 100-2 1 1 0 000 2z"/>
+              <path d="M16.5 15.5c2.5 0 4.5-1.8 4.5-4s-2-4-4.5-4-4.5 1.8-4.5 4 2 4 4.5 4zm-9 2c3.6 0 6.5-2.5 6.5-5.5S11.1 6.5 7.5 6.5 1 9 1 12s2.9 5.5 6.5 5.5z"/>
+            </svg>
+            微信
+          </button>
+          <button type="button" class="plca-btn plca-btn-ghost oauth-btn" aria-label="支付宝登录">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1zm8.5 9.5H11v1h2.5v-1zM9 8.5h6V7.5H9v1zm1 4h4v-1h-4v1z"/>
+            </svg>
+            支付宝
+          </button>
+        </div>
+
+        <p class="text-center text-sm text-muted-foreground mt-6">
+          已有账号？<a href="login.html" class="text-primary hover:underline">立即登录</a>
+        </p>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        const form = document.getElementById('registerForm');
+        const phone = document.getElementById('phone');
+        const smsCode = document.getElementById('smsCode');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const agreement = document.getElementById('agreement');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+
+        const showError = (id, message) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.textContent = message;
+          el.classList.remove('hidden');
+        };
+
+        const hideError = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.add('hidden');
+          el.textContent = '';
+        };
+
+        const setInvalid = (input, errorId, message) => {
+          input.classList.add('plca-input-error');
+          showError(errorId, message);
+        };
+
+        const clearInvalid = (input, errorId) => {
+          input.classList.remove('plca-input-error');
+          hideError(errorId);
+        };
+
+        const validatePhone = () => {
+          const value = phone.value.trim();
+          if (!value) {
+            setInvalid(phone, 'phoneError', '请输入手机号');
+            return false;
+          }
+          if (!/^1[3-9]\d{9}$/.test(value)) {
+            setInvalid(phone, 'phoneError', '手机号格式不正确');
+            return false;
+          }
+          clearInvalid(phone, 'phoneError');
+          return true;
+        };
+
+        const validateSmsCode = () => {
+          const value = smsCode.value.trim();
+          if (!value) {
+            setInvalid(smsCode, 'smsCodeError', '请输入短信验证码');
+            return false;
+          }
+          if (!/^\d{6}$/.test(value)) {
+            setInvalid(smsCode, 'smsCodeError', '验证码为 6 位数字');
+            return false;
+          }
+          clearInvalid(smsCode, 'smsCodeError');
+          return true;
+        };
+
+        const getPasswordStrength = (value) => {
+          let score = 0;
+          if (value.length >= 8) score++;
+          if (value.length >= 12) score++;
+          if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
+          if (/\d/.test(value)) score++;
+          if (/[^A-Za-z0-9]/.test(value)) score++;
+          if (value.length < 8) return 0;
+          if (score <= 2) return 1;
+          if (score <= 4) return 2;
+          return 3;
+        };
+
+        const updateStrength = () => {
+          const value = password.value;
+          strengthFill.className = 'strength-fill';
+          if (!value) {
+            strengthText.textContent = '密码强度：未输入';
+            strengthText.style.color = 'var(--plca-muted-foreground)';
+            return;
+          }
+          const strength = getPasswordStrength(value);
+          if (strength === 1) {
+            strengthFill.classList.add('strength-weak');
+            strengthText.textContent = '密码强度：弱';
+            strengthText.style.color = 'var(--plca-destructive)';
+          } else if (strength === 2) {
+            strengthFill.classList.add('strength-medium');
+            strengthText.textContent = '密码强度：中';
+            strengthText.style.color = 'var(--plca-warning)';
+          } else {
+            strengthFill.classList.add('strength-strong');
+            strengthText.textContent = '密码强度：强';
+            strengthText.style.color = 'var(--plca-success)';
+          }
+        };
+
+        const validatePassword = () => {
+          const value = password.value;
+          if (!value) {
+            setInvalid(password, 'passwordError', '请设置密码');
+            return false;
+          }
+          if (value.length < 8 || value.length > 20) {
+            setInvalid(password, 'passwordError', '密码长度需在 8-20 位之间');
+            return false;
+          }
+          clearInvalid(password, 'passwordError');
+          return true;
+        };
+
+        const validateConfirmPassword = () => {
+          const value = confirmPassword.value;
+          if (!value) {
+            setInvalid(confirmPassword, 'confirmPasswordError', '请确认密码');
+            return false;
+          }
+          if (value !== password.value) {
+            setInvalid(confirmPassword, 'confirmPasswordError', '两次输入的密码不一致');
+            return false;
+          }
+          clearInvalid(confirmPassword, 'confirmPasswordError');
+          return true;
+        };
+
+        const validateAgreement = () => {
+          if (!agreement.checked) {
+            showError('agreementError', '请阅读并同意用户协议');
+            return false;
+          }
+          hideError('agreementError');
+          return true;
+        };
+
+        const updateSubmitState = () => {
+          submitBtn.disabled = !agreement.checked;
+        };
+
+        password.addEventListener('input', updateStrength);
+
+        phone.addEventListener('input', () => {
+          phone.value = phone.value.replace(/\D/g, '').slice(0, 11);
+          if (phone.value.length === 11) validatePhone();
+        });
+        phone.addEventListener('blur', validatePhone);
+
+        smsCode.addEventListener('input', () => {
+          smsCode.value = smsCode.value.replace(/\D/g, '').slice(0, 6);
+        });
+        smsCode.addEventListener('blur', validateSmsCode);
+
+        password.addEventListener('blur', validatePassword);
+        confirmPassword.addEventListener('blur', validateConfirmPassword);
+        confirmPassword.addEventListener('input', () => {
+          if (confirmPassword.value === password.value) clearInvalid(confirmPassword, 'confirmPasswordError');
+        });
+
+        agreement.addEventListener('change', () => {
+          validateAgreement();
+          updateSubmitState();
+        });
+
+        document.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-toggle');
+            const target = document.getElementById(targetId);
+            const icon = btn.querySelector('i');
+            if (target.type === 'password') {
+              target.type = 'text';
+              icon.setAttribute('data-lucide', 'eye-off');
+              btn.setAttribute('aria-label', '隐藏密码');
+            } else {
+              target.type = 'password';
+              icon.setAttribute('data-lucide', 'eye');
+              btn.setAttribute('aria-label', '显示密码');
+            }
+            lucide.createIcons();
+          });
+        });
+
+        let countdown = 0;
+        let countdownTimer = null;
+        sendCodeBtn.addEventListener('click', () => {
+          if (countdown > 0) return;
+          if (!validatePhone()) return;
+          countdown = 60;
+          sendCodeBtn.disabled = true;
+          sendCodeBtn.textContent = countdown + 's 后重发';
+          countdownTimer = setInterval(() => {
+            countdown--;
+            if (countdown <= 0) {
+              clearInterval(countdownTimer);
+              sendCodeBtn.disabled = false;
+              sendCodeBtn.textContent = '获取验证码';
+            } else {
+              sendCodeBtn.textContent = countdown + 's 后重发';
+            }
+          }, 1000);
+        });
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const isPhoneValid = validatePhone();
+          const isSmsValid = validateSmsCode();
+          const isPasswordValid = validatePassword();
+          const isConfirmValid = validateConfirmPassword();
+          const isAgreementValid = validateAgreement();
+
+          if (!isPhoneValid || !isSmsValid || !isPasswordValid || !isConfirmValid || !isAgreementValid) {
+            return;
+          }
+
+          submitBtn.disabled = true;
+          btnText.textContent = '注册中...';
+          btnSpinner.classList.remove('hidden');
+
+          setTimeout(() => {
+            submitBtn.disabled = false;
+            btnText.textContent = '立即注册';
+            btnSpinner.classList.add('hidden');
+            alert('注册成功（演示）');
+            form.reset();
+            strengthFill.className = 'strength-fill';
+            strengthText.textContent = '密码强度：未输入';
+            strengthText.style.color = 'var(--plca-muted-foreground)';
+            updateSubmitState();
+          }, 2000);
+        });
+
+        lucide.createIcons();
+      })();
+    </script>
+</body>
+</html>

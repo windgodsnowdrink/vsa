@@ -1,0 +1,23 @@
+# 源码与版本控制
+.git
+.gitignore
+**/.git
+**/.vs
+**/.idea
+
+# 构建产物
+**/bin
+**/obj
+**/out
+
+# 文档与示例（无需进入镜像）
+docs
+samples
+**/*.md
+
+# 本地前端开发产物
+**/node_modules
+
+# 操作系统文件
+.DS_Store
+Thumbs.db

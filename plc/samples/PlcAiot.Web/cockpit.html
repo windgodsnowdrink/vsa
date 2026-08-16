@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLC·AIOT 驾驶舱 — 工业物联网平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',
+                     500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
+          },
+          fontFamily: { sans: ['"Segoe UI"','"Microsoft YaHei"','system-ui','sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass { background: rgba(255,255,255,0.65); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .dark .glass { background: rgba(15,23,42,0.55); }
+    .scroll-thin::-webkit-scrollbar{width:6px;height:6px}
+    .scroll-thin::-webkit-scrollbar-thumb{background:rgba(96,165,250,.4);border-radius:3px}
+    .nav-active{background:linear-gradient(90deg,rgba(59,130,246,.18),rgba(59,130,246,.02));border-left:3px solid #3b82f6}
+    .page{display:none}
+    .page.active{display:block;animation:fade .25s ease}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .tip{position:fixed;pointer-events:none;z-index:60;padding:6px 9px;border-radius:8px;font-size:12px;
+         background:rgba(2,6,23,.9);color:#e2e8f0;border:1px solid rgba(96,165,250,.4);transform:translate(-50%,-130%);white-space:nowrap}
+    .canvas-wrap{position:relative;width:100%;height:clamp(340px,56vh,560px);border-radius:1rem;overflow:hidden;
+                 background:radial-gradient(circle at 50% 40%,#0b1f3a,#020617)}
+    .seg{display:inline-flex;border:1px solid rgba(96,165,250,.3);border-radius:10px;overflow:hidden}
+    .seg button{padding:4px 10px;font-size:12px}
+    .seg button.on{background:#3b82f6;color:#fff}
+    .badge{font-size:11px;padding:2px 8px;border-radius:999px}
+    #drawerMask{position:fixed;inset:0;background:rgba(2,6,23,.45);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+    #drawerMask.open{opacity:1;pointer-events:auto}
+    #drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:55;
+            transform:translateX(100%);transition:transform .28s ease}
+    #drawer.open{transform:translateX(0)}
+    .tabbtn.active{background:#3b82f6;color:#fff}
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-sans antialiased">
+
+<div class="flex min-h-screen">
+
+  <!-- 侧边栏 -->
+  <aside class="w-60 shrink-0 hidden md:flex flex-col glass border-r border-slate-200 dark:border-slate-800">
+    <div class="flex items-center gap-2 px-5 h-16 border-b border-slate-200 dark:border-slate-800">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 grid place-items-center text-white font-bold">P</div>
+      <span class="font-bold text-lg tracking-tight">PLC·<span class="text-brand-500">AIOT</span></span>
+    </div>
+    <nav id="sideNav" class="flex-1 px-3 py-4 space-y-1 text-sm"></nav>
+    <div class="px-4 py-4 text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800">
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>MQTT 已连接</div>
+      <div class="mt-1 truncate">edge: Mosquitto · cloud: EMQX</div>
+    </div>
+  </aside>
+
+  <!-- 主区 -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- 移动端顶部横向导航 -->
+    <nav id="topNav" class="md:hidden glass border-b border-slate-200 dark:border-slate-800 flex gap-1 overflow-x-auto scroll-thin px-3 py-2 text-sm"></nav>
+
+    <!-- 顶部栏 -->
+    <header class="h-16 glass border-b border-slate-200 dark:border-slate-800 flex items-center gap-4 px-5 sticky top-0 z-20">
+      <div class="relative flex-1 max-w-md">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        <input id="globalSearch" placeholder="搜索设备 / 指令 / 告警…" class="w-full pl-9 pr-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400 text-sm" />
+      </div>
+      <button id="themeBtn" class="w-9 h-9 rounded-lg grid place-items-center hover:bg-brand-50 dark:hover:bg-slate-800" title="切换主题">🌗</button>
+      <button id="bellBtn" class="relative w-9 h-9 rounded-lg grid place-items-center hover:bg-brand-50 dark:hover:bg-slate-800">
+        🔔<span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full"></span>
+      </button>
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-indigo-500 grid place-items-center text-white text-sm font-bold">林</div>
+    </header>
+
+    <main class="flex-1 p-5 space-y-5 overflow-auto scroll-thin">
+
+      <!-- ===================== 1. 驾驶舱 ===================== -->
+      <section id="page-dashboard" class="page active">
+        <div class="flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <h1 class="text-2xl font-bold">运营驾驶舱</h1>
+            <p class="text-sm text-slate-400 mt-0.5">郑州·富士康园区 · 产线 A1/A2 · 实时刷新</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="px-3 py-1.5 rounded-lg glass">最后同步 <span id="lastSync">刚刚</span></span>
+            <button class="px-3 py-1.5 rounded-lg bg-brand-500 text-white hover:bg-brand-600">⟳ 刷新</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between"><span class="text-sm text-slate-400">设备在线率</span><span class="text-emerald-500 text-xs">↑ 1.2%</span></div>
+            <div class="text-2xl font-bold mt-2">98.6<span class="text-base text-slate-400">%</span></div>
+            <div class="mt-2 h-1 rounded bg-slate-200 dark:bg-slate-700"><div class="h-full rounded bg-emerald-400" style="width:98.6%"></div></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between"><span class="text-sm text-slate-400">今日采集点</span><span class="text-rose-500 text-xs">↓ 3.4%</span></div>
+            <div class="text-2xl font-bold mt-2">4.82<span class="text-base text-slate-400">M</span></div>
+            <div class="mt-2 h-1 rounded bg-slate-200 dark:bg-slate-700"><div class="h-full rounded bg-brand-400" style="width:72%"></div></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between"><span class="text-sm text-slate-400">活跃告警</span><span class="text-rose-500 text-xs">↑ 5</span></div>
+            <div class="text-2xl font-bold mt-2 text-rose-500">12</div>
+            <div class="mt-2 h-1 rounded bg-slate-200 dark:bg-slate-700"><div class="h-full rounded bg-rose-400" style="width:30%"></div></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between"><span class="text-sm text-slate-400">AI 诊断命中</span><span class="text-emerald-500 text-xs">↑ 2.1%</span></div>
+            <div class="text-2xl font-bold mt-2">91.3<span class="text-base text-slate-400">%</span></div>
+            <div class="mt-2 h-1 rounded bg-slate-200 dark:bg-slate-700"><div class="h-full rounded bg-brand-400" style="width:91%"></div></div>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800 lg:col-span-2">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold">实时点位吞吐（折线）</h3>
+              <div class="seg"><button class="on">1h</button><button>24h</button><button>7d</button></div>
+            </div>
+            <svg viewBox="0 0 600 220" class="w-full h-52" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity=".35"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+              <g stroke="currentColor" stroke-opacity=".08"><line x1="0" y1="55" x2="600" y2="55"/><line x1="0" y1="110" x2="600" y2="110"/><line x1="0" y1="165" x2="600" y2="165"/></g>
+              <path d="M0,160 C80,140 120,90 200,110 S340,60 420,80 S540,40 600,55 L600,220 L0,220 Z" fill="url(#g1)"/>
+              <path d="M0,160 C80,140 120,90 200,110 S340,60 420,80 S540,40 600,55" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">按设备聚合（柱状）</h3>
+            <svg viewBox="0 0 220 220" class="w-full h-52">
+              <g fill="#60a5fa"><rect x="14" y="120" width="26" height="80" rx="4"/><rect x="54" y="90" width="26" height="110" rx="4"/><rect x="94" y="140" width="26" height="60" rx="4"/><rect x="134" y="70" width="26" height="130" rx="4"/><rect x="174" y="100" width="26" height="100" rx="4"/></g>
+            </svg>
+            <div class="flex justify-between text-xs text-slate-400 mt-1"><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span></div>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800 lg:col-span-2">
+            <h3 class="font-semibold mb-3">实时活动流 <span class="text-xs text-emerald-500">● LIVE</span></h3>
+            <ul id="stream" class="space-y-2 text-sm max-h-64 overflow-auto scroll-thin"></ul>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">设备状态分布</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center justify-between"><span>🟢 在线</span><span class="font-semibold">1,204</span></div>
+              <div class="flex items-center justify-between"><span>🟡 预警</span><span class="font-semibold">38</span></div>
+              <div class="flex items-center justify-between"><span>🔴 告警</span><span class="font-semibold text-rose-500">12</span></div>
+              <div class="flex items-center justify-between"><span>⚪ 离线</span><span class="font-semibold">17</span></div>
+            </div>
+            <div class="mt-4 p-3 rounded-xl bg-brand-50 dark:bg-slate-800/60 text-xs text-slate-500">
+              订阅主题：<code class="text-brand-600">devices/asia/cn/henan/zhengzhou/+/+/#/telemetry</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 2. 设备 ===================== -->
+      <section id="page-devices" class="page">
+        <div class="flex items-end justify-between flex-wrap gap-3">
+          <div><h1 class="text-2xl font-bold">设备</h1><p class="text-sm text-slate-400 mt-0.5">全部 PLC / 边缘网关 / 采集代理</p></div>
+          <div class="flex items-center gap-2 text-sm">
+            <select id="devFilter" class="rounded-lg glass border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-sm">
+              <option value="">全部状态</option><option>在线</option><option>预警</option><option>告警</option><option>离线</option>
+            </select>
+            <button class="px-3 py-1.5 rounded-lg bg-brand-500 text-white hover:bg-brand-600">+ 注册设备</button>
+          </div>
+        </div>
+        <div id="devGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </section>
+
+      <!-- ===================== 3. 告警 ===================== -->
+      <section id="page-alarms" class="page">
+        <div class="flex items-end justify-between flex-wrap gap-3">
+          <div><h1 class="text-2xl font-bold">告警</h1><p class="text-sm text-slate-400 mt-0.5">FaultEvent 全生命周期（Open→Ack→Resolved→Closed）</p></div>
+          <div class="flex items-center gap-2 text-sm">
+            <div class="seg" id="almFilter"><button class="on" data-s="all">全部</button><button data-s="active">活跃</button><button data-s="resolved">已解决</button></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">活跃</div><div class="text-2xl font-bold text-rose-500 mt-1">12</div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">已确认</div><div class="text-2xl font-bold mt-1">5</div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">今日新增</div><div class="text-2xl font-bold mt-1">37</div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">MTTR</div><div class="text-2xl font-bold mt-1">8.4<span class="text-base text-slate-400">m</span></div></div>
+        </div>
+        <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+          <table class="w-full text-sm"><thead><tr class="text-slate-400 text-left"><th class="py-2">时间</th><th>设备</th><th>级别</th><th>描述</th><th>状态</th><th class="text-right">操作</th></tr></thead>
+          <tbody id="almBody" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===================== 4. 统计 ===================== -->
+      <section id="page-statistics" class="page">
+        <div><h1 class="text-2xl font-bold">统计</h1><p class="text-sm text-slate-400 mt-0.5">采集吞吐 · 设备分布 · 告警趋势 · OEE</p></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">日均采集点</div><div class="text-2xl font-bold mt-1">126.4<span class="text-base text-slate-400">M</span></div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">OEE</div><div class="text-2xl font-bold mt-1 text-emerald-500">87.2<span class="text-base text-slate-400">%</span></div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">协议种类</div><div class="text-2xl font-bold mt-1">6</div></div>
+          <div class="glass rounded-2xl p-4"><div class="text-sm text-slate-400">园区数</div><div class="text-2xl font-bold mt-1">9</div></div>
+        </div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800 lg:col-span-2">
+            <h3 class="font-semibold mb-2">7 日点位吞吐（折线）</h3>
+            <svg viewBox="0 0 600 200" class="w-full h-48" preserveAspectRatio="none">
+              <path d="M0,150 100,120 200,140 300,90 400,110 500,70 600,95" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+              <path d="M0,170 100,150 200,160 300,130 400,140 500,110 600,125" fill="none" stroke="#10b981" stroke-width="2.5" stroke-dasharray="5 4"/>
+            </svg>
+            <div class="flex justify-between text-xs text-slate-400"><span>周一</span><span>周三</span><span>周五</span><span>周日</span></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-2">设备状态占比</h3>
+            <svg viewBox="0 0 120 120" class="w-40 h-40 mx-auto">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="4" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="200" transform="rotate(45 60 60)"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#f43f5e" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="262" transform="rotate(80 60 60)"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#64748b" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="276" transform="rotate(95 60 60)"/>
+            </svg>
+            <div class="flex justify-center gap-3 text-xs mt-2"><span>🟢 在线</span><span>🟡 预警</span><span>🔴 告警</span><span>⚪ 离线</span></div>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+          <h3 class="font-semibold mb-2">近 7 日告警趋势（柱状）</h3>
+          <svg viewBox="0 0 600 140" class="w-full h-36"><g fill="#60a5fa">
+            <rect x="20" y="60" width="50" height="80" rx="4"/><rect x="110" y="40" width="50" height="100" rx="4"/><rect x="200" y="80" width="50" height="60" rx="4"/>
+            <rect x="290" y="30" width="50" height="110" rx="4"/><rect x="380" y="70" width="50" height="70" rx="4"/><rect x="470" y="50" width="50" height="90" rx="4"/><rect x="560" y="90" width="40" height="50" rx="4"/>
+          </g></svg>
+        </div>
+      </section>
+
+      <!-- ===================== 5. 实时看板（PLC 3D 结构透视） ===================== -->
+      <section id="page-board" class="page">
+        <div class="flex items-end justify-between flex-wrap gap-3">
+          <div><h1 class="text-2xl font-bold">实时看板 · PLC 3D 结构透视</h1><p class="text-sm text-slate-400 mt-0.5">拖拽旋转 · 悬停模块查看遥测 · 模型可由 Blender MCP 生成后导出 glTF 加载</p></div>
+          <div class="flex items-center gap-2 text-sm">
+            <div class="seg" id="boardMode"><button class="on" data-m="auto">自动旋转</button><button data-m="manual">手动</button></div>
+            <button id="boardLoadBtn" class="px-3 py-1.5 rounded-lg glass border border-slate-200 dark:border-slate-700">↺ 加载 glTF 模型</button>
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 glass rounded-2xl p-2 border border-slate-200 dark:border-slate-800">
+            <div id="plcCanvas" class="canvas-wrap"></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">模块实时遥测</h3>
+            <div id="plcInfo" class="text-sm space-y-2"></div>
+            <hr class="my-3 border-slate-200 dark:border-slate-800"/>
+            <div class="text-xs text-slate-400">资产管线：<br/><code class="text-brand-500">Blender MCP → .glb → GLTFLoader</code><br/>当前为程序化机架（无外部模型时回退）。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 6. 地图（Three.js 全球 3D） ===================== -->
+      <section id="page-map" class="page">
+        <div class="flex items-end justify-between flex-wrap gap-3">
+          <div><h1 class="text-2xl font-bold">全球设备地图 · 3D</h1><p class="text-sm text-slate-400 mt-0.5">Three.js 地球 · 园区分布 · 中心郑州枢纽</p></div>
+          <div class="flex items-center gap-2 text-sm">
+            <div class="seg" id="mapMode"><button class="on" data-m="auto">自动旋转</button><button data-m="manual">手动</button></div>
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 glass rounded-2xl p-2 border border-slate-200 dark:border-slate-800">
+            <div id="mapCanvas" class="canvas-wrap"></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">园区分布</h3>
+            <div id="mapInfo" class="text-sm space-y-2"></div>
+            <hr class="my-3 border-slate-200 dark:border-slate-800"/>
+            <div class="text-xs text-slate-400">点击地球上的点查看园区详情。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 7. 系统 ===================== -->
+      <section id="page-system" class="page">
+        <div><h1 class="text-2xl font-bold">系统</h1><p class="text-sm text-slate-400 mt-0.5">服务健康 · 资源 · 边缘数据链路配置</p></div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="svcGrid"></div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">资源占用</h3>
+            <div id="resGrid" class="space-y-3 text-sm"></div>
+          </div>
+          <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+            <h3 class="font-semibold mb-3">边缘数据链路</h3>
+            <pre class="text-xs text-slate-400 bg-slate-900/40 dark:bg-black/40 rounded-xl p-3 overflow-auto scroll-thin">边缘库  : SQLite  (plc-edge.db, EF Core + DapperAOT)
+边缘MQTT: Mosquitto (本地订阅/发布/桥接转发)
+桥接至  : EMQX 集群 (cloud://emqx:8883)
+同步平台: CommunityToolkit.Datasync (离线优先增量同步)
+主题树  : devices/{洲}/{国}/{省}/{市}/{区}/{线}/{批}/{设备}/{类型}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 8. 后端管理 ===================== -->
+      <section id="page-admin" class="page">
+        <div><h1 class="text-2xl font-bold">后端管理</h1><p class="text-sm text-slate-400 mt-0.5">插件 · 用户 · 主题路由 · 连接器</p></div>
+        <div class="seg mb-4" id="adminTabs">
+          <button class="on" data-t="plugin">插件</button><button data-t="user">用户</button>
+          <button data-t="topic">主题路由</button><button data-t="conn">连接器</button>
+        </div>
+        <div id="adminPanel" class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- 通知中心浮层 -->
+<div id="notif" class="hidden fixed right-4 top-20 w-80 glass rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl z-40 p-4">
+  <div class="flex items-center justify-between mb-3"><h3 class="font-semibold">通知中心</h3><button id="notifClose" class="text-slate-400 hover:text-slate-200">✕</button></div>
+  <ul class="space-y-2 text-sm">
+    <li class="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600">🔴 A2-07 温度越限 78℃</li>
+    <li class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600">🟡 B1-03 通信抖动</li>
+    <li class="p-2 rounded-lg bg-brand-50 dark:bg-slate-800/60">🤖 AI：C1-12 预测轴承磨损</li>
+  </ul>
+</div>
+
+<!-- 设备详情抽屉（替代 alert，钻取 ≤ 3 层：设备 → 详情 → tab） -->
+<div id="drawerMask"></div>
+<aside id="drawer" class="glass border-l border-slate-200 dark:border-slate-800 flex flex-col">
+  <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+    <div><div class="font-bold" id="dwName">设备详情</div><div class="text-xs text-slate-400" id="dwId"></div></div>
+    <button id="dwClose" class="w-8 h-8 rounded-lg grid place-items-center hover:bg-brand-50 dark:hover:bg-slate-800">✕</button>
+  </div>
+  <div id="dwTabs" class="flex flex-wrap gap-1 px-3 py-2 border-b border-slate-200 dark:border-slate-800 text-xs sticky top-0"></div>
+  <div id="dwBody" class="flex-1 overflow-auto scroll-thin p-4 text-sm space-y-2"></div>
+</aside>
+
+<div id="tip" class="tip hidden"></div>
+
+<!-- Three.js (ESM via importmap) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/* ============ 模拟数据 ============ */
+const STATUS_COLOR = { '在线':'#10b981', '预警':'#f59e0b', '告警':'#f43f5e', '离线':'#64748b' };
+const devices = [
+  { id:'ZZ-A1-05', name:'郑州 A1-05 贴片机',   model:'S7-1200', proto:'S7',     status:'在线', lat:34.75, lon:113.62, last:'2s' },
+  { id:'ZZ-A2-07', name:'郑州 A2-07 回流焊',   model:'FX5U',    proto:'Melsec', status:'告警', lat:34.70, lon:113.65, last:'1s' },
+  { id:'SZ-B1-03', name:'深圳 B1-03 点胶机',   model:'OMRON-NJ',proto:'Fins',   status:'预警', lat:22.54, lon:114.06, last:'3s' },
+  { id:'CD-C1-12', name:'成都 C1-12 组装臂',   model:'S7-1500', proto:'S7',     status:'在线', lat:30.57, lon:104.07, last:'2s' },
+  { id:'KS-D1-09', name:'昆山 D1-09 注塑机',   model:'MC-Protocol',proto:'Melsec',status:'在线', lat:31.38, lon:120.98, last:'4s' },
+  { id:'US-E1-02', name:'Austin E1-02 CNC',    model:'ControlLogix',proto:'EtherNet/IP',status:'在线', lat:30.27, lon:-97.74, last:'6s' },
+  { id:'BR-F1-04', name:'São Paulo F1-04 焊线',model:'FX3U',    proto:'Melsec', status:'离线', lat:-23.55,lon:-46.63, last:'—' },
+  { id:'IN-G1-06', name:'Chennai G1-06 测试',  model:'S7-1200', proto:'S7',     status:'在线', lat:13.08, lon:80.27,  last:'5s' },
+  { id:'VN-H1-01', name:'Hanoi H1-01 包装',    model:'Fatek',   proto:'Fatek',  status:'预警', lat:21.03, lon:105.85, last:'3s' },
+  { id:'MX-I1-08', name:'Mexico I1-08 切割',   model:'Keyence', proto:'KV',     status:'在线', lat:19.43, lon:-99.13, last:'7s' },
+];
+const alarms = [
+  { t:'08-15 21:42', dev:'ZZ-A2-07', lv:'严重', msg:'温度越限 78℃ (阈值 70℃)', st:'活跃' },
+  { t:'08-15 21:30', dev:'SZ-B1-03', lv:'警告', msg:'通信抖动 320ms',          st:'已确认' },
+  { t:'08-15 21:12', dev:'VN-H1-01', lv:'警告', msg:'心跳延迟 410ms',          st:'活跃' },
+  { t:'08-15 20:55', dev:'CD-C1-12', lv:'信息', msg:'AI 预测轴承磨损',         st:'已解决' },
+  { t:'08-15 20:40', dev:'BR-F1-04', lv:'严重', msg:'设备离线 > 5min',         st:'活跃' },
+  { t:'08-15 20:18', dev:'ZZ-A1-05', lv:'信息', msg:'固件升级完成',           st:'已解决' },
+];
+
+/* ============ 导航 / 路由 ============ */
+const NAV = [
+  { id:'dashboard', icon:'🛰️', label:'驾驶舱' },
+  { id:'devices',   icon:'🏭', label:'设备' },
+  { id:'alarms',    icon:'🔔', label:'告警', badge:'12' },
+  { id:'statistics',icon:'📊', label:'统计' },
+  { id:'board',     icon:'📡', label:'实时看板' },
+  { id:'map',       icon:'🗺️', label:'地图' },
+  { id:'system',    icon:'⚙️', label:'系统' },
+  { id:'admin',     icon:'🧩', label:'后端管理' },
+];
+const sideNav = document.getElementById('sideNav');
+const topNav = document.getElementById('topNav');
+NAV.forEach(n=>{
+  const a = document.createElement('a');
+  a.href = '#'+n.id; a.dataset.page = n.id;
+  a.className = 'flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-brand-50 dark:hover:bg-slate-800';
+  a.innerHTML = `<span>${n.icon}</span>${n.label}` + (n.badge?`<span class="ml-auto text-xs bg-rose-500 text-white px-1.5 rounded-full">${n.badge}</span>`:'');
+  sideNav.appendChild(a);
+  const b = a.cloneNode(true); b.className='shrink-0 px-3 py-1.5 rounded-lg glass whitespace-nowrap';
+  topNav.appendChild(b);
+});
+
+let currentPage = 'dashboard';
+function showPage(id){
+  if(!NAV.find(n=>n.id===id)) id='dashboard';
+  currentPage = id;
+  document.querySelectorAll('.page').forEach(s=>s.classList.toggle('active', s.id==='page-'+id));
+  document.querySelectorAll('#sideNav a, #topNav a').forEach(a=>{
+    const on = a.dataset.page===id;
+    a.classList.toggle('nav-active', on && a.parentElement===sideNav);
+    a.classList.toggle('bg-brand-500', on && a.parentElement===topNav);
+    a.classList.toggle('text-white', on && a.parentElement===topNav);
+  });
+  stopLoop();
+  if(id==='board'){ if(!boardInited) initBoard(); animateBoard(); }
+  if(id==='map'){ if(!mapInited) initMap(); animateMap(); }
+}
+window.addEventListener('hashchange', ()=>showPage(location.hash.replace('#','')));
+
+/* ============ 主题 / 通知 ============ */
+const root = document.documentElement;
+document.getElementById('themeBtn').onclick = ()=>root.classList.toggle('dark');
+const notif = document.getElementById('notif');
+document.getElementById('bellBtn').onclick = ()=>notif.classList.toggle('hidden');
+document.getElementById('notifClose').onclick = ()=>notif.classList.add('hidden');
+
+/* ============ 驾驶舱实时流 ============ */
+const events = [
+  ['🟢','设备 A1-05 上线','asia/cn/henan/zhengzhou/A1/LOT9/A1-05/telemetry'],
+  ['📥','采集点 +1,284 /s','asia/cn/henan/zhengzhou/A1/LOT9/A1-05/telemetry'],
+  ['🔴','A2-07 温度越限','asia/cn/henan/zhengzhou/A2/LOT3/A2-07/alarm'],
+  ['🤖','AI 诊断：B1-12 异常振动','asia/cn/henan/zhengzhou/B1/LOT7/B1-12/ai'],
+  ['✅','指令下发成功：A1-09 复位','asia/cn/henan/zhengzhou/A1/LOT9/A1-09/command'],
+  ['🟡','C1-03 心跳延迟 320ms','asia/cn/henan/zhengzhou/C1/LOT1/C1-03/heartbeat'],
+];
+const stream = document.getElementById('stream'); let ei=0;
+function pushEvent(){
+  const [icon,text,topic] = events[ei++ % events.length];
+  const li=document.createElement('li');
+  li.className='flex items-start gap-2 p-2 rounded-lg hover:bg-brand-50 dark:hover:bg-slate-800/60';
+  li.innerHTML=`<span>${icon}</span><div class="min-w-0"><div class="truncate">${text}</div><code class="text-[11px] text-slate-400">${topic}</code></div><span class="ml-auto text-[11px] text-slate-400">${new Date().toLocaleTimeString()}</span>`;
+  stream.prepend(li); if(stream.children.length>12) stream.lastChild.remove();
+}
+for(let k=0;k<6;k++) pushEvent();
+setInterval(pushEvent,2500);
+setInterval(()=>document.getElementById('lastSync').textContent=new Date().toLocaleTimeString(),1500);
+
+/* ============ 设备页 ============ */
+const devGrid=document.getElementById('devGrid');
+let searchQ='';
+function renderDevices(){
+  const f=document.getElementById('devFilter').value;
+  const q=searchQ;
+  devGrid.innerHTML='';
+  devices.filter(d=>(!f||d.status===f)&&(!q||(d.id+' '+d.name+' '+d.model).toLowerCase().includes(q))).forEach(d=>{
+    const c=document.createElement('div');
+    c.className='glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800 cursor-pointer hover:-translate-y-0.5 transition-transform';
+    c.innerHTML=`<div class="flex items-center justify-between"><span class="font-semibold">${d.name}</span><span class="badge" style="background:${STATUS_COLOR[d.status]}22;color:${STATUS_COLOR[d.status]}">${d.status}</span></div>
+      <div class="text-xs text-slate-400 mt-1">${d.id} · ${d.model} · ${d.proto}</div>
+      <div class="flex items-center justify-between mt-3 text-xs"><span class="text-slate-400">心跳 ${d.last}</span><span class="text-brand-500">详情 →</span></div>`;
+    c.onclick=()=>openDrawer(d);
+    devGrid.appendChild(c);
+  });
+}
+document.getElementById('devFilter').onchange=renderDevices;
+document.getElementById('globalSearch').addEventListener('input',e=>{
+  searchQ=e.target.value.trim().toLowerCase();
+  if(currentPage!=='devices' && searchQ) location.hash='devices';
+  else renderDevices();
+});
+
+/* ============ 设备详情抽屉（信息/心跳/操作/日志/指令/计划/任务/地图） ============ */
+const DW_TABS=['信息','心跳','操作','日志','指令','计划','任务','地图'];
+function openDrawer(d){
+  document.getElementById('dwName').textContent=d.name;
+  document.getElementById('dwId').textContent=`${d.id} · ${d.model} · ${d.proto}`;
+  const tabs=document.getElementById('dwTabs'); tabs.innerHTML='';
+  DW_TABS.forEach((t,i)=>{ const b=document.createElement('button');
+    b.className='tabbtn px-2.5 py-1 rounded-lg glass'+(i===0?' active':''); b.textContent=t;
+    b.onclick=()=>{ tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderDwTab(d,t); };
+    tabs.appendChild(b); });
+  renderDwTab(d,'信息');
+  document.getElementById('drawerMask').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(){ document.getElementById('drawerMask').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); }
+document.getElementById('dwClose').onclick=closeDrawer;
+document.getElementById('drawerMask').onclick=closeDrawer;
+function renderDwTab(d,t){
+  const body=document.getElementById('dwBody');
+  const row=(k,v)=>`<div class="flex justify-between"><span class="text-slate-400">${k}</span><span>${v}</span></div>`;
+  if(t==='信息') body.innerHTML=row('型号',d.model)+row('协议',d.proto)+row('状态',d.status)+row('位置',`${d.lat}, ${d.lon}`);
+  else if(t==='心跳') body.innerHTML=row('最后心跳',d.last)+row('间隔','5s')+row('延迟','18ms')+row('探针','HealthCheck OK');
+  else if(t==='操作') body.innerHTML=`<div class="flex gap-2 flex-wrap"><button class="px-3 py-1.5 rounded-lg bg-brand-500 text-white">复位</button><button class="px-3 py-1.5 rounded-lg glass">启动</button><button class="px-3 py-1.5 rounded-lg glass">停止</button></div><div class="text-xs text-slate-400 mt-2">操作经 CQRS 写命令 → IProtocolAdapter.WriteAsync（§6）</div>`;
+  else if(t==='日志') body.innerHTML=['12:01 采集正常','11:58 通信恢复','11:40 温度 71℃ 预警'].map(l=>`<div class="p-2 rounded-lg bg-slate-900/30 text-xs">${l}</div>`).join('');
+  else if(t==='指令') body.innerHTML=`<div class="flex gap-2"><input placeholder="地址 如 40001" class="flex-1 rounded-lg glass border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-xs"><input placeholder="值" class="w-20 rounded-lg glass border border-slate-200 dark:border-slate-700 px-2 py-1.5 text-xs"><button class="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-xs">下发</button></div><div class="text-xs text-slate-400 mt-2">经 Channel → MQTT → 设备（§9）</div>`;
+  else if(t==='计划') body.innerHTML=['每日 02:00 批量轮询','每周日 固件巡检'].map(l=>`<div class="p-2 rounded-lg glass text-xs">${l}</div>`).join('');
+  else if(t==='任务') body.innerHTML=['校正任务 #T204 进行中','备份任务 #T198 完成'].map(l=>`<div class="p-2 rounded-lg glass text-xs">${l}</div>`).join('');
+  else if(t==='地图') body.innerHTML=`<div class="text-slate-400">经纬度 ${d.lat}, ${d.lon}</div><div class="text-xs mt-2">完整地理分布见「地图」页（Three.js 全球 3D）。</div>`;
+}
+
+/* ============ 告警页 ============ */
+const almBody=document.getElementById('almBody');
+function renderAlarms(){
+  const f=document.querySelector('#almFilter .on').dataset.s;
+  almBody.innerHTML='';
+  alarms.filter(a=>f==='all'||(f==='active'&&a.st!=='已解决')||(f==='resolved'&&a.st==='已解决')).forEach(a=>{
+    const lvColor=a.lv==='严重'?'#f43f5e':a.lv==='警告'?'#f59e0b':'#60a5fa';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="py-2 text-slate-400">${a.t}</td><td>${a.dev}</td>
+      <td><span class="badge" style="background:${lvColor}22;color:${lvColor}">${a.lv}</span></td>
+      <td>${a.msg}</td><td>${a.st}</td>
+      <td class="text-right"><button class="text-brand-500 hover:underline mr-2">${a.st==='已解决'?'查看':'确认'}</button><button class="text-rose-500 hover:underline">${a.st==='已解决'?'关闭':'解决'}</button></td>`;
+    almBody.appendChild(tr);
+  });
+}
+document.querySelectorAll('#almFilter button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#almFilter button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); renderAlarms();
+});
+
+/* ============ 系统页 ============ */
+const svcGrid=document.getElementById('svcGrid');
+const services=[
+  {n:'Mosquitto(边缘)',s:'在线',d:'本地订阅/发布/桥接'},
+  {n:'EMQX(中心)',s:'在线',d:'云端集群 broker'},
+  {n:'SQLite(边缘库)',s:'在线',d:'plc-edge.db'},
+  {n:'DataSync',s:'同步中',d:'离线优先增量'},
+  {n:'WebApi',s:'在线',d:'REST / FastEndpoints'},
+  {n:'采集代理',s:'在线',d:'10 园区常驻'},
+];
+services.forEach(v=>{
+  const sc=v.s==='在线'?'#10b981':v.s==='同步中'?'#3b82f6':'#f59e0b';
+  const d=document.createElement('div'); d.className='glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800';
+  d.innerHTML=`<div class="flex items-center justify-between"><span class="font-semibold">${v.n}</span><span class="w-2 h-2 rounded-full animate-pulse" style="background:${sc}"></span></div><div class="text-xs text-slate-400 mt-1">${v.d}</div><div class="text-xs mt-2" style="color:${sc}">${v.s}</div>`;
+  svcGrid.appendChild(d);
+});
+const resGrid=document.getElementById('resGrid');
+[['CPU','38%',38],['内存','61%',61],['磁盘','44%',44],['网络','12 MB/s',30]].forEach(([k,v,p])=>{
+  const d=document.createElement('div');
+  d.innerHTML=`<div class="flex justify-between"><span>${k}</span><span class="font-semibold">${v}</span></div><div class="h-1.5 rounded bg-slate-200 dark:bg-slate-700 mt-1"><div class="h-full rounded bg-brand-400" style="width:${p}%"></div></div>`;
+  resGrid.appendChild(d);
+});
+
+/* ============ 后端管理页 ============ */
+const adminPanel=document.getElementById('adminPanel');
+const adminData={
+  plugin:[['Modbus 驱动','v2.3.1','已启用'],['S7 驱动','v1.8.0','已启用'],['OPC-UA 驱动','v1.2.4','已启用'],['三菱 MC','v0.9.0','已禁用'],['AI 诊断','v3.0.0','已启用']],
+  user:[['林工','admin@foxconn','管理员'],['王技师','wang@foxconn','运维'],['赵分析','zhao@foxconn','只读']],
+  topic:[['devices/asia/cn/henan/zhengzhou/+/+/#/telemetry','遥测'],['devices/+/+/+/+/+/+/+/alarm','告警'],['devices/+/+/+/+/+/+/+/command','指令'],['devices/+/+/+/+/+/+/+/heartbeat','心跳'],['devices/+/+/+/+/+/+/+/ai','AI 诊断']],
+  conn:[['EMQX 桥接','已连接'],['PostgreSQL','已连接'],['CommunityToolkit.Datasync','同步中'],['Seq 日志','已连接']],
+};
+function renderAdmin(t){
+  const rows=adminData[t];
+  let html='<table class="w-full text-sm"><tbody class="divide-y divide-slate-200 dark:divide-slate-800">';
+  rows.forEach(r=>{
+    if(t==='plugin') html+=`<tr><td class="py-2">${r[0]}</td><td class="text-slate-400">${r[1]}</td><td><span class="badge ${r[2]==='已启用'?'bg-emerald-500/20 text-emerald-500':'bg-slate-500/20 text-slate-400'}">${r[2]}</span></td><td class="text-right"><button class="text-brand-500 hover:underline">${r[2]==='已启用'?'停用':'启用'}</button></td></tr>`;
+    else if(t==='user') html+=`<tr><td class="py-2">${r[0]}</td><td class="text-slate-400">${r[1]}</td><td><span class="badge bg-brand-500/20 text-brand-400">${r[2]}</span></td></tr>`;
+    else if(t==='topic') html+=`<tr><td class="py-2"><code class="text-[11px] text-brand-500">${r[0]}</code></td><td><span class="badge bg-amber-500/20 text-amber-500">${r[1]}</span></td></tr>`;
+    else html+=`<tr><td class="py-2">${r[0]}</td><td><span class="badge ${r[1].includes('连接')?'bg-emerald-500/20 text-emerald-500':'bg-brand-500/20 text-brand-400'}">${r[1]}</span></td></tr>`;
+  });
+  html+='</tbody></table>'; adminPanel.innerHTML=html;
+}
+document.querySelectorAll('#adminTabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#adminTabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); renderAdmin(b.dataset.t);
+});
+
+/* ============ 实时看板：PLC 3D 结构透视 ============ */
+const tip=document.getElementById('tip');
+let boardInited=false, boardRAF=null, boardAuto=true;
+const plcModules=[
+  { key:'PWR', name:'电源模块 PW-24V',   color:0x475569, metric:'输入 24.1V' },
+  { key:'CPU', name:'CPU 控制器 S7-1200', color:0x3b82f6, metric:'负载 42%' },
+  { key:'DI',  name:'数字输入 DI16',      color:0x10b981, metric:'激活 11/16' },
+  { key:'DO',  name:'数字输出 DO16',      color:0xf59e0b, metric:'输出 6/16' },
+  { key:'AI',  name:'模拟输入 AI8',       color:0x8b5cf6, metric:'4-20mA 正常' },
+  { key:'AO',  name:'模拟输出 AO4',       color:0xec4899, metric:'输出 2.4V' },
+  { key:'COM', name:'通信模块 MQTT',      color:0x06b6d4, metric:'RTT 18ms' },
+];
+let boardScene, boardCam, boardRenderer, boardControls, boardRay, boardModMeshes=[], boardLabel;
+function initBoard(){
+  const wrap=document.getElementById('plcCanvas');
+  const w=wrap.clientWidth, h=wrap.clientHeight;
+  boardScene=new THREE.Scene();
+  boardCam=new THREE.PerspectiveCamera(45,w/h,0.1,100); boardCam.position.set(0,0.6,4.2);
+  boardRenderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  boardRenderer.setSize(w,h); boardRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  wrap.appendChild(boardRenderer.domElement);
+  boardControls=new OrbitControls(boardCam,boardRenderer.domElement);
+  boardControls.enableDamping=true; boardControls.autoRotate=true; boardControls.autoRotateSpeed=1.2; boardControls.target.set(0,0,0);
+  boardScene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const dir=new THREE.DirectionalLight(0xffffff,0.9); dir.position.set(3,4,5); boardScene.add(dir);
+  // 导轨
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(3.4,0.08,0.5),new THREE.MeshStandardMaterial({color:0x1e293b,metalness:.4,roughness:.6}));
+  boardScene.add(rail);
+  const startX=-1.5, gap=0.46;
+  plcModules.forEach((m,i)=>{
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.BoxGeometry(0.34,0.7,0.42),new THREE.MeshStandardMaterial({color:m.color,metalness:.3,roughness:.5}));
+    body.userData=m;
+    const led=new THREE.Mesh(new THREE.SphereGeometry(0.03,12,12),new THREE.MeshBasicMaterial({color:0x22c55e}));
+    led.position.set(0.12,0.3,0.22); led.userData=m;
+    g.add(body); g.add(led); g.position.set(startX+i*gap,0.4,0);
+    boardScene.add(g); boardModMeshes.push(body,led);
+  });
+  boardRay=new THREE.Raycaster();
+  boardRenderer.domElement.addEventListener('pointermove',e=>{
+    const r=boardRenderer.domElement.getBoundingClientRect();
+    const mx=((e.clientX-r.left)/r.width)*2-1, my=-((e.clientY-r.top)/r.height)*2+1;
+    boardRay.setFromCamera({x:mx,y:my},boardCam);
+    const hit=boardRay.intersectObjects(boardModMeshes)[0];
+    if(hit){ const m=hit.object.userData; tip.classList.remove('hidden'); tip.textContent=`${m.name} · ${m.metric}`;
+      tip.style.left=e.clientX+'px'; tip.style.top=e.clientY+'px';
+      document.getElementById('plcInfo').innerHTML=`<div class="font-semibold text-brand-400">${m.name}</div><div class="text-slate-400">${m.metric}</div>`;
+    } else tip.classList.add('hidden');
+  });
+  boardInited=true;
+}
+function animateBoard(){ boardRAF=requestAnimationFrame(animateBoard);
+  boardControls.autoRotate=boardAuto; boardControls.update(); boardRenderer.render(boardScene,boardCam); }
+document.querySelectorAll('#boardMode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#boardMode button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); boardAuto=b.dataset.m==='auto';
+});
+// Blender MCP → glTF 加载分支（生产级高保真资产）
+document.getElementById('boardLoadBtn').onclick=()=>{
+  if(!boardInited) initBoard();
+  const loader=new GLTFLoader();
+  loader.load('assets/plc-rack.glb', g=>{ boardScene.add(g.scene); },
+    undefined, ()=>{ tip.textContent='未找到 assets/plc-rack.glb（由 Blender MCP 生成导出）'; });
+};
+// 模块遥测面板定时刷新
+setInterval(()=>{ if(currentPage!=='board')return;
+  const box=document.getElementById('plcInfo');
+  box.innerHTML=plcModules.map(m=>`<div class="flex justify-between"><span>${m.name}</span><span class="text-emerald-500">${m.metric}</span></div>`).join('');
+},2000);
+
+/* ============ 地图：Three.js 全球 3D 地球 ============ */
+let mapInited=false, mapRAF=null, mapAuto=true;
+let mapScene, mapCam, mapRenderer, mapControls, mapRay, mapPins=[];
+const HUB={lat:34.75,lon:113.62};
+function latLonToVec3(lat,lon,r){ const phi=(90-lat)*Math.PI/180, theta=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta)); }
+function initMap(){
+  const wrap=document.getElementById('mapCanvas');
+  const w=wrap.clientWidth, h=wrap.clientHeight;
+  mapScene=new THREE.Scene();
+  mapCam=new THREE.PerspectiveCamera(45,w/h,0.1,100); mapCam.position.set(0,0,3.4);
+  mapRenderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  mapRenderer.setSize(w,h); mapRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  wrap.appendChild(mapRenderer.domElement);
+  mapControls=new OrbitControls(mapCam,mapRenderer.domElement);
+  mapControls.enableDamping=true; mapControls.autoRotate=true; mapControls.autoRotateSpeed=0.6; mapControls.minDistance=2.2; mapControls.maxDistance=6;
+  mapScene.add(new THREE.AmbientLight(0xffffff,0.65));
+  const dl=new THREE.DirectionalLight(0xffffff,0.9); dl.position.set(5,3,5); mapScene.add(dl);
+  const earth=new THREE.Mesh(new THREE.SphereGeometry(1,64,64),
+    new THREE.MeshPhongMaterial({color:0x0b3d91,emissive:0x06203f,shininess:8,transparent:true,opacity:0.95}));
+  mapScene.add(earth);
+  mapScene.add(new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.SphereGeometry(1.01,24,16)),
+    new THREE.LineBasicMaterial({color:0x3b82f6,transparent:true,opacity:0.25})));
+  // 大气辉光
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(1.08,32,32),new THREE.MeshBasicMaterial({color:0x3b82f6,transparent:true,opacity:0.08,side:THREE.BackSide}));
+  mapScene.add(glow);
+  // 设备点 + 到枢纽的弧线
+  const hubPos=latLonToVec3(HUB.lat,HUB.lon,1.01);
+  devices.forEach(d=>{
+    const p=latLonToVec3(d.lat,d.lon,1.01);
+    const pin=new THREE.Mesh(new THREE.SphereGeometry(0.022,12,12),new THREE.MeshBasicMaterial({color:STATUS_COLOR[d.status]}));
+    pin.position.copy(p); pin.userData=d; mapScene.add(pin); mapPins.push(pin);
+    const mid=p.clone().add(hubPos).multiplyScalar(0.5).normalize().multiplyScalar(1.35);
+    const curve=new THREE.QuadraticBezierCurve3(p,hubPos,mid);
+    const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(30)),
+      new THREE.LineBasicMaterial({color:0x60a5fa,transparent:true,opacity:0.35}));
+    mapScene.add(line);
+  });
+  const hub=new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));
+  hub.position.copy(hubPos); mapScene.add(hub);
+  mapRay=new THREE.Raycaster();
+  mapRenderer.domElement.addEventListener('pointermove',e=>{
+    const r=mapRenderer.domElement.getBoundingClientRect();
+    const mx=((e.clientX-r.left)/r.width)*2-1, my=-((e.clientY-r.top)/r.height)*2+1;
+    mapRay.setFromCamera({x:mx,y:my},mapCam);
+    const hit=mapRay.intersectObjects(mapPins)[0];
+    if(hit){ const d=hit.object.userData; tip.classList.remove('hidden'); tip.textContent=`${d.name} · ${d.status}`;
+      tip.style.left=e.clientX+'px'; tip.style.top=e.clientY+'px';
+      document.getElementById('mapInfo').innerHTML=`<div class="font-semibold text-brand-400">${d.name}</div><div class="text-slate-400">${d.id} · ${d.model}</div><div class="text-slate-400">状态 ${d.status} · 心跳 ${d.last}</div>`;
+    } else tip.classList.add('hidden');
+  });
+  // 园区分布列表
+  document.getElementById('mapInfo').innerHTML=devices.map(d=>
+    `<div class="flex justify-between"><span>${d.name.split(' ')[0]} ${d.name.split(' ')[1]||''}</span><span style="color:${STATUS_COLOR[d.status]}">${d.status}</span></div>`).join('');
+  mapInited=true;
+}
+function animateMap(){ mapRAF=requestAnimationFrame(animateMap);
+  mapControls.autoRotate=mapAuto; mapControls.update(); mapRenderer.render(mapScene,mapCam); }
+document.querySelectorAll('#mapMode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mapMode button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); mapAuto=b.dataset.m==='auto';
+});
+
+/* ============ 循环管理 ============ */
+function stopLoop(){ if(boardRAF) cancelAnimationFrame(boardRAF); if(mapRAF) cancelAnimationFrame(mapRAF); boardRAF=mapRAF=null; }
+window.addEventListener('resize',()=>{
+  if(mapInited){ const w=document.getElementById('mapCanvas').clientWidth,h=document.getElementById('mapCanvas').clientHeight;
+    mapCam.aspect=w/h; mapCam.updateProjectionMatrix(); mapRenderer.setSize(w,h); }
+  if(boardInited){ const w=document.getElementById('plcCanvas').clientWidth,h=document.getElementById('plcCanvas').clientHeight;
+    boardCam.aspect=w/h; boardCam.updateProjectionMatrix(); boardRenderer.setSize(w,h); }
+});
+
+/* ============ 启动 ============ */
+renderDevices(); renderAlarms(); renderAdmin('plugin');
+showPage(location.hash.replace('#','')||'dashboard');
+</script>
+</body>
+</html>

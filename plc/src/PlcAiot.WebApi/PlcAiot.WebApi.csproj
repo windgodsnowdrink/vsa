@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>PlcAiot.WebApi</RootNamespace>
+    <AssemblyName>PlcAiot.WebApi</AssemblyName>
+    <!-- 单一自包含控制台入口；便于容器化与 AOT/剪裁场景 -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UserSecretsId>plc-aiot-webapi</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

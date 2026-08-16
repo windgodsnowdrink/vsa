@@ -1,6 +1,6 @@
 # SaaS 能力补全推荐方案（Phase 5 立项建议）
 
-> 版本：Rec v1.0 · 状态：总监推荐（待用户确认分期 + 架构师 ratify ADR）
+> 版本：Rec v1.0 · 状态：**已确认（2026-08-16，用户拍板）** — 分期锁定：V1-now = 真实 MQTT/EMQX 桥(P0) + 治理三件套；P1 = PluginManager+ALC 热插拔 + MEAI/MCP/Qdrant(Phase 5)；P2/Later = Wolverine Outbox + YARP/WAF。ADR-109~113 仍 PROPOSED，待架构师 ratify。
 > 范围：把 `PLC-IoT-Architecture-Complete.md`(V9) 中「仅文档、未落地」的 5 项能力给出实现推荐，并补齐 DevOps / 安全审查 / 代码 CoreReview 三套工程治理。
 > 关联：`docs/PLC-IoT-Architecture-Verification.md`（实现核验，落地≈40%）· `docs/SaaS-Architecture-Spec.md` · `docs/decisions/ADR-109-113.md`（PROPOSED）。
 

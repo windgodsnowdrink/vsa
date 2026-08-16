@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media Matrix Tracker — 社媒矩阵数据追踪</title>
+  <!-- 单文件 HTMX + Tailwind：电影级数据密集仪表板 -->
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{400:'#60a5fa',500:'#3b82f6',600:'#2563eb'}}}}};</script>
+  <style>
+    .glass{background:rgba(255,255,255,.6);backdrop-filter:blur(12px)}
+    .dark .glass{background:rgba(15,23,42,.5)}
+    .tip{position:fixed;pointer-events:none;opacity:0;transition:opacity .12s;z-index:50;
+         background:#0f172a;color:#e2e8f0;font-size:12px;padding:6px 9px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-200 font-sans antialiased min-h-screen">
+
+  <!-- 顶栏 -->
+  <header class="glass sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto flex items-center gap-4 px-5 py-3">
+      <h1 class="font-bold text-lg">📣 Social Matrix <span class="text-brand-500">Tracker</span></h1>
+      <!-- 平台筛选 -->
+      <div class="hidden md:flex gap-1 text-sm" id="platforms">
+        <button data-p="all"  class="px-3 py-1 rounded-lg bg-brand-500 text-white">全部</button>
+        <button data-p="wb"   class="px-3 py-1 rounded-lg glass">微博</button>
+        <button data-p="dy"   class="px-3 py-1 rounded-lg glass">抖音</button>
+        <button data-p="xhs"  class="px-3 py-1 rounded-lg glass">小红书</button>
+        <button data-p="bili" class="px-3 py-1 rounded-lg glass">B站</button>
+      </div>
+      <div class="ml-auto flex items-center gap-2">
+        <!-- 范围对比 -->
+        <div class="flex gap-1 text-sm" id="ranges">
+          <button data-r="7"   class="px-3 py-1 rounded-lg bg-brand-500 text-white">7天</button>
+          <button data-r="30"  class="px-3 py-1 rounded-lg glass">30天</button>
+          <button data-r="90"  class="px-3 py-1 rounded-lg glass">90天</button>
+        </div>
+        <button id="theme" class="w-9 h-9 rounded-lg grid place-items-center glass">🌗</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-5 space-y-5">
+    <!-- KPI 行：多平台指标 -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="kpis">
+      <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm text-slate-400">总曝光</div><div class="text-2xl font-bold mt-1">12.4M</div>
+        <div class="text-xs text-emerald-500 mt-1">↑ 8.2% vs 上期</div></div>
+      <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm text-slate-400">互动量</div><div class="text-2xl font-bold mt-1">982K</div>
+        <div class="text-xs text-emerald-500 mt-1">↑ 4.1% vs 上期</div></div>
+      <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm text-slate-400">新增粉丝</div><div class="text-2xl font-bold mt-1">46.3K</div>
+        <div class="text-xs text-rose-500 mt-1">↓ 1.3% vs 上期</div></div>
+      <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+        <div class="text-sm text-slate-400">声量份额</div><div class="text-2xl font-bold mt-1">23.7%</div>
+        <div class="text-xs text-emerald-500 mt-1">↑ 2.0% vs 上期</div></div>
+    </div>
+
+    <!-- 交互式组合图（悬停洞察） -->
+    <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold">曝光 / 互动趋势（悬停查看明细）</h3>
+        <span class="text-xs text-slate-400" id="rangeLabel">范围：近 7 天</span>
+      </div>
+      <svg id="chart" viewBox="0 0 700 260" class="w-full h-64" preserveAspectRatio="none"></svg>
+    </div>
+
+    <!-- 平台明细表 -->
+    <div class="glass rounded-2xl p-4 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-slate-400 text-left"><th class="py-2">平台</th><th>曝光</th><th>互动</th><th>涨粉</th><th>互动率</th></tr></thead>
+        <tbody id="ptable" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <div id="tooltip" class="tip"></div>
+
+<script>
+  // 主题
+  const root=document.documentElement;
+  document.getElementById('theme').onclick=()=>root.classList.toggle('dark');
+
+  // 模拟多平台矩阵数据（生产由后端 /api/metrics 提供；此处用 HTMX 模式占位）
+  // HTMX 真实写法：<button hx-get="/api/metrics?range=30" hx-target="#chart" hx-swap="innerHTML">
+  const DATA = {
+    7:  {label:'近 7 天', exp:[3,4,3.6,5,4.8,6,5.2], eng:[1,1.4,1.2,1.8,1.6,2,1.9]},
+    30: {label:'近 30 天',exp:[12,14,13,16,15,18,17], eng:[4,5,4.6,6,5.5,7,6.4]},
+    90: {label:'近 90 天',exp:[34,38,36,42,40,46,44], eng:[11,13,12,15,14,17,16]},
+  };
+  const platforms=[
+    {n:'微博',  exp:'4.1M',eng:'310K',fan:'12.1K',rate:'7.6%'},
+    {n:'抖音',  exp:'5.8M',eng:'520K',fan:'21.4K',rate:'9.0%'},
+    {n:'小红书',exp:'1.9M',eng:'102K',fan:'8.6K', rate:'5.4%'},
+    {n:'B站',   exp:'640K',eng:'50K', fan:'4.2K', rate:'7.8%'},
+  ];
+  const tip=document.getElementById('tooltip');
+
+  function renderChart(range){
+    const d=DATA[range]; document.getElementById('rangeLabel').textContent='范围：'+d.label;
+    const W=700,H=260,max=Math.max(...d.exp)*1.1;
+    let pts='',area='',bars='';
+    d.exp.forEach((v,i)=>{const x=40+i*(W-60)/(d.exp.length-1);const y=H-30-(v/max)*(H-60);
+      pts+=`${i?'L':''}${x.toFixed(0)},${y.toFixed(0)} `;
+      area+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="4" fill="#3b82f6" class="dot" data-i="${i}"/>`;
+      const bw=18,bh=(d.eng[i]/max)*(H-60);
+      bars+=`<rect x="${(x-9).toFixed(0)}" y="${(H-30-bh).toFixed(0)}" width="${bw}" height="${bh.toFixed(0)}" rx="3" fill="#93c5fd" class="dot" data-i="${i}"/>`;
+    });
+    document.getElementById('chart').innerHTML=
+      `<path d="${pts} L${W-20},${H-30} L40,${H-30} Z" fill="#3b82f6" fill-opacity=".12"/>`+
+      `<path d="${pts}" fill="none" stroke="#3b82f6" stroke-width="2.5"/>`+bars+area;
+    // 悬停洞察
+    document.querySelectorAll('.dot').forEach(el=>{
+      el.addEventListener('mousemove',e=>{
+        const i=+el.dataset.i;
+        tip.style.opacity=1;tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY+12)+'px';
+        tip.innerHTML=`第 ${i+1} 期<br>曝光 ${d.exp[i]}M · 互动 ${d.eng[i]}K<br>互动率 ${(d.eng[i]/d.exp[i]*100).toFixed(1)}%`;
+      });
+      el.addEventListener('mouseleave',()=>tip.style.opacity=0);
+    });
+  }
+  function renderTable(){
+    document.getElementById('ptable').innerHTML=platforms.map(p=>
+      `<tr><td class="py-2 font-medium">${p.n}</td><td>${p.exp}</td><td>${p.eng}</td><td>${p.fan}</td><td>${p.rate}</td></tr>`).join('');
+  }
+  renderChart(7); renderTable();
+
+  // 范围对比 / 平台筛选
+  document.querySelectorAll('#ranges button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#ranges button').forEach(x=>x.className='px-3 py-1 rounded-lg glass');
+    b.className='px-3 py-1 rounded-lg bg-brand-500 text-white'; renderChart(b.dataset.r);
+  });
+  document.querySelectorAll('#platforms button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#platforms button').forEach(x=>x.className='px-3 py-1 rounded-lg glass');
+    b.className='px-3 py-1 rounded-lg bg-brand-500 text-white';
+    // 演示：实际按 data-p 向后端请求分平台指标
+  });
+</script>
+</body>
+</html>

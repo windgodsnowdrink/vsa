@@ -1,0 +1,14 @@
+{
+  "deviceId": "PLC-A1",
+  "displayName": "Demo Tank A1",
+  "protocol": "Modbus",
+  "transport": "Tcp",
+  "endpoint": { "host": "192.168.1.10", "port": 502, "slaveId": 1 },
+  "endianness": "Big",
+  "pollingMs": 1000,
+  "points": [
+    { "tag": "Temp1", "address": 30001, "functionCode": 4, "dataType": "float", "unit": "°C" },
+    { "tag": "Pressure", "address": 30002, "functionCode": 4, "dataType": "float", "unit": "bar" },
+    { "tag": "ValveOpen", "address": 1, "functionCode": 1, "dataType": "bool" }
+  ]
+}

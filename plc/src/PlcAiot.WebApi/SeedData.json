@@ -1,0 +1,187 @@
+{
+  "dashboard": {
+    "meta": { "park": "郑州 · 富士康园区", "lines": "产线 A1 / A2 / B1 / C1", "updated": "2026-08-15 22:40" },
+    "kpis": [
+      { "label": "设备在线率", "value": "98.6", "unit": "%", "delta": "+1.2%", "trend": "up", "pct": 98.6, "accent": "ok" },
+      { "label": "今日采集点", "value": "4.82", "unit": "M", "delta": "-3.4%", "trend": "down", "pct": 72, "accent": "brand" },
+      { "label": "活跃告警", "value": "12", "unit": "", "delta": "+5", "trend": "up", "pct": 30, "accent": "bad" },
+      { "label": "AI 诊断命中", "value": "91.3", "unit": "%", "delta": "+2.1%", "trend": "up", "pct": 91, "accent": "ok" }
+    ],
+    "throughput": {
+      "labels": ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"],
+      "series": [
+        { "name": "采集点 / s", "color": "#3b82f6", "data": [820, 760, 1180, 1320, 1260, 1340, 980] },
+        { "name": "告警 / s", "color": "#10b981", "data": [2, 1, 4, 6, 5, 7, 3] }
+      ]
+    },
+    "aggregate": [
+      { "name": "A1", "value": 1284 },
+      { "name": "A2", "value": 1120 },
+      { "name": "B1", "value": 940 },
+      { "name": "B2", "value": 760 },
+      { "name": "C1", "value": 1020 }
+    ],
+    "statusDist": [
+      { "label": "在线", "value": 1204, "color": "#10b981" },
+      { "label": "预警", "value": 38, "color": "#f59e0b" },
+      { "label": "告警", "value": 12, "color": "#f43f5e" },
+      { "label": "离线", "value": 17, "color": "#64748b" }
+    ],
+    "activity": [
+      { "icon": "🟢", "text": "设备 A1-05 上线", "topic": "asia/cn/henan/zhengzhou/A1/LOT9/A1-05/telemetry" },
+      { "icon": "📥", "text": "采集点 +1,284 /s", "topic": "asia/cn/henan/zhengzhou/A1/LOT9/A1-05/telemetry" },
+      { "icon": "🔴", "text": "A2-07 温度越限", "topic": "asia/cn/henan/zhengzhou/A2/LOT3/A2-07/alarm" },
+      { "icon": "🤖", "text": "AI 诊断：B1-12 异常振动", "topic": "asia/cn/henan/zhengzhou/B1/LOT7/B1-12/ai" },
+      { "icon": "✅", "text": "指令下发成功：A1-09 复位", "topic": "asia/cn/henan/zhengzhou/A1/LOT9/A1-09/command" },
+      { "icon": "🟡", "text": "C1-03 心跳延迟 320ms", "topic": "asia/cn/henan/zhengzhou/C1/LOT1/C1-03/heartbeat" }
+    ]
+  },
+  "devices": {
+    "devices": [
+      { "id": "ZZ-A1-05", "name": "郑州 A1-05 贴片机", "model": "S7-1200", "proto": "S7", "status": "在线", "last": "2s", "lat": 34.75, "lon": 113.62, "park": "郑州", "line": "A1" },
+      { "id": "ZZ-A2-07", "name": "郑州 A2-07 回流焊", "model": "FX5U", "proto": "Melsec", "status": "告警", "last": "1s", "lat": 34.70, "lon": 113.65, "park": "郑州", "line": "A2" },
+      { "id": "SZ-B1-03", "name": "深圳 B1-03 点胶机", "model": "OMRON-NJ", "proto": "Fins", "status": "预警", "last": "3s", "lat": 22.54, "lon": 114.06, "park": "深圳", "line": "B1" },
+      { "id": "CD-C1-12", "name": "成都 C1-12 组装臂", "model": "S7-1500", "proto": "S7", "status": "在线", "last": "2s", "lat": 30.57, "lon": 104.07, "park": "成都", "line": "C1" },
+      { "id": "KS-D1-09", "name": "昆山 D1-09 注塑机", "model": "MC-Protocol", "proto": "Melsec", "status": "在线", "last": "4s", "lat": 31.38, "lon": 120.98, "park": "昆山", "line": "D1" },
+      { "id": "US-E1-02", "name": "Austin E1-02 CNC", "model": "ControlLogix", "proto": "EtherNet/IP", "status": "在线", "last": "6s", "lat": 30.27, "lon": -97.74, "park": "Austin", "line": "E1" },
+      { "id": "BR-F1-04", "name": "São Paulo F1-04 焊线", "model": "FX3U", "proto": "Melsec", "status": "离线", "last": "—", "lat": -23.55, "lon": -46.63, "park": "São Paulo", "line": "F1" },
+      { "id": "IN-G1-06", "name": "Chennai G1-06 测试", "model": "S7-1200", "proto": "S7", "status": "在线", "last": "5s", "lat": 13.08, "lon": 80.27, "park": "Chennai", "line": "G1" },
+      { "id": "VN-H1-01", "name": "Hanoi H1-01 包装", "model": "Fatek", "proto": "Fatek", "status": "预警", "last": "3s", "lat": 21.03, "lon": 105.85, "park": "Hanoi", "line": "H1" },
+      { "id": "MX-I1-08", "name": "Mexico I1-08 切割", "model": "Keyence", "proto": "KV", "status": "在线", "last": "7s", "lat": 19.43, "lon": -99.13, "park": "Mexico", "line": "I1" }
+    ]
+  },
+  "alarms": {
+    "alarms": [
+      { "t": "08-15 21:42", "dev": "ZZ-A2-07", "lv": "严重", "msg": "温度越限 78℃ (阈值 70℃)", "st": "活跃" },
+      { "t": "08-15 21:30", "dev": "SZ-B1-03", "lv": "警告", "msg": "通信抖动 320ms", "st": "已确认" },
+      { "t": "08-15 21:12", "dev": "VN-H1-01", "lv": "警告", "msg": "心跳延迟 410ms", "st": "活跃" },
+      { "t": "08-15 20:55", "dev": "CD-C1-12", "lv": "信息", "msg": "AI 预测轴承磨损", "st": "已解决" },
+      { "t": "08-15 20:40", "dev": "BR-F1-04", "lv": "严重", "msg": "设备离线 > 5min", "st": "活跃" },
+      { "t": "08-15 20:18", "dev": "ZZ-A1-05", "lv": "信息", "msg": "固件升级完成", "st": "已解决" }
+    ]
+  },
+  "statistics": {
+    "stats": { "dailyAvg": "126.4M", "protocols": 6, "parks": 9 },
+    "oee": { "value": 87.2, "sub": "可用性 92% · 性能 95% · 质量 99%" },
+    "statusDist": [
+      { "label": "在线", "value": 1204, "color": "#10b981" },
+      { "label": "预警", "value": 38, "color": "#f59e0b" },
+      { "label": "告警", "value": 12, "color": "#f43f5e" },
+      { "label": "离线", "value": 17, "color": "#64748b" }
+    ],
+    "alarmTrend": [
+      { "label": "一", "value": 18 },
+      { "label": "二", "value": 24 },
+      { "label": "三", "value": 15 },
+      { "label": "四", "value": 30 },
+      { "label": "五", "value": 21 },
+      { "label": "六", "value": 27 },
+      { "label": "日", "value": 12 }
+    ]
+  },
+  "realtime": {
+    "plcModules": [
+      { "key": "PWR", "name": "电源模块 PW-24V", "color": "#475569", "metric": "输入 24.1V" },
+      { "key": "CPU", "name": "CPU 控制器 S7-1200", "color": "#3b82f6", "metric": "负载 42%" },
+      { "key": "DI", "name": "数字输入 DI16", "color": "#10b981", "metric": "激活 11/16" },
+      { "key": "DO", "name": "数字输出 DO16", "color": "#f59e0b", "metric": "输出 6/16" },
+      { "key": "AI", "name": "模拟输入 AI8", "color": "#8b5cf6", "metric": "4-20mA 正常" },
+      { "key": "AO", "name": "模拟输出 AO4", "color": "#ec4899", "metric": "输出 2.4V" },
+      { "key": "COM", "name": "通信模块 MQTT", "color": "#06b6d4", "metric": "RTT 18ms" }
+    ]
+  },
+  "map": {
+    "devices": [
+      { "id": "ZZ-A1-05", "name": "郑州 A1-05 贴片机", "model": "S7-1200", "proto": "S7", "status": "在线", "last": "2s", "lat": 34.75, "lon": 113.62, "park": "郑州", "line": "A1" },
+      { "id": "ZZ-A2-07", "name": "郑州 A2-07 回流焊", "model": "FX5U", "proto": "Melsec", "status": "告警", "last": "1s", "lat": 34.70, "lon": 113.65, "park": "郑州", "line": "A2" },
+      { "id": "SZ-B1-03", "name": "深圳 B1-03 点胶机", "model": "OMRON-NJ", "proto": "Fins", "status": "预警", "last": "3s", "lat": 22.54, "lon": 114.06, "park": "深圳", "line": "B1" },
+      { "id": "CD-C1-12", "name": "成都 C1-12 组装臂", "model": "S7-1500", "proto": "S7", "status": "在线", "last": "2s", "lat": 30.57, "lon": 104.07, "park": "成都", "line": "C1" },
+      { "id": "KS-D1-09", "name": "昆山 D1-09 注塑机", "model": "MC-Protocol", "proto": "Melsec", "status": "在线", "last": "4s", "lat": 31.38, "lon": 120.98, "park": "昆山", "line": "D1" },
+      { "id": "US-E1-02", "name": "Austin E1-02 CNC", "model": "ControlLogix", "proto": "EtherNet/IP", "status": "在线", "last": "6s", "lat": 30.27, "lon": -97.74, "park": "Austin", "line": "E1" },
+      { "id": "BR-F1-04", "name": "São Paulo F1-04 焊线", "model": "FX3U", "proto": "Melsec", "status": "离线", "last": "—", "lat": -23.55, "lon": -46.63, "park": "São Paulo", "line": "F1" },
+      { "id": "IN-G1-06", "name": "Chennai G1-06 测试", "model": "S7-1200", "proto": "S7", "status": "在线", "last": "5s", "lat": 13.08, "lon": 80.27, "park": "Chennai", "line": "G1" },
+      { "id": "VN-H1-01", "name": "Hanoi H1-01 包装", "model": "Fatek", "proto": "Fatek", "status": "预警", "last": "3s", "lat": 21.03, "lon": 105.85, "park": "Hanoi", "line": "H1" },
+      { "id": "MX-I1-08", "name": "Mexico I1-08 切割", "model": "Keyence", "proto": "KV", "status": "在线", "last": "7s", "lat": 19.43, "lon": -99.13, "park": "Mexico", "line": "I1" }
+    ]
+  },
+  "system": {
+    "services": [
+      { "n": "Mosquitto（边缘）", "s": "在线", "d": "本地订阅 / 发布 / 桥接" },
+      { "n": "EMQX（中心）", "s": "在线", "d": "云端集群 broker" },
+      { "n": "SQLite（边缘库）", "s": "在线", "d": "plc-edge.db" },
+      { "n": "DataSync", "s": "同步中", "d": "离线优先增量" },
+      { "n": "WebApi", "s": "在线", "d": "REST / Minimal API" },
+      { "n": "采集代理", "s": "在线", "d": "10 园区常驻" }
+    ],
+    "resources": [
+      { "k": "CPU", "v": "38%", "p": 38 },
+      { "k": "内存", "v": "61%", "p": 61 },
+      { "k": "磁盘", "v": "44%", "p": 44 },
+      { "k": "网络", "v": "12 MB/s", "p": 30 }
+    ]
+  },
+  "admin": {
+    "admin": {
+      "plugin": [
+        ["Modbus 驱动", "v2.3.1", "已启用"],
+        ["S7 驱动", "v1.8.0", "已启用"],
+        ["OPC-UA 驱动", "v1.2.4", "已启用"],
+        ["三菱 MC", "v0.9.0", "已禁用"],
+        ["AI 诊断", "v3.0.0", "已启用"]
+      ],
+      "user": [
+        ["林工", "admin@foxconn", "管理员"],
+        ["王技师", "wang@foxconn", "运维"],
+        ["赵分析", "zhao@foxconn", "只读"]
+      ],
+      "topic": [
+        ["devices/asia/cn/henan/zhengzhou/+/+/#/telemetry", "遥测"],
+        ["devices/+/+/+/+/+/+/+/alarm", "告警"],
+        ["devices/+/+/+/+/+/+/+/command", "指令"],
+        ["devices/+/+/+/+/+/+/+/heartbeat", "心跳"],
+        ["devices/+/+/+/+/+/+/+/ai", "AI 诊断"]
+      ],
+      "conn": [
+        ["EMQX 桥接", "已连接"],
+        ["PostgreSQL", "已连接"],
+        ["CommunityToolkit.Datasync", "同步中"],
+        ["Seq 日志", "已连接"]
+      ]
+    }
+  },
+  "social": {
+    "kpis": [
+      { "t": "总曝光", "v": "12.4M", "d": 8.2 },
+      { "t": "互动量", "v": "982K", "d": 4.1 },
+      { "t": "新增粉丝", "v": "46.3K", "d": -1.3 },
+      { "t": "声量份额", "v": "23.7%", "d": 2.0 }
+    ],
+    "trend": {
+      "7": { "label": "近 7 天", "exp": [3, 4, 3.6, 5, 4.8, 6, 5.2], "eng": [1, 1.4, 1.2, 1.8, 1.6, 2, 1.9] },
+      "30": { "label": "近 30 天", "exp": [12, 14, 13, 16, 15, 18, 17], "eng": [4, 5, 4.6, 6, 5.5, 7, 6.4] },
+      "90": { "label": "近 90 天", "exp": [34, 38, 36, 42, 40, 46, 44], "eng": [11, 13, 12, 15, 14, 17, 16] }
+    },
+    "platforms": [
+      { "n": "微博", "exp": "4.1M", "eng": "310K", "fan": "12.1K", "rate": "7.6%" },
+      { "n": "抖音", "exp": "5.8M", "eng": "520K", "fan": "21.4K", "rate": "9.0%" },
+      { "n": "小红书", "exp": "1.9M", "eng": "102K", "fan": "8.6K", "rate": "5.4%" },
+      { "n": "B站", "exp": "640K", "eng": "50K", "fan": "4.2K", "rate": "7.8%" }
+    ]
+  },
+  "notion": {
+    "kpis": [
+      { "t": "设备在线", "v": "1,204", "d": 1.2 },
+      { "t": "今日告警", "v": "12", "d": -0.4 },
+      { "t": "待办任务", "v": "34", "d": 3 },
+      { "t": "AI 命中", "v": "91%", "d": 2.1 }
+    ],
+    "trend": [40, 52, 48, 61, 57, 70, 66],
+    "tasks": [
+      { "name": "A2-07 温度越限处置", "owner": "林工", "st": "进行中", "dev": "A2-07", "due": "08-16" },
+      { "name": "B1-03 通信抖动排查", "owner": "王工", "st": "待办", "dev": "B1-03", "due": "08-17" },
+      { "name": "C1-12 轴承预测维护", "owner": "AI", "st": "已完成", "dev": "C1-12", "due": "08-14" },
+      { "name": "产线A1 协议升级", "owner": "赵工", "st": "阻塞", "dev": "A1-*", "due": "08-20" }
+    ],
+    "connectors": ["Notion", "Slack", "GitHub", "Jira", "Google Sheets", "飞书", "企业微信", "Webhook"]
+  }
+}
