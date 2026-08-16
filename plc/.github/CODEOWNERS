@@ -1,0 +1,17 @@
+# 治理与文档
+docs/                   @mvp-dev-expert-team-architect
+docs/decisions/         @mvp-dev-expert-team-architect
+
+# DevOps / 安全 / 审查
+.github/                @mvp-dev-expert-team-devops
+scripts/                @mvp-dev-expert-team-devops
+
+# 后端 SaaS 控制面
+plc-saas/               @mvp-dev-expert-team-backend
+
+# 前端
+wwwroot/                @mvp-dev-expert-team-frontend
+
+# 根协议驱动 / 边缘稳定性
+*.cs                    @mvp-dev-expert-team-architect @mvp-dev-expert-team-backend
+samples/                @mvp-dev-expert-team-backend
