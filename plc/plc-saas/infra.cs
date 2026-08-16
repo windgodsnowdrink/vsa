@@ -173,8 +173,8 @@ public sealed class TenantConnectionInterceptor : DbConnectionInterceptor
         if (connection is NpgsqlConnection npg)
         {
             using var cmd = npg.CreateCommand();
-            cmd.CommandText = "SET app.tenant_id = :tid;";
-            cmd.Parameters.AddWithValue("tid", _tenant.IsRoot ? Guid.Empty : _tenant.TenantId);
+            var tid = _tenant.IsRoot ? Guid.Empty : _tenant.TenantId;
+            cmd.CommandText = $"SET app.tenant_id = '{tid}';";
             cmd.ExecuteNonQuery();
         }
         return Task.CompletedTask;
@@ -236,6 +236,7 @@ public sealed class BaseDbContext : IdentityDbContext<
         // jsonb 列
         b.Entity<Device>().Property(d => d.Profile).HasColumnType("jsonb");
         b.Entity<OutboxMessage>().Property(o => o.Payload).HasColumnType("jsonb");
+        b.Entity<OutboxMessage>().Property(o => o.SentAt).HasColumnName("sent_at"); // 显式列名，与过滤索引 WHERE sent_at IS NULL 及计量轮询口径一致
         b.Entity<AuditLog>().Property(a => a.Detail).HasColumnType("jsonb");
 
         // 全局查询过滤器（ITenantEntity）——RLS 是 DB 级兜底
@@ -362,7 +363,14 @@ public static class SaasServiceExtensions
     public static IServiceCollection AddSaasAuth(this IServiceCollection services, IConfiguration config)
     {
         var jwt = config.GetSection("Jwt");
-        var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
+        var jwtKey = jwt["Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            // 本地开发兜底：未配置 Jwt:Key 时不致命崩溃；生产环境务必在配置中设置强密钥。
+            jwtKey = "plc-aiot-saas-dev-insecure-fallback-key-change-me-32+";
+            Console.Error.WriteLine("WARN: Jwt:Key 未配置，已使用内置开发兜底密钥（生产环境务必在配置中设置强密钥）。");
+        }
+        var key = Encoding.UTF8.GetBytes(jwtKey);
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(o =>
