@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.AI;
 using Xunit;
 
 namespace PlcSaas.Verify;
@@ -94,7 +95,7 @@ public sealed class VerifyTests
             "billing.usage.cs", "billing.plan.cs", "billing.quota.cs",
             "devices.list.cs", "faults.ack.cs", "faults.stream.cs",
             "ops.tenants.cs", "ops.pricing.cs", "ops.roles.cs", "ops.health.cs",
-            "metering.agent.cs",
+            "metering.agent.cs", "ingest.bridge.cs", "ingest.http.cs", "ai.assistant.cs",
         };
         foreach (var name in expected)
         {
@@ -102,5 +103,67 @@ public sealed class VerifyTests
                 File.Exists(Path.Combine(slicesDir, name)),
                 $"缺失切片源文件：slices/{name}");
         }
+    }
+
+    // —— ADR-113 摄取契约：设备 Id 解析 / 遥测归一化（纯逻辑，验证 HTTP 主路径契约）——
+    private const string Tid = "3f2504e0-4f89-41d3-9a0c-0305e82c3301";
+    private const string Dev = "9f1e7c2a-1b2c-4d3e-8f9a-0b1c2d3e4f5a";
+
+    [Fact]
+    public void IngestAuthTryDeviceIdAcceptsGuidAndTopicFallback()
+    {
+        Assert.True(IngestAuth.TryDeviceId(Dev, null, out var d1));
+        Assert.Equal(Guid.Parse(Dev), d1);
+
+        Assert.False(IngestAuth.TryDeviceId("not-a-guid", null, out _));
+
+        var topic = $"tenants/{Tid}/devices/{Dev}/telemetry";
+        Assert.True(IngestAuth.TryDeviceId(null, topic, out var d2));
+        Assert.Equal(Guid.Parse(Dev), d2);
+
+        Assert.False(IngestAuth.TryDeviceId(null, "bad/topic", out _));
+    }
+
+    [Fact]
+    public void IngestAuthNormalizeTelemetryParsesUnixAndEmptyMetrics()
+    {
+        var (ts, metrics) = IngestAuth.NormalizeTelemetry(1_690_000_000, null);
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(1_690_000_000).UtcDateTime, ts);
+        Assert.Empty(metrics);
+
+        var (ts2, metrics2) = IngestAuth.NormalizeTelemetry(null, new Dictionary<string, double> { { "temp", 1.5 } });
+        Assert.Equal(DateTime.UtcNow.Date, ts2.Date);
+        Assert.Equal(1.5, metrics2["temp"]);
+    }
+
+    // —— ADR-112 AI/RAG：故障模式向量库租户隔离（内存兜底实现）——
+    [Fact]
+    public async Task FaultVectorStoreIsTenantIsolated()
+    {
+        var store = new InMemoryFaultVectorStore();
+        var a = Guid.NewGuid();
+        var b = Guid.NewGuid();
+        var vec = FaultEmbedding.Encode("OVER_TEMP", "high");
+
+        await store.UpsertPatternAsync(a, "OVER_TEMP", "high", vec);
+
+        var own = await store.SearchSimilarAsync(a, vec, 5);
+        Assert.Single(own);
+        Assert.Equal("OVER_TEMP", own[0].Code);
+
+        var other = await store.SearchSimilarAsync(b, vec, 5);
+        Assert.Empty(other); // 跨租户不可见
+    }
+
+    // —— ADR-112 AI：未接入真实 LLM 时离线启发式诊断回退（无网络依赖）——
+    [Fact]
+    public async Task DiagnosisChatClientFallsBackToHeuristic()
+    {
+        var client = new PlcDiagnosisChatClient(upstream: null);
+        var resp = await client.GetResponseAsync(new List<ChatMessage>
+        {
+            new(ChatRole.User, "设备持续过温报警"),
+        });
+        Assert.Contains("启发式诊断", resp.Text);
     }
 }

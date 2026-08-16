@@ -1,0 +1,52 @@
+# PLC·AIOT SaaS 本地开发基础设施（V1-now MQTT 桥验证用）
+# 启动： docker compose up -d
+# 停止： docker compose down   （保留数据： docker compose down 不删 pgdata 卷； docker compose down -v 删除）
+# 凭据（按需）：
+#   PostgreSQL  superuser: postgresql / postgresql   （数据库 plc_aiot_saas）
+#   SaaS 应用角色: plcsaas / plcsaas   （由 initdb/01-roles.sql 创建，appsettings 连接串使用）
+#   EMQX 控制台:  http://localhost:18083   admin / Admin123
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: plc-saas-postgres
+    environment:
+      POSTGRES_USER: postgresql
+      POSTGRES_PASSWORD: postgresql
+      POSTGRES_DB: plc_aiot_saas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgresql -d plc_aiot_saas"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  emqx:
+    image: emqx/emqx:5.8.5
+    container_name: plc-saas-emqx
+    environment:
+      EMQX_DASHBOARD__DEFAULT_USERNAME: admin
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: Admin123
+      EMQX_NODE__NAME: emqx@127.0.0.1
+      # 允许 EMQX 规则引擎 Webhook 用自签/HTTP 访问本机 SaaS（dev）
+      EMQX_RULE_ENGINE__HTTP__CONNECT_TIMEOUT: 5s
+    ports:
+      - "1883:1883"   # MQTT
+      - "8083:8083"   # MQTT over WebSocket
+      - "8084:8084"   # MQTT over WSS
+      - "8883:8883"   # MQTT/SSL
+      - "18083:18083" # Dashboard + REST API
+    healthcheck:
+      test: ["CMD", "emqx", "ctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  pgdata:

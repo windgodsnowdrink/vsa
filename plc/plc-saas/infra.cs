@@ -10,6 +10,11 @@
 #r "nuget:System.IdentityModel.Tokens.Jwt, 8.22.0"
 #r "nuget:Mediator.Abstractions, 3.0.2"
 #r "nuget:Mediator.SourceGenerator, 3.0.2"
+#r "nuget:MQTTnet, 5.2.0.1603"
+#r "nuget:Microsoft.Extensions.AI, 10.9.0"
+#r "nuget:ModelContextProtocol, 2.2.0"
+#r "nuget:ModelContextProtocol.AspNetCore, 0.1.0-preview.14"
+#r "nuget:Qdrant.Client, 1.19.0"
 
 #if !INFRA_CS
 #define INFRA_CS
@@ -34,6 +39,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Data.Common;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,6 +50,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Npgsql;
 using Mediator;
+using Microsoft.Extensions.AI;
+using ModelContextProtocol.Server;
+using Qdrant.Client;
+using Qdrant.Client.Grpc;
+using System.Runtime.CompilerServices;
 using System.Threading.RateLimiting;
 
 // ===================== 常量 =====================
@@ -282,7 +295,7 @@ public static class Api
 public sealed record FaultAcked(Guid TenantId, Guid FaultId, Guid AckedBy, DateTime AckedAt) : INotification;
 public sealed record QuotaThresholdReached(Guid TenantId, string Metric, long Used, long Quota, decimal Pct) : INotification;
 public sealed record QuotaExceeded(Guid TenantId, string Metric, long Used, long Quota) : INotification;
-public sealed record TelemetryIngested(Guid TenantId, Guid DeviceId, long Points) : INotification;
+public sealed record TelemetryIngested(Guid TenantId, Guid DeviceId, long Points);
 
 // ===================== JWT 签发（含 tid 声明；ADR-104）=====================
 public static class JwtIssuer
@@ -557,6 +570,311 @@ public static class SaasSchemaBootstrap
             if (File.Exists(c))
                 return File.ReadAllText(c);
         return null;
+    }
+}
+
+// ===================== 遥测存储（ADR-113 数据平面）=====================
+// 遥测走时序库（InfluxDB v2 行协议，经 HttpClient 写入，无额外包依赖）；未配置则 Null 兜底。
+// 注意：遥测落库与计量解耦——计量由 Outbox(TelemetryIngested) 独立路径保证（ADR-102/108），
+// 因此 InfluxDB 不可达时仅告警、绝不阻塞摄取主链路。
+public interface ITelemetryStore
+{
+    ValueTask WriteAsync(Guid tenantId, Guid deviceId, DateTime timestamp,
+        IReadOnlyDictionary<string, double> metrics, CancellationToken ct = default);
+}
+
+public sealed class NullTelemetryStore : ITelemetryStore
+{
+    private readonly ILogger<NullTelemetryStore> _log;
+    public NullTelemetryStore(ILogger<NullTelemetryStore> log) => _log = log;
+    public ValueTask WriteAsync(Guid tenantId, Guid deviceId, DateTime timestamp,
+        IReadOnlyDictionary<string, double> metrics, CancellationToken ct = default)
+    {
+        _log.LogDebug("遥测未落库（未配置 InfluxDB）：tid={Tid} device={Device} metrics={Count}", tenantId, deviceId, metrics.Count);
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class InfluxTelemetryStore : ITelemetryStore
+{
+    private readonly HttpClient _http;
+    private readonly string _baseUrl;
+    private readonly string _bucket;
+    private readonly string _org;
+    private readonly string _token;
+    private readonly ILogger<InfluxTelemetryStore> _log;
+
+    public InfluxTelemetryStore(HttpClient http, IConfiguration cfg, ILogger<InfluxTelemetryStore> log)
+    {
+        _http = http;
+        _baseUrl = (cfg["Telemetry:Influx:Url"] ?? "http://localhost:8086").TrimEnd('/');
+        _bucket = cfg["Telemetry:Influx:Bucket"] ?? "plc_telemetry";
+        _org = cfg["Telemetry:Influx:Org"] ?? "plc-aiot";
+        _token = cfg["Telemetry:Influx:Token"] ?? "";
+        _log = log;
+    }
+
+    public async ValueTask WriteAsync(Guid tenantId, Guid deviceId, DateTime timestamp,
+        IReadOnlyDictionary<string, double> metrics, CancellationToken ct = default)
+    {
+        if (metrics.Count == 0) return;
+        var ts = (long)(timestamp.ToUniversalTime() - DateTime.UnixEpoch).TotalSeconds;
+        var fields = string.Join(",", metrics.Select(kv =>
+            $"{EscapeTag(kv.Key)}={kv.Value.ToString(CultureInfo.InvariantCulture)}"));
+        var line = $"device_telemetry,tenant_id={tenantId},device_id={deviceId} {fields} {ts}";
+
+        var url = $"{_baseUrl}/api/v2/write?org={Uri.EscapeDataString(_org)}&bucket={Uri.EscapeDataString(_bucket)}&precision=s";
+        using var req = new HttpRequestMessage(HttpMethod.Post, url);
+        if (!string.IsNullOrEmpty(_token))
+            req.Headers.Authorization = new AuthenticationHeaderValue("Token", _token);
+        req.Content = new StringContent(line, Encoding.UTF8, "text/plain");
+
+        // best-effort：遥测高吞吐，存储不可达不应阻断摄取（计量走 Outbox 独立路径）
+        try
+        {
+            var resp = await _http.SendAsync(req, ct);
+            if (!resp.IsSuccessStatusCode)
+                _log.LogWarning("InfluxDB 写入失败 {Code}: {Body}", (int)resp.StatusCode, await resp.Content.ReadAsStringAsync(ct));
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "InfluxDB 写入异常（遥测未落库，不影响摄取与计量）");
+        }
+    }
+
+    private static string EscapeTag(string s) =>
+        s.Replace(" ", "\\ ").Replace(",", "\\,").Replace("=", "\\=").Replace("\"", "\\\"");
+}
+
+// ===================== 摄取桥 DI（ADR-113）=====================
+public static class SaasIngestExtensions
+{
+    public static IServiceCollection AddSaasIngest(this IServiceCollection services, IConfiguration config)
+    {
+        // 遥测存储：配置 Telemetry:Influx:Url 时接 InfluxDB，否则 Null 兜底（不阻断启动）
+        if (!string.IsNullOrWhiteSpace(config["Telemetry:Influx:Url"]))
+        {
+            services.AddHttpClient<InfluxTelemetryStore>();
+            services.AddScoped<ITelemetryStore>(sp => sp.GetRequiredService<InfluxTelemetryStore>());
+        }
+        else
+        {
+            services.AddScoped<ITelemetryStore, NullTelemetryStore>();
+        }
+
+        // 边缘中继（MQTTnet 订阅桥）：仅当 Mqtt:Bridge:Enabled=true 时启用
+        if (config.GetValue("Mqtt:Bridge:Enabled", false))
+            services.AddHostedService<MqttBridgeService>();
+
+        return services;
+    }
+}
+
+// ===================== AI 助手 / RAG / MCP（ADR-112，P1 旗舰）=====================
+// 设计要点（全部经 ICurrentTenant + EF 全局过滤器保证租户隔离）：
+//  - MEAI 作 LLM 抽象（IChatClient）：未配置 Provider 时回退 PlcDiagnosisChatClient 启发式诊断（离线可用）。
+//  - 故障模式向量库：Qdrant（租户分区 collection）或内存兜底；任一不可达均 best-effort 不阻断启动。
+//  - MCP Server（/mcp，tid 作用域隔离）：暴露 list_devices/get_faults/get_telemetry_summary，外部 AI Agent 可安全问诊。
+//  - AiAssistant / Mcp / Qdrant 均 feature flag 门控（默认关闭，需显式开启）。
+
+public sealed class AiOptions
+{
+    public bool Enabled { get; set; }
+    public string Provider { get; set; } = "";   // OpenAI | Azure | Ollama —— 生产接入真实 LLM 时填
+    public string Model { get; set; } = "";
+    public string Endpoint { get; set; } = "";
+    public string ApiKey { get; set; } = "";
+}
+
+public sealed class QdrantOptions
+{
+    public bool Enabled { get; set; }
+    public string Url { get; set; } = "http://localhost:6334";
+    public string ApiKey { get; set; } = "";
+}
+
+public sealed class McpOptions
+{
+    public bool Enabled { get; set; }
+}
+
+// 故障模式向量库抽象（租户分区）
+public interface IFaultVectorStore
+{
+    ValueTask UpsertPatternAsync(Guid tenantId, string code, string severity, IReadOnlyList<float> vector, CancellationToken ct = default);
+    ValueTask<IReadOnlyList<FaultPatternHit>> SearchSimilarAsync(Guid tenantId, IReadOnlyList<float> vector, int topK = 5, CancellationToken ct = default);
+}
+
+public sealed record FaultPatternHit(string Code, string Severity, float Score);
+
+// 确定性伪嵌入：将故障码+级别映射到固定维度向量，离线即可做余弦相似（生产替换为真实 IEmbeddingGenerator）。
+internal static class FaultEmbedding
+{
+    public const int Dim = 32;
+    public static IReadOnlyList<float> Encode(string code, string severity)
+    {
+        var vec = new float[Dim];
+        foreach (var ch in $"{code}:{severity}".ToLowerInvariant())
+            vec[Math.Abs(ch) % Dim] += 1f;
+        var norm = (float)Math.Sqrt(vec.Sum(v => v * v));
+        if (norm > 0) for (int i = 0; i < Dim; i++) vec[i] /= norm;
+        return vec;
+    }
+}
+
+// 内存兜底实现（Qdrant 未启用/不可达时使用，保证演示与单测离线可用）
+public sealed class InMemoryFaultVectorStore : IFaultVectorStore
+{
+    private sealed record Entry(string Code, string Severity, IReadOnlyList<float> Vector);
+    private readonly Dictionary<Guid, List<Entry>> _byTenant = new();
+    private readonly object _gate = new();
+
+    public ValueTask UpsertPatternAsync(Guid tenantId, string code, string severity, IReadOnlyList<float> vector, CancellationToken ct = default)
+    {
+        lock (_gate)
+        {
+            if (!_byTenant.TryGetValue(tenantId, out var list)) _byTenant[tenantId] = list = new();
+            list.Add(new Entry(code, severity, vector.ToArray()));
+        }
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask<IReadOnlyList<FaultPatternHit>> SearchSimilarAsync(Guid tenantId, IReadOnlyList<float> vector, int topK = 5, CancellationToken ct = default)
+    {
+        List<Entry>? list;
+        lock (_gate) { _byTenant.TryGetValue(tenantId, out var src); list = src?.ToList(); }
+        if (list is null) return new ValueTask<IReadOnlyList<FaultPatternHit>>(Array.Empty<FaultPatternHit>());
+        var hits = list.Select(e => new FaultPatternHit(e.Code, e.Severity, Cosine(e.Vector, vector)))
+                        .OrderByDescending(h => h.Score).Take(topK).ToArray();
+        return new ValueTask<IReadOnlyList<FaultPatternHit>>(hits);
+    }
+
+    private static float Cosine(IReadOnlyList<float> a, IReadOnlyList<float> b)
+    {
+        float dot = 0, na = 0, nb = 0;
+        for (int i = 0; i < a.Count; i++) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; }
+        return (na == 0 || nb == 0) ? 0 : dot / (MathF.Sqrt(na) * MathF.Sqrt(nb));
+    }
+}
+
+// Qdrant 实现：租户分区 collection（faults_{tid}）；任何异常 best-effort 降级，不阻断摄取主链路。
+public sealed class QdrantFaultVectorStore : IFaultVectorStore
+{
+    private readonly QdrantClient _client;
+    private readonly ILogger<QdrantFaultVectorStore> _log;
+    private readonly Dictionary<string, (string Code, string Severity)> _meta = new();
+    public QdrantFaultVectorStore(IConfiguration cfg, ILogger<QdrantFaultVectorStore> log)
+    {
+        var url = cfg["Qdrant:Url"] ?? "http://localhost:6334";
+        var uri = new Uri(url);
+        _client = new QdrantClient(uri.Host, uri.Port, uri.Scheme == "https", cfg["Qdrant:ApiKey"]);
+        _log = log;
+    }
+
+    private static string Coll(Guid tid) => $"faults_{tid:N}";
+
+    public async ValueTask UpsertPatternAsync(Guid tenantId, string code, string severity, IReadOnlyList<float> vector, CancellationToken ct = default)
+    {
+        try
+        {
+            var coll = Coll(tenantId);
+            await EnsureCollectionAsync(coll, ct);
+            var id = Guid.NewGuid();
+            _meta[id.ToString()] = (code, severity); // 进程内元数据缓存（生产应改用 PointStruct.Payload）
+            var point = new PointStruct { Id = id, Vectors = vector.ToArray() };
+            await _client.UpsertAsync(coll, new List<PointStruct> { point }, cancellationToken: ct);
+        }
+        catch (Exception ex) { _log.LogWarning(ex, "Qdrant 写入失败（故障模式未入库，不影响摄取）"); }
+    }
+
+    public async ValueTask<IReadOnlyList<FaultPatternHit>> SearchSimilarAsync(Guid tenantId, IReadOnlyList<float> vector, int topK = 5, CancellationToken ct = default)
+    {
+        try
+        {
+#pragma warning disable CS0618 // Qdrant SearchAsync 在本版本标记 Obsolete，改用 QueryAsync 前保持可用
+            var res = await _client.SearchAsync(Coll(tenantId), vector.ToArray(), limit: (ulong)topK, cancellationToken: ct);
+#pragma warning restore CS0618
+            return res.Select(r =>
+            {
+                _meta.TryGetValue(r.Id.ToString(), out var m);
+                return new FaultPatternHit(m.Code ?? "?", m.Severity ?? "?", (float)r.Score);
+            }).ToArray();
+        }
+        catch (Exception ex) { _log.LogWarning(ex, "Qdrant 检索失败（回退空结果）"); return Array.Empty<FaultPatternHit>(); }
+    }
+
+    private async Task EnsureCollectionAsync(string coll, CancellationToken ct)
+    {
+        var cols = await _client.ListCollectionsAsync(cancellationToken: ct);
+        if (cols.Contains(coll)) return;
+        await _client.CreateCollectionAsync(coll,
+            new VectorParams { Size = (ulong)FaultEmbedding.Dim, Distance = Distance.Cosine }, cancellationToken: ct);
+    }
+}
+
+// 离线启发式诊断客户端：未接入真实 LLM Provider 时，基于检索到的相似故障模式生成结构化诊断（离线可用）。
+internal sealed class PlcDiagnosisChatClient : IChatClient
+{
+    private readonly IChatClient? _upstream;
+    public ChatClientMetadata Metadata { get; } = new("plc-diagnosis", null, "heuristic-v1");
+    public PlcDiagnosisChatClient(IChatClient? upstream) => _upstream = upstream;
+
+    public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        if (_upstream is not null)
+            return _upstream.GetResponseAsync(messages, options, cancellationToken);
+        var diagnosis = BuildHeuristic(LastUserText(messages));
+        return Task.FromResult(new ChatResponse(new List<ChatMessage> { new(ChatRole.Assistant, diagnosis) }));
+    }
+
+    public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+        IEnumerable<ChatMessage> messages, ChatOptions? options = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var text = _upstream is not null
+            ? (await _upstream.GetResponseAsync(messages, options, cancellationToken)).Text
+            : BuildHeuristic(LastUserText(messages));
+        yield return new ChatResponseUpdate(ChatRole.Assistant, text);
+    }
+
+    public object? GetService(Type serviceType, object? serviceKey = null) => null;
+    public void Dispose() { }
+
+    private static string LastUserText(IEnumerable<ChatMessage> messages)
+    {
+        var last = messages.LastOrDefault(m => m.Role == ChatRole.User);
+        return last?.Text ?? "";
+    }
+
+    private static string BuildHeuristic(string prompt) =>
+        $"[启发式诊断·离线] 已收到问诊上下文（{prompt.Length} 字符）。建议：1) 检查设备供电与通信链路；" +
+        "2) 比对历史相似故障模式；3) 若持续告警，派工 DeviceEng 现场排查。";
+}
+
+// ===================== AI 模块 DI（ADR-112）=====================
+public static class SaasAiExtensions
+{
+    public static IServiceCollection AddSaasAi(this IServiceCollection services, IConfiguration config)
+    {
+        var ai = config.GetSection("Ai").Get<AiOptions>() ?? new();
+        var qdrant = config.GetSection("Qdrant").Get<QdrantOptions>() ?? new();
+        var mcp = config.GetSection("Mcp").Get<McpOptions>() ?? new();
+
+        // LLM 抽象（MEAI）：Provider 接入点已预留——生产可在此构造 OpenAI/Azure/Ollama IChatClient 作为 upstream。
+        // 默认 upstream=null → PlcDiagnosisChatClient 启发式（离线可用，feature flag 不影响编译）。
+        services.AddSingleton<IChatClient>(_ => new PlcDiagnosisChatClient(upstream: null));
+
+        // 故障模式向量库：Qdrant（租户分区）或内存兜底
+        if (qdrant.Enabled)
+            services.AddSingleton<IFaultVectorStore>(sp =>
+                new QdrantFaultVectorStore(config, sp.GetRequiredService<ILogger<QdrantFaultVectorStore>>()));
+        else
+            services.AddSingleton<IFaultVectorStore, InMemoryFaultVectorStore>();
+
+        // MCP Server（tid 作用域隔离）：仅 Mcp:Enabled 时注册并映射 /mcp
+        if (mcp.Enabled)
+            services.AddMcpServer().WithHttpTransport().WithTools<PlcMcpTools>();
+
+        return services;
     }
 }
 #endif

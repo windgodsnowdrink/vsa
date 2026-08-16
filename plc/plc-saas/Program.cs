@@ -1,6 +1,6 @@
-// Program.cs — PLC·AIOT 多租户 SaaS（File-based App 入口，.NET 11 preview.6 / C# 14）
-// 运行： dotnet run Program.cs   （等待 "Now listening on http://localhost:5000"）
-// 所有共享设施经 #include "infra.cs"；各垂直切片自包含端点 + CQRS Handler + DTO。
+// Program.cs �? PLC·AIOT 多租�? SaaS（File-based App 入口�?.NET 11 preview.6 / C# 14�?
+// 运行�? dotnet run Program.cs   （等�? "Now listening on http://localhost:5000"�?
+// 所有共享设施经 #include "infra.cs"；各垂直切片自包含端�? + CQRS Handler + DTO�?
 #nullable enable
 #include "GlobalUsings.cs"
 #include "infra.cs"
@@ -20,6 +20,9 @@
 #include "slices/ops.roles.cs"
 #include "slices/ops.health.cs"
 #include "slices/metering.agent.cs"
+#include "slices/ingest.bridge.cs"
+#include "slices/ingest.http.cs"
+#include "slices/ai.assistant.cs"
 #include "seed.cs"
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +33,8 @@ builder.Services.AddSaasMediator();
 builder.Services.AddSaasSignalR();
 builder.Services.AddSaasRateLimiter();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSaasIngest(builder.Configuration);
+builder.Services.AddSaasAi(builder.Configuration);
 
 builder.Services.AddCors(o => o.AddPolicy("saas-dev", p =>
     p.WithOrigins("http://localhost:5173", "https://localhost:5173")
@@ -61,10 +66,16 @@ OpsTenantsApi.Map(api);
 OpsPricingApi.Map(api);
 OpsRolesApi.Map(api);
 OpsHealthApi.Map(api);
+IngestApi.Map(api);
+AiAssistantApi.Map(api);
 
-app.MapHub<FaultsHub>("/hubs/faults"); // Hub 名 faults；协商 /hubs/faults/negotiate
+app.MapHub<FaultsHub>("/hubs/faults");
 
-// 启动：幂等建表 + RLS 自动应用（先于种子，确保表与行级安全就绪）
+// MCP Server��ADR-112���ⲿ AI Agent ��ȫ������� Mcp:Enabled ʱ��¶ /mcp��Streamable HTTP + SSE��
+if (builder.Configuration.GetValue("Mcp:Enabled", false))
+    app.MapMcp("/mcp"); // Hub �? faults；协�? /hubs/faults/negotiate
+
+// 启动：幂等建�? + RLS 自动应用（先于种子，确保表与行级安全就绪�?
 using (var scope = app.Services.CreateScope())
 {
     await SaasSchemaBootstrap.BootstrapAsync(scope.ServiceProvider);

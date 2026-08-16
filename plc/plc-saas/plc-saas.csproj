@@ -1,14 +1,21 @@
+<!--
+  plc-saas.csproj — PLC·AIOT 多租户 SaaS 后端（File-based App 的可构建/可发布工程）
+  目的：让 `dotnet build` / `dotnet publish` / `dotnet run` 直接可用（此前仅能 `dotnet run Program.cs` 文件模式）。
+  实现：复用 File-based 源，经 strip-app.ps1 剥离 #include/#r 后编译（Program.cs 作入口）。
+  包引用与 plc-saas.verify 对齐（去掉 xunit/测试 SDK）。
+-->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net11.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
     <IsPackable>false</IsPackable>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <NoWarn>CS1591;AD0001;CS0169</NoWarn>
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <NoWarn>CS1591;AD0001;CS0169;CS0168;CS0419;NU1701</NoWarn>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.6.26359.118" />
@@ -30,34 +38,19 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
-    <PackageReference Include="xunit.v3" Version="3.0.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-  </ItemGroup>
-
-  <!-- 源快照：供 ADR-108 红线静态校验测试读取（仅复制为内容，不参与编译；排除 verify 自身文件） -->
-  <ItemGroup>
-    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\*.cs">
-      <Link>saas-src/%(Filename)%(Extension)</Link>
-    </_SaasSrc>
-    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\slices\*.cs">
-      <Link>saas-src/slices/%(Filename)%(Extension)</Link>
-    </_SaasSrc>
-    <Content Include="@(_SaasSrc)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="VerifyTests.cs" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="sql/rls.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="docker-compose.yml" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="initdb/01-roles.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <!-- File-based 源 → 剥离 #include/#r → 编译（ADR-101 的工程化 typecheck） -->
-  <Target Name="PrepareStrippedSources" BeforeTargets="CoreCompile">
+  <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->
+  <Target Name="PrepareStrippedApp" BeforeTargets="CoreCompile">
     <RemoveDir Directories="$(IntermediateOutputPath)stripped" Condition="Exists('$(IntermediateOutputPath)stripped')" />
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-sources.ps1&quot; &quot;$(MSBuildThisFileDirectory)..&quot; &quot;$(IntermediateOutputPath)stripped&quot;" />
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-app.ps1&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\stripped&quot;" />
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)stripped\**\*.cs" />
     </ItemGroup>
