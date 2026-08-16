@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 720" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="680" height="720" fill="#f7f9fc"/>
+  <text x="340" y="34" font-size="20" font-weight="700" fill="#1f2d3d" text-anchor="middle">PLC 数据采集 / 下发 数据平面（协议隔离 · 零分配 · 可靠消息）</text>
+
+  <!-- PLC devices -->
+  <g font-size="12">
+    <rect x="20" y="70" width="110" height="54" rx="8" fill="#fff" stroke="#2b6cb0"/>
+    <text x="75" y="92" text-anchor="middle" font-weight="700" fill="#1a4971">Modbus PLC</text>
+    <text x="75" y="110" text-anchor="middle" fill="#557">NModbus4</text>
+
+    <rect x="20" y="150" width="110" height="54" rx="8" fill="#fff" stroke="#2b6cb0"/>
+    <text x="75" y="172" text-anchor="middle" font-weight="700" fill="#1a4971">西门子 S7</text>
+    <text x="75" y="190" text-anchor="middle" fill="#557">s7netplus</text>
+
+    <rect x="20" y="230" width="110" height="54" rx="8" fill="#fff" stroke="#2b6cb0"/>
+    <text x="75" y="252" text-anchor="middle" font-weight="700" fill="#1a4971">OPC UA</text>
+    <text x="75" y="270" text-anchor="middle" fill="#557">Opc.Ua</text>
+
+    <rect x="20" y="310" width="110" height="54" rx="8" fill="#fff" stroke="#9a6b12"/>
+    <text x="75" y="332" text-anchor="middle" font-weight="700" fill="#9a6b12">… 其它协议</text>
+    <text x="75" y="350" text-anchor="middle" fill="#557">插件</text>
+  </g>
+
+  <!-- Driver + RingBuffer + StateMachine (per protocol plugin ALC) -->
+  <g>
+    <rect x="170" y="60" width="180" height="320" rx="12" fill="#fff7e6" stroke="#e0a83b"/>
+    <text x="260" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#9a6b12">协议插件（独立 ALC · 隔离解析）</text>
+    <g font-size="11" fill="#5a4a20">
+      <rect x="186" y="96"  width="148" height="40" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="114" text-anchor="middle">IDriver + RingBuffer</text><text x="260" y="129" text-anchor="middle">大小端/波特率</text>
+      <rect x="186" y="146" width="148" height="40" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="164" text-anchor="middle">FrameParser (Pipe)</text><text x="260" y="179" text-anchor="middle">粘包拆包/校验</text>
+      <rect x="186" y="196" width="148" height="40" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="214" text-anchor="middle">DeviceStateMachine</text><text x="260" y="229" text-anchor="middle">Stateless 状态机</text>
+      <rect x="186" y="246" width="148" height="40" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="264" text-anchor="middle">IDataPipeline</text><text x="260" y="279" text-anchor="middle">帧分发器(Channel)</text>
+      <rect x="186" y="296" width="148" height="40" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="314" text-anchor="middle">IProtocolAdapter</text><text x="260" y="329" text-anchor="middle">统一出口</text>
+    </g>
+  </g>
+
+  <!-- IAsyncEnumerable + Channel + Redis backpressure -->
+  <g>
+    <rect x="390" y="60" width="270" height="150" rx="12" fill="#e8f1fb" stroke="#2b6cb0"/>
+    <text x="525" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#1a4971">零分配流式 + 背压</text>
+    <g font-size="11" fill="#1a4971">
+      <text x="406" y="106">IAsyncEnumerable&lt;DeviceFrame&gt; + EnumeratorCancellation</text>
+      <text x="406" y="128">System.Threading.Channels（生产者/消费者）</text>
+      <text x="406" y="150">Redis 深度闸门（mq:depth）背压限流</text>
+      <text x="406" y="172">Polly：超时/熔断/舱壁/重试/死信(DLQ)</text>
+      <text x="406" y="194">优先级 Channel（高/中/低 QoS）</text>
+    </g>
+  </g>
+
+  <!-- EMQX + Outbox/Inbox -->
+  <rect x="390" y="230" width="270" height="80" rx="12" fill="#eafaf1" stroke="#2f9e6f"/>
+  <text x="525" y="254" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b48">可靠消息出口</text>
+  <text x="406" y="276" font-size="11" fill="#1d6b48">EMQX(MQTT) · Outbox/Inbox(Wolverine)</text>
+  <text x="406" y="296" font-size="11" fill="#1d6b48">事务发件箱 + 死信队列 + 幂等</text>
+
+  <!-- CQRS -->
+  <rect x="390" y="330" width="270" height="50" rx="12" fill="#f3e8fb" stroke="#8b5cf6"/>
+  <text x="525" y="354" text-anchor="middle" font-size="13" font-weight="700" fill="#5b2a9b">CQRS：MediatR(命令/查询分离)</text>
+  <text x="525" y="372" text-anchor="middle" font-size="11" fill="#5b2a9b">写命令→Handler→Adapter.WriteAsync</text>
+
+  <!-- DB topology -->
+  <rect x="390" y="400" width="270" height="120" rx="12" fill="#eef2f7" stroke="#64748b"/>
+  <text x="525" y="424" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">分库存储</text>
+  <g font-size="11" fill="#334155">
+    <text x="406" y="446">SQLite+EFCore+DapperAOT（边缘/本地）</text>
+    <text x="406" y="466">InfluxDB（时序点位）</text>
+    <text x="406" y="486">PostgreSQL（业务 + Outbox/Inbox）</text>
+    <text x="406" y="506">Seq(热日志) + ClickHouse(冷分析)</text>
+  </g>
+
+  <!-- AI top -->
+  <rect x="390" y="540" width="270" height="70" rx="12" fill="#fff0f6" stroke="#db2777"/>
+  <text x="525" y="564" text-anchor="middle" font-size="13" font-weight="700" fill="#9d174d">AI 诊断助手</text>
+  <text x="406" y="586" font-size="11" fill="#9d174d">MEAI + MCP(Tools) + Qdrant(向量)</text>
+  <text x="406" y="604" font-size="11" fill="#9d174d">读取点位/下发命令/故障诊断</text>
+
+  <!-- Frontend -->
+  <rect x="390" y="630" width="270" height="60" rx="12" fill="#fffbeb" stroke="#d97706"/>
+  <text x="525" y="654" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">前端实时渲染</text>
+  <text x="406" y="676" font-size="11" fill="#92400e">MVVM + Rx.NET 发布 → Mqtt.js 订阅渲染</text>
+
+  <!-- arrows -->
+  <g stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M130 97  H168"/>
+    <path d="M130 177 H168"/>
+    <path d="M130 257 H168"/>
+    <path d="M130 337 H168"/>
+    <path d="M350 150 H388"/>
+    <path d="M520 210 V228"/>
+    <path d="M520 310 V328"/>
+    <path d="M520 380 V398"/>
+    <path d="M520 520 V538"/>
+    <path d="M520 610 V628"/>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+</svg>

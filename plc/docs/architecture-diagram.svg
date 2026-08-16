@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 760" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <rect width="680" height="760" fill="#f7f9fc"/>
+  <text x="340" y="36" font-size="22" font-weight="700" fill="#1f2d3d" text-anchor="middle">可热插拔 .NET PLC IoT / AIOT 平台 — 分层架构</text>
+
+  <!-- Host -->
+  <rect x="40" y="60" width="600" height="660" rx="14" fill="#ffffff" stroke="#c7d2e0" stroke-width="2"/>
+  <text x="60" y="86" font-size="15" font-weight="700" fill="#2b6cb0">宿主 Host 进程 (ASP.NET Core · Modular Monolith / 微服务演进)</text>
+
+  <!-- Contract layer -->
+  <rect x="60" y="100" width="560" height="70" rx="10" fill="#e8f1fb" stroke="#2b6cb0"/>
+  <text x="80" y="126" font-size="14" font-weight="700" fill="#1a4971">① 契约层 PlcPlatform.Abstractions（仅接口/DTO/枚举 · 零实现 · 类型共享边界）</text>
+  <text x="80" y="150" font-size="12" fill="#335">IPlugin · ICapability · IEventBus · ICapabilityRegistry · PluginManifest</text>
+
+  <!-- Base core -->
+  <rect x="60" y="186" width="560" height="120" rx="10" fill="#eafaf1" stroke="#2f9e6f"/>
+  <text x="80" y="210" font-size="14" font-weight="700" fill="#1d6b48">② 底座核心 Base（宿主内置）</text>
+  <text x="80" y="232" font-size="12" fill="#335">PluginManager · CapabilityRegistry · ConfigCenter(AgileConfig/Consul) · Telemetry(OTel)</text>
+  <text x="80" y="252" font-size="12" fill="#335">DI(MS.DI/Autofac) · EventBus · Scheduler(Hangfire/Coravel) · Security(OpenIddict/Casbin)</text>
+  <text x="80" y="272" font-size="12" fill="#335">零分配基石：Span&lt;T&gt; · Memory&lt;T&gt; · Pipelines · Dataflow · ObjectPool · ArrayPool</text>
+  <text x="80" y="292" font-size="12" fill="#335">高性能消息：Disruptor(RingBuffer) · SpanNetty · 事务日志刷盘</text>
+
+  <!-- Plugin isolation zone -->
+  <rect x="60" y="322" width="560" height="150" rx="10" fill="#fff7e6" stroke="#e0a83b"/>
+  <text x="80" y="346" font-size="14" font-weight="700" fill="#9a6b12">③ 插件隔离区（每个插件 = collectible ALC + 独立子容器）</text>
+  <g font-size="12" fill="#5a4a20">
+    <rect x="80" y="356" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="155" y="376" text-anchor="middle" font-weight="700">Modbus 插件</text>
+    <text x="155" y="392" text-anchor="middle">ALC #1</text>
+    <rect x="245" y="356" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="320" y="376" text-anchor="middle" font-weight="700">BACnet 插件</text>
+    <text x="320" y="392" text-anchor="middle">ALC #2</text>
+    <rect x="410" y="356" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="485" y="376" text-anchor="middle" font-weight="700">AI 服务插件</text>
+    <text x="485" y="392" text-anchor="middle">ALC #3</text>
+    <rect x="80" y="410" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="155" y="430" text-anchor="middle" font-weight="700">Melsec 插件</text>
+    <text x="155" y="446" text-anchor="middle">ALC #4</text>
+    <rect x="245" y="410" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="320" y="430" text-anchor="middle" font-weight="700">Omron 插件</text>
+    <text x="320" y="446" text-anchor="middle">ALC #5</text>
+    <rect x="410" y="410" width="150" height="44" rx="8" fill="#fff" stroke="#e0a83b"/>
+    <text x="485" y="430" text-anchor="middle" font-weight="700">… 更多协议</text>
+    <text x="485" y="446" text-anchor="middle">ALC #N</text>
+  </g>
+
+  <!-- Adapter layer -->
+  <rect x="60" y="488" width="560" height="90" rx="10" fill="#f3e8fb" stroke="#8b5cf6"/>
+  <text x="80" y="512" font-size="14" font-weight="700" fill="#5b2a9b">④ 适配层 Adapters（统一外观 · 适配器模式）</text>
+  <text x="80" y="534" font-size="12" fill="#4a2a6b">IProtocolAdapter（Modbus/BACnet/Fatek/Fuji/Keyence…）</text>
+  <text x="80" y="554" font-size="12" fill="#4a2a6b">ICacheAdapter（Garnet/Redis/本地） · IMessageAdapter（MQTT/RabbitMQ/NATS）</text>
+  <text x="80" y="574" font-size="12" fill="#4a2a6b">ISerializeAdapter（MemoryPack/MessagePack/System.Text.Json）</text>
+
+  <!-- Standard in/out -->
+  <rect x="60" y="594" width="560" height="104" rx="10" fill="#eef2f7" stroke="#64748b"/>
+  <text x="80" y="618" font-size="14" font-weight="700" fill="#334155">⑤ 标准入口 / 标准出口</text>
+  <text x="80" y="640" font-size="12" fill="#334155">入口：PluginManager 扫描 → ALC 加载 → 反射发现 [Plugin]/IPlugin → ConfigureServices 注册 → Start</text>
+  <text x="80" y="660" font-size="12" fill="#334155">出口：ICapabilityRegistry（能力挂出） · IEventBus（事件流出） · IHostServices（DI 取服务） · OTel（遥测）</text>
+  <text x="80" y="682" font-size="12" fill="#334155">统一入口接入、统一出口消费 → 可替换、零耦合、支持热插拔与版本共存</text>
+
+  <!-- container footer -->
+  <rect x="40" y="712" width="600" height="30" rx="8" fill="#1f2d3d"/>
+  <text x="340" y="732" font-size="13" fill="#ffffff" text-anchor="middle">容器化 Docker · 编排 K8s / Tye / Aspire · 三高一低 + 零分配</text>
+</svg>

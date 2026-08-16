@@ -1,0 +1,61 @@
+/* =========================================================
+   docs/design-tokens.css — SaaS 层令牌扩展（增量）
+   依据：DESIGN.md §10（SSOT） + SaaS-Spec.md §8（锁定）
+   链接顺序：styles.css 之后引入本文件（仅扩展，不重置）
+   原则：
+     - 不新增主色（MVP 单品牌，科技天蓝唯一）
+     - 禁硬编码颜色（例外 #fff / #000，见 --surface-sunken）
+     - 禁紫→粉渐变；图标统一 Lucide（16/20/24px）
+   ========================================================= */
+
+:root {
+  /* —— 租户上下文（MVP 单品牌：禁第二主色，无租户自定义色相） —— */
+  --tenant-dot: var(--brand-500);                  /* 当前租户指示点，统一品牌色 */
+  --border-strong: color-mix(in srgb, var(--text-2) 30%, var(--border)); /* 计费/审计/角色/租户敏感边界 */
+  --surface-sunken: color-mix(in srgb, var(--bg) 55%, #000 10%);          /* 表单内嵌 / 代码块 / 数据范围条（#000 为 P0 允许例外） */
+
+  /* —— 配额 / 进度轨道（复用既有语义，不引入图表专属色） —— */
+  --quota-track: color-mix(in srgb, var(--text-3) 22%, transparent);      /* meter 轨道 */
+
+  /* —— 图标尺寸令牌（Lucide 锁定，全项目统一） —— */
+  --icon-sm: 16px; --icon-md: 20px; --icon-lg: 24px; --icon-stroke: 2px;
+
+  /* —— 状态扩展（复用既有语义色，MVP 单品牌不改色相） —— */
+  --state-active: var(--ok);
+  --state-suspended: var(--text-3);
+  --state-trial: var(--warn);
+
+  /* —— 套餐档徽章：统一 .badge.info（品牌蓝），档位仅文字区分，禁上色、禁紫色 —— */
+  --tier-badge-fg: var(--brand-700);   /* 等同 .badge.info 文字色 #1d4ed8，单品牌 */
+}
+
+/* ---------- Lucide 雪碧图图标类（配合 wwwroot/css/icons.svg <symbol id="i-xxx">） ----------
+   用法：<svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg>
+   尺寸全项目统一 16/20/24px；stroke 随 currentColor 自动换色，零硬编码。            */
+.ico, .ico-sm, .ico-md, .ico-lg {
+  display: inline-block; vertical-align: middle; flex: none;
+  stroke: currentColor; stroke-width: var(--icon-stroke);
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.ico-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.ico, .ico-md { width: var(--icon-md); height: var(--icon-md); }
+.ico-lg { width: var(--icon-lg); height: var(--icon-lg); }
+.ico use { pointer-events: none; }
+
+/* ---------- 配额 meter（AC-11：progressbar + 文本值；阈值色用既有语义色） ---------- */
+.meter > i { background: var(--brand-400); }                 /* 正常 */
+.meter > i.is-warn { background: var(--warn); }              /* ≥80% */
+.meter > i.is-bad  { background: var(--bad); }               /* ≥95% */
+
+/* ---------- 数据范围边界条（敏感区常驻，防误操错租户） ---------- */
+.scope-bar {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-sunken);
+  color: var(--text-2); font-size: 12px; padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+.scope-bar .ico { color: var(--tenant-dot); }
+
+/* ---------- 套餐档徽章（单品牌：统一品牌蓝，档位仅文字区分） ---------- */
+.badge.tier { background: color-mix(in srgb, var(--brand-500) 18%, transparent); color: var(--tier-badge-fg); }

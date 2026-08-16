@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "name": "PLC-AIOT SaaS Design Tokens",
+    "version": "1.0",
+    "basedOn": ["DESIGN.md §10 (SSOT)", "SaaS-Spec.md §8 (locked)"],
+    "singleBrand": true,
+    "iconLibrary": "Lucide (ISC, 24x24, 2px stroke, currentColor)",
+    "iconSprite": "wwwroot/css/icons.svg",
+    "theme": "dark-first (#020617)",
+    "noSecondPrimary": true,
+    "noPurplePinkGradient": true
+  },
+  "color": {
+    "brand": {
+      "400": { "value": "#60a5fa", "type": "color", "ref": "--brand-400" },
+      "500": { "value": "#3b82f6", "type": "color", "ref": "--brand-500", "note": "唯一主色（科技天蓝）" },
+      "600": { "value": "#2563eb", "type": "color", "ref": "--brand-600", "note": "主按钮底色，白字 AA 4.6:1" },
+      "700": { "value": "#1d4ed8", "type": "color", "ref": "--brand-700" },
+      "800": { "value": "#1e40af", "type": "color", "ref": "--brand-800" }
+    },
+    "bg": { "value": "#020617", "type": "color", "ref": "--bg", "note": "暗色优先；亮色 #f1f5f9" },
+    "surface": { "value": "rgba(15,23,42,0.55)", "type": "color", "ref": "--surface", "note": "玻璃卡片底" },
+    "surfaceSolid": { "value": "#0f172a", "type": "color", "ref": "--surface-solid", "note": "抽屉/对话框实底" },
+    "border": { "value": "rgba(148,163,184,0.14)", "type": "color", "ref": "--border" },
+    "text": { "value": "#e2e8f0", "type": "color", "ref": "--text" },
+    "text2": { "value": "#94a3b8", "type": "color", "ref": "--text-2", "note": "标签/次级文字" },
+    "text3": { "value": "#64748b", "type": "color", "ref": "--text-3", "note": "仅装饰/图表轴/禁用" },
+    "semantic": {
+      "ok": { "value": "#10b981", "type": "color", "ref": "--ok", "note": "在线/成功/正常" },
+      "warn": { "value": "#f59e0b", "type": "color", "ref": "--warn", "note": "预警/待处理/≥80% 配额" },
+      "bad": { "value": "#f43f5e", "type": "color", "ref": "--bad", "note": "告警/错误/≥95% 配额" },
+      "info": { "value": "#64748b", "type": "color", "ref": "--info", "note": "中性状态" }
+    },
+    "saas": {
+      "tenantDot": {
+        "value": "var(--brand-500)", "type": "color", "ref": "--tenant-dot",
+        "note": "MVP 单品牌：租户身份用「名称文字 + 组织标」表达，禁第二主色"
+      },
+      "borderStrong": {
+        "value": "color-mix(in srgb, var(--text-2) 30%, var(--border))", "type": "color", "ref": "--border-strong",
+        "note": "计费/审计/角色/租户敏感边界"
+      },
+      "surfaceSunken": {
+        "value": "color-mix(in srgb, var(--bg) 55%, #000 10%)", "type": "color", "ref": "--surface-sunken",
+        "note": "表单内嵌/代码块/数据范围条（#000 为 P0 允许例外）"
+      },
+      "quotaTrack": {
+        "value": "color-mix(in srgb, var(--text-3) 22%, transparent)", "type": "color", "ref": "--quota-track",
+        "note": "meter 轨道，复用既有语义，不引入图表专属色"
+      },
+      "tierBadgeFg": {
+        "value": "var(--brand-700)", "type": "color", "ref": "--tier-badge-fg",
+        "note": "套餐档徽章统一 .badge.info（品牌蓝）；档位仅文字区分，禁上色、禁紫色"
+      },
+      "stateActive": { "value": "var(--ok)", "type": "color", "ref": "--state-active" },
+      "stateSuspended": { "value": "var(--text-3)", "type": "color", "ref": "--state-suspended" },
+      "stateTrial": { "value": "var(--warn)", "type": "color", "ref": "--state-trial" }
+    }
+  },
+  "font": {
+    "family": {
+      "value": "\"Segoe UI\", \"Microsoft YaHei\", system-ui, -apple-system, sans-serif",
+      "type": "fontFamily", "ref": "--font",
+      "note": "实现真值（离线优先，中文优先）；SaaS-Spec §8 目标 Inter+Noto Sans SC 待 webfont 引入后再对齐，届时改 --font 一处即可"
+    },
+    "mono": {
+      "value": "\"JetBrains Mono\", ui-monospace, monospace", "type": "fontFamily", "ref": "--mono",
+      "note": "仅设备 ID / 主题路径 / 时间戳"
+    },
+    "size": {
+      "nano": { "value": "11px", "type": "dimension", "ref": "--text-nano" },
+      "caption": { "value": "12px", "type": "dimension" },
+      "body": { "value": "14px", "type": "dimension" },
+      "section": { "value": "15px", "type": "dimension" },
+      "pageTitle": { "value": "24px", "type": "dimension" },
+      "kpi": { "value": "28px", "type": "dimension" }
+    },
+    "weight": { "value": "400 / 500 / 600 / 700 / 800", "type": "fontWeight" }
+  },
+  "icon": {
+    "sm": { "value": "16px", "type": "dimension", "ref": "--icon-sm" },
+    "md": { "value": "20px", "type": "dimension", "ref": "--icon-md" },
+    "lg": { "value": "24px", "type": "dimension", "ref": "--icon-lg" },
+    "stroke": { "value": "2px", "type": "dimension", "ref": "--icon-stroke" }
+  },
+  "radius": {
+    "card": { "value": "16px", "type": "dimension", "ref": "--radius" },
+    "sm": { "value": "10px", "type": "dimension", "ref": "--radius-sm" },
+    "pill": { "value": "999px", "type": "dimension" }
+  },
+  "space": {
+    "base": { "value": "8px", "type": "dimension" },
+    "gap": { "value": "16px", "type": "dimension", "ref": "--gap" },
+    "section": { "value": "18px", "type": "dimension" }
+  },
+  "shadow": {
+    "raised": { "value": "0 18px 40px -18px rgba(0,0,0,0.7)", "type": "boxShadow", "ref": "--shadow" },
+    "sm": { "value": "0 6px 18px -10px rgba(0,0,0,0.6)", "type": "boxShadow", "ref": "--shadow-sm" }
+  },
+  "motion": {
+    "fast": { "value": "150ms", "type": "duration", "ref": "--motion-fast" },
+    "base": { "value": "200ms", "type": "duration" }
+  },
+  "glass": {
+    "backdrop": { "value": "blur(14px) saturate(140%)", "type": "backdropFilter", "ref": "--glass" }
+  }
+}

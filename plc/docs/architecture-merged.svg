@@ -1,0 +1,265 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 2640" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#7b8794"/>
+    </marker>
+    <marker id="arrowB" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2b6cb0"/>
+    </marker>
+    <marker id="arrowG" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#2f9e6f"/>
+    </marker>
+    <marker id="arrowR" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#c0392b"/>
+    </marker>
+  </defs>
+  <rect width="780" height="2300" fill="#f7f9fc"/>
+  <text x="390" y="28" font-size="20" font-weight="700" fill="#1f2d3d" text-anchor="middle">可热插拔 .NET PLC IoT / AIOT 平台 — 综合系统架构（合并版 V9 · 长期运行稳定性 · .NET 10 基线）</text>
+
+  <!-- ============ Region 0: 领域边界上下文地图 (G1) ============ -->
+  <rect x="40" y="44" width="700" height="182" rx="14" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="60" y="68" font-size="14" font-weight="700" fill="#1a4971">领域边界上下文地图（Bounded Context · G1：先画域，再选技）</text>
+  <g font-size="9.5" text-anchor="middle">
+    <rect x="60" y="80" width="158" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="139" y="100" font-weight="700" fill="#1a4971">设备资产 Asset</text><text x="139" y="116" fill="#557">CRUD · 唯一真相源</text>
+    <rect x="228" y="80" width="158" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="307" y="100" font-weight="700" fill="#1a4971">采集遥测 Telemetry</text><text x="307" y="116" fill="#557">点位采样·上送</text>
+    <rect x="396" y="80" width="158" height="46" rx="8" fill="#fff" stroke="#c0392b"/><text x="475" y="100" font-weight="700" fill="#9d2a1a">指令控制 Command</text><text x="475" y="116" fill="#9d2a1a">南向写·强一致(§1.7)</text>
+    <rect x="564" y="80" width="158" height="46" rx="8" fill="#fff" stroke="#d97706"/><text x="643" y="100" font-weight="700" fill="#92400e">规则告警 Rule/Alert</text><text x="643" y="116" fill="#92400e">轮询·阈值(控制平面)</text>
+    <rect x="60" y="134" width="158" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="139" y="154" font-weight="700" fill="#1a4971">配置 Config</text><text x="139" y="170" fill="#557">设备/寄存器/用户</text>
+    <rect x="228" y="134" width="158" height="46" rx="8" fill="#fff" stroke="#8b5cf6"/><text x="307" y="154" font-weight="700" fill="#5b2a9b">身份 IAM</text><text x="307" y="170" fill="#5b2a9b">鉴权·审计(§1.8)</text>
+    <rect x="396" y="134" width="158" height="46" rx="8" fill="#fff" stroke="#db2777"/><text x="475" y="154" font-weight="700" fill="#9d174d">诊断 Diagnosis</text><text x="475" y="170" fill="#9d174d">AI 质检·只读</text>
+    <rect x="564" y="134" width="158" height="46" rx="8" fill="#fff" stroke="#64748b"/><text x="643" y="154" font-weight="700" fill="#334155">… 其它上下文</text><text x="643" y="170" fill="#334155">可扩展</text>
+  </g>
+  <text x="60" y="214" font-size="10.5" fill="#c0392b">铁律：跨上下文只允许经「领域事件 / API」通信，禁止直连对方数据库；每个协议插件归属 Telemetry+Command 上下文。</text>
+
+  <!-- ============ Region A: 分层架构 ============ -->
+  <rect x="40" y="232" width="700" height="470" rx="14" fill="#ffffff" stroke="#c7d2e0" stroke-width="2"/>
+  <text x="60" y="258" font-size="15" font-weight="700" fill="#2b6cb0">宿主 Host 进程 (ASP.NET Core · Modular Monolith / 微服务演进)</text>
+
+  <rect x="60" y="272" width="660" height="62" rx="10" fill="#e8f1fb" stroke="#2b6cb0"/>
+  <text x="80" y="296" font-size="13.5" font-weight="700" fill="#1a4971">① 契约层 PlcPlatform.Abstractions（仅接口/DTO/枚举 · 零实现 · 类型共享边界）</text>
+  <text x="80" y="318" font-size="11.5" fill="#335">IPlugin · ICapability · IEventBus · ICapabilityRegistry · PluginManifest · IProtocolAdapter · IDevice · IRegistry · IDomainEvent</text>
+
+  <rect x="60" y="346" width="660" height="104" rx="10" fill="#eafaf1" stroke="#2f9e6f"/>
+  <text x="80" y="368" font-size="13.5" font-weight="700" fill="#1d6b48">② 底座核心 Base（宿主内置）</text>
+  <text x="80" y="388" font-size="11" fill="#335">PluginManager · CapabilityRegistry · ConfigCenter(AgileConfig/Consul) · Telemetry(OTel)</text>
+  <text x="80" y="406" font-size="11" fill="#335">DI(MS.DI/Scrutor/Autofac) · EventBus · Scheduler(Hangfire/Coravel) · Security(OpenIddict/Casbin)</text>
+  <text x="80" y="424" font-size="11" fill="#335">零分配基石：Span&lt;T&gt; · Memory&lt;T&gt; · Pipelines · Dataflow · ObjectPool · ArrayPool · Disruptor(RingBuffer)</text>
+
+  <rect x="60" y="462" width="660" height="130" rx="10" fill="#fff7e6" stroke="#e0a83b"/>
+  <text x="80" y="484" font-size="13.5" font-weight="700" fill="#9a6b12">③ 插件隔离区（每个插件 = collectible ALC + 独立子容器）</text>
+  <g font-size="11" fill="#5a4a20">
+    <rect x="80" y="494" width="118" height="42" rx="8" fill="#fff" stroke="#e0a83b"/><text x="139" y="514" text-anchor="middle" font-weight="700">Modbus 插件</text><text x="139" y="530" text-anchor="middle">ALC #1</text>
+    <rect x="212" y="494" width="118" height="42" rx="8" fill="#fff" stroke="#e0a83b"/><text x="271" y="514" text-anchor="middle" font-weight="700">BACnet 插件</text><text x="271" y="530" text-anchor="middle">ALC #2</text>
+    <rect x="344" y="494" width="118" height="42" rx="8" fill="#fff" stroke="#e0a83b"/><text x="403" y="514" text-anchor="middle" font-weight="700">AI 服务插件</text><text x="403" y="530" text-anchor="middle">ALC #3</text>
+    <rect x="476" y="494" width="118" height="42" rx="8" fill="#fff" stroke="#e0a83b"/><text x="535" y="514" text-anchor="middle" font-weight="700">Melsec/Omron</text><text x="535" y="530" text-anchor="middle">ALC #4/#5</text>
+    <rect x="608" y="494" width="100" height="42" rx="8" fill="#fff" stroke="#e0a83b"/><text x="658" y="514" text-anchor="middle" font-weight="700">…</text><text x="658" y="530" text-anchor="middle">ALC #N</text>
+    <text x="80" y="560" font-size="11" fill="#9a6b12">每个插件独立 ALC + 独立 Channel + 独立 RingBuffer + 独立 九态 Stateless 状态机 → 单次解析互不影响</text>
+    <text x="80" y="578" font-size="10.5" fill="#c0392b">卸载清理（G4·§3.5）：反注册事件订阅 → 停 Timer → 排空 Channel → 释放连接 → Unload → 强制 GC 观测</text>
+  </g>
+
+  <rect x="60" y="604" width="660" height="48" rx="10" fill="#f3e8fb" stroke="#8b5cf6"/>
+  <text x="80" y="625" font-size="12.5" font-weight="700" fill="#5b2a9b">④ 适配层 Adapters（统一外观）</text>
+  <text x="80" y="643" font-size="10.5" fill="#4a2a6b">IProtocolAdapter(Modbus/BACnet/S7/OPC) · ICacheAdapter(Garnet/Redis) · IMessageAdapter(MQTT/RabbitMQ/NATS) · ISerializeAdapter(MemoryPack/MessagePack)</text>
+
+  <rect x="60" y="664" width="660" height="40" rx="10" fill="#eef2f7" stroke="#64748b"/>
+  <text x="80" y="689" font-size="11.5" fill="#334155">⑤ 标准入口 / 出口：PluginManager 加载 → ConfigureServices 注册 → Start ｜ ICapabilityRegistry · IEventBus · IHostServices · OTel</text>
+
+  <!-- ============ Region A2: .NET 内置组件与高级技术 ============ -->
+  <rect x="40" y="722" width="700" height="300" rx="14" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="60" y="746" font-size="14" font-weight="700" fill="#1a4971">.NET 内置 / 官方 / 社区组件优先（约束 a–f · 零分配 / MIT / AOT 友好）</text>
+  <g font-size="10" fill="#1a4971">
+    <rect x="60" y="760" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="164" y="780" text-anchor="middle" font-weight="700">Microsoft.Extensions</text><text x="164" y="796" text-anchor="middle">.ServiceDiscovery 服务发现</text>
+    <rect x="286" y="760" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="390" y="780" text-anchor="middle" font-weight="700">Resilience / Http.Resilience</text><text x="390" y="796" text-anchor="middle">Retry/熔断/超时/降级/负载均衡</text>
+    <rect x="512" y="760" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="616" y="780" text-anchor="middle" font-weight="700">AspNetCoreRateLimit</text><text x="616" y="796" text-anchor="middle">限流（+ 内置 RateLimiter）</text>
+
+    <rect x="60" y="814" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="164" y="834" text-anchor="middle" font-weight="700">HybridCache + Redis</text><text x="164" y="850" text-anchor="middle">L1内存+L2分布式 / 踩踏保护</text>
+    <rect x="286" y="814" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="390" y="834" text-anchor="middle" font-weight="700">Mediator(martinothamar, MIT)</text><text x="390" y="850" text-anchor="middle">源码生成 SG / NativeAOT / 零分配</text>
+    <rect x="512" y="814" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="616" y="834" text-anchor="middle" font-weight="700">HttpClientFactory</text><text x="616" y="850" text-anchor="middle">连接池 / 弹性 handler 链</text>
+
+    <rect x="60" y="868" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="164" y="888" text-anchor="middle" font-weight="700">CommunityToolkit.Mvvm</text><text x="164" y="904" text-anchor="middle">MVVM / RelayCommand / Messenger</text>
+    <rect x="286" y="868" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="390" y="888" text-anchor="middle" font-weight="700">HighPerformance</text><text x="390" y="904" text-anchor="middle">SpanOwner/MemoryOwner/StringPool</text>
+    <rect x="512" y="868" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="616" y="888" text-anchor="middle" font-weight="700">CommunityToolkit.Datasync</text><text x="616" y="904" text-anchor="middle">PLC 客户端⇄服务端离线同步</text>
+
+    <rect x="60" y="922" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="164" y="942" text-anchor="middle" font-weight="700">Source Generators</text><text x="164" y="958" text-anchor="middle">MVVM/Regex/JSON/Mediator 编译期</text>
+    <rect x="286" y="922" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="390" y="942" text-anchor="middle" font-weight="700">CSGO 纤程 / Flink</text><text x="390" y="958" text-anchor="middle">shared_strand(github HAM-2015/CsGo)</text>
+    <rect x="512" y="922" width="208" height="46" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="616" y="942" text-anchor="middle" font-weight="700">Dapr 边车 + Aspire</text><text x="616" y="958" text-anchor="middle">服务网格 / 业务 / 测试编排</text>
+  </g>
+  <text x="60" y="990" font-size="10.5" fill="#557">原则：能用 Microsoft.Extensions.* 内置就不引第三方；第三方优先官方/社区、MIT 协议、AOT 友好、热路径零分配（详见 §0.5）。</text>
+  <text x="60" y="1008" font-size="10.5" fill="#557">插件加载：DotNetCorePlugins + AssemblyDependencyResolver（见 §3.4，参照 vsa/PluginLoadContext.cs）。</text>
+
+  <!-- ============ Region B: 工业级生产流水线 ============ -->
+  <rect x="40" y="1024" width="700" height="170" rx="14" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="60" y="1048" font-size="14" font-weight="700" fill="#1a4971">工业级生产流水线（背压贯穿全程 · 单一方向）</text>
+  <g font-size="11" text-anchor="middle">
+    <rect x="60" y="1064" width="118" height="74" rx="10" fill="#fff" stroke="#2b6cb0"/><text x="119" y="1090" font-weight="700" fill="#1a4971">① Channels</text><text x="119" y="1108">生产者/消费者</text><text x="119" y="1124">BoundedChannel</text><text x="119" y="1140">Wait 背压</text>
+    <rect x="200" y="1064" width="118" height="74" rx="10" fill="#fff" stroke="#2b6cb0"/><text x="259" y="1090" font-weight="700" fill="#1a4971">② IAsyncEnumerable</text><text x="259" y="1108">+ Enumerator</text><text x="259" y="1124">Cancellation</text><text x="259" y="1140">流式协作取消</text>
+    <rect x="340" y="1064" width="118" height="74" rx="10" fill="#fff" stroke="#2b6cb0"/><text x="399" y="1090" font-weight="700" fill="#1a4971">③ BackgroundService</text><text x="399" y="1108">长生命周期</text><text x="399" y="1124">采集/消费</text><text x="399" y="1140">工作者</text>
+    <rect x="480" y="1064" width="118" height="74" rx="10" fill="#fff" stroke="#2b6cb0"/><text x="539" y="1090" font-weight="700" fill="#1a4971">④ IHostedService</text><text x="539" y="1108">宿主统一编排</text><text x="539" y="1124">优雅关闭</text><text x="539" y="1140">顺序启停</text>
+    <rect x="620" y="1064" width="108" height="74" rx="10" fill="#fff" stroke="#2b6cb0"/><text x="674" y="1090" font-weight="700" fill="#1a4971">⑤ Dataflow</text><text x="674" y="1108">TPL 流水线</text><text x="674" y="1124">Transform→Batch</text><text x="674" y="1140">→Action</text>
+  </g>
+  <g stroke="#2b6cb0" stroke-width="2" fill="none" marker-end="url(#arrowB)">
+    <path d="M178 1101 H198"/><path d="M318 1101 H338"/><path d="M458 1101 H478"/><path d="M598 1101 H618"/>
+  </g>
+  <text x="60" y="1172" font-size="10.5" fill="#557">背压单闸门（G6 修正）：仅用 BoundedChannel 一处设闸门；跨节点集群限流才切 Redis 深度计数作唯一闸门，二者绝不叠加。</text>
+
+  <!-- ============ Region C: 三平面 + 南北向 + 数据平面 ============ -->
+  <text x="60" y="1206" font-size="15" font-weight="700" fill="#2b6cb0">三平面（管理 / 控制 / 数据）与南北向流量</text>
+
+  <rect x="40" y="1220" width="700" height="92" rx="12" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <g font-size="10" text-anchor="middle">
+    <rect x="56" y="1240" width="206" height="56" rx="9" fill="#fff" stroke="#8b5cf6"/><text x="159" y="1260" font-weight="700" fill="#5b2a9b">管理平面 Management</text><text x="159" y="1276" fill="#4a2a6b">用户经 UI/API 修改配置</text><text x="159" y="1290" fill="#4a2a6b">设备/寄存器/规则/权限</text>
+    <rect x="286" y="1240" width="206" height="56" rx="9" fill="#fff" stroke="#d97706"/><text x="389" y="1260" font-weight="700" fill="#92400e">控制平面 Control</text><text x="389" y="1276" fill="#7c4a06">解析配置 → 生成规则</text><text x="389" y="1290" fill="#7c4a06">Mediator·RuleCompiler·Registry</text>
+    <rect x="516" y="1240" width="206" height="56" rx="9" fill="#fff" stroke="#2f9e6f"/><text x="619" y="1260" font-weight="700" fill="#1d6b48">数据平面 Data</text><text x="619" y="1276" fill="#1d6b48">执行规则 · 处理真实流量</text><text x="619" y="1290" fill="#1d6b48">协议解析→下发(南向)</text>
+  </g>
+  <g stroke="#2b6cb0" stroke-width="2" fill="none" marker-end="url(#arrowB)">
+    <path d="M262 1268 H284"/><path d="M492 1268 H514"/>
+  </g>
+  <text x="263" y="1262" font-size="8.5" fill="#557" text-anchor="middle">配置事件</text>
+  <text x="503" y="1262" font-size="8.5" fill="#557" text-anchor="middle">下发规则</text>
+
+  <text x="60" y="1336" font-size="10" fill="#2b6cb0" font-weight="700">北向 North-South：人(UI/API) 与 设备(MQTT/OPC) 接入平台 → 经 YARP/WAF 网关 + EMQX</text>
+  <text x="60" y="1352" font-size="10" fill="#1d6b48" font-weight="700">南向 South：数据平面执行区 ⇄ 设备 真实控制流量（写指令 / 采集轮询）— 配置错误即操作物理设备，须审批灰度 + 安全基线(§1.8)</text>
+  <text x="60" y="1368" font-size="9.5" fill="#c0392b">一致性（G2·§1.7）：命令强一致+幂等(PostgreSQL+Outbox) / 遥测最终一致(Outbox→InfluxDB/Seq/ClickHouse 可重建读模型)</text>
+
+  <!-- 数据平面执行区 -->
+  <text x="60" y="1392" font-size="13" font-weight="700" fill="#1d6b48">数据平面执行区（协议隔离 · 零分配 · 可靠消息 · 南向安全）</text>
+
+  <g font-size="11">
+    <rect x="20" y="1406" width="120" height="52" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="80" y="1428" text-anchor="middle" font-weight="700" fill="#1a4971">Modbus PLC</text><text x="80" y="1446" text-anchor="middle" fill="#557">NModbus4</text>
+    <rect x="20" y="1470" width="120" height="52" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="80" y="1492" text-anchor="middle" font-weight="700" fill="#1a4971">西门子 S7</text><text x="80" y="1510" text-anchor="middle" fill="#557">s7netplus</text>
+    <rect x="20" y="1534" width="120" height="52" rx="8" fill="#fff" stroke="#2b6cb0"/><text x="80" y="1556" text-anchor="middle" font-weight="700" fill="#1a4971">OPC UA</text><text x="80" y="1574" text-anchor="middle" fill="#557">Opc.Ua</text>
+    <rect x="20" y="1598" width="120" height="52" rx="8" fill="#fff" stroke="#9a6b12"/><text x="80" y="1620" text-anchor="middle" font-weight="700" fill="#9a6b12">三菱 MC …</text><text x="80" y="1638" text-anchor="middle" fill="#557">插件</text>
+  </g>
+
+  <!-- Protocol plugin box -->
+  <rect x="160" y="1406" width="200" height="244" rx="12" fill="#fff7e6" stroke="#e0a83b"/>
+  <text x="260" y="1428" text-anchor="middle" font-size="12.5" font-weight="700" fill="#9a6b12">协议插件（独立 ALC · 隔离解析）</text>
+  <g font-size="10.5" fill="#5a4a20">
+    <rect x="176" y="1436" width="168" height="34" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="1453" text-anchor="middle">IDriver + RingBuffer</text><text x="260" y="1466" text-anchor="middle">大小端/波特率/共地</text>
+    <rect x="176" y="1476" width="168" height="34" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="1493" text-anchor="middle">FrameParser (Pipe)</text><text x="260" y="1506" text-anchor="middle">粘包拆包/校验</text>
+    <rect x="176" y="1516" width="168" height="34" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="1533" text-anchor="middle">DeviceStateMachine</text><text x="260" y="1546" text-anchor="middle">九态 Stateless(§7.0,含急停)</text>
+    <rect x="176" y="1556" width="168" height="34" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="1573" text-anchor="middle">IDataPipeline</text><text x="260" y="1586" text-anchor="middle">帧分发器(Channel)</text>
+    <rect x="176" y="1596" width="168" height="34" rx="6" fill="#fff" stroke="#e0a83b"/><text x="260" y="1613" text-anchor="middle">IProtocolAdapter</text><text x="260" y="1626" text-anchor="middle">统一出口</text>
+  </g>
+
+  <!-- 南向安全基线框 (G3) -->
+  <rect x="160" y="1662" width="200" height="48" rx="10" fill="#fde8e8" stroke="#c0392b"/>
+  <text x="260" y="1682" text-anchor="middle" font-size="11" font-weight="700" fill="#9d2a1a">南向安全基线（G3·§1.8）</text>
+  <text x="260" y="1700" text-anchor="middle" font-size="9.5" fill="#9d2a1a">TLS/mTLS · EMQX ACL · 写指令 RBAC · 全量审计</text>
+
+  <!-- State machine parse flow -->
+  <rect x="380" y="1406" width="360" height="150" rx="12" fill="#eef6ff" stroke="#2b6cb0"/>
+  <text x="400" y="1428" font-size="12" font-weight="700" fill="#1a4971">帧解析状态机（六阶段）</text>
+  <g font-size="9.5" fill="#1a4971">
+    <rect x="396" y="1436" width="150" height="22" rx="5" fill="#fff" stroke="#2b6cb0"/><text x="471" y="1451" text-anchor="middle">1 定位帧头(丢噪声)</text>
+    <rect x="396" y="1464" width="150" height="22" rx="5" fill="#fff" stroke="#2b6cb0"/><text x="471" y="1479" text-anchor="middle">2 读长度(不足return)</text>
+    <rect x="396" y="1492" width="150" height="22" rx="5" fill="#fff" stroke="#2b6cb0"/><text x="471" y="1507" text-anchor="middle">3 等待完整帧</text>
+    <rect x="396" y="1520" width="150" height="22" rx="5" fill="#fff" stroke="#2b6cb0"/><text x="471" y="1535" text-anchor="middle">4 校验? 否→丢首字节</text>
+    <rect x="396" y="1548" width="150" height="22" rx="5" fill="#fff" stroke="#2b6cb0"/><text x="471" y="1563" text-anchor="middle">5 上报DataFrame</text>
+    <text x="560" y="1446" font-size="9.5" fill="#9a6b12">粘包 → 回到 1 循环</text>
+    <text x="560" y="1468" font-size="9.5" fill="#9a6b12">6 消费帧并继续</text>
+    <text x="560" y="1563" font-size="9.5" fill="#557">噪声/坏帧→丢弃计数</text>
+  </g>
+
+  <!-- Channels + backpressure (single gate) -->
+  <rect x="380" y="1568" width="360" height="64" rx="12" fill="#e8f1fb" stroke="#2b6cb0"/>
+  <text x="400" y="1588" font-size="12" font-weight="700" fill="#1a4971">零分配流式 + 背压（单闸门）</text>
+  <g font-size="9.5" fill="#1a4971">
+    <text x="396" y="1606">IAsyncEnumerable&lt;DeviceFrame&gt; + EnumeratorCancellation</text>
+    <text x="396" y="1622">System.Threading.Channels · BoundedChannel.Wait（唯一闸门）</text>
+  </g>
+
+  <!-- Events: domain + integration (G2) -->
+  <rect x="380" y="1644" width="360" height="44" rx="12" fill="#f3e8fb" stroke="#8b5cf6"/>
+  <text x="400" y="1664" font-size="11" font-weight="700" fill="#5b2a9b">事件（G2·§1.7）：域内 Mediator / 领域外 MQTT+Outbox</text>
+  <text x="396" y="1680" font-size="9.5" fill="#5b2a9b">域内=进程内强一致 · 领域外=跨边界最终一致+幂等</text>
+
+  <!-- EMQX + Outbox -->
+  <rect x="380" y="1700" width="360" height="44" rx="12" fill="#eafaf1" stroke="#2f9e6f"/>
+  <text x="400" y="1720" font-size="12" font-weight="700" fill="#1d6b48">可靠消息出口（MQTT 多段主题）</text>
+  <text x="396" y="1736" font-size="9.5" fill="#1d6b48">EMQX · Outbox/Inbox(Wolverine) · devices/{洲}/{国}/{省}/{市}/{区}/{线}/{批}/{devId}/{type}</text>
+
+  <!-- CQRS -->
+  <rect x="380" y="1756" width="360" height="40" rx="12" fill="#f3e8fb" stroke="#8b5cf6"/>
+  <text x="400" y="1776" font-size="12" font-weight="700" fill="#5b2a9b">CQRS：Mediator(martinothamar, MIT · 源码生成)</text>
+  <text x="396" y="1790" font-size="9.5" fill="#5b2a9b">写命令→Handler→IProtocolAdapter.WriteAsync（[EventHandler] SG / NativeAOT）</text>
+
+  <!-- DB -->
+  <rect x="380" y="1808" width="360" height="64" rx="12" fill="#eef2f7" stroke="#64748b"/>
+  <text x="400" y="1828" font-size="12" font-weight="700" fill="#334155">分库存储（G2 一致性基线）</text>
+  <g font-size="9.5" fill="#334155">
+    <text x="396" y="1846">SQLite+EFCore+DapperAOT(边缘) · InfluxDB(时序)</text>
+    <text x="396" y="1862">PostgreSQL(业务+Outbox 强一致) · Seq(热)+ClickHouse(冷·可重建)</text>
+  </g>
+
+  <!-- arrows C -->
+  <g stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M140 1432 H158"/><path d="M140 1496 H158"/><path d="M140 1560 H158"/><path d="M140 1624 H158"/>
+    <path d="M360 1662 H378"/>
+    <path d="M560 1554 V1566"/><path d="M560 1612 V1642"/><path d="M560 1688 V1698"/><path d="M560 1744 V1754"/><path d="M560 1796 V1806"/>
+  </g>
+  <g stroke="#2f9e6f" stroke-width="2" fill="none" marker-end="url(#arrowG)">
+    <path d="M619 1312 V1404"/>
+  </g>
+
+  <!-- ============ Region D: YARP + Aneiang.Yarp + Charts ============ -->
+  <rect x="40" y="1888" width="700" height="150" rx="14" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="60" y="1912" font-size="14" font-weight="700" fill="#1a4971">API 网关 YARP + Aneiang.Yarp（WAL 审计类比 + WAF） + 实时图表</text>
+  <rect x="60" y="1924" width="330" height="100" rx="10" fill="#fff" stroke="#2b6cb0"/>
+  <text x="80" y="1946" font-size="12" font-weight="700" fill="#1a4971">YARP + Aneiang.Yarp（WAL + WAF）</text>
+  <g font-size="9.5" fill="#335">
+    <text x="80" y="1964">动态路由/集群 CRUD · 限流 · 熔断</text>
+    <text x="80" y="1978">WAL=配置审计(环形缓冲)+原子文件(类比,非事务日志)</text>
+    <text x="80" y="1992">WAF：SQL注入/XSS/路径遍历+黑白名单(默认关闭,需 Dashboard 包+显式开启)</text>
+    <text x="80" y="2006">UseAneiangYarpWaf() 置于 MapReverseProxy 之前</text>
+    <text x="80" y="2020">单体 ⇄ 微服务平滑切分（契约不变）</text>
+  </g>
+  <rect x="410" y="1924" width="310" height="100" rx="10" fill="#fff" stroke="#2f9e6f"/>
+  <text x="430" y="1946" font-size="12" font-weight="700" fill="#1d6b48">实时图表（高频时序）</text>
+  <g font-size="9.5" fill="#335">
+    <text x="430" y="1964">ScottPlot（优先）：零依赖、百万点、低开销</text>
+    <text x="430" y="1978">LiveCharts2：MVVM 组件化（Blazor/WPF）</text>
+    <text x="430" y="1992">折线(实时点位) + 柱状(设备聚合)</text>
+    <text x="430" y="2006">后台仪表盘 KPI / 图表区 / 通知中心</text>
+    <text x="430" y="2020">CommunityToolkit.Mvvm 驱动 UI 更新</text>
+  </g>
+
+  <!-- ============ Region E: 测试架构 (G11) ============ -->
+  <rect x="40" y="2052" width="700" height="138" rx="14" fill="#fff7e6" stroke="#e0a83b" stroke-width="2"/>
+  <text x="60" y="2076" font-size="14" font-weight="700" fill="#9a6b12">质量与测试架构（G11 · §22：xUnit + Testcontainers + Aspire）</text>
+  <g font-size="10" text-anchor="middle">
+    <rect x="60" y="2088" width="208" height="58" rx="9" fill="#fff" stroke="#e0a83b"/><text x="164" y="2110" font-weight="700" fill="#9a6b12">xUnit 单元测试</text><text x="164" y="2126" fill="#5a4a20">帧解析/状态机/类型转换</text><text x="164" y="2140" fill="#5a4a20">零基础设施 · 热路径覆盖</text>
+    <rect x="286" y="2088" width="208" height="58" rx="9" fill="#fff" stroke="#e0a83b"/><text x="390" y="2110" font-weight="700" fill="#9a6b12">Testcontainers</text><text x="390" y="2126" fill="#5a4a20">EMQX/PostgreSQL/InfluxDB</text><text x="390" y="2140" fill="#5a4a20">真实依赖集成测试</text>
+    <rect x="512" y="2088" width="208" height="58" rx="9" fill="#fff" stroke="#e0a83b"/><text x="616" y="2110" font-weight="700" fill="#9a6b12">Aspire 测试编排</text><text x="616" y="2126" fill="#5a4a20">一键拉起整条数据平面</text><text x="616" y="2140" fill="#5a4a20">契约/混沌/压测(k6)</text>
+  </g>
+  <text x="60" y="2166" font-size="9.5" fill="#9a6b12">质量基线：契约测试(每次PR) + 单元测试 + 集成测试 + 网络分区混沌(每夜) + 发版前 p99 压测(对齐 §1.9 SLO：1万设备/50万点每秒/p99&lt;200ms)</text>
+
+  <!-- ============ Region F: 后端可靠性架构 V8 ============ -->
+  <rect x="40" y="2196" width="700" height="158" rx="14" fill="#eafaf1" stroke="#2f9e6f" stroke-width="2"/>
+  <text x="60" y="2220" font-size="14" font-weight="700" fill="#1d6b48">后端可靠性架构（V8 · 可扩展 · 高性能 · 插件式 · 可靠）</text>
+  <g font-size="9.8" text-anchor="middle">
+    <rect x="60" y="2232" width="160" height="66" rx="9" fill="#fff" stroke="#2f9e6f"/><text x="140" y="2254" font-weight="700" fill="#1d6b48">可扩展</text><text x="140" y="2270" fill="#335">垂直切片·契约版本</text><text x="140" y="2286" fill="#335">微服务抽取缝(§0.3)</text>
+    <rect x="232" y="2232" width="160" height="66" rx="9" fill="#fff" stroke="#2f9e6f"/><text x="312" y="2254" font-weight="700" fill="#1d6b48">高性能</text><text x="312" y="2270" fill="#335">NativeAOT·零分配</text><text x="312" y="2286" fill="#335">Span·Channel·lock-free</text>
+    <rect x="404" y="2232" width="160" height="66" rx="9" fill="#fff" stroke="#2f9e6f"/><text x="484" y="2254" font-weight="700" fill="#1d6b48">插件式</text><text x="484" y="2270" fill="#335">ALC隔离·清理契约</text><text x="484" y="2286" fill="#335">sidecar兜底(§3.5)</text>
+    <rect x="576" y="2232" width="160" height="66" rx="9" fill="#fff" stroke="#2f9e6f"/><text x="656" y="2254" font-weight="700" fill="#1d6b48">可靠</text><text x="656" y="2270" fill="#335">三探针·优雅停机</text><text x="656" y="2286" fill="#335">弹性·幂等(§1.7/§10)</text>
+  </g>
+  <text x="60" y="2322" font-size="10" fill="#1d6b48">.NET 10 LTS + C# 13 基座 · OpenTelemetry 可观测(Logs/Metrics/Traces) · 横向扩展=无状态后端+会话外置+负载均衡(§23)</text>
+  <text x="60" y="2342" font-size="10" fill="#557">可观测性(G7)：跨 ALC/MQTT trace 传播；SLO(§1.9)：1万设备/50万点每秒/p99&lt;200ms/99.9%。</text>
+
+  <!-- ============ Region G: 运行稳定性·可互换性·故障全生命周期 V9 ============ -->
+  <rect x="40" y="2366" width="700" height="158" rx="14" fill="#eef6ff" stroke="#2b6cb0" stroke-width="2"/>
+  <text x="60" y="2390" font-size="14" font-weight="700" fill="#1a4971">运行稳定性 · 可互换性 · 故障全生命周期（V9 · ADR-009/010/011）</text>
+  <g font-size="9.5" text-anchor="middle">
+    <rect x="60" y="2402" width="208" height="104" rx="9" fill="#fff" stroke="#2b6cb0"/><text x="164" y="2424" font-weight="700" fill="#1a4971">长时间运行稳定性+高可用</text><text x="164" y="2440" fill="#335">监督者+看门狗·自愈重启</text><text x="164" y="2452" fill="#335">长期GC(DATAS/低延迟)</text><text x="164" y="2464" fill="#335">连接租约·防泄漏</text><text x="164" y="2476" fill="#335">过载保护·降级服务</text><text x="164" y="2488" fill="#335">HA: PG咨询锁选主+边缘主备</text><text x="164" y="2500" fill="#335">崩溃恢复·状态重建</text>
+    <rect x="286" y="2402" width="208" height="104" rx="9" fill="#fff" stroke="#2b6cb0"/><text x="390" y="2424" font-weight="700" fill="#1a4971">协议与PLC设备可互换</text><text x="390" y="2440" fill="#335">DeviceProfile 点表描述</text><text x="390" y="2452" fill="#335">IDeviceProtocol 统一契约</text><text x="390" y="2464" fill="#335">能力协商 Capabilities</text><text x="390" y="2476" fill="#335">DeviceCatalog 热替换</text><text x="390" y="2488" fill="#335">通用点表导入/导出</text><text x="390" y="2500" fill="#335">换型=改Profile 零改动</text>
+    <rect x="512" y="2402" width="208" height="104" rx="9" fill="#fff" stroke="#2b6cb0"/><text x="616" y="2424" font-weight="700" fill="#1a4971">故障全生命周期</text><text x="616" y="2440" fill="#335">FaultEvent(correlationId)</text><text x="616" y="2452" fill="#335">全链路可追溯</text><text x="616" y="2464" fill="#335">IRecoveryStrategy 自动恢复</text><text x="616" y="2476" fill="#335">解决状态机 Open→Closed</text><text x="616" y="2488" fill="#335">IFaultStore 多维查询</text><text x="616" y="2500" fill="#335">MTTR 看板</text>
+  </g>
+  <text x="60" y="2518" font-size="10" fill="#1a4971">.NET 10 LTS + C# 13 · 长期稳定性基线：7×24 不掉线/不崩 · 可互换 · 可追/可恢/可解/可查（§1.11–§1.13）</text>
+
+  <!-- footer -->
+  <rect x="40" y="2534" width="700" height="40" rx="8" fill="#1f2d3d"/>
+  <text x="390" y="2559" font-size="11.5" fill="#ffffff" text-anchor="middle">容器化 Docker · 编排 K8s / Tye / Aspire · 三高一低 + 零分配 · 工业级流水线（Channel→AsyncEnum→BackgroundService→IHostedService→Dataflow）</text>
+
+  <text x="60" y="2598" font-size="10.5" fill="#64748b">① 管理(UI/API)→ ② 控制(配置编译规则)→ ③ 数据(执行/南向) ｜ 外围：④ EMQX/Outbox(可靠消息)→ ⑤ MIT Mediator CQRS → ⑥ 分库+AI+前端</text>
+  <text x="60" y="2618" font-size="10.5" fill="#64748b">评审加固 V7 + V8 后端可靠性 + V9 长期运行稳定性：G1 领域地图 · G2 一致性 · G3 南向安全 · G4 插件清理 · G6 背压单闸门 · G10 急停 · G11 测试 · V8 四支柱 · V9 稳定/互换/故障全生命周期(§1.11–§1.13)</text>
+</svg>
