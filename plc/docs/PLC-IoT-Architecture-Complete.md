@@ -78,6 +78,71 @@
 
 ---
 
+### 0.4.1 技术落地状态对照（实际采用 vs 文档规划）
+
+> 本节对 0.4 速查表逐行标注**实际落地状态**。基准：`plc-saas`（多租户 SaaS 控制面，dev 分支，截至 2026-08-18，P0/P1 已完成、P2 开启）。
+> 文档 0.4 把「SaaS 控制面 + 边缘宿主(plc-aiot-saas) + 纯规划」三类技术混在一张表里，审阅时易误判为全部落地。本对照以 `plc-saas.csproj` / `infra.cs` 的 `#r` 指令 / 全仓源码引用为据。
+>
+> 图例：
+> - **【已落地】** plc-saas 实际引用并实现
+> - **【部分】** 仅子集落地或用内置能力替代
+> - **【边缘域】** 属 `plc-aiot-saas` 边缘宿主/驱动职责，设计上不在 SaaS 控制面
+> - **【待 ratify】** ADR-109/110/111 已裁定推迟（非本次实现）
+> - **【未采纳】** 文档写定但 plc-saas 与边缘宿主两端均未接线
+
+| 关注点（0.4 行） | 文档决策 | 落地状态 | 说明 |
+| --- | --- | --- | --- |
+| 插件/热插拔 | DotNetCorePlugins + 自研 PluginManager | 【边缘域】 | ADR-109 Deferred，属边缘宿主 ALC 加载 |
+| 模块化 UI | Oqtane（Blazor 模块化） | 【未采纳】 | plc-saas 无前端 |
+| 基础件可替换 | Foundatio | 【未采纳】 | 未引用 |
+| AI | MEAI + MCP + Qdrant | 【已落地】 | ADR-112 已落地，dotnet run 端到端验证通过 |
+| PLC 状态机 | Stateless | 【边缘域】 | 边缘设备状态机 |
+| AIOT 传输 | MQTT + EMQX | 【已落地】 | MQTTnet（ADR-113）；EMQX 为外部容器，非包依赖 |
+| 消息队列 | Channels + BoundedChannel 背压 | 【边缘域】 | 控制面未用 Channels（用 MeteringAgent 轮询替代） |
+| 弹性 | Polly v8 | 【未采纳】 | 未引用 Polly |
+| CQRS | Mediator + Wolverine Outbox | 【部分】 | Mediator(MIT)+SG【已落地】；Wolverine Outbox【未采纳】（自建 Outbox + MeteringAgent，ADR-110 Deferred） |
+| IOC | Scrutor 程序集扫描 | 【未采纳】 | 未引用 |
+| 模块化端点 | Carter | 【未采纳】 | 用 Minimal API 直接 Map |
+| API 网关 | YARP | 【待 ratify】 | ADR-111 Deferred → P2 |
+| 实时图表 | ScottPlot / LiveCharts2 | 【未采纳】 | 无前端 |
+| 协议帧 | 统一帧格式 | 【边缘域】 | 边缘解析层 |
+| 抽象层级 | driver/device/pipeline/registry | 【边缘域】 | 边缘宿主 |
+| Modbus | NModbus4 | 【边缘域】 | 驱动在 plc-aiot-saas |
+| OPC | OPC Foundation + OpcUaHelper | 【边缘域】 | 同上 |
+| S7 | s7netplus | 【边缘域】 | 同上 |
+| 设备配置 | json + Options | 【部分】 | appsettings 用；设备点表属边缘域 |
+| 心跳/健康 | HealthCheck | 【部分】 | ops.health 单端点（SuperAdminOnly）；无三探针分离 |
+| 流式输出 | IAsyncEnumerable | 【部分】 | AI/MCP 流式用；非数据管道 |
+| 生命周期 | BackgroundService + IHostedService → Dataflow | 【边缘域】 | 数据流水线属边缘 |
+| 数据库 | SQLite/InfluxDB/PostgreSQL/Seq/ClickHouse | 【部分】 | 仅 PostgreSQL 业务/多租户库；其余未用 |
+| 前端 | HTMX+Tailwind+Blazor+MVVM+Rx.NET | 【未采纳】 | 无前端 |
+| 可观测 | OpenTelemetry + Aspire | 【未采纳】 | 未引用 |
+| API 设计 | Minimal API + TypedResults + /v1 + OpenAPI | 【已落地】 | plc-saas 采用 |
+| 限流 | System.Threading.RateLimiting + AspNetCoreRateLimit | 【部分】 | 仅内置 TokenBucket 租户配额；AspNetCoreRateLimit 未用 |
+| 缓存 | HybridCache + Garnet/Redis | 【未采纳】 | 未引用 |
+| 健康检查 | liveness/readiness/startup 三探针 | 【部分】 | 仅单 health 端点，无三探针分离 |
+| 横向扩展 | 无状态 + Redis/PG + LB + 容器/Aspire | 【边缘域】 | 编排未做 |
+| 设备协议互换 | DeviceProfile/IDeviceProtocol/DeviceCatalog | 【边缘域】 | |
+| 长期运行 GC | DATAS + GCSettings + TryStartNoGCRegion | 【边缘域】 | 长驻进程属边缘宿主 |
+| 看门狗/自愈 | DeviceSessionSupervisor | 【边缘域】 | |
+| 领导者选举 | PG 咨询锁 / Dapr Actor | 【未采纳】 | 未用 |
+| 故障存储/查询 | FaultEvent + IFaultStore | 【部分】 | faults.stream/ack 用 PG；InfluxDB 冷热分层未做 |
+| 自动化恢复 | IRecoveryStrategy | 【边缘域】 | |
+| 向量/AI | Microsoft.Extensions.VectorData + MEAI | 【部分】 | 用 Qdrant.Client 直接；未用 VectorData 抽象 |
+| 原生 AOT | Native AOT 宿主 | 【未采纳】 | 用 strip 构建脚本，非 AOT |
+
+**小结（38 行速查表中）**：【已落地】4 · 【部分】10 · 【边缘域】14 · 【待 ratify】1 · 【未采纳】9。
+即 plc-saas 本次真正落地的控制面技术约 9–10 项（含【已落地】与【部分】中的控制面子集），其余要么归属边缘宿主、要么被 ADR 推迟、要么从未接线。
+
+**补充：实际已落地但 0.4 未列入的技术（文档遗漏）**
+- 认证/授权：ASP.NET Core Identity + JwtBearer（SuperAdmin / TenantUser 策略）—— plc-saas 核心，0.4 速查表未列。
+- 多租户隔离：EF Core 全局查询过滤器 + `TenantStampInterceptor` 盖戳/拒跨租户 + PostgreSQL RLS（`sql/rls.sql`）—— 0.4 未列。
+- Billing 计量配额：仅计量不收费（ADR-108），`billing.*` 切片 + `System.Threading.RateLimiting` TokenBucket 租户配额 —— 0.4 未列。
+- 自建事务 Outbox + MeteringAgent 轮询（替代 Wolverine，ADR-110 Deferred）。
+- 文件化构建：VSA File-based App（`Program.cs` + `#include` + `strip-app.ps1`），0.4 的"低部署成本"未点明此实现方式。
+
+---
+
 ## 0.5 优先采用 .NET 内置框架与官方/社区组件（选型约束 a–f）
 
 > 基调：**能用 ASP.NET Core / Microsoft.Extensions.* 内置能力就不引第三方**；确需第三方时优先官方/社区、MIT 协议、AOT 友好、零分配。以下逐条落实你的约束 a–f。
