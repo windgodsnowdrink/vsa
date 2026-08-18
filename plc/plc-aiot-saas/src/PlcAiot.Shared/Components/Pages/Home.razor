@@ -1,0 +1,10 @@
+@page "/"
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        // 启动后直接进入静态 HTML 页面集群
+        Navigation.NavigateTo("pages/index.html", forceLoad: true);
+    }
+}
