@@ -36,8 +36,9 @@ public static class DbSeeder
         }
 
         // 平台超管（tid=root，TenantId=Guid.Empty）
-        var rootEmail = cfg["Root:Email"] ?? "root@plc-aiot.example";
-        var rootPwd = cfg["Root:Password"] ?? "Root@Dev-ChangeMe-2026";
+        // 用户裁定（2026-08-18）：默认租户/密码 root/admin（多租户 SaaS 重要等级降低，先用最简凭据）
+        var rootEmail = cfg["Root:Email"] ?? "root";
+        var rootPwd = cfg["Root:Password"] ?? "admin";
         var rootUser = await db.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.NormalizedEmail == rootEmail.ToUpper());
         if (rootUser is null)
         {

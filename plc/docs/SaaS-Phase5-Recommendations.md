@@ -1,6 +1,6 @@
 # SaaS 能力补全推荐方案（Phase 5 立项建议）
 
-> 版本：Rec v1.0 · 状态：**已确认（2026-08-16，用户拍板）** — 分期锁定：V1-now(P0) = 真实 MQTT/EMQX 桥(ADR-113 ✅) + 治理三件套(✅)；P1 = PluginManager+ALC(ADR-109 ⏸边缘域 Deferred) + MEAI/MCP/Qdrant(ADR-112 ✅)；P2/Later = Wolverine Outbox(ADR-110 ⏸) + YARP/WAF(ADR-111 ⏸)。**P0/P1 已收口，进入 P2。**
+> 版本：Rec v1.0 · 状态：**已被 ADR-114（2026-08-18 用户裁定）战略重排覆盖** —— 原“P0/P1 收口进入 P2”作废；新主轴 = **插件体系优先（DotNetCorePlugins，优先级 1）→ 基础能力栈（优先级 2）→ PLC 插件化（优先级 3）**；多租户 SaaS 重要等级降低（凭据默认 root/admin）。ADR-109 由 Deferred 反转升为优先级 1。
 > 范围：把 `PLC-IoT-Architecture-Complete.md`(V9) 中「仅文档、未落地」的 5 项能力给出实现推荐，并补齐 DevOps / 安全审查 / 代码 CoreReview 三套工程治理。
 > 关联：`docs/PLC-IoT-Architecture-Verification.md`（实现核验，落地≈40%）· `docs/SaaS-Architecture-Spec.md` · `docs/decisions/ADR-109-113.md`（PROPOSED）。
 
