@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Plc.Host</RootNamespace>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 宿主仅引用契约层；插件在运行时由 ALC 加载，绝不进宿主依赖图 -->
+    <ProjectReference Include="Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 排除子目录源码被宿主默认编译（否则与 ProjectReference 同名类型冲突 / 重复 AssemblyInfo） -->
+    <Compile Remove="plugins\**\*.cs" />
+    <Compile Remove="Plc.Plugins.Contracts\**\*.cs" />
+    <None Remove="plugins\**" />
+    <None Remove="Plc.Plugins.Contracts\**" />
+  </ItemGroup>
+
+</Project>

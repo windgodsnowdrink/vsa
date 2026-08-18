@@ -41,13 +41,15 @@
 
 ---
 
-## Open Questions（开放问题 · 待用户拍板）
+## Decisions Resolved（已拍板 · 2026-08-18）
 
-1. **Oqtane 范围**：Oqtane 是 Blazor 模块化 CMS。是指“采用 Oqtane 作为模块/插件宿主”，还是仅取其“模块化应用框架”思路、自研轻量宿主？两者工作量与耦合度差异极大。
-2. **“CSGO”指代**：疑似 typo。候选 —— Ocelot（API 网关）/ Kafka（流）/ Orleans·Akka（Actor）/ 其他？需明确。
-3. **Dapr vs Flink**：Dapr = 微服务 sidecar 构建块；Flink = 流处理。二者范式不同，是否都需要、还是只取其一作为编排/流底座？
-4. **插件宿主落点**：插件体系内嵌进 `plc-saas` 控制面，还是新建独立“插件宿主 / 边缘宿主”工程作为主产物？决定代码组织与 ALC 隔离边界。
-5. **基础能力深度**：统一“轻量引用 + flag 门控 + 离线兜底”（如 ADR-112 的 AI 做法），还是对部分组件做“深集成”？影响风险与工期。
+1. **Oqtane 范围**：**不引入 Oqtane 全栈**。仅取其“模块化”思路，自研基于 ALC 的轻量插件宿主（最小依赖、可控、契合 File-based App）。→ 见 `plc/plc-host/`。
+2. **“CSGO”指代**：**CSGO = CsGo**（`github.com/HAM-2015/CsGo`）；与 **Dapr**（`github.com/dapr`）和 **CSharpFlink**（`github.com/wxzz/CSharpFlink`）**三者都要**，作为编排/流处理底座。
+3. **Dapr vs Flink**：二者并存——Dapr 管微服务 sidecar 构建块，Flink（CSharpFlink）管设备遥测流处理；CsGo 作补充（网络/游戏式协议栈，视边缘场景）。
+4. **插件宿主落点**：**新建独立工程 `plc/plc-host/`**（主产物），`plc-saas` 控制面降为其一个插件消费者；宿主与插件通过 `Plc.Plugins.Contracts` 共享契约、ALC 隔离。
+5. **基础能力深度**：统一 **“轻量引用 + feature flag 门控 + 离线兜底”**（沿用 ADR-112 的 AI 做法），preview 期风险最低，按需再深集成。
+
+> 优先级 1 骨架已落地：`plc-host`（宿主 + PluginManager + ALC 隔离加载器 + 热重载）+ `Plc.Plugins.Contracts`（共享契约）+ `plugins/DemoDevicePlugin`（演示 PLC 设备协议插件，验证插件化）。基础能力栈（Dapr/CSharpFlink/CsGo/Polly/Scrutor/Carter/ScottPlot/HybridCache/OTel+Aspire/CommunityToolkit/Native AOT）列入优先级 2，待逐项接入。
 
 ---
 

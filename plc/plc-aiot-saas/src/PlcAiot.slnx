@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="PlcAiot.Shared\PlcAiot.Shared.csproj" />
+  <Project Path="PlcAiot.Web\PlcAiot.Web.csproj" />
+  <Project Path="PlcAiot.Web.Client\PlcAiot.Web.Client.csproj" />
+  <Project Path="PlcAiot.Desktop\PlcAiot.Desktop.csproj" />
+  <Project Path="PlcAiot.Mobile\PlcAiot.Mobile.csproj" />
+</Solution>

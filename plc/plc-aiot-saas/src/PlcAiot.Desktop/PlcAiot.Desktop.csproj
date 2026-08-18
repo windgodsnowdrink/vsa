@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>PlcAiot.Desktop</RootNamespace>
+    <AssemblyName>PlcAiot.Desktop</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlcAiot.Shared\PlcAiot.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.0-preview.3.25208.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="CopyPages" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <PageFiles Include="..\..\pages\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PageFiles)" DestinationFolder="wwwroot\pages\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
