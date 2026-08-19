@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- Must match the library's windows TFM (WinForms is referenced by CsGo). -->
+    <TargetFramework>net11.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>CsGoSpike</RootNamespace>
+    <AssemblyName>CsGoSpike</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CsGo-master\CsGo\CsGo.csproj" />
+  </ItemGroup>
+
+</Project>

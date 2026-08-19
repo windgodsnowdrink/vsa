@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0-windows</TargetFramework>
+    <AssemblyName>CsGo</AssemblyName>
+    <RootNamespace>CsGo</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <!-- WinForms is referenced only by the optional UI-thread control_strand and an
+         unhandled-exception MessageBox; kept enabled so the library compiles as-is. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Original csproj treated CS4014 as error; relaxed for the spike build. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core CSP/concurrency files only. socket.cs (networking/serial/ports) is
+         excluded: it pulls extra framework APIs and is not needed for channels/goroutines. -->
+    <Compile Include="Go\async_timer.cs" />
+    <Compile Include="Go\channel.cs" />
+    <Compile Include="Go\functional.cs" />
+    <Compile Include="Go\generator.cs" />
+    <Compile Include="Go\mt19937.cs" />
+    <Compile Include="Go\time_heap.cs" />
+    <Compile Include="Go\mutex.cs" />
+    <Compile Include="Go\shared_strand.cs" />
+    <Compile Remove="Go\socket.cs" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+</Project>
