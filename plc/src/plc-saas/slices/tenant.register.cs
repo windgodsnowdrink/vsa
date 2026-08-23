@@ -1,6 +1,5 @@
 ﻿// slices/tenant.register.cs — 租户开通与运营暂停/恢复（Tenant 上下文，§5.1）
 // POST /tenants（匿名） · POST /ops/tenants/{id}/suspend · POST /ops/tenants/{id}/resume（超管）
-#include "../infra.cs"
 using System.Text.RegularExpressions;
 
 public static class TenantRegisterApi

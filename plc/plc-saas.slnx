@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/test/">
+    <Project Path="src/csgo-spike/src/FormTest/FormTest.csproj" Id="2ac9e74b-77ff-4987-aa1e-6f75e7320941" />
+    <Project Path="src/csgo-spike/src/GoTest/GoTest.csproj" Id="f3f7779d-df67-4fd8-bef0-d9ff6b93ca1e" />
+    <Project Path="src/csgo-spike/src/WorkerFlow/WorkerFlow.csproj" Id="9cde92f2-774c-4705-a3e6-4b586450aa5b" />
+    <Project Path="src/csharpflink-spike/repo/test/TestCommon/TestCommon.csproj" />
+    <Project Path="src/csharpflink-spike/repo/test/TestConfluentKafka/TestConfluentKafka.csproj" />
+    <Project Path="src/csharpflink-spike/repo/test/TestMasterNode/TestMasterNode.csproj" />
+    <Project Path="src/csharpflink-spike/repo/test/TestRPC/TestRPC.csproj" />
+    <Project Path="src/csharpflink-spike/repo/test/TestSlaveNode/TestSlaveNode.csproj" />
+    <Project Path="src/csharpflink-spike/repo/test/TestTask/TestTask.csproj" />
+    <Project Path="src/plc-saas.verify/plc-saas.verify.csproj" />
+  </Folder>
+  <Project Path="src/csgo-spike/CsGo-master/CsGo/CsGo.csproj" />
+  <Project Path="src/csgo-spike/CsGoSpike/CsGoSpike.csproj" />
+  <Project Path="src/csharpflink-spike/poc/Poc.csproj" />
+  <Project Path="src/csharpflink-spike/repo/src/CSharpFlink.Core/CSharpFlink.Core.csproj" />
+  <Project Path="src/csharpflink-spike/repo/src/CSharpFlink/CSharpFlink.csproj" />
+  <Project Path="src/dapr-spike/dapr-spike.csproj" />
+  <Project Path="src/plc-host/plc-host.csproj" />
+  <Project Path="src/plc-saas/plc-saas.csproj" />
+  <Project Path="src/Plc.Plugins.Contracts/Plc.Plugins.Contracts.csproj" />
+  <Project Path="src/PlcAiot.Abstractions/PlcAiot.Abstractions.csproj" />
+  <Project Path="src/PlcAiot.Desktop/PlcAiot.Desktop.csproj" />
+  <Project Path="src/PlcAiot.Devices/PlcAiot.Devices.csproj" />
+  <Project Path="src/PlcAiot.Faults.Persistent/PlcAiot.Faults.Persistent.csproj" />
+  <Project Path="src/PlcAiot.Faults/PlcAiot.Faults.csproj" />
+  <Project Path="src/PlcAiot.Mobile/PlcAiot.Mobile.csproj" />
+  <Project Path="src/PlcAiot.Shared/PlcAiot.Shared.csproj" />
+  <Project Path="src/PlcAiot.Stability/DemoHost/DemoHost.csproj" />
+  <Project Path="src/PlcAiot.Supervisor/PlcAiot.Supervisor.csproj" />
+  <Project Path="src/PlcAiot.Web.Client/PlcAiot.Web.Client.csproj" />
+  <Project Path="src/PlcAiot.Web/PlcAiot.Web.csproj" />
+  <Project Path="src/PlcAiot.WebApi/PlcAiot.WebApi.csproj" />
+</Solution>

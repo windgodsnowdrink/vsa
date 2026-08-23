@@ -1,10 +1,11 @@
-// VerifyTests.cs — ADR-101 工程化校验
+﻿// VerifyTests.cs — ADR-101 工程化校验
 // 1) 整个 verify 工程编译通过 = File-based 切片的全量 typecheck（含 Mediator 源生成）
 // 2) ADR-108 红线静态扫描：所有 plc-saas 源中不得出现 price/currency/amount/money 字段/标识符
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
 using Xunit;
 

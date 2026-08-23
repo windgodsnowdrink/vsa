@@ -1,29 +1,29 @@
-// Program.cs �? PLC·AIOT 多租�? SaaS（File-based App 入口�?.NET 11 preview.6 / C# 14�?
-// 运行�? dotnet run Program.cs   （等�? "Now listening on http://localhost:5000"�?
-// 所有共享设施经 #include "infra.cs"；各垂直切片自包含端�? + CQRS Handler + DTO�?
-#nullable enable
-#include "GlobalUsings.cs"
-#include "infra.cs"
-#include "slices/tenant.register.cs"
-#include "slices/tenant.activate.cs"
-#include "slices/identity.login.cs"
-#include "slices/identity.members.cs"
-#include "slices/identity.mqtt.cs"
-#include "slices/billing.usage.cs"
-#include "slices/billing.plan.cs"
-#include "slices/billing.quota.cs"
-#include "slices/devices.list.cs"
-#include "slices/faults.ack.cs"
-#include "slices/faults.stream.cs"
-#include "slices/ops.tenants.cs"
-#include "slices/ops.pricing.cs"
-#include "slices/ops.roles.cs"
-#include "slices/ops.health.cs"
-#include "slices/metering.agent.cs"
-#include "slices/ingest.bridge.cs"
-#include "slices/ingest.http.cs"
-#include "slices/ai.assistant.cs"
-#include "seed.cs"
+﻿// Program.cs 鈥? PLC路AIOT 澶氱鎴? SaaS锛團ile-based App 鍏ュ彛锛?.NET 11 preview.6 / C# 14锛?
+// 杩愯锛? dotnet run Program.cs   锛堢瓑寰? "Now listening on http://localhost:5000"锛?
+// 鎵€鏈夊叡浜鏂界粡 #include "infra.cs"锛涘悇鍨傜洿鍒囩墖鑷寘鍚鐐? + CQRS Handler + DTO銆?
+//#nullable enable
+//#include "GlobalUsings.cs"
+//#include "infra.cs"
+//#include "slices/tenant.register.cs"
+//#include "slices/tenant.activate.cs"
+//#include "slices/identity.login.cs"
+//#include "slices/identity.members.cs"
+//#include "slices/identity.mqtt.cs"
+//#include "slices/billing.usage.cs"
+//#include "slices/billing.plan.cs"
+//#include "slices/billing.quota.cs"
+//#include "slices/devices.list.cs"
+//#include "slices/faults.ack.cs"
+//#include "slices/faults.stream.cs"
+//#include "slices/ops.tenants.cs"
+//#include "slices/ops.pricing.cs"
+//#include "slices/ops.roles.cs"
+//#include "slices/ops.health.cs"
+//#include "slices/metering.agent.cs"
+//#include "slices/ingest.bridge.cs"
+//#include "slices/ingest.http.cs"
+//#include "slices/ai.assistant.cs"
+//#include "seed.cs"
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,11 +71,11 @@ AiAssistantApi.Map(api);
 
 app.MapHub<FaultsHub>("/hubs/faults");
 
-// MCP Server��ADR-112���ⲿ AI Agent ��ȫ������� Mcp:Enabled ʱ��¶ /mcp��Streamable HTTP + SSE��
+// MCP Server（ADR-112，外部 AI Agent 安全问诊）；仅 Mcp:Enabled 时暴露 /mcp（Streamable HTTP + SSE）
 if (builder.Configuration.GetValue("Mcp:Enabled", false))
-    app.MapMcp("/mcp"); // Hub �? faults；协�? /hubs/faults/negotiate
+    app.MapMcp("/mcp"); // Hub 鍚? faults锛涘崗鍟? /hubs/faults/negotiate
 
-// 启动：幂等建�? + RLS 自动应用（先于种子，确保表与行级安全就绪�?
+// 鍚姩锛氬箓绛夊缓琛? + RLS 鑷姩搴旂敤锛堝厛浜庣瀛愶紝纭繚琛ㄤ笌琛岀骇瀹夊叏灏辩华锛?
 using (var scope = app.Services.CreateScope())
 {
     await SaasSchemaBootstrap.BootstrapAsync(scope.ServiceProvider);
@@ -84,5 +84,5 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// 便于集成测试取地址
+// 渚夸簬闆嗘垚娴嬭瘯鍙栧湴鍧€
 public partial class Program { }

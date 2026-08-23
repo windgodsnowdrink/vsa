@@ -49,9 +49,8 @@
     </_SaasSrc>
     <Content Include="@(_SaasSrc)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Include="VerifyTests.cs" />
+    <ProjectReference Include="..\plc-saas\plc-saas.csproj" />
   </ItemGroup>
 
   <!-- File-based 源 → 剥离 #include/#r → 编译（ADR-101 的工程化 typecheck） -->

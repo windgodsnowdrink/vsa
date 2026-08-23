@@ -1,6 +1,5 @@
 ﻿// slices/billing.usage.cs — 用量计量（Billing 上下文，§5.3 / ADR-108）
 // GET /billing/usage（租户用户）。仅计量，无任何 price/currency/amount/money 字段。
-#include "../infra.cs"
 
 // —— 共享 DTO（Billing 三端点复用）——
 public sealed record PlanResponse(Guid Id, string Name, int DeviceQuota, int TelemetryQuota);

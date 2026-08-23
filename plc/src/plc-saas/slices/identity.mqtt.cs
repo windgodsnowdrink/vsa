@@ -1,6 +1,5 @@
-// slices/identity.mqtt.cs — 派生短时 MQTT 凭据（Identity 上下文，§5.2 / ADR-107）
+﻿// slices/identity.mqtt.cs — 派生短时 MQTT 凭据（Identity 上下文，§5.2 / ADR-107）
 // POST /mqtt/credential（租户用户）。凭据内嵌 tid；EMQX 经 JWT auth + ACL 隔离（方案 B）。
-#include "../infra.cs"
 
 public static class IdentityMqttApi
 {

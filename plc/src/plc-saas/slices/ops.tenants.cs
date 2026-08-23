@@ -1,5 +1,4 @@
 ﻿// slices/ops.tenants.cs — 平台运营：全部租户 + 健康（§5.5，超管）
-#include "../infra.cs"
 
 public static class OpsTenantsApi
 {

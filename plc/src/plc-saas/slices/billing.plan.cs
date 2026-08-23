@@ -1,6 +1,5 @@
 ﻿// slices/billing.plan.cs — 套餐档查询与切换（Billing 上下文，§5.3 / ADR-108）
 // GET/POST /billing/plan。套餐档仅作配额差异化，无价格字段。
-#include "../infra.cs"
 
 public static class BillingPlanApi
 {

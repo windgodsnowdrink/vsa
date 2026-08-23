@@ -1,5 +1,4 @@
 ﻿// slices/tenant.activate.cs — 租户详情（超管，§5.1 GET /tenants/{id}）
-#include "../infra.cs"
 
 public static class TenantActivateApi
 {

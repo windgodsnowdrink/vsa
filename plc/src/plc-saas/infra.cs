@@ -3,18 +3,18 @@
 // 类型定义用 #if !INFRA_CS 守卫，避免多切片 #include 导致重复定义。
 // 红线：以下任何类型/方法均不含 price/currency/amount/money（ADR-108）。
 
-#r "nuget:Microsoft.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
-#r "nuget:Npgsql.EntityFrameworkCore.PostgreSQL, 11.0.0-preview.6"
-#r "nuget:Microsoft.AspNetCore.Identity.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
-#r "nuget:Microsoft.AspNetCore.Authentication.JwtBearer, 11.0.0-preview.6.26359.118"
-#r "nuget:System.IdentityModel.Tokens.Jwt, 8.22.0"
-#r "nuget:Mediator.Abstractions, 3.0.2"
-#r "nuget:Mediator.SourceGenerator, 3.0.2"
-#r "nuget:MQTTnet, 5.2.0.1603"
-#r "nuget:Microsoft.Extensions.AI, 10.9.0"
-#r "nuget:ModelContextProtocol, 2.2.0"
-#r "nuget:ModelContextProtocol.AspNetCore, 0.1.0-preview.14"
-#r "nuget:Qdrant.Client, 1.19.0"
+//#r "nuget:Microsoft.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
+//#r "nuget:Npgsql.EntityFrameworkCore.PostgreSQL, 11.0.0-preview.6"
+//#r "nuget:Microsoft.AspNetCore.Identity.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
+//#r "nuget:Microsoft.AspNetCore.Authentication.JwtBearer, 11.0.0-preview.6.26359.118"
+//#r "nuget:System.IdentityModel.Tokens.Jwt, 8.22.0"
+//#r "nuget:Mediator.Abstractions, 3.0.2"
+//#r "nuget:Mediator.SourceGenerator, 3.0.2"
+//#r "nuget:MQTTnet, 5.2.0.1603"
+//#r "nuget:Microsoft.Extensions.AI, 10.9.0"
+//#r "nuget:ModelContextProtocol, 2.2.0"
+//#r "nuget:ModelContextProtocol.AspNetCore, 0.1.0-preview.14"
+//#r "nuget:Qdrant.Client, 1.19.0"
 
 #if !INFRA_CS
 #define INFRA_CS

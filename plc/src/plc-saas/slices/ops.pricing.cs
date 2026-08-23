@@ -1,6 +1,5 @@
 ﻿// slices/ops.pricing.cs — 平台运营：计费策略 / 套餐档定义（§5.5，超管）
 // 无价格字段（ADR-108）。
-#include "../infra.cs"
 
 public static class OpsPricingApi
 {

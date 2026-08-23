@@ -1,7 +1,6 @@
 ﻿// slices/metering.agent.cs — 计量后台（Outbox 消费者 + 配额评估 + SignalR 推送，§SaaS-Metering / ADR-102/108）
 // 轮询 OutboxMessages(sent_at IS NULL) → 聚合 UsageMeters → 评估 QuotaPolicies → 发布事件经 SignalR 直推。
 // 仅计量，无 price/currency/amount/money 字段。
-#include "../infra.cs"
 using System.Text.Json;
 using System.Collections.Concurrent;
 

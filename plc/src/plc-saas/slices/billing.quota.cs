@@ -1,6 +1,5 @@
 ﻿// slices/billing.quota.cs — 配额阈值与超限策略（Billing 上下文，§5.3 / G8）
 // GET /billing/quota（租户用户）。返回阈值与动作（Warn/Throttle），无货币字段。
-#include "../infra.cs"
 
 public static class BillingQuotaApi
 {

@@ -1,7 +1,6 @@
 ﻿// slices/identity.members.cs — 租户内成员与角色（Identity 上下文，§5.2）
 // GET/POST /tenant/members（管理员） · POST /tenant/members/{id}/role（管理员）
 // 四角色：Admin/Analyst/Operator/DeviceEng；分析师只读（AC-04）。
-#include "../infra.cs"
 using System.Security.Cryptography;
 
 public static class IdentityMembersApi

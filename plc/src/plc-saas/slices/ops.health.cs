@@ -1,5 +1,4 @@
-// slices/ops.health.cs — 平台运营：平台健康 / SLO（§5.5，超管）
-#include "../infra.cs"
+﻿// slices/ops.health.cs — 平台运营：平台健康 / SLO（§5.5，超管）
 
 public static class OpsHealthApi
 {

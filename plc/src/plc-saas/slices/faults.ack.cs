@@ -1,7 +1,6 @@
 ﻿// slices/faults.ack.cs — 确认告警（既有 PLC 域，§5.4 / AC-04）
 // POST /faults/{id}/ack（租户用户，非分析师）。分析师被 NotAnalyst 策略拒绝 → 403。
 // 跨租户 fault 被全局过滤器隐藏 → 404（不泄露归属，AC-03）。成功后经 SignalR 直推（ADR-105）。
-#include "../infra.cs"
 
 public static class FaultsAckApi
 {

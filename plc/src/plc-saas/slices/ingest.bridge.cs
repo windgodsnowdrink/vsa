@@ -1,10 +1,9 @@
-// slices/ingest.bridge.cs — 真实 MQTT/EMQX 摄取桥（ADR-113，P0 数据平面关键路径）
+﻿// slices/ingest.bridge.cs — 真实 MQTT/EMQX 摄取桥（ADR-113，P0 数据平面关键路径）
 // 双摄取路径，统一收敛到 Ingest*Command：
 //   ① 主路径：EMQX 规则引擎 → POST /api/v1/ingest/*（slices/ingest.http.cs）
 //   ② 边缘中继（可选）：MqttBridgeService 订阅 EMQX 主题 → 同命令
 // 设备映射：deviceId(Guid) 全局唯一；首条遥测自动纳管设备（V1-now 友好演示）。
 // 隔离：tid 来自主题/头；写操作显式设置 ICurrentTenant.TenantId；租户暂停则拒（AC-07）。
-#include "../infra.cs"
 using System.Text.Json;
 using MQTTnet;
 

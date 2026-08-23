@@ -1,7 +1,6 @@
 ﻿// slices/faults.stream.cs — 实时告警流（SignalR Hub，§5.4 / ADR-105）
 // GET /faults/stream（信息端点） + Hub "faults"（/hubs/faults/negotiate）。
 // 告警确认等事件由 Hub 直推前端角标（AC-08）。
-#include "../infra.cs"
 
 public static class FaultsStreamApi
 {

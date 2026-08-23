@@ -19,6 +19,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="GlobalUsings.cs" />
+    <Compile Include="infra.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="seed.cs" />
+    <Compile Include="slices\ai.assistant.cs" />
+    <Compile Include="slices\billing.plan.cs" />
+    <Compile Include="slices\billing.quota.cs" />
+    <Compile Include="slices\billing.usage.cs" />
+    <Compile Include="slices\devices.list.cs" />
+    <Compile Include="slices\faults.ack.cs" />
+    <Compile Include="slices\faults.stream.cs" />
+    <Compile Include="slices\identity.login.cs" />
+    <Compile Include="slices\identity.members.cs" />
+    <Compile Include="slices\identity.mqtt.cs" />
+    <Compile Include="slices\ingest.bridge.cs" />
+    <Compile Include="slices\ingest.http.cs" />
+    <Compile Include="slices\metering.agent.cs" />
+    <Compile Include="slices\ops.health.cs" />
+    <Compile Include="slices\ops.pricing.cs" />
+    <Compile Include="slices\ops.roles.cs" />
+    <Compile Include="slices\ops.tenants.cs" />
+    <Compile Include="slices\tenant.activate.cs" />
+    <Compile Include="slices\tenant.register.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

@@ -1,7 +1,6 @@
 ﻿// slices/identity.login.cs — 登录与刷新（Identity 上下文，§5.2）
 // POST /auth/login（匿名） · POST /auth/refresh（匿名）
 // JWT 含 tid 声明；access 15min / refresh 7d（ADR-104）。超管 tid=root。
-#include "../infra.cs"
 
 public static class IdentityLoginApi
 {

@@ -1,6 +1,5 @@
-// slices/ops.roles.cs — 平台运营：全局角色与权限矩阵（§5.5，超管）
+﻿// slices/ops.roles.cs — 平台运营：全局角色与权限矩阵（§5.5，超管）
 // 四角色权限定义（分析师强制只读，AC-04）。
-#include "../infra.cs"
 
 public static class OpsRolesApi
 {

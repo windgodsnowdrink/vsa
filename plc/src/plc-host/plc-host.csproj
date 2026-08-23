@@ -15,11 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- 宿主仅引用契约层；插件在运行时由 ALC 加载，绝不进宿主依赖图 -->
-    <ProjectReference Include="Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- 排除子目录源码被宿主默认编译（否则与 ProjectReference 同名类型冲突 / 重复 AssemblyInfo） -->
     <Compile Remove="plugins\**\*.cs" />
     <Compile Remove="Plc.Plugins.Contracts\**\*.cs" />
@@ -43,6 +38,10 @@
     <PackageReference Include="Foundatio" Version="13.0.2" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.18.5" />
     <PackageReference Include="Dapr.Client" Version="1.18.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

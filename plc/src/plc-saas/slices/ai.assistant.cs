@@ -1,8 +1,7 @@
-// slices/ai.assistant.cs — AI 故障诊断 / RAG / MCP Server（ADR-112，P1 旗舰）
+﻿// slices/ai.assistant.cs — AI 故障诊断 / RAG / MCP Server（ADR-112，P1 旗舰）
 //  - AiAssistantApi: POST /api/v1/ai/diagnose（需 TenantUser 鉴权，Ai:Enabled 门控）
 //  - PlcMcpTools: MCP Server 工具（list_devices/get_faults/get_telemetry_summary），tid 作用域隔离
 // 全部经 ICurrentTenant + EF 全局过滤器隔离；向量库默认内存兜底，Qdrant:Enabled 接真实库。
-#include "../infra.cs"
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Server;
 using Qdrant.Client;

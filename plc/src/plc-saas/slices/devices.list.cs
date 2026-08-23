@@ -1,6 +1,5 @@
 ﻿// slices/devices.list.cs — 设备列表（既有 PLC 域，§5.4）
 // GET /devices（租户用户）。全局过滤器自动附加 WHERE TenantId=当前（AC-02）。
-#include "../infra.cs"
 
 public static class DevicesApi
 {

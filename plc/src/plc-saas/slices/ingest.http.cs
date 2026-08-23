@@ -1,4 +1,4 @@
-// slices/ingest.http.cs — MQTT 摄取主路径端点（ADR-113 ① EMQX 规则引擎 → HTTPS）
+﻿// slices/ingest.http.cs — MQTT 摄取主路径端点（ADR-113 ① EMQX 规则引擎 → HTTPS）
 // EMQX 规则引擎将设备主题转发到此；请求经共享密钥 + X-Tenant-Id 校验（server-to-server，非用户 JWT）。
 // 契约（EMQX HTTP Action 模板见 docs/ADR-113-implementation.md）：
 //   POST /api/v1/ingest/telemetry
@@ -7,7 +7,6 @@
 //   POST /api/v1/ingest/fault
 //     Body:    { "deviceId": "<guid>", "code": "E001", "severity": "high", "message": "..." }
 // 两条路径均复用 Ingest*Command（与 MqttBridgeService 完全一致）。
-#include "../infra.cs"
 using System.Text.Json;
 
 public static class IngestApi
@@ -47,7 +46,7 @@ public sealed record TelemetryIngestRequest(string? DeviceId, string? Topic, lon
 public sealed record FaultIngestRequest(string? DeviceId, string? Topic, string? Code, string? Severity, string? Message);
 
 // 摄取鉴权与归一化（共享密钥 + 租户头；topic 兜底解析 deviceId）
-internal static class IngestAuth
+public static class IngestAuth
 {
     public static (Guid Tid, IResult? Error) Authenticate(HttpContext ctx, IConfiguration cfg)
     {
