@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- Windows / iOS / MacCatalyst verified locally. Re-add net10.0-android once the Android SDK is installed. -->
-    <TargetFrameworks>net10.0-ios;net10.0-maccatalyst;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>net10.0-windows10.0.19041.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>

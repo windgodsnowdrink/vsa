@@ -19,4 +19,7 @@
   <ItemGroup>
     <Compile Include="Go\**\*.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
 </Project>

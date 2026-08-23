@@ -1,4 +1,4 @@
-using PlcAiot.Abstractions.Devices;
+﻿using PlcAiot.Abstractions.Devices;
 
 namespace PlcAiot.Devices;
 
@@ -18,7 +18,7 @@ public sealed class DeviceCatalog : IDeviceCatalog
 {
     private readonly Dictionary<string, DeviceProfile> _profiles = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, Func<DeviceProfile, IDeviceProtocol>> _factories = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Lock _gate = new();
+    private readonly System.Threading. Lock _gate = new();
 
     public DeviceCatalog()
     {

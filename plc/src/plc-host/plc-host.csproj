@@ -16,12 +16,20 @@
 
   <ItemGroup>
     <!-- 排除子目录源码被宿主默认编译（否则与 ProjectReference 同名类型冲突 / 重复 AssemblyInfo） -->
-    <Compile Remove="plugins\**\*.cs" />
     <Compile Remove="Plc.Plugins.Contracts\**\*.cs" />
     <Compile Remove="tests\**\*.cs" />
-    <None Remove="plugins\**" />
     <None Remove="Plc.Plugins.Contracts\**" />
     <None Remove="tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="plugins\BacnetDevicePlugin\BacnetDevicePlugin.csproj" />
+    <None Include="plugins\DemoDevicePlugin\DemoDevicePlugin.csproj" />
+    <None Include="plugins\FatekDevicePlugin\FatekDevicePlugin.csproj" />
+    <None Include="plugins\FujiDevicePlugin\FujiDevicePlugin.csproj" />
+    <None Include="plugins\KeyenceDevicePlugin\KeyenceDevicePlugin.csproj" />
+    <None Include="plugins\LoRaDevicePlugin\LoRaDevicePlugin.csproj" />
+    <None Include="plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
   </ItemGroup>
 
   <ItemGroup>

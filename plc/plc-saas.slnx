@@ -11,6 +11,7 @@
     <Project Path="src/csharpflink-spike/repo/test/TestTask/TestTask.csproj" />
     <Project Path="src/plc-saas.verify/plc-saas.verify.csproj" />
   </Folder>
+  <Project Path="Feature.csproj" />
   <Project Path="src/csgo-spike/CsGo-master/CsGo/CsGo.csproj" />
   <Project Path="src/csgo-spike/CsGoSpike/CsGoSpike.csproj" />
   <Project Path="src/csharpflink-spike/poc/Poc.csproj" />
@@ -19,6 +20,7 @@
   <Project Path="src/dapr-spike/dapr-spike.csproj" />
   <Project Path="src/plc-host/plc-host.csproj" />
   <Project Path="src/plc-saas/plc-saas.csproj" />
+  <Project Path="src/plc-vsa-demo/plc-vsa-demo.csproj" />
   <Project Path="src/Plc.Plugins.Contracts/Plc.Plugins.Contracts.csproj" />
   <Project Path="src/PlcAiot.Abstractions/PlcAiot.Abstractions.csproj" />
   <Project Path="src/PlcAiot.Desktop/PlcAiot.Desktop.csproj" />

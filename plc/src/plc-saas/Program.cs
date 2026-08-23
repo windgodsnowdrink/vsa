@@ -1,6 +1,6 @@
-﻿// Program.cs 鈥? PLC路AIOT 澶氱鎴? SaaS锛團ile-based App 鍏ュ彛锛?.NET 11 preview.6 / C# 14锛?
-// 杩愯锛? dotnet run Program.cs   锛堢瓑寰? "Now listening on http://localhost:5000"锛?
-// 鎵€鏈夊叡浜鏂界粡 #include "infra.cs"锛涘悇鍨傜洿鍒囩墖鑷寘鍚鐐? + CQRS Handler + DTO銆?
+﻿// Program.cs — PLC·AIOT 多租户 SaaS（File-based App 入口，.NET 11 preview.6 / C# 14）
+// 运行： dotnet run Program.cs   （等待 "Now listening on http://localhost:5000"）
+// 所有共享设施经 #include "infra.cs"；各垂直切片自包含端点 + CQRS Handler + DTO。
 //#nullable enable
 //#include "GlobalUsings.cs"
 //#include "infra.cs"
