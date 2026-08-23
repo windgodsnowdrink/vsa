@@ -50,7 +50,10 @@
   <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->
   <Target Name="PrepareStrippedApp" BeforeTargets="CoreCompile">
     <RemoveDir Directories="$(IntermediateOutputPath)stripped" Condition="Exists('$(IntermediateOutputPath)stripped')" />
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-app.ps1&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\stripped&quot;" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'"
+          Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-app.ps1&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\stripped&quot;" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'"
+          Command="bash &quot;$(MSBuildThisFileDirectory)strip-app.sh&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)/obj/$(Configuration)/$(TargetFramework)/stripped&quot;" />
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)stripped\**\*.cs" />
     </ItemGroup>

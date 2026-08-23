@@ -4,6 +4,11 @@
     <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- 占位脚手架项目：根目录无 .cs，仅承载 App.razor / Home.razor / _Imports.razor。
+         关闭默认项 globbing 以避免把子项目（csgo-spike 等含 .resx 的目录）纳入编译，
+         否则会因 src/csgo-spike/{CsGo-master,src}/FormTest/FormTest.resx 重名触发
+         MSB3577 (Two output file names resolved to the same output path)。-->
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
 
 </Project>

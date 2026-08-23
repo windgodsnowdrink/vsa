@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PlcAiot.Abstractions\PlcAiot.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\PlcAiot.Devices\PlcAiot.Devices.csproj" />
-    <ProjectReference Include="..\..\src\PlcAiot.Faults\PlcAiot.Faults.csproj" />
-    <ProjectReference Include="..\..\src\PlcAiot.Supervisor\PlcAiot.Supervisor.csproj" />
+    <ProjectReference Include="..\..\PlcAiot.Abstractions\PlcAiot.Abstractions.csproj" />
+    <ProjectReference Include="..\..\PlcAiot.Devices\PlcAiot.Devices.csproj" />
+    <ProjectReference Include="..\..\PlcAiot.Faults\PlcAiot.Faults.csproj" />
+    <ProjectReference Include="..\..\PlcAiot.Supervisor\PlcAiot.Supervisor.csproj" />
   </ItemGroup>
 
   <!-- 换型/换协议仅改此目录下的 JSON，零代码改动（§1.12.1） -->

@@ -13,13 +13,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
-    <ProjectReference Include="..\..\plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
-    <ProjectReference Include="..\..\plugins\BacnetDevicePlugin\BacnetDevicePlugin.csproj" />
-    <ProjectReference Include="..\..\plugins\FatekDevicePlugin\FatekDevicePlugin.csproj" />
-    <ProjectReference Include="..\..\plugins\KeyenceDevicePlugin\KeyenceDevicePlugin.csproj" />
-    <ProjectReference Include="..\..\plugins\FujiDevicePlugin\FujiDevicePlugin.csproj" />
-    <ProjectReference Include="..\..\plugins\LoRaDevicePlugin\LoRaDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\BacnetDevicePlugin\BacnetDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\FatekDevicePlugin\FatekDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\KeyenceDevicePlugin\KeyenceDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\FujiDevicePlugin\FujiDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\src\plc-host\plugins\LoRaDevicePlugin\LoRaDevicePlugin.csproj" />
+  </ItemGroup>
+
+  <!-- *Test.cs 使用 #load "AI.cs" 等脚本指令加载 File-based 应用源（位于
+       src/PlcAiot.Stability/file-based/）。#load 仅在 .csx 脚本中合法，
+       嵌入常规 csproj 会触发 CS8097；File-based 应用源亦非可被常规 MSBuild
+       项目直接 Compile 的库源。这些 *Test.cs 是探索性 smoke test，
+       真正的设备协议帧往返验证入口在 Program.cs。将其从 Compile 移除。 -->
+  <ItemGroup>
+    <Compile Remove="*Test.cs" />
   </ItemGroup>
 
   <!-- .NET 11 预览版下 Microsoft.NET.Sdk 会在 CoreCompile 前重置程序集特性开关，

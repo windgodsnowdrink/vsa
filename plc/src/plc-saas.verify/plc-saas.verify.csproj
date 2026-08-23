@@ -41,10 +41,10 @@
 
   <!-- 源快照：供 ADR-108 红线静态校验测试读取（仅复制为内容，不参与编译；排除 verify 自身文件） -->
   <ItemGroup>
-    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\*.cs">
+    <_SaasSrc Include="$(MSBuildThisFileDirectory)../plc-saas/*.cs">
       <Link>saas-src/%(Filename)%(Extension)</Link>
     </_SaasSrc>
-    <_SaasSrc Include="$(MSBuildThisFileDirectory)..\slices\*.cs">
+    <_SaasSrc Include="$(MSBuildThisFileDirectory)../plc-saas/slices/*.cs">
       <Link>saas-src/slices/%(Filename)%(Extension)</Link>
     </_SaasSrc>
     <Content Include="@(_SaasSrc)" CopyToOutputDirectory="PreserveNewest" />
@@ -57,7 +57,10 @@
   <!-- File-based 源 → 剥离 #include/#r → 编译（ADR-101 的工程化 typecheck） -->
   <Target Name="PrepareStrippedSources" BeforeTargets="CoreCompile">
     <RemoveDir Directories="$(IntermediateOutputPath)stripped" Condition="Exists('$(IntermediateOutputPath)stripped')" />
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-sources.ps1&quot; &quot;$(MSBuildThisFileDirectory)..&quot; &quot;$(IntermediateOutputPath)stripped&quot;" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'"
+          Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-sources.ps1&quot; &quot;$(MSBuildThisFileDirectory)../plc-saas&quot; &quot;$(IntermediateOutputPath)stripped&quot;" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'"
+          Command="bash &quot;$(MSBuildThisFileDirectory)strip-sources.sh&quot; &quot;$(MSBuildThisFileDirectory)../plc-saas&quot; &quot;$(IntermediateOutputPath)stripped&quot;" />
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)stripped\**\*.cs" />
     </ItemGroup>

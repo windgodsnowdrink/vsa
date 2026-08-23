@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <!-- Private=false：契约层不随插件复制，由宿主 ALC 以共享程序集方式解析，保证类型身份一致 -->
-    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
+    <ProjectReference Include="..\..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
       <Private>false</Private>
     </ProjectReference>
   </ItemGroup>

@@ -1,0 +1,34 @@
+[1/28] Feature.csproj ... OK
+[2/28] src/Plc.Plugins.Contracts/Plc.Plugins.Contracts.csproj ... OK
+[3/28] src/PlcAiot.Abstractions/PlcAiot.Abstractions.csproj ... OK
+[4/28] src/PlcAiot.Desktop/PlcAiot.Desktop.csproj ... SKIP (Windows-only)
+[5/28] src/PlcAiot.Devices/PlcAiot.Devices.csproj ... OK
+[6/28] src/PlcAiot.Faults.Persistent/PlcAiot.Faults.Persistent.csproj ... OK
+[7/28] src/PlcAiot.Faults/PlcAiot.Faults.csproj ... OK
+[8/28] src/PlcAiot.Mobile/PlcAiot.Mobile.csproj ... SKIP (Windows-only)
+[9/28] src/PlcAiot.Shared/PlcAiot.Shared.csproj ... SKIP (Windows-only)
+[10/28] src/PlcAiot.Stability/DemoHost/DemoHost.csproj ... OK
+[11/28] src/PlcAiot.Supervisor/PlcAiot.Supervisor.csproj ... OK
+[12/28] src/PlcAiot.Web.Client/PlcAiot.Web.Client.csproj ... OK
+[13/28] src/PlcAiot.Web/PlcAiot.Web.csproj ... OK
+[14/28] src/PlcAiot.WebApi/PlcAiot.WebApi.csproj ... OK
+[15/28] src/csgo-spike/CsGoSpike/CsGoSpike.csproj ... OK
+[16/28] src/csharpflink-spike/poc/Poc.csproj ... OK
+[17/28] src/dapr-spike/dapr-spike.csproj ... OK
+[18/28] src/plc-host/plc-host.csproj ... OK
+[19/28] src/plc-host/plugins/BacnetDevicePlugin/BacnetDevicePlugin.csproj ... OK
+[20/28] src/plc-host/plugins/DemoDevicePlugin/DemoDevicePlugin.csproj ... OK
+[21/28] src/plc-host/plugins/FatekDevicePlugin/FatekDevicePlugin.csproj ... OK
+[22/28] src/plc-host/plugins/FujiDevicePlugin/FujiDevicePlugin.csproj ... OK
+[23/28] src/plc-host/plugins/KeyenceDevicePlugin/KeyenceDevicePlugin.csproj ... OK
+[24/28] src/plc-host/plugins/LoRaDevicePlugin/LoRaDevicePlugin.csproj ... OK
+[25/28] src/plc-host/plugins/MelsecDevicePlugin/MelsecDevicePlugin.csproj ... OK
+[26/28] src/plc-saas.verify/plc-saas.verify.csproj ... OK
+[27/28] src/plc-saas/plc-saas.csproj ... OK
+[28/28] tests/DeviceProtocols.Verify/DeviceProtocols.Verify.csproj ... OK
+------------------------------------------
+TOTAL=28 OK=25 FAIL=0 SKIPPED=3
+SKIPPED (Windows-only):
+  - src/PlcAiot.Desktop/PlcAiot.Desktop.csproj
+  - src/PlcAiot.Mobile/PlcAiot.Mobile.csproj
+  - src/PlcAiot.Shared/PlcAiot.Shared.csproj
