@@ -1,0 +1,567 @@
+diff --git a/plc/src/plc-saas/.gitignore b/plc/src/plc-saas/.gitignore
+new file mode 100644
+index 0000000..3ac54f0
+--- /dev/null
++++ b/plc/src/plc-saas/.gitignore
+@@ -0,0 +1,7 @@
++# 源生成器输出（仅调试时通过 <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> 落盘）
++# 不应提交到 git；构建时会由 Mediator.SourceGenerator 重新生成。
++generated/
++
++# 标准构建产物
++bin/
++obj/
+diff --git a/plc/src/plc-saas/GlobalUsings.cs b/plc/src/plc-saas/GlobalUsings.cs
+index bf6f893..19c7425 100644
+--- a/plc/src/plc-saas/GlobalUsings.cs
++++ b/plc/src/plc-saas/GlobalUsings.cs
+@@ -29,3 +29,10 @@ global using Microsoft.IdentityModel.Tokens;
+ global using System.IdentityModel.Tokens.Jwt;
+ global using Mediator;
+ global using PlcAiot.Saas.Domain;
++
++// Mediator 源生成器配置：handler 生命周期 = Scoped（与 BaseDbContext / ICurrentTenant 对齐）。
++// 必须用 assembly attribute，因为源生成器在编译期解析配置；lambda 形式在某些工具链下不被识别。
++// 若 handler 仍以 Singleton 注册会触发 captive dependency 校验失败：
++//   "Cannot consume scoped service 'BaseDbContext' from singleton 'XxxHandler'"
++// 改了此 attribute 后必须清 obj/bin 重新构建，源生成器才会重新生成 AddMediator 注册代码。
++[assembly: MediatorOptions(ServiceLifetime = ServiceLifetime.Scoped)]
+diff --git a/plc/src/plc-saas/appsettings.json b/plc/src/plc-saas/appsettings.json
+index 677093d..eed9190 100644
+--- a/plc/src/plc-saas/appsettings.json
++++ b/plc/src/plc-saas/appsettings.json
+@@ -1,6 +1,6 @@
+ {
+   "ConnectionStrings": {
+-    "Default": "Host=localhost;Port=5432;Database=plc_aiot_saas;Username=postgres;Password=postgres"
++    "Default": "Server=localhost;Database=plc_aiot_saas;Integrated Security=True;Encrypt=False"
+   },
+   "Jwt": {
+     "Key": "plc-aiot-saas-dev-key-Change-Me-In-Production-32+chars",
+diff --git a/plc/src/plc-saas/docker-compose.yml b/plc/src/plc-saas/docker-compose.yml
+index cf54800..3da62c3 100644
+--- a/plc/src/plc-saas/docker-compose.yml
++++ b/plc/src/plc-saas/docker-compose.yml
+@@ -1,31 +1,12 @@
+ # PLC·AIOT SaaS 本地开发基础设施（V1-now MQTT 桥验证用）
+ # 启动： docker compose up -d
+-# 停止： docker compose down   （保留数据： docker compose down 不删 pgdata 卷； docker compose down -v 删除）
+-# 凭据（按需）：
+-#   PostgreSQL  superuser: postgresql / postgresql   （数据库 plc_aiot_saas）
+-#   SaaS 应用角色: plcsaas / plcsaas   （由 initdb/01-roles.sql 创建，appsettings 连接串使用）
+-#   EMQX 控制台:  http://localhost:18083   admin / Admin123
++# 停止： docker compose down
++# 数据库：本地 SQL Server，Windows 账户登录（Integrated Security=True）。
++#   不再随容器起 PostgreSQL；appsettings 连接串 Server=localhost;Integrated Security=True。
++#   需本机已安装 SQL Server（默认实例）并以当前 Windows 账户登录。
++# EMQX 控制台:  http://localhost:18083   admin / Admin123
+ 
+ services:
+-  postgres:
+-    image: postgres:16
+-    container_name: plc-saas-postgres
+-    environment:
+-      POSTGRES_USER: postgresql
+-      POSTGRES_PASSWORD: postgresql
+-      POSTGRES_DB: plc_aiot_saas
+-    ports:
+-      - "5432:5432"
+-    volumes:
+-      - pgdata:/var/lib/postgresql/data
+-      - ./initdb:/docker-entrypoint-initdb.d:ro
+-    healthcheck:
+-      test: ["CMD-SHELL", "pg_isready -U postgresql -d plc_aiot_saas"]
+-      interval: 5s
+-      timeout: 3s
+-      retries: 12
+-    restart: unless-stopped
+-
+   emqx:
+     image: emqx/emqx:5.8.5
+     container_name: plc-saas-emqx
+@@ -47,6 +28,3 @@ services:
+       timeout: 5s
+       retries: 12
+     restart: unless-stopped
+-
+-volumes:
+-  pgdata:
+diff --git a/plc/src/plc-saas/entities.cs b/plc/src/plc-saas/entities.cs
+index 693e5b3..5706601 100644
+--- a/plc/src/plc-saas/entities.cs
++++ b/plc/src/plc-saas/entities.cs
+@@ -6,7 +6,7 @@
+ 
+ namespace PlcAiot.Saas.Domain;
+ 
+-// —— 枚举（存储为文本，匹配 PG CHECK 约束；中文/小写与 Schema 一致）——
++// —— 枚举（存储为文本，匹配 SQL Server CHECK 约束；中文/小写与 Schema 一致）——
+ public enum TenantStatus { Active, Suspended }
+ public enum SubscriptionStatus { Active, Suspended }
+ public enum DeviceStatus { online, offline, fault }
+@@ -75,7 +75,7 @@ public sealed class Device : ITenantEntity
+     public Guid TenantId { get; set; }
+     public string Name { get; set; } = string.Empty;
+     public DeviceStatus Status { get; set; } = DeviceStatus.offline;
+-    public string? Profile { get; set; }                     // jsonb（点表）
++    public string? Profile { get; set; }                     // nvarchar(max) JSON（点表）
+     public DateTime? LastHeartbeat { get; set; }
+     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+ }
+@@ -101,7 +101,7 @@ public sealed class OutboxMessage : ITenantEntity
+     public Guid Id { get; set; }
+     public Guid TenantId { get; set; }
+     public string Type { get; set; } = string.Empty;
+-    public string Payload { get; set; } = "{}";              // jsonb
++    public string Payload { get; set; } = "{}";              // nvarchar(max) JSON
+     public DateTime? SentAt { get; set; }
+     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+ }
+@@ -125,6 +125,6 @@ public sealed class AuditLog
+     public string Actor { get; set; } = string.Empty;
+     public string Action { get; set; } = string.Empty;
+     public DateTime At { get; set; } = DateTime.UtcNow;
+-    public string? Detail { get; set; }                      // jsonb
++    public string? Detail { get; set; }                      // nvarchar(max) JSON
+ }
+ #endif
+diff --git a/plc/src/plc-saas/infra.cs b/plc/src/plc-saas/infra.cs
+index 8805d22..14052cf 100644
+--- a/plc/src/plc-saas/infra.cs
++++ b/plc/src/plc-saas/infra.cs
+@@ -4,7 +4,7 @@
+ // 红线：以下任何类型/方法均不含 price/currency/amount/money（ADR-108）。
+ 
+ #r "nuget:Microsoft.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
+-#r "nuget:Npgsql.EntityFrameworkCore.PostgreSQL, 11.0.0-preview.6"
++#r "nuget:Microsoft.EntityFrameworkCore.SqlServer, 11.0.0-preview.6.26359.118"
+ #r "nuget:Microsoft.AspNetCore.Identity.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
+ #r "nuget:Microsoft.AspNetCore.Authentication.JwtBearer, 11.0.0-preview.6.26359.118"
+ #r "nuget:System.IdentityModel.Tokens.Jwt, 8.22.0"
+@@ -37,7 +37,9 @@ using Microsoft.AspNetCore.Identity;
+ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+ using Microsoft.EntityFrameworkCore;
+ using Microsoft.EntityFrameworkCore.Diagnostics;
++using Microsoft.Data.SqlClient;
+ using System.Data.Common;
++using System.Text.RegularExpressions;
+ using System.IO;
+ using System.Net.Http;
+ using System.Net.Http.Headers;
+@@ -48,7 +50,6 @@ using Microsoft.Extensions.Hosting;
+ using Microsoft.Extensions.Logging;
+ using Microsoft.IdentityModel.Tokens;
+ using System.IdentityModel.Tokens.Jwt;
+-using Npgsql;
+ using Mediator;
+ using Microsoft.Extensions.AI;
+ using ModelContextProtocol.Server;
+@@ -162,7 +163,9 @@ public sealed class TenantStampInterceptor : SaveChangesInterceptor
+     }
+ }
+ 
+-// 每条连接打开时设置 app.tenant_id（RLS 兜底，ADR-103 ③.4）
++// 每条连接打开时设置 SESSION_CONTEXT N'TenantId'（SQL Server RLS 兜底，ADR-103 ③.4）
++// 注意：SESSION_CONTEXT 用 @read_only=0（默认），连接池复用时 sp_reset_connection 会清空，
++// 故每次 ConnectionOpenedAsync 重新设置是正确且必要的；与 EF Core SQL Server RLS 官方示例一致。
+ public sealed class TenantConnectionInterceptor : DbConnectionInterceptor
+ {
+     private readonly ICurrentTenant _tenant;
+@@ -170,11 +173,11 @@ public sealed class TenantConnectionInterceptor : DbConnectionInterceptor
+ 
+     public override Task ConnectionOpenedAsync(DbConnection connection, ConnectionEndEventData eventData, CancellationToken cancellationToken = default)
+     {
+-        if (connection is NpgsqlConnection npg)
++        if (connection is SqlConnection sql)
+         {
+-            using var cmd = npg.CreateCommand();
++            using var cmd = sql.CreateCommand();
+             var tid = _tenant.IsRoot ? Guid.Empty : _tenant.TenantId;
+-            cmd.CommandText = $"SET app.tenant_id = '{tid}';";
++            cmd.CommandText = $"EXEC sp_set_session_context @key = N'TenantId', @value = '{tid}';";
+             cmd.ExecuteNonQuery();
+         }
+         return Task.CompletedTask;
+@@ -233,11 +236,11 @@ public sealed class BaseDbContext : IdentityDbContext<
+         b.Entity<QuotaPolicy>().Property(q => q.Metric).HasConversion<string>();
+         b.Entity<QuotaPolicy>().Property(q => q.Action).HasConversion<string>();
+ 
+-        // jsonb 列
+-        b.Entity<Device>().Property(d => d.Profile).HasColumnType("jsonb");
+-        b.Entity<OutboxMessage>().Property(o => o.Payload).HasColumnType("jsonb");
++        // JSON 列：SQL Server 无 jsonb，以 nvarchar(max) 存 JSON 文本（EF Core SqlServer 原生支持）
++        b.Entity<Device>().Property(d => d.Profile).HasColumnType("nvarchar(max)");
++        b.Entity<OutboxMessage>().Property(o => o.Payload).HasColumnType("nvarchar(max)");
+         b.Entity<OutboxMessage>().Property(o => o.SentAt).HasColumnName("sent_at"); // 显式列名，与过滤索引 WHERE sent_at IS NULL 及计量轮询口径一致
+-        b.Entity<AuditLog>().Property(a => a.Detail).HasColumnType("jsonb");
++        b.Entity<AuditLog>().Property(a => a.Detail).HasColumnType("nvarchar(max)");
+ 
+         // 全局查询过滤器（ITenantEntity）——RLS 是 DB 级兜底
+         b.Entity<ApplicationUser>().HasQueryFilter(u => u.TenantId == _currentTenant.TenantId);
+@@ -351,7 +354,7 @@ public static class SaasServiceExtensions
+         services.AddDbContext<BaseDbContext>((sp, opt) =>
+         {
+             var conn = config.GetConnectionString("Default")!;
+-            opt.UseNpgsql(conn);
++            opt.UseSqlServer(conn);
+             // 拦截器必须挂到 DbContext 选项上才会生效（EF Core 要求）
+             opt.AddInterceptors(
+                 sp.GetRequiredService<TenantStampInterceptor>(),
+@@ -412,7 +415,10 @@ public static class SaasServiceExtensions
+ 
+     public static IServiceCollection AddSaasMediator(this IServiceCollection services)
+     {
+-        services.AddMediator(); // 由 Mediator.SourceGenerator 编译期生成
++        // handler 生命周期由 [assembly: MediatorOptions(ServiceLifetime = Scoped)] 控制
++        // （见 GlobalUsings.cs）。源生成器在编译期解析 assembly attribute，生成 AddScoped 注册。
++        // 不在 lambda 里再次配置以避免与 attribute 冲突。
++        services.AddMediator();
+         return services;
+     }
+ 
+@@ -521,8 +527,9 @@ public static class EndpointHelpers
+ 
+     private static bool IsUniqueViolation(DbUpdateException e)
+     {
++        // SQL Server：2627=违反主键/PK 约束；2601=违反唯一索引。两者均映射为 40900 资源冲突。
+         for (var ex = e.InnerException; ex is not null; ex = ex.InnerException)
+-            if (ex is PostgresException pg && pg.SqlState == "23505") return true;
++            if (ex is SqlException sql && (sql.Number == 2627 || sql.Number == 2601)) return true;
+         return false;
+     }
+ }
+@@ -530,13 +537,14 @@ public static class EndpointHelpers
+ // ===================== 启动期幂等建表 + RLS 自动应用（ADR-103 ③.4）=====================
+ // 每次启动执行一次，二者均幂等：
+ //   a) EnsureCreatedAsync —— 预览版不使用 Migrations，仅创建缺失的表（已存在则无操作）。
+-//   b) 读取并执行 sql/rls.sql —— DO 块已幂等（DROP POLICY IF EXISTS + CREATE POLICY；
+-//      ENABLE ROW LEVEL SECURITY 可重跑），可安全每启动重跑。
++//   b) 读取并执行 sql/rls.sql —— SQL Server RLS：CREATE OR ALTER FUNCTION（幂等）+
++//      DROP/CREATE SECURITY POLICY（可重跑）。sql/rls.sql 用 GO 分隔批次，此处按 GO 拆分逐批执行
++//      （SqlCommand 不支持 GO；CREATE FUNCTION/CREATE SECURITY POLICY 必须各自成批）。
+ // BYPASS/隔离假设（intranet 工具；ADR-103 ③.4）：bootstrap 与 DbSeeder 在本进程的平台服务连接下运行；
+ // 根行（平台超管/目录表）TenantId=Guid.Empty，TenantConnectionInterceptor 在连接打开时
+-// SET app.tenant_id=Guid.Empty，满足 RLS WITH CHECK(tenant_id = current_setting('app.tenant_id'))。
+-// 即便配置角色非 BYPASSRLS，仅写入 root 行时该不变式仍成立；租户作用域写由请求级拦截器设置各自
+-// app.tenant_id。RLS 策略本身绝不被削弱（未放宽 USING/WITH CHECK）。
++// sp_set_session_context N'TenantId'=Guid.Empty，满足 RLS 谓词
++// WHERE @TenantId = CONVERT(uniqueidentifier, SESSION_CONTEXT(N'TenantId'))。
++// 租户作用域写由请求级拦截器设置各自 SESSION_CONTEXT N'TenantId'。RLS 策略本身绝不被削弱（FILTER+CHECK 均不放宽）。
+ public static class SaasSchemaBootstrap
+ {
+     public static async Task BootstrapAsync(IServiceProvider sp, CancellationToken ct = default)
+@@ -555,13 +563,22 @@ public static class SaasSchemaBootstrap
+ 
+         try
+         {
+-            await db.Database.ExecuteSqlRawAsync(sql, ct); // 幂等 DO 块，可每启动重跑
++            // 按 GO（独立成行，大小写不敏感）拆分批次逐条执行；每批各自幂等，可安全每启动重跑。
++            var batches = Regex.Split(sql, @"^\s*GO\s*$",
++                RegexOptions.Multiline | RegexOptions.IgnoreCase);
++            foreach (var batch in batches)
++            {
++                var b = batch.Trim();
++                if (string.IsNullOrEmpty(b)) continue;
++                await db.Database.ExecuteSqlRawAsync(b, ct);
++            }
+         }
+         catch (Exception ex)
+         {
+-            // 连接角色权限不足（非迁移角色）时不阻断启动；记录后由具 ALTER/CREATE POLICY 权限角色补执行。
++            // 连接角色权限不足（无 CREATE SECURITY POLICY / ALTER 权限）时不阻断启动；
++            // 记录后由具权限角色补执行。EnsureCreated 已建表，应用层 HasQueryFilter 仍保证租户隔离。
+             sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.Schema")
+-              ?.LogError(ex, "应用 RLS 失败（连接角色权限不足？）。请由具 ALTER/CREATE POLICY 权限的迁移角色手动执行 sql/rls.sql。");
++              ?.LogError(ex, "应用 RLS 失败（连接 Windows 账户无 CREATE SECURITY POLICY 权限？）。请由具权限的迁移角色手动执行 sql/rls.sql。");
+         }
+     }
+ 
+diff --git a/plc/src/plc-saas/initdb/01-roles.sql b/plc/src/plc-saas/initdb/01-roles.sql
+deleted file mode 100644
+index 83749c9..0000000
+--- a/plc/src/plc-saas/initdb/01-roles.sql
++++ /dev/null
+@@ -1,12 +0,0 @@
+--- 在 PostgreSQL 初始化阶段创建 SaaS 应用专用角色。
+--- appsettings.json 连接串使用 plcsaas / plcsaas；PG 超级用户为 postgresql / postgresql（compose 设定）。
+--- 设为 SUPERUSER 仅为本地开发便利：EnsureCreated + 种子阶段免去 RLS 摩擦；
+--- 生产应改为受限角色（依赖 TenantConnectionInterceptor 每连接 SET app.tenant_id + RLS 兜底）。
+-
+-DO $$
+-BEGIN
+-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'plcsaas') THEN
+-    CREATE ROLE plcsaas LOGIN PASSWORD 'plcsaas' SUPERUSER;
+-  END IF;
+-END
+-$$;
+diff --git a/plc/src/plc-saas/plc-saas.csproj b/plc/src/plc-saas/plc-saas.csproj
+index 4adbf55..4379fa7 100644
+--- a/plc/src/plc-saas/plc-saas.csproj
++++ b/plc/src/plc-saas/plc-saas.csproj
+@@ -28,7 +28,7 @@
+     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
+     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+     <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
+-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.6" />
++    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0-preview.6.26359.118" />
+     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
+     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.6.26359.118" />
+     <PackageReference Include="Qdrant.Client" Version="1.19.0" />
+@@ -44,7 +44,6 @@
+     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+     <Content Include="sql/rls.sql" CopyToOutputDirectory="PreserveNewest" />
+     <Content Include="docker-compose.yml" CopyToOutputDirectory="PreserveNewest" />
+-    <Content Include="initdb/01-roles.sql" CopyToOutputDirectory="PreserveNewest" />
+   </ItemGroup>
+ 
+   <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->
+diff --git a/plc/src/plc-saas/slices/ingest.bridge.cs b/plc/src/plc-saas/slices/ingest.bridge.cs
+index ef5d3d2..1600a2b 100644
+--- a/plc/src/plc-saas/slices/ingest.bridge.cs
++++ b/plc/src/plc-saas/slices/ingest.bridge.cs
+@@ -64,7 +64,7 @@ public sealed class IngestTelemetryHandler : IRequestHandler<IngestTelemetryComm
+     public async ValueTask<IngestTelemetryResponse> Handle(IngestTelemetryCommand cmd, CancellationToken ct)
+     {
+         await IngestGuards.EnsureTenantActive(_db, cmd.TenantId, ct);
+-        _current.TenantId = cmd.TenantId; // 匿名摄取无 JWT，显式设置连接级 app.tenant_id（RLS 兜底）
++        _current.TenantId = cmd.TenantId; // 匿名摄取无 JWT，显式设置连接级 SESSION_CONTEXT N'TenantId'（RLS 兜底）
+ 
+         var device = await DeviceResolver.ResolveOrProvisionAsync(_db, cmd.TenantId, cmd.DeviceId, ct);
+         device.Status = DeviceStatus.online;
+diff --git a/plc/src/plc-saas/slices/metering.agent.cs b/plc/src/plc-saas/slices/metering.agent.cs
+index 68eeea5..0a159b5 100644
+--- a/plc/src/plc-saas/slices/metering.agent.cs
++++ b/plc/src/plc-saas/slices/metering.agent.cs
+@@ -49,7 +49,7 @@ public sealed class MeteringAgent : BackgroundService
+             .Where(o => o.SentAt == null).OrderBy(o => o.CreatedAt).Take(100).ToListAsync(ct);
+         foreach (var msg in pending)
+         {
+-            current.TenantId = msg.TenantId; // restore 连接级 app.tenant_id
++            current.TenantId = msg.TenantId; // restore 连接级 SESSION_CONTEXT N'TenantId'
+             if (msg.Type == "TelemetryIngested")
+             {
+                 var period = DateTime.UtcNow.ToString("yyyy-MM");
+diff --git a/plc/src/plc-saas/slices/ops.health.cs b/plc/src/plc-saas/slices/ops.health.cs
+index a06e331..c2650a8 100644
+--- a/plc/src/plc-saas/slices/ops.health.cs
++++ b/plc/src/plc-saas/slices/ops.health.cs
+@@ -24,7 +24,7 @@ public sealed class GetHealthHandler : IRequestHandler<GetHealthQuery, HealthRes
+         new List<ComponentHealth>
+         {
+             new("api", "Healthy"),
+-            new("postgres", "Healthy"),
++            new("sqlserver", "Healthy"),
+             new("signalr", "Healthy"),
+             new("mqtt-broker", "Healthy"),
+         }));
+diff --git a/plc/src/plc-saas/sql/rls.sql b/plc/src/plc-saas/sql/rls.sql
+index 171d0df..91f8047 100644
+--- a/plc/src/plc-saas/sql/rls.sql
++++ b/plc/src/plc-saas/sql/rls.sql
+@@ -1,38 +1,58 @@
+--- sql/rls.sql — PostgreSQL 行级安全兜底（ADR-103 ③.4 / SaaS-DB-Schema §3）
++-- sql/rls.sql — SQL Server 行级安全兜底（ADR-103 ③.4 / SaaS-DB-Schema §3）
+ -- 纵深防御：即便代码误用 IgnoreQueryFilters() 或走原始 SQL，RLS 仍强制租户隔离。
+--- 连接拦截器（TenantConnectionInterceptor）每连接执行 SET app.tenant_id = '<tid>'。
+--- 运行时机：EnsureCreated / 迁移建表后执行一次（app.tenant_id 为自定义 GUC，app.* 前缀无需预注册）。
++-- 连接拦截器（TenantConnectionInterceptor）每连接执行
++--   EXEC sp_set_session_context @key = N'TenantId', @value = '<tid>';
++-- 运行时机：EnsureCreated 建表后执行一次（幂等：CREATE OR ALTER FUNCTION + DROP/CREATE SECURITY POLICY）。
++-- 批次分隔：用 GO（SaasSchemaBootstrap 按 GO 拆分逐批执行；SqlCommand 不支持 GO，
++--   CREATE FUNCTION / CREATE SECURITY POLICY 必须各自成批）。
++-- 依赖：SQL Server 2016+（RLS + SESSION_CONTEXT）。Windows 账户登录需具 CREATE SECURITY POLICY 权限；
++--   权限不足时 bootstrap 记录告警不阻断启动，由具权限角色补执行。
+ 
+--- 1) 启用 RLS + 策略（USING 过滤读/删；WITH CHECK 强制写同租户）
+---    仅对 ITenantEntity 表启用；目录表（tenants/plans/quota_policies）与平台级 audit_logs 不启用。
++-- 1) 谓词函数（inline TVF）：行 TenantId 与 SESSION_CONTEXT(N'TenantId') 一致则返回 1 行
++--    CREATE OR ALTER 幂等，可每启动重跑。
++CREATE OR ALTER FUNCTION dbo.fn_tenant_predicate(@TenantId uniqueidentifier)
++RETURNS TABLE
++AS
++RETURN
++    SELECT 1 AS fn_result
++    WHERE @TenantId = CONVERT(uniqueidentifier, SESSION_CONTEXT(N'TenantId'));
++GO
+ 
+-DO $$
+-DECLARE t text;
+-BEGIN
+-  FOREACH t IN ARRAY ARRAY[
+-    'asp_net_users','asp_net_roles','asp_net_user_roles',
+-    'devices','fault_events','subscriptions','usage_meters','outbox_messages','refresh_tokens'
+-  ]
+-  LOOP
+-    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY;', t);
+-    EXECUTE format(
+-      'DROP POLICY IF EXISTS tenant_isolation ON %1$I; ' ||
+-      'CREATE POLICY tenant_isolation ON %1$I ' ||
+-      'USING ("TenantId" = current_setting(''app.tenant_id'')::uuid) ' ||
+-      'WITH CHECK ("TenantId" = current_setting(''app.tenant_id'')::uuid);', t);
+-  END LOOP;
+-END $$;
++-- 2) 安全策略：对 ITenantEntity 表启用 FILTER（读/删过滤）+ CHECK（写强制同租户）
++--    目录表（tenants/plans/quota_policies）与平台级 audit_logs 不启用。
++--    DROP IF EXISTS 幂等后重建，可每启动重跑。
++DROP SECURITY POLICY IF EXISTS dbo.tenant_isolation;
++GO
+ 
+--- 2) 角色划分（部署约定）
+---    租户作用域连接：普通角色，每连接由拦截器 SET app.tenant_id = '<tid>' → RLS 强制隔离。
+---    平台超管 / 后台计量作业：具 BYPASSRLS 权限的角色连接 → RLS 对其透明跳过（见 SaaS-DB-Schema §3）。
+---    以下为示例，实际凭据由部署配置注入连接字符串：
+---    CREATE ROLE saas_tenant NOINHERIT;                 -- 租户作用域
+---    CREATE ROLE saas_bypass BYPASSRLS NOINHERIT;       -- root / 计量 Agent
+---    GRANT USAGE ON SCHEMA public TO saas_tenant, saas_bypass;
+---    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO saas_tenant, saas_bypass;
++CREATE SECURITY POLICY dbo.tenant_isolation
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_users,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_users,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_roles,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_roles,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_user_roles,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.asp_net_user_roles,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.devices,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.devices,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.fault_events,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.fault_events,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.subscriptions,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.subscriptions,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.usage_meters,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.usage_meters,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.outbox_messages,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.outbox_messages,
++    ADD FILTER PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.refresh_tokens,
++    ADD CHECK  PREDICATE dbo.fn_tenant_predicate(TenantId) ON dbo.refresh_tokens
++WITH (STATE = ON);
++GO
+ 
+--- 3) 验证（手动）
+---    SET app.tenant_id = '11111111-1111-1111-1111-111111111111';
+---    SELECT count(*) FROM devices;   -- 仅返回该租户行（被 RLS 过滤）
+---    RESET app.tenant_id;
++-- 3) 角色划分（部署约定）
++--    租户作用域连接：Windows 账户登录，每连接由拦截器 sp_set_session_context → RLS 强制隔离。
++--    平台超管 / 后台计量作业：可在 SESSION_CONTEXT(N'TenantId')=00000000-0000-0000-0000-000000000000
++--      （Guid.Empty）下读写 root 行；如需完全跳过 RLS，由 db_owner 或 CONTROL SERVER 主体操作。
++--    （Windows 账户登录下无 SQL LOGIN 创建脚本；凭据由部署侧 AD/本机账户注入连接串。）
++
++-- 4) 验证（手动，SSMS / sqlcmd）
++--    EXEC sp_set_session_context @key = N'TenantId', @value = '11111111-1111-1111-1111-111111111111';
++--    SELECT count(*) FROM dbo.devices;   -- 仅返回该租户行（被 RLS FILTER 过滤）
++--    -- 重置：连接释放后 sp_reset_connection 自动清空 SESSION_CONTEXT
+diff --git a/plc/src/plc-saas/start-dev-env.ps1 b/plc/src/plc-saas/start-dev-env.ps1
+index 4839a03..83c5463 100644
+--- a/plc/src/plc-saas/start-dev-env.ps1
++++ b/plc/src/plc-saas/start-dev-env.ps1
+@@ -1,34 +1,28 @@
+ # =============================================================================
+ # start-dev-env.ps1  —  本地开发环境启动（WSLC 容器，不用 Docker）
+ # -----------------------------------------------------------------------------
+-# 用 wslc（WSL 预览版容器 CLI）拉起 PostgreSQL + EMQX 两个本地容器，
++# 用 wslc（WSL 预览版容器 CLI）拉起 EMQX 一个本地容器，
+ # 供 plc-saas 后端运行期验证（health 端点 + 核心多租户流程 + V1-now MQTT 桥）。
+ # 镜像源：Docker Hub(registry-1.docker.io) 在本机/沙箱不可达，统一改用 docker.1ms.run 镜像加速器。
+ #
++# 数据库：本地 SQL Server（Windows 账户登录，Integrated Security=True）。
++#   不再起 PostgreSQL 容器；appsettings 连接串 Server=localhost;Integrated Security=True;Encrypt=False。
++#   需本机已安装 SQL Server 默认实例，且当前 Windows 账户有建库/建表权限。
++#   首次启动由 EnsureCreated 幂等建库表 + RLS（sql/rls.sql）。
++#
+ # 凭据（按总监裁定）：
+-#   PostgreSQL : localhost:5432  postgres / postgres   （库 plc_aiot_saas）
+ #   EMQX       : admin / Admin123  （MQTT 1883 · 控制台 18083 · WS 8083/8084）
+ #
+-# 端口发布（宿主侧 → 容器侧）：
+-#   默认宿主端口 5432（符合裁定）。若本机 5432 被占用 / 被 Windows 端口排除范围覆盖，
+-#   会以 WSAEACCES 失败。此时可临时覆盖宿主端口（容器内部仍是 5432，无需改镜像）：
+-#     $env:PG_HOST_PORT = '5433'      # 然后相应把 appsettings 连接串 Port 改为 5433
+-#   脚本启动前会自检端口是否可绑定，失败会打印排查指引而非 cryptic 报错。
+-#
+ # 用法：在仓库根目录执行
+ #   pwsh plc-saas/start-dev-env.ps1
+ # 停止：
+-#   wslc stop plc-saas-postgres plc-saas-emqx
++#   wslc stop plc-saas-emqx
+ # =============================================================================
+ 
+ $ErrorActionPreference = 'Stop'
+ 
+-$PG_NAME    = 'plc-saas-postgres'
+ $EMQX_NAME  = 'plc-saas-emqx'
+-$PG_IMAGE   = 'docker.1ms.run/library/postgres:18-alpine3.23'  # docker.1ms.run 镜像源（Docker Hub 不可达）
+ $EMQX_IMAGE = 'docker.1ms.run/emqx/emqx:6.1.4'                # docker.1ms.run 镜像源（EMQX 6.x）
+-$PG_VOLUME  = 'plc-saas-pgdata'
+-$PG_HOST_PORT = if ($env:PG_HOST_PORT) { $env:PG_HOST_PORT } else { '5432' }  # 宿主侧发布端口（容器内部恒为 5432）
+ 
+ function Container-Exists($name) {
+     $out = wslc ps -a 2>$null
+@@ -39,53 +33,6 @@ function Container-Running($name) {
+     return ($out -match [regex]::Escape($name))
+ }
+ 
+-# 宿主端口可绑定性自检：尝试在 127.0.0.1 上 bind 一下，能绑说明可发布，不能绑则说明
+-# 已被占用或落在 Windows TCP 排除保留范围（这正是 wslc 报 WSAEACCES 的两类根因）。
+-function Assert-PortBindable($port) {
+-    try {
+-        $ep = [System.Net.IPEndPoint]::new([System.Net.IPAddress]::Loopback, [int]$port)
+-        $sock = [System.Net.Sockets.Socket]::new(
+-            [System.Net.Sockets.AddressFamily]::InterNetwork,
+-            [System.Net.Sockets.SocketType]::Stream,
+-            [System.Net.Sockets.ProtocolType]::Tcp)
+-        $sock.Bind($ep)
+-        $sock.Close()
+-        return $true
+-    } catch {
+-        return $false
+-    }
+-}
+-
+-function Ensure-Postgres {
+-    if (Container-Running $PG_NAME) { Write-Host "[pg] 已在运行，跳过"; return }
+-    if (Container-Exists $PG_NAME) { Write-Host "[pg] 已存在，启动中…"; wslc start $PG_NAME; return }
+-
+-    # 宿主端口可绑定性自检（避开 WSAEACCES cryptic 报错，给出可读排查指引）
+-    if (-not (Assert-PortBindable $PG_HOST_PORT)) {
+-        Write-Warning "宿主端口 ${PG_HOST_PORT} 无法绑定（WSAEACCES）。两类根因：(1) 已被占用——本机可能装有原生 PostgreSQL 服务在监听；(2) 端口落在 Windows TCP 排除保留范围（Hyper-V/WSL 自动保留）。"
+-        Write-Host "排查占用： Get-NetTCPConnection -LocalPort $PG_HOST_PORT | Select-Object OwningProcess,State ；随后 Stop-Service -Name postgresql-* -Force"
+-        Write-Host "排查保留： netsh interface ipv4 show excludedportrange protocol=tcp"
+-        Write-Host "修复保留（管理员 PowerShell）： netsh int ipv4 add excludedportrange protocol=tcp startport=$PG_HOST_PORT numberofports=1 store=persistent"
+-        Write-Host "或临时平移宿主端口（容器内部仍 5432）： `$env:PG_HOST_PORT='5433' ，并相应把 appsettings 连接串 Port 改为 5433"
+-        throw "宿主端口 ${PG_HOST_PORT} 不可绑定，已终止。请按上面指引处理后重试。"
+-    }
+-
+-    Write-Host "[pg] 拉取镜像 $PG_IMAGE …"
+-    wslc pull $PG_IMAGE 2>&1 | Out-String -Width 200 | Write-Host
+-
+-    # 持久化数据卷（best-effort，已存在则忽略报错）
+-    wslc volume create $PG_VOLUME 2>$null
+-
+-    Write-Host "[pg] 启动容器（POSTGRES_DB 自动建库 plc_aiot_saas），宿主端口 ${PG_HOST_PORT} → 容器 5432…"
+-    wslc run -d --name $PG_NAME `
+-        --volume "${PG_VOLUME}:/var/lib/postgresql/data" `
+-        -e POSTGRES_USER=postgres `
+-        -e POSTGRES_PASSWORD=postgres `
+-        -e POSTGRES_DB=plc_aiot_saas `
+-        -p "${PG_HOST_PORT}:5432" `
+-        $PG_IMAGE
+-}
+-
+ function Ensure-Emqx {
+     if (Container-Running $EMQX_NAME) { Write-Host "[emqx] 已在运行，跳过"; return }
+     if (Container-Exists $EMQX_NAME) { Write-Host "[emqx] 已存在，启动中…"; wslc start $EMQX_NAME; return }
+@@ -104,13 +51,13 @@ function Ensure-Emqx {
+         $EMQX_IMAGE
+ }
+ 
+-Ensure-Postgres
+ Ensure-Emqx
+ 
+ Write-Host ""
+ Write-Host "=== 容器状态 ==="
+ wslc ps -a
+ Write-Host ""
++Write-Host "数据库：本地 SQL Server（Windows 账户登录），EnsureCreated 首启自动建库表 + RLS。"
+ Write-Host "下一步："
+ Write-Host "  1) 启动后端：dotnet run --project plc-saas/plc-saas.csproj   (EnsureCreated + rls.sql 自动建表/RLS)"
+ Write-Host "  2) 健康检查：curl -u <admin-token> http://localhost:5000/api/v1/ops/health"
