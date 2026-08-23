@@ -29,3 +29,10 @@ global using Microsoft.IdentityModel.Tokens;
 global using System.IdentityModel.Tokens.Jwt;
 global using Mediator;
 global using PlcAiot.Saas.Domain;
+
+// Mediator 源生成器配置：handler 生命周期 = Scoped（与 BaseDbContext / ICurrentTenant 对齐）。
+// 必须用 assembly attribute，因为源生成器在编译期解析配置；lambda 形式在某些工具链下不被识别。
+// 若 handler 仍以 Singleton 注册会触发 captive dependency 校验失败：
+//   "Cannot consume scoped service 'BaseDbContext' from singleton 'XxxHandler'"
+// 改了此 attribute 后必须清 obj/bin 重新构建，源生成器才会重新生成 AddMediator 注册代码。
+[assembly: MediatorOptions(ServiceLifetime = ServiceLifetime.Scoped)]
