@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS1591;AD0001;CS0169;CS0168;CS0419;NU1701;CA1501;CA2254;CA1416;CA1822;CA1859;NU1510</NoWarn>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 生产级依赖：对应 8 项需求（使用实际存在的版本号，restore 会自动取兼容版本） -->
+    <PackageReference Include="Disruptor"                            Version="6.0.1" />
+    <PackageReference Include="McMaster.NETCore.Plugins"             Version="1.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading"    Version="18.7.23" />
+    <PackageReference Include="StreamJsonRpc"                        Version="2.21.69" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="plc-vsa-demo.cs" />
+  </ItemGroup>
+
+</Project>
