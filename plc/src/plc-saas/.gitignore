@@ -1,0 +1,7 @@
+# 源生成器输出（仅调试时通过 <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> 落盘）
+# 不应提交到 git；构建时会由 Mediator.SourceGenerator 重新生成。
+generated/
+
+# 标准构建产物
+bin/
+obj/
