@@ -12,6 +12,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoWarn>CS4014;CS1591;CS0168;CS0219;CS0169;CS0649;CS0414;CS0162;CS0618</NoWarn>
+    <!-- 允许在非 Windows 主机（CI/Linux）上交叉编译 net*-windows 目标 -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" Version="9.0.0" />

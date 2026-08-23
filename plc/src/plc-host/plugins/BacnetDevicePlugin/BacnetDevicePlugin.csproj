@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
+    <ProjectReference Include="..\..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
       <Private>false</Private>
     </ProjectReference>
   </ItemGroup>

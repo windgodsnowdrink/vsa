@@ -38,8 +38,10 @@
 
 ### A-3 代码落地位置（不在 docs/，供对照）
 
-- `samples/PlcAiot.Stability/` —— **真实可运行骨架**：`IDeviceProtocol`/`DeviceCatalog`（统一契约 + 热替换）、`DeviceSessionSupervisor`（看门狗自愈）、`FaultEvent`/`IFaultStore`/`IRecoveryStrategy`/`ResolutionStateMachine` + `PostgreSqlFaultStore`(Npgsql) / `InfluxDbFaultStore`（故障全生命周期，PG/InfluxDB 双写）、`file-based/`（edge-aot-host / plugin-host 两个 File-based App 样例）。
-- `samples/PlcAiot.Web/` —— 前端 mockup（landing / cockpit 8页SPA+Three.js / social-matrix-tracker / notion-dashboard）。
+- `src/PlcAiot.Stability/` —— **真实可运行骨架**：`IDeviceProtocol`/`DeviceCatalog`（统一契约 + 热替换）、`DeviceSessionSupervisor`（看门狗自愈）、`FaultEvent`/`IFaultStore`/`IRecoveryStrategy`/`ResolutionStateMachine` + `PostgreSqlFaultStore`(Npgsql) / `InfluxDbFaultStore`（故障全生命周期，PG/InfluxDB 双写）、`file-based/`（edge-aot-host / plugin-host 两个 File-based App 样例）。其中 `DemoHost/` 可一键 `dotnet run -- --once` 演示故障注入 + 自动恢复闭环。
+- `src/PlcAiot.Web/` —— 前端 mockup（landing / cockpit 8页SPA+Three.js / social-matrix-tracker / notion-dashboard）。
+- `src/plc-host/` —— 插件宿主（ALC 热加载）：`dotnet run` 即按 `plugins/` 目录动态注册 Fatek/ModbusTcp/Keyence/Bacnet/Fuji/LoRa/Melsec 等设备协议到 `DeviceCatalog`。
+- `src/PlcAiot.WebApi/` —— 内网控制台后端（Minimal API）：`/api/health` + `/api/{resource}` 种子数据端点 + `wwwroot` 静态前端（HTMX + Axios）。`ASPNETCORE_ENVIRONMENT=Development dotnet run` 即起。
 - 仓库根 `*.cs`（Modbus/MQTT/AI 等）—— **多为 File-based App 空壳占位**；真实驱动在 Melsec/LoRa/IoT/Panasonic/Schneider/Keyence/Fatek/Fuji（走 `DriverBase`，未接 `IDeviceProtocol`）。
 
 ---
@@ -52,7 +54,7 @@
 
 | 文档 | 状态 | 说明 / 读者入口 |
 |------|------|----------------|
-| [`SaaS-PRD.md`](../SaaS-PRD.md) | 已确认 | 多租户 SaaS 增量 PRD（用户故事 / RICE / 范围） |
+| [`SaaS-PRD.md`](./SaaS-PRD.md) | 已确认 | 多租户 SaaS 增量 PRD（用户故事 / RICE / 范围） |
 | [`SaaS-Architecture-Spec.md`](./SaaS-Architecture-Spec.md) | **v1.1 · Phase 3 已构建并通过门禁** | SaaS 架构规格（选型矩阵 / 隔离实现 / ADR-100~108 / 切片划分 / 启动引导）。**最新总入口** |
 | [`SaaS-Spec.md`](./SaaS-Spec.md) | 已生成 | 12 章规格契约（范围/API/DB/页面/Token/验收/坑） |
 | [`openapi.yaml`](./openapi.yaml) | 已验证 | 21 端点 OpenAPI 3.2（bearerAuth + tid 语义 + 403 拒绝规则） |
@@ -82,7 +84,8 @@
 
 ### B-5 代码落地位置
 
-- `plc-saas/`（分支 dev）—— File-based App：Program.cs + infra.cs + slices/（21 端点 + SignalR Hub）+ entities.cs + sql/rls.sql（启动自动建表 + 应用 RLS）。已提交 `0cd0f31`(切片) / `594ebe9`(引导) / `613c620`(中间)。
+- `src/plc-saas/`（分支 dev）—— File-based App：Program.cs + infra.cs + slices/（21 端点 + SignalR Hub）+ entities.cs + sql/rls.sql（启动自动建表 + 应用 RLS）。已提交 `0cd0f31`(切片) / `594ebe9`(引导) / `613c620`(中间)。运行需 PostgreSQL（`Host=localhost;Port=5432;Database=plc_aiot_saas`）。
+- `src/plc-saas.verify/` —— ADR-101 工程化校验：`dotnet test` 运行 6 项静态核验（File-based 切片全量 typecheck + ADR-108 红线扫描：禁止 price/currency/amount/money 字段）。
 - `wwwroot/`（分支 dev）—— 9 页 SaaS + 租户切换器 + design-tokens.css（前端 `df668f0`）。
 
 ---
@@ -90,7 +93,7 @@
 ## 状态图例
 
 - ✅ **已实现/已验证**：代码落地且通过门禁
-- 🟡 **部分实现/演示**：samples 骨架或 mockup，非生产全栈
+- 🟡 **部分实现/演示**：`src/` 骨架或 mockup，非生产全栈
 - 📐 **设计蓝图/仅文档**：描述详尽但仓库内无对应实现（如 PluginManager+ALC、CQRS+Wolverine、YARP、MEAI+MCP+Qdrant、真实 MQTT/EMQX 客户端）
 - 📝 **调研/评审**：过程性文档
 

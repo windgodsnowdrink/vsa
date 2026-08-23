@@ -17,3 +17,8 @@ Live-Artifact.zip
 
 # Node (if any)
 node_modules/
+
+# External clones pulled in to satisfy ProjectReference during local builds.
+# csharpflink-spike/poc/Poc.csproj references ..\repo\src\CSharpFlink.Core\CSharpFlink.Core.csproj;
+# clone https://github.com/wxzz/CSharpFlink to src/csharpflink-spike/repo/ to build/run the spike locally.
+src/csharpflink-spike/repo/

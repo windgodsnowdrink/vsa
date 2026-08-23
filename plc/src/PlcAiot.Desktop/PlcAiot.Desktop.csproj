@@ -8,6 +8,8 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>PlcAiot.Desktop</RootNamespace>
     <AssemblyName>PlcAiot.Desktop</AssemblyName>
+    <!-- 允许在非 Windows 主机（CI/Linux）上交叉编译 net*-windows 目标（WPF 引用程序集可解析） -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
