@@ -415,7 +415,16 @@ public static class SaasServiceExtensions
 
     public static IServiceCollection AddSaasMediator(this IServiceCollection services)
     {
-        services.AddMediator(); // 由 Mediator.SourceGenerator 编译期生成
+        // AddMediator() 默认按 Singleton 注册 handler；本服务 handler 依赖 Scoped
+        // BaseDbContext / ICurrentTenant，会触发 captive dependency 校验失败：
+        //   "Cannot consume scoped service 'BaseDbContext' from singleton 'XxxHandler'"
+        // Mediator 库的 MediatorOptions.ServiceLifetime 接受编译期常量（Singleton/Transient/Scoped），
+        // 这里统一降级为 Scoped，与 BaseDbContext / ICurrentTenant 生命周期对齐，
+        // 仍经每请求 DI scope 解析 handler 实例。
+        services.AddMediator(static options =>
+        {
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+        });
         return services;
     }
 
