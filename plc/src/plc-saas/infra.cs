@@ -4,7 +4,7 @@
 // 红线：以下任何类型/方法均不含 price/currency/amount/money（ADR-108）。
 
 #r "nuget:Microsoft.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
-#r "nuget:Npgsql.EntityFrameworkCore.PostgreSQL, 11.0.0-preview.6"
+#r "nuget:Microsoft.EntityFrameworkCore.SqlServer, 11.0.0-preview.6.26359.118"
 #r "nuget:Microsoft.AspNetCore.Identity.EntityFrameworkCore, 11.0.0-preview.6.26359.118"
 #r "nuget:Microsoft.AspNetCore.Authentication.JwtBearer, 11.0.0-preview.6.26359.118"
 #r "nuget:System.IdentityModel.Tokens.Jwt, 8.22.0"
@@ -37,7 +37,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Data.SqlClient;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -48,7 +50,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using Npgsql;
 using Mediator;
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Server;
@@ -162,7 +163,9 @@ public sealed class TenantStampInterceptor : SaveChangesInterceptor
     }
 }
 
-// 每条连接打开时设置 app.tenant_id（RLS 兜底，ADR-103 ③.4）
+// 每条连接打开时设置 SESSION_CONTEXT N'TenantId'（SQL Server RLS 兜底，ADR-103 ③.4）
+// 注意：SESSION_CONTEXT 用 @read_only=0（默认），连接池复用时 sp_reset_connection 会清空，
+// 故每次 ConnectionOpenedAsync 重新设置是正确且必要的；与 EF Core SQL Server RLS 官方示例一致。
 public sealed class TenantConnectionInterceptor : DbConnectionInterceptor
 {
     private readonly ICurrentTenant _tenant;
@@ -170,11 +173,11 @@ public sealed class TenantConnectionInterceptor : DbConnectionInterceptor
 
     public override Task ConnectionOpenedAsync(DbConnection connection, ConnectionEndEventData eventData, CancellationToken cancellationToken = default)
     {
-        if (connection is NpgsqlConnection npg)
+        if (connection is SqlConnection sql)
         {
-            using var cmd = npg.CreateCommand();
+            using var cmd = sql.CreateCommand();
             var tid = _tenant.IsRoot ? Guid.Empty : _tenant.TenantId;
-            cmd.CommandText = $"SET app.tenant_id = '{tid}';";
+            cmd.CommandText = $"EXEC sp_set_session_context @key = N'TenantId', @value = '{tid}';";
             cmd.ExecuteNonQuery();
         }
         return Task.CompletedTask;
@@ -233,11 +236,11 @@ public sealed class BaseDbContext : IdentityDbContext<
         b.Entity<QuotaPolicy>().Property(q => q.Metric).HasConversion<string>();
         b.Entity<QuotaPolicy>().Property(q => q.Action).HasConversion<string>();
 
-        // jsonb 列
-        b.Entity<Device>().Property(d => d.Profile).HasColumnType("jsonb");
-        b.Entity<OutboxMessage>().Property(o => o.Payload).HasColumnType("jsonb");
+        // JSON 列：SQL Server 无 jsonb，以 nvarchar(max) 存 JSON 文本（EF Core SqlServer 原生支持）
+        b.Entity<Device>().Property(d => d.Profile).HasColumnType("nvarchar(max)");
+        b.Entity<OutboxMessage>().Property(o => o.Payload).HasColumnType("nvarchar(max)");
         b.Entity<OutboxMessage>().Property(o => o.SentAt).HasColumnName("sent_at"); // 显式列名，与过滤索引 WHERE sent_at IS NULL 及计量轮询口径一致
-        b.Entity<AuditLog>().Property(a => a.Detail).HasColumnType("jsonb");
+        b.Entity<AuditLog>().Property(a => a.Detail).HasColumnType("nvarchar(max)");
 
         // 全局查询过滤器（ITenantEntity）——RLS 是 DB 级兜底
         b.Entity<ApplicationUser>().HasQueryFilter(u => u.TenantId == _currentTenant.TenantId);
@@ -351,7 +354,7 @@ public static class SaasServiceExtensions
         services.AddDbContext<BaseDbContext>((sp, opt) =>
         {
             var conn = config.GetConnectionString("Default")!;
-            opt.UseNpgsql(conn);
+            opt.UseSqlServer(conn);
             // 拦截器必须挂到 DbContext 选项上才会生效（EF Core 要求）
             opt.AddInterceptors(
                 sp.GetRequiredService<TenantStampInterceptor>(),
@@ -521,8 +524,9 @@ public static class EndpointHelpers
 
     private static bool IsUniqueViolation(DbUpdateException e)
     {
+        // SQL Server：2627=违反主键/PK 约束；2601=违反唯一索引。两者均映射为 40900 资源冲突。
         for (var ex = e.InnerException; ex is not null; ex = ex.InnerException)
-            if (ex is PostgresException pg && pg.SqlState == "23505") return true;
+            if (ex is SqlException sql && (sql.Number == 2627 || sql.Number == 2601)) return true;
         return false;
     }
 }
@@ -530,13 +534,14 @@ public static class EndpointHelpers
 // ===================== 启动期幂等建表 + RLS 自动应用（ADR-103 ③.4）=====================
 // 每次启动执行一次，二者均幂等：
 //   a) EnsureCreatedAsync —— 预览版不使用 Migrations，仅创建缺失的表（已存在则无操作）。
-//   b) 读取并执行 sql/rls.sql —— DO 块已幂等（DROP POLICY IF EXISTS + CREATE POLICY；
-//      ENABLE ROW LEVEL SECURITY 可重跑），可安全每启动重跑。
+//   b) 读取并执行 sql/rls.sql —— SQL Server RLS：CREATE OR ALTER FUNCTION（幂等）+
+//      DROP/CREATE SECURITY POLICY（可重跑）。sql/rls.sql 用 GO 分隔批次，此处按 GO 拆分逐批执行
+//      （SqlCommand 不支持 GO；CREATE FUNCTION/CREATE SECURITY POLICY 必须各自成批）。
 // BYPASS/隔离假设（intranet 工具；ADR-103 ③.4）：bootstrap 与 DbSeeder 在本进程的平台服务连接下运行；
 // 根行（平台超管/目录表）TenantId=Guid.Empty，TenantConnectionInterceptor 在连接打开时
-// SET app.tenant_id=Guid.Empty，满足 RLS WITH CHECK(tenant_id = current_setting('app.tenant_id'))。
-// 即便配置角色非 BYPASSRLS，仅写入 root 行时该不变式仍成立；租户作用域写由请求级拦截器设置各自
-// app.tenant_id。RLS 策略本身绝不被削弱（未放宽 USING/WITH CHECK）。
+// sp_set_session_context N'TenantId'=Guid.Empty，满足 RLS 谓词
+// WHERE @TenantId = CONVERT(uniqueidentifier, SESSION_CONTEXT(N'TenantId'))。
+// 租户作用域写由请求级拦截器设置各自 SESSION_CONTEXT N'TenantId'。RLS 策略本身绝不被削弱（FILTER+CHECK 均不放宽）。
 public static class SaasSchemaBootstrap
 {
     public static async Task BootstrapAsync(IServiceProvider sp, CancellationToken ct = default)
@@ -555,13 +560,22 @@ public static class SaasSchemaBootstrap
 
         try
         {
-            await db.Database.ExecuteSqlRawAsync(sql, ct); // 幂等 DO 块，可每启动重跑
+            // 按 GO（独立成行，大小写不敏感）拆分批次逐条执行；每批各自幂等，可安全每启动重跑。
+            var batches = Regex.Split(sql, @"^\s*GO\s*$",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            foreach (var batch in batches)
+            {
+                var b = batch.Trim();
+                if (string.IsNullOrEmpty(b)) continue;
+                await db.Database.ExecuteSqlRawAsync(b, ct);
+            }
         }
         catch (Exception ex)
         {
-            // 连接角色权限不足（非迁移角色）时不阻断启动；记录后由具 ALTER/CREATE POLICY 权限角色补执行。
+            // 连接角色权限不足（无 CREATE SECURITY POLICY / ALTER 权限）时不阻断启动；
+            // 记录后由具权限角色补执行。EnsureCreated 已建表，应用层 HasQueryFilter 仍保证租户隔离。
             sp.GetService<ILoggerFactory>()?.CreateLogger("Saas.Schema")
-              ?.LogError(ex, "应用 RLS 失败（连接角色权限不足？）。请由具 ALTER/CREATE POLICY 权限的迁移角色手动执行 sql/rls.sql。");
+              ?.LogError(ex, "应用 RLS 失败（连接 Windows 账户无 CREATE SECURITY POLICY 权限？）。请由具权限的迁移角色手动执行 sql/rls.sql。");
         }
     }
 

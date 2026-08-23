@@ -24,7 +24,7 @@ public sealed class GetHealthHandler : IRequestHandler<GetHealthQuery, HealthRes
         new List<ComponentHealth>
         {
             new("api", "Healthy"),
-            new("postgres", "Healthy"),
+            new("sqlserver", "Healthy"),
             new("signalr", "Healthy"),
             new("mqtt-broker", "Healthy"),
         }));

@@ -28,7 +28,7 @@
     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Qdrant.Client" Version="1.19.0" />
@@ -44,7 +44,6 @@
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="sql/rls.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="docker-compose.yml" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="initdb/01-roles.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->

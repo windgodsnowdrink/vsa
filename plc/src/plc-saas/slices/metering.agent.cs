@@ -49,7 +49,7 @@ public sealed class MeteringAgent : BackgroundService
             .Where(o => o.SentAt == null).OrderBy(o => o.CreatedAt).Take(100).ToListAsync(ct);
         foreach (var msg in pending)
         {
-            current.TenantId = msg.TenantId; // restore 连接级 app.tenant_id
+            current.TenantId = msg.TenantId; // restore 连接级 SESSION_CONTEXT N'TenantId'
             if (msg.Type == "TelemetryIngested")
             {
                 var period = DateTime.UtcNow.ToString("yyyy-MM");

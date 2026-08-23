@@ -64,7 +64,7 @@ public sealed class IngestTelemetryHandler : IRequestHandler<IngestTelemetryComm
     public async ValueTask<IngestTelemetryResponse> Handle(IngestTelemetryCommand cmd, CancellationToken ct)
     {
         await IngestGuards.EnsureTenantActive(_db, cmd.TenantId, ct);
-        _current.TenantId = cmd.TenantId; // 匿名摄取无 JWT，显式设置连接级 app.tenant_id（RLS 兜底）
+        _current.TenantId = cmd.TenantId; // 匿名摄取无 JWT，显式设置连接级 SESSION_CONTEXT N'TenantId'（RLS 兜底）
 
         var device = await DeviceResolver.ResolveOrProvisionAsync(_db, cmd.TenantId, cmd.DeviceId, ct);
         device.Status = DeviceStatus.online;
