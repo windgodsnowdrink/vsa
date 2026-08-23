@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FujiDevicePlugin</RootNamespace>
+    <AssemblyName>FujiDevicePlugin</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Target Name="CopyPluginToHost" AfterTargets="Build">
+    <ItemGroup>
+      <_PluginDll Include="$(TargetDir)$(AssemblyName).dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(MSBuildThisFileDirectory)bin" />
+    <Copy SourceFiles="@(_PluginDll)" DestinationFolder="$(MSBuildThisFileDirectory)bin" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

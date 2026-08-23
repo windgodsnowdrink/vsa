@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DeviceProtocols.Verify</RootNamespace>
+    <AssemblyName>DeviceProtocols.Verify</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
+    <ProjectReference Include="..\..\plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\plugins\BacnetDevicePlugin\BacnetDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\plugins\FatekDevicePlugin\FatekDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\plugins\KeyenceDevicePlugin\KeyenceDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\plugins\FujiDevicePlugin\FujiDevicePlugin.csproj" />
+    <ProjectReference Include="..\..\plugins\LoRaDevicePlugin\LoRaDevicePlugin.csproj" />
+  </ItemGroup>
+
+  <!-- .NET 11 预览版下 Microsoft.NET.Sdk 会在 CoreCompile 前重置程序集特性开关，
+       导致与手动 AssemblyInfo.cs 重复（CS0579）。在此强制锁定，确保 SDK 不再生成默认特性。 -->
+  <Target Name="LockAssemblyInfoFlags" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    </PropertyGroup>
+  </Target>
+
+</Project>

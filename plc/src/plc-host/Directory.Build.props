@@ -1,0 +1,10 @@
+<Project>
+  <!-- .NET 11 预览版 Microsoft.NET.Sdk.Web（叠加 Dapr.AspNetCore 的 web build target）在生成程序集
+       特性时会重复产出 AssemblyInfo / TargetFramework，导致 CS0579（特性重复）。统一关闭 SDK 自动
+       生成：宿主项目由 Properties/AssemblyInfo.cs 手动提供单一来源；插件 / 测试等无手动特性亦可正常
+       编译运行。 -->
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+</Project>

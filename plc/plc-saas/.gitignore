@@ -1,3 +1,0 @@
-# .NET build artifacts (per-project; repo root .gitignore omits bin/obj)
-bin/
-obj/

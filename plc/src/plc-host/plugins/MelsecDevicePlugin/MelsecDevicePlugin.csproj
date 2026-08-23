@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MelsecDevicePlugin</RootNamespace>
+    <AssemblyName>MelsecDevicePlugin</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Private=false：契约层不随插件复制，由宿主 ALC 以共享程序集方式解析，保证类型身份一致 -->
+    <ProjectReference Include="..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- 构建后将插件 DLL 拷贝到宿主可发现的 plugins/<Name>/bin/ 下（PluginManager 用 AllDirectories 扫描） -->
+  <Target Name="CopyPluginToHost" AfterTargets="Build">
+    <ItemGroup>
+      <_PluginDll Include="$(TargetDir)$(AssemblyName).dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(MSBuildThisFileDirectory)bin" />
+    <Copy SourceFiles="@(_PluginDll)" DestinationFolder="$(MSBuildThisFileDirectory)bin" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

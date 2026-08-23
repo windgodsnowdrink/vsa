@@ -1,22 +1,1121 @@
-<div data-page="system">
-  <div class="page-head">
-    <div><h1>系统</h1><p>服务健康 · 资源 · 边缘数据链路配置</p></div>
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC·AIOT 系统设置</title>
+    <style id="theme-vars">
+/*
+ * PLC·AIOT Design Tokens
+ * Reference: Apple Design Library (restrained, precise, editorial)
+ * Domain: Industrial IoT / PLC Edge Device SaaS
+ * Primary: Tech sky blue (#0ea5e9) with glassmorphism surfaces
+ * Theme modes: light / dark
+ */
+
+:root {
+  /* Primitive — brand sky */
+  --plca-brand-50: #f0f9ff;
+  --plca-brand-100: #e0f2fe;
+  --plca-brand-200: #bae6fd;
+  --plca-brand-300: #7dd3fc;
+  --plca-brand-400: #38bdf8;
+  --plca-brand-500: #0ea5e9;
+  --plca-brand-600: #0284c7;
+  --plca-brand-700: #0369a1;
+  --plca-brand-800: #075985;
+  --plca-brand-900: #0c4a6e;
+
+  /* Primitive — slate neutrals */
+  --plca-slate-50: #f8fafc;
+  --plca-slate-100: #f1f5f9;
+  --plca-slate-200: #e2e8f0;
+  --plca-slate-300: #cbd5e1;
+  --plca-slate-400: #94a3b8;
+  --plca-slate-500: #64748b;
+  --plca-slate-600: #475569;
+  --plca-slate-700: #334155;
+  --plca-slate-800: #1e293b;
+  --plca-slate-900: #0f172a;
+
+  /* Primitive — semantic scales */
+  --plca-background: var(--plca-slate-50);
+  --plca-foreground: var(--plca-slate-900);
+  --plca-card: rgba(255, 255, 255, 0.78);
+  --plca-card-foreground: var(--plca-slate-900);
+  --plca-popover: #ffffff;
+  --plca-popover-foreground: var(--plca-slate-900);
+
+  --plca-primary: var(--plca-brand-500);
+  --plca-primary-foreground: #ffffff;
+  --plca-secondary: var(--plca-slate-100);
+  --plca-secondary-foreground: var(--plca-slate-800);
+  --plca-muted: var(--plca-slate-100);
+  --plca-muted-foreground: var(--plca-slate-500);
+  --plca-accent: var(--plca-brand-100);
+  --plca-accent-foreground: var(--plca-brand-900);
+  --plca-destructive: #ef4444;
+  --plca-destructive-foreground: #ffffff;
+  --plca-success: #10b981;
+  --plca-success-foreground: #ffffff;
+  --plca-warning: #f59e0b;
+  --plca-warning-foreground: #ffffff;
+  --plca-border: var(--plca-slate-200);
+  --plca-input: var(--plca-slate-300);
+  --plca-ring: var(--plca-brand-500);
+
+  --plca-icon: var(--plca-slate-800);
+  --plca-icon-muted: var(--plca-slate-500);
+
+  /* Chart */
+  --plca-chart-1: var(--plca-brand-500);
+  --plca-chart-2: #10b981;
+  --plca-chart-3: #f59e0b;
+  --plca-chart-4: #8b5cf6;
+  --plca-chart-5: #ec4899;
+
+  /* Sidebar */
+  --plca-sidebar: rgba(255, 255, 255, 0.72);
+  --plca-sidebar-foreground: var(--plca-slate-800);
+  --plca-sidebar-primary: var(--plca-brand-500);
+  --plca-sidebar-primary-foreground: #ffffff;
+  --plca-sidebar-accent: var(--plca-slate-100);
+  --plca-sidebar-accent-foreground: var(--plca-slate-800);
+  --plca-sidebar-border: var(--plca-slate-200);
+  --plca-sidebar-ring: var(--plca-brand-500);
+
+  /* Typography */
+  --plca-font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --plca-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --plca-tracking-tight: -0.02em;
+  --plca-tracking-normal: 0em;
+
+  /* Radius */
+  --plca-radius-sm: 0.5rem;
+  --plca-radius-md: 0.75rem;
+  --plca-radius-lg: 1rem;
+  --plca-radius-xl: 1.25rem;
+
+  /* Shadows */
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(2, 8, 20, 0.04);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(2, 8, 20, 0.05), 0 1px 3px -1px rgba(2, 8, 20, 0.05);
+  --plca-shadow-md: 0 4px 8px -2px rgba(2, 8, 20, 0.06), 0 2px 4px -2px rgba(2, 8, 20, 0.04);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(2, 8, 20, 0.10), 0 4px 8px -4px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(2, 8, 20, 0.12), 0 8px 16px -8px rgba(2, 8, 20, 0.06);
+
+  /* Spacing base */
+  --plca-spacing: 0.25rem;
+}
+
+.dark {
+  --plca-background: #030711;
+  --plca-foreground: #f8fafc;
+  --plca-card: rgba(15, 23, 42, 0.72);
+  --plca-card-foreground: #f8fafc;
+  --plca-popover: #0f172a;
+  --plca-popover-foreground: #f8fafc;
+
+  --plca-primary: #38bdf8;
+  --plca-primary-foreground: #0f172a;
+  --plca-secondary: #1e293b;
+  --plca-secondary-foreground: #f8fafc;
+  --plca-muted: #1e293b;
+  --plca-muted-foreground: #94a3b8;
+  --plca-accent: #0c4a6e;
+  --plca-accent-foreground: #e0f2fe;
+  --plca-border: rgba(148, 163, 184, 0.2);
+  --plca-input: rgba(148, 163, 184, 0.25);
+  --plca-ring: #38bdf8;
+
+  --plca-sidebar: rgba(15, 23, 42, 0.72);
+  --plca-sidebar-foreground: #f8fafc;
+  --plca-sidebar-primary: #38bdf8;
+  --plca-sidebar-primary-foreground: #0f172a;
+  --plca-sidebar-accent: #1e293b;
+  --plca-sidebar-accent-foreground: #f8fafc;
+  --plca-sidebar-border: rgba(148, 163, 184, 0.16);
+
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --plca-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.32);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.36);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.40);
+}
+
+    </style>
+    <style id="component-vars">
+/* PLC·AIOT Component Layer — plain CSS, no @apply referencing local classes */
+
+/* Glass surfaces */
+.plca-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.dark .plca-glass {
+  background: rgba(15, 23, 42, 0.60);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.plca-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.dark .plca-glass-strong {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+/* Cards */
+.plca-card {
+  background: var(--plca-card);
+  color: var(--plca-card-foreground);
+  border: 1px solid var(--plca-border);
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-sm);
+  transition: box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1), transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.plca-card-hover:hover {
+  box-shadow: var(--plca-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.plca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-btn-primary {
+  background: var(--plca-primary);
+  color: var(--plca-primary-foreground);
+  box-shadow: 0 4px 14px -4px rgba(14, 165, 233, 0.35);
+}
+
+.plca-btn-primary:hover {
+  background: var(--plca-brand-600);
+  box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.42);
+}
+
+.plca-btn-secondary {
+  background: var(--plca-secondary);
+  color: var(--plca-secondary-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-secondary:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-ghost {
+  background: transparent;
+  color: var(--plca-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-ghost:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Forms */
+.plca-input {
+  width: 100%;
+  background: var(--plca-background);
+  color: var(--plca-foreground);
+  border: 1px solid var(--plca-input);
+  border-radius: var(--plca-radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plca-input::placeholder {
+  color: var(--plca-muted-foreground);
+}
+
+.plca-input:focus {
+  border-color: var(--plca-ring);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+}
+
+.plca-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--plca-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.plca-error {
+  font-size: 0.75rem;
+  color: var(--plca-destructive);
+  margin-top: 0.25rem;
+}
+
+/* Badges */
+.plca-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.dark .plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+.plca-badge-rose {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.dark .plca-badge-rose {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.plca-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.dark .plca-badge-amber {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.plca-badge-sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.dark .plca-badge-sky {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+}
+
+/* Navigation */
+.plca-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 4rem;
+}
+
+.plca-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--plca-radius-md);
+  transition: color 150ms ease, background-color 150ms ease;
+  text-decoration: none;
+}
+
+.plca-nav-link:hover {
+  color: var(--plca-foreground);
+  background: var(--plca-muted);
+}
+
+/* Sidebar */
+.plca-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-sidebar-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.plca-sidebar-item:hover {
+  background: var(--plca-sidebar-accent);
+}
+
+.plca-sidebar-item-active {
+  background: rgba(14, 165, 233, 0.10);
+  color: var(--plca-primary);
+  border-left: 3px solid var(--plca-primary);
+}
+
+/* KPI */
+.plca-kpi {
+  padding: 1rem;
+  border-radius: var(--plca-radius-lg);
+  min-width: 140px;
+}
+
+.plca-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--plca-tracking-tight);
+  white-space: nowrap;
+}
+
+.plca-kpi-label {
+  font-size: 0.8125rem;
+  color: var(--plca-muted-foreground);
+}
+
+/* Tables */
+.plca-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.plca-table th,
+.plca-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--plca-border);
+  white-space: nowrap;
+}
+
+.plca-table th {
+  font-weight: 600;
+  color: var(--plca-muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plca-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+/* Tabs */
+.plca-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+  width: fit-content;
+}
+
+.plca-tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-tab:hover {
+  color: var(--plca-foreground);
+}
+
+.plca-tab-active {
+  background: var(--plca-card);
+  color: var(--plca-foreground);
+  box-shadow: var(--plca-shadow-xs);
+}
+
+/* Timeline */
+.plca-timeline-item {
+  position: relative;
+  padding-left: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-left: 1px solid var(--plca-border);
+}
+
+.plca-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -0.25rem;
+  top: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plca-primary);
+}
+
+.plca-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+/* Avatar */
+.plca-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+  color: #fff;
+}
+
+/* Scrollbar */
+.plca-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.plca-scroll::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 3px;
+}
+
+/* Map placeholder */
+.plca-map {
+  background:
+    radial-gradient(circle at 25% 35%, rgba(14, 165, 233, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 70% 65%, rgba(16, 185, 129, 0.12) 0%, transparent 26%),
+    var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+}
+
+/* Toast / notification panel */
+.plca-notification-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: 22rem;
+  z-index: 40;
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-xl);
+}
+
+/* Section shells */
+.plca-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.plca-page-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.plca-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pricing card highlight */
+.plca-pricing-featured {
+  border: 2px solid var(--plca-primary);
+  box-shadow: var(--plca-shadow-lg);
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--plca-background);
+    --color-foreground: var(--plca-foreground);
+    --color-card: var(--plca-card);
+    --color-card-foreground: var(--plca-card-foreground);
+    --color-popover: var(--plca-popover);
+    --color-popover-foreground: var(--plca-popover-foreground);
+    --color-primary: var(--plca-primary);
+    --color-primary-foreground: var(--plca-primary-foreground);
+    --color-secondary: var(--plca-secondary);
+    --color-secondary-foreground: var(--plca-secondary-foreground);
+    --color-muted: var(--plca-muted);
+    --color-muted-foreground: var(--plca-muted-foreground);
+    --color-accent: var(--plca-accent);
+    --color-accent-foreground: var(--plca-accent-foreground);
+    --color-destructive: var(--plca-destructive);
+    --color-destructive-foreground: var(--plca-destructive-foreground);
+    --color-border: var(--plca-border);
+    --color-input: var(--plca-input);
+    --color-ring: var(--plca-ring);
+    --color-chart-1: var(--plca-chart-1);
+    --color-chart-2: var(--plca-chart-2);
+    --color-chart-3: var(--plca-chart-3);
+    --color-chart-4: var(--plca-chart-4);
+    --color-chart-5: var(--plca-chart-5);
+    --color-sidebar: var(--plca-sidebar);
+    --color-sidebar-foreground: var(--plca-sidebar-foreground);
+    --color-sidebar-primary: var(--plca-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--plca-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--plca-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--plca-sidebar-accent-foreground);
+    --radius-sm: var(--plca-radius-sm);
+    --radius-md: var(--plca-radius-md);
+    --radius-lg: var(--plca-radius-lg);
+    --radius-xl: var(--plca-radius-xl);
+  }
+  @layer base {
+    body { background: var(--plca-background); color: var(--plca-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--plca-background); }
+      .text-background { color: var(--plca-background); }
+      .border-background { border-color: var(--plca-background); }
+      .ring-background { --tw-ring-color: var(--plca-background); }
+      .bg-foreground { background-color: var(--plca-foreground); }
+      .text-foreground { color: var(--plca-foreground); }
+      .border-foreground { border-color: var(--plca-foreground); }
+      .ring-foreground { --tw-ring-color: var(--plca-foreground); }
+      .bg-card { background-color: var(--plca-card); }
+      .text-card { color: var(--plca-card); }
+      .border-card { border-color: var(--plca-card); }
+      .ring-card { --tw-ring-color: var(--plca-card); }
+      .bg-card-foreground { background-color: var(--plca-card-foreground); }
+      .text-card-foreground { color: var(--plca-card-foreground); }
+      .border-card-foreground { border-color: var(--plca-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--plca-card-foreground); }
+      .bg-popover { background-color: var(--plca-popover); }
+      .text-popover { color: var(--plca-popover); }
+      .border-popover { border-color: var(--plca-popover); }
+      .ring-popover { --tw-ring-color: var(--plca-popover); }
+      .bg-popover-foreground { background-color: var(--plca-popover-foreground); }
+      .text-popover-foreground { color: var(--plca-popover-foreground); }
+      .border-popover-foreground { border-color: var(--plca-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--plca-popover-foreground); }
+      .bg-primary { background-color: var(--plca-primary); }
+      .text-primary { color: var(--plca-primary); }
+      .border-primary { border-color: var(--plca-primary); }
+      .ring-primary { --tw-ring-color: var(--plca-primary); }
+      .bg-primary-foreground { background-color: var(--plca-primary-foreground); }
+      .text-primary-foreground { color: var(--plca-primary-foreground); }
+      .border-primary-foreground { border-color: var(--plca-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--plca-primary-foreground); }
+      .bg-secondary { background-color: var(--plca-secondary); }
+      .text-secondary { color: var(--plca-secondary); }
+      .border-secondary { border-color: var(--plca-secondary); }
+      .ring-secondary { --tw-ring-color: var(--plca-secondary); }
+      .bg-secondary-foreground { background-color: var(--plca-secondary-foreground); }
+      .text-secondary-foreground { color: var(--plca-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--plca-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--plca-secondary-foreground); }
+      .bg-muted { background-color: var(--plca-muted); }
+      .text-muted { color: var(--plca-muted); }
+      .border-muted { border-color: var(--plca-muted); }
+      .ring-muted { --tw-ring-color: var(--plca-muted); }
+      .bg-muted-foreground { background-color: var(--plca-muted-foreground); }
+      .text-muted-foreground { color: var(--plca-muted-foreground); }
+      .border-muted-foreground { border-color: var(--plca-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--plca-muted-foreground); }
+      .bg-accent { background-color: var(--plca-accent); }
+      .text-accent { color: var(--plca-accent); }
+      .border-accent { border-color: var(--plca-accent); }
+      .ring-accent { --tw-ring-color: var(--plca-accent); }
+      .bg-accent-foreground { background-color: var(--plca-accent-foreground); }
+      .text-accent-foreground { color: var(--plca-accent-foreground); }
+      .border-accent-foreground { border-color: var(--plca-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--plca-accent-foreground); }
+      .bg-destructive { background-color: var(--plca-destructive); }
+      .text-destructive { color: var(--plca-destructive); }
+      .border-destructive { border-color: var(--plca-destructive); }
+      .ring-destructive { --tw-ring-color: var(--plca-destructive); }
+      .bg-destructive-foreground { background-color: var(--plca-destructive-foreground); }
+      .text-destructive-foreground { color: var(--plca-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--plca-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--plca-destructive-foreground); }
+      .bg-border { background-color: var(--plca-border); }
+      .text-border { color: var(--plca-border); }
+      .border-border { border-color: var(--plca-border); }
+      .ring-border { --tw-ring-color: var(--plca-border); }
+      .bg-input { background-color: var(--plca-input); }
+      .text-input { color: var(--plca-input); }
+      .border-input { border-color: var(--plca-input); }
+      .ring-input { --tw-ring-color: var(--plca-input); }
+      .bg-ring { background-color: var(--plca-ring); }
+      .text-ring { color: var(--plca-ring); }
+      .border-ring { border-color: var(--plca-ring); }
+      .ring-ring { --tw-ring-color: var(--plca-ring); }
+      .bg-chart-1 { background-color: var(--plca-chart-1); }
+      .text-chart-1 { color: var(--plca-chart-1); }
+      .border-chart-1 { border-color: var(--plca-chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--plca-chart-1); }
+      .bg-chart-2 { background-color: var(--plca-chart-2); }
+      .text-chart-2 { color: var(--plca-chart-2); }
+      .border-chart-2 { border-color: var(--plca-chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--plca-chart-2); }
+      .bg-chart-3 { background-color: var(--plca-chart-3); }
+      .text-chart-3 { color: var(--plca-chart-3); }
+      .border-chart-3 { border-color: var(--plca-chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--plca-chart-3); }
+      .bg-chart-4 { background-color: var(--plca-chart-4); }
+      .text-chart-4 { color: var(--plca-chart-4); }
+      .border-chart-4 { border-color: var(--plca-chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--plca-chart-4); }
+      .bg-chart-5 { background-color: var(--plca-chart-5); }
+      .text-chart-5 { color: var(--plca-chart-5); }
+      .border-chart-5 { border-color: var(--plca-chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--plca-chart-5); }
+      .bg-sidebar { background-color: var(--plca-sidebar); }
+      .text-sidebar { color: var(--plca-sidebar); }
+      .border-sidebar { border-color: var(--plca-sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--plca-sidebar); }
+      .bg-sidebar-foreground { background-color: var(--plca-sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--plca-sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--plca-sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--plca-sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--plca-sidebar-primary); }
+      .text-sidebar-primary { color: var(--plca-sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--plca-sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--plca-sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--plca-sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--plca-sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--plca-sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--plca-sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--plca-sidebar-accent); }
+      .text-sidebar-accent { color: var(--plca-sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--plca-sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--plca-sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--plca-sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--plca-sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--plca-sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--plca-sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+    <style>
+      .settings-panel { display: none; }
+      .settings-panel.active { display: block; }
+      .plca-toggle { display: inline-flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+      .plca-toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
+      .plca-toggle-track { position: relative; width: 2.75rem; height: 1.5rem; background: var(--plca-input); border-radius: 9999px; transition: background-color 150ms ease; }
+      .plca-toggle-thumb { position: absolute; top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem; background: #fff; border-radius: 50%; box-shadow: var(--plca-shadow-xs); transition: transform 150ms ease; }
+      .plca-toggle-input:checked + .plca-toggle-track { background: var(--plca-primary); }
+      .plca-toggle-input:checked + .plca-toggle-track .plca-toggle-thumb { transform: translateX(1.25rem); }
+      .plca-toggle-text { font-size: 0.875rem; font-weight: 500; color: var(--plca-foreground); }
+      textarea.plca-input { resize: vertical; min-height: 5rem; }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="plca-page-shell">
+    <!-- 侧边栏 -->
+    <aside id="sidebar"
+           class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full md:translate-x-0 transition-transform duration-200
+                  bg-sidebar border-r border-sidebar-border backdrop-blur-md flex flex-col">
+      <div class="h-16 flex items-center px-4 border-b border-sidebar-border">
+        <a href="cockpit.html" class="flex items-center gap-2 text-sidebar-foreground font-bold text-lg">
+          <i data-lucide="cpu" class="w-6 h-6 text-primary"></i>
+          <span>PLC·AIOT</span>
+        </a>
+        <button id="closeSidebar" class="md:hidden ml-auto p-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+                  <nav class="flex-1 space-y-1 overflow-y-auto p-3 plca-scroll">
+        <a href="cockpit.html" class="plca-sidebar-item"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>驾驶舱</span></a>
+        <a href="devices.html" class="plca-sidebar-item"><i data-lucide="hard-drive" class="h-4 w-4"></i><span>设备</span></a>
+        <a href="alerts.html" class="plca-sidebar-item"><i data-lucide="bell-ring" class="h-4 w-4"></i><span>告警</span></a>
+        <a href="statistics.html" class="plca-sidebar-item"><i data-lucide="bar-chart-3" class="h-4 w-4"></i><span>统计</span></a>
+        <a href="realtime.html" class="plca-sidebar-item"><i data-lucide="activity" class="h-4 w-4"></i><span>实时看板</span></a>
+        <a href="map.html" class="plca-sidebar-item"><i data-lucide="map" class="h-4 w-4"></i><span>地图</span></a>
+        <a href="system.html" class="plca-sidebar-item plca-sidebar-item-active"><i data-lucide="settings" class="h-4 w-4"></i><span>系统</span></a>
+        <a href="admin.html" class="plca-sidebar-item"><i data-lucide="shield" class="h-4 w-4"></i><span>后端管理</span></a>
+      </nav>
+    </aside>
+
+    <!-- 移动端遮罩 -->
+    <div id="sidebarOverlay" class="fixed inset-0 z-30 bg-black/40 hidden md:hidden" aria-hidden="true"></div>
+
+    <!-- 主内容区 -->
+    <div class="plca-content md:ml-64">
+      <!-- 顶部栏 -->
+      <header class="plca-topnav plca-glass border-b border-border px-4 flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <button id="openSidebar" class="md:hidden p-2 rounded-md hover:bg-muted text-foreground">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-lg font-semibold tracking-tight truncate">系统设置</h1>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button class="plca-btn plca-btn-primary hidden sm:inline-flex"
+                  hx-post="/api/settings/all"
+                  hx-swap="none"
+                  hx-on::after-request="if(event.detail.successful) showToast('全部设置已保存')">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            保存全部
+          </button>
+          <button id="themeToggle" class="plca-btn plca-btn-ghost w-9 h-9 p-0 rounded-full" aria-label="切换主题">
+            <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+          </button>
+          <div class="plca-avatar" title="管理员">管</div>
+        </div>
+      </header>
+
+      <!-- 页面内容 -->
+      <main class="flex-1 p-4 lg:p-6">
+        <div class="max-w-5xl mx-auto space-y-6">
+          <!-- 设置分类标签 -->
+          <div class="overflow-x-auto no-scrollbar pb-1">
+            <div class="plca-tabs" role="tablist">
+              <button type="button" class="plca-tab plca-tab-active" data-target="basic">基本信息</button>
+              <button type="button" class="plca-tab" data-target="mqtt">MQTT 配置</button>
+              <button type="button" class="plca-tab" data-target="collect">数据采集</button>
+              <button type="button" class="plca-tab" data-target="alert">告警规则</button>
+              <button type="button" class="plca-tab" data-target="security">安全</button>
+            </div>
+          </div>
+
+          <!-- 基本信息 -->
+          <section id="basic" class="settings-panel active">
+            <div class="plca-card p-5 lg:p-6 space-y-5">
+              <div class="flex items-center gap-2 pb-4 border-b border-border">
+                <i data-lucide="info" class="w-5 h-5 text-primary"></i>
+                <h2 class="font-semibold text-foreground">基本信息</h2>
+              </div>
+              <form class="space-y-4"
+                    hx-post="/api/settings/basic"
+                    hx-swap="none"
+                    hx-on::after-request="if(event.detail.successful) showToast('基本信息已保存')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="md:col-span-2">
+                    <label class="plca-label" for="basic-name">系统名称</label>
+                    <input id="basic-name" name="systemName" type="text" class="plca-input" value="PLC·AIOT 工业物联网平台" placeholder="请输入系统名称">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="basic-timezone">时区</label>
+                    <select id="basic-timezone" name="timezone" class="plca-input">
+                      <option value="Asia/Shanghai" selected>Asia/Shanghai（UTC+8）</option>
+                      <option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
+                      <option value="Asia/Tokyo">Asia/Tokyo</option>
+                      <option value="UTC">UTC</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="plca-label" for="basic-language">界面语言</label>
+                    <select id="basic-language" name="language" class="plca-input">
+                      <option value="zh-CN" selected>简体中文</option>
+                      <option value="zh-TW">繁體中文</option>
+                      <option value="en-US">English</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="plca-btn plca-btn-primary">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    保存
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- MQTT 配置 -->
+          <section id="mqtt" class="settings-panel">
+            <div class="plca-card p-5 lg:p-6 space-y-5">
+              <div class="flex items-center gap-2 pb-4 border-b border-border">
+                <i data-lucide="radio" class="w-5 h-5 text-primary"></i>
+                <h2 class="font-semibold text-foreground">MQTT 配置</h2>
+              </div>
+              <form class="space-y-4"
+                    hx-post="/api/settings/mqtt"
+                    hx-swap="none"
+                    hx-on::after-request="if(event.detail.successful) showToast('MQTT 配置已保存')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="md:col-span-2">
+                    <label class="plca-label" for="mqtt-host">Broker 地址</label>
+                    <input id="mqtt-host" name="brokerHost" type="text" class="plca-input" value="mqtt.plc-aiot.local" placeholder="例如 mqtt.example.com">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="mqtt-port">端口</label>
+                    <input id="mqtt-port" name="brokerPort" type="number" class="plca-input" value="8883" placeholder="1883">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="mqtt-client-id">客户端 ID</label>
+                    <input id="mqtt-client-id" name="clientId" type="text" class="plca-input" value="plc-aiot-edge-001" placeholder="客户端 ID">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="mqtt-username">用户名</label>
+                    <input id="mqtt-username" name="username" type="text" class="plca-input" value="edge_gateway" placeholder="用户名">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="mqtt-password">密码</label>
+                    <input id="mqtt-password" name="password" type="password" class="plca-input" value="********" placeholder="密码">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="plca-toggle">
+                      <input type="checkbox" name="tlsEnabled" value="true" checked class="plca-toggle-input">
+                      <span class="plca-toggle-track"><span class="plca-toggle-thumb"></span></span>
+                      <span class="plca-toggle-text">启用 TLS 加密</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="plca-btn plca-btn-primary">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    保存
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- 数据采集 -->
+          <section id="collect" class="settings-panel">
+            <div class="plca-card p-5 lg:p-6 space-y-5">
+              <div class="flex items-center gap-2 pb-4 border-b border-border">
+                <i data-lucide="database" class="w-5 h-5 text-primary"></i>
+                <h2 class="font-semibold text-foreground">数据采集</h2>
+              </div>
+              <form class="space-y-4"
+                    hx-post="/api/settings/collection"
+                    hx-swap="none"
+                    hx-on::after-request="if(event.detail.successful) showToast('数据采集配置已保存')">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label class="plca-label" for="collect-interval">采样间隔（毫秒）</label>
+                    <input id="collect-interval" name="sampleInterval" type="number" class="plca-input" value="1000" min="100" step="100">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="collect-batch">批量大小</label>
+                    <input id="collect-batch" name="batchSize" type="number" class="plca-input" value="500" min="10" step="10">
+                  </div>
+                  <div>
+                    <label class="plca-label" for="collect-retention">数据保留天数</label>
+                    <input id="collect-retention" name="retentionDays" type="number" class="plca-input" value="90" min="1">
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="plca-btn plca-btn-primary">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    保存
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- 告警规则 -->
+          <section id="alert" class="settings-panel">
+            <div class="plca-card p-5 lg:p-6 space-y-5">
+              <div class="flex items-center gap-2 pb-4 border-b border-border">
+                <i data-lucide="bell-ring" class="w-5 h-5 text-primary"></i>
+                <h2 class="font-semibold text-foreground">告警规则</h2>
+              </div>
+              <form class="space-y-4"
+                    hx-post="/api/settings/alerts"
+                    hx-swap="none"
+                    hx-on::after-request="if(event.detail.successful) showToast('告警规则已保存')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="plca-toggle">
+                      <input type="checkbox" name="enableEmail" value="true" checked class="plca-toggle-input">
+                      <span class="plca-toggle-track"><span class="plca-toggle-thumb"></span></span>
+                      <span class="plca-toggle-text">启用邮件告警</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label class="plca-toggle">
+                      <input type="checkbox" name="enableSms" value="true" class="plca-toggle-input">
+                      <span class="plca-toggle-track"><span class="plca-toggle-thumb"></span></span>
+                      <span class="plca-toggle-text">启用短信告警</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label class="plca-toggle">
+                      <input type="checkbox" name="enableWebhook" value="true" checked class="plca-toggle-input">
+                      <span class="plca-toggle-track"><span class="plca-toggle-thumb"></span></span>
+                      <span class="plca-toggle-text">启用 Webhook 告警</span>
+                    </label>
+                  </div>
+                  <div>
+                    <label class="plca-label" for="alert-severity">默认严重等级阈值</label>
+                    <select id="alert-severity" name="defaultSeverity" class="plca-input">
+                      <option value="info">信息</option>
+                      <option value="warning">警告</option>
+                      <option value="critical" selected>严重</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="plca-btn plca-btn-primary">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    保存
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- 安全 -->
+          <section id="security" class="settings-panel">
+            <div class="plca-card p-5 lg:p-6 space-y-5">
+              <div class="flex items-center gap-2 pb-4 border-b border-border">
+                <i data-lucide="shield" class="w-5 h-5 text-primary"></i>
+                <h2 class="font-semibold text-foreground">安全</h2>
+              </div>
+              <form class="space-y-4"
+                    hx-post="/api/settings/security"
+                    hx-swap="none"
+                    hx-on::after-request="if(event.detail.successful) showToast('安全设置已保存')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="plca-label" for="security-timeout">会话超时（分钟）</label>
+                    <input id="security-timeout" name="sessionTimeout" type="number" class="plca-input" value="30" min="5">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="plca-label" for="security-ips">IP 白名单</label>
+                    <textarea id="security-ips" name="ipWhitelist" rows="4" class="plca-input" placeholder="每行一个 IP 或 CIDR，留空表示不限制">192.168.1.0/24
+10.0.0.0/8</textarea>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="plca-toggle">
+                      <input type="checkbox" name="twoFactorEnabled" value="true" class="plca-toggle-input">
+                      <span class="plca-toggle-track"><span class="plca-toggle-thumb"></span></span>
+                      <span class="plca-toggle-text">启用双因素认证（2FA）</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button type="submit" class="plca-btn plca-btn-primary">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    保存
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
   </div>
 
-  <div class="grid-3" id="svcGrid" style="margin-bottom:18px"></div>
+  <!-- Toast 容器 -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
-  <div class="grid-2">
-    <div class="card hover">
-      <h3>资源占用</h3>
-      <div id="resGrid"></div>
-    </div>
-    <div class="card hover">
-      <h3>边缘数据链路</h3>
-      <pre class="pill" style="white-space:pre-wrap;line-height:1.8;font-family:var(--mono)">边缘库  : SQLite   (plc-edge.db, EF Core + DapperAOT)
-边缘MQTT: Mosquitto (本地订阅/发布/桥接转发)
-桥接至  : EMQX 集群 (cloud://emqx:8883)
-同步平台: CommunityToolkit.Datasync (离线优先增量同步)
-主题树  : devices/{洲}/{国}/{省}/{市}/{区}/{线}/{批}/{设备}/{类型}</pre>
-    </div>
-  </div>
-</div>
+  <script>
+    (function () {
+      'use strict';
+
+      lucide.createIcons();
+
+      // 主题切换
+      const html = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      function applyTheme(isDark) {
+        if (isDark) {
+          html.classList.add('dark');
+          html.classList.remove('light');
+        } else {
+          html.classList.add('light');
+          html.classList.remove('dark');
+        }
+        lucide.createIcons();
+      }
+      themeToggle.addEventListener('click', () => applyTheme(!html.classList.contains('dark')));
+
+      // 移动端侧边栏
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const openSidebar = document.getElementById('openSidebar');
+      const closeSidebar = document.getElementById('closeSidebar');
+      function setSidebar(open) {
+        if (open) {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('hidden');
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+        }
+      }
+      openSidebar.addEventListener('click', () => setSidebar(true));
+      closeSidebar.addEventListener('click', () => setSidebar(false));
+      overlay.addEventListener('click', () => setSidebar(false));
+
+      // 设置分类标签切换
+      const tabs = document.querySelectorAll('.plca-tab');
+      const panels = document.querySelectorAll('.settings-panel');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.target;
+          tabs.forEach(t => t.classList.remove('plca-tab-active'));
+          tab.classList.add('plca-tab-active');
+          panels.forEach(p => {
+            if (p.id === target) p.classList.add('active');
+            else p.classList.remove('active');
+          });
+        });
+      });
+
+      // Toast 提示
+      window.showToast = function (message) {
+        const container = document.getElementById('toastContainer');
+        const el = document.createElement('div');
+        el.className = 'plca-toast plca-glass-strong px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm text-foreground border border-border';
+        el.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-success"></i><span>' + message + '</span>';
+        container.appendChild(el);
+        lucide.createIcons();
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(10px)';
+          el.style.transition = 'opacity 200ms ease, transform 200ms ease';
+          setTimeout(() => el.remove(), 220);
+        }, 3000);
+      };
+    })();
+  </script>
+</body>
+</html>
