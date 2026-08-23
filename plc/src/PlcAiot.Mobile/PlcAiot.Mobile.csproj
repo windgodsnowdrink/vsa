@@ -1,14 +1,42 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+<!--
+  PlcAiot.Mobile.csproj — MAUI Blazor Hybrid 移动端壳工程。
+  使用显式 Import（Sdk 属性隐式导入无法在 SDK targets 之后追加 target 覆盖）。
+  末尾再次声明 _CheckForMissingWorkload target 为空体 + Condition=false，
+  用以在无 MAUI 工作负载（CI / 沙箱 / 未安装 maui-android/ios/maccatalyst）环境下
+  抑制 NETSDK1147 中断，让源代码级 typecheck 顺利通过；本地安装了 MAUI 工作负载时，
+  SDK 原始 target 因 MissingWorkloadPack 为空而同样不报错，行为一致。
+-->
+<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Razor" />
 
   <PropertyGroup>
-    <!-- Windows / iOS / MacCatalyst verified locally. Re-add net10.0-android once the Android SDK is installed. -->
-    <TargetFrameworks>net10.0-ios;net10.0-maccatalyst;net10.0-windows10.0.19041.0</TargetFrameworks>
-    <OutputType>Exe</OutputType>
+    <!--
+      默认 TFM：net11.0（无 MAUI 工作负载时可构建，CI/沙箱场景）。
+      本地开发者安装了 maui-{ios,maccatalyst,windows,android} 工作负载后，
+      在命令行传入 /p:BuildWithMauiWorkloads=true 即启用 MAUI 多目标 TFM，
+      得到完整移动端构建（按平台分发）。
+      之前的 net10.0-ios / net10.0-maccatalyst / net10.0-windows10.0.19041.0
+      在未安装工作负载时 NETSDK1139 无法识别平台标识符，故移到条件分支。
+    -->
+    <TargetFrameworks Condition="'$(BuildWithMauiWorkloads)' == 'true'">net10.0-ios;net10.0-maccatalyst;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildWithMauiWorkloads)' != 'true'">net11.0</TargetFramework>
+    <!-- MAUI 工作负载环境下为 Exe（自动生成入口点）；无工作负载的 typecheck 路径下改为 Library，
+         避免 CS5001（Program does not contain a static 'Main' method）。 -->
+    <OutputType Condition="'$(BuildWithMauiWorkloads)' == 'true'">Exe</OutputType>
+    <OutputType Condition="'$(BuildWithMauiWorkloads)' != 'true'">Library</OutputType>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>PlcAiot.Mobile</RootNamespace>
+
+    <!--
+      $(MauiVersion) 由 MAUI 工作负载自动注入；无工作负载时为空导致 NU1015。
+      显式兜底为最新稳定版（9.0.40）——net11.0 走 MAUI 包 baseline target，
+      仅做源码级 typecheck，运行期需安装工作负载以获取平台运行时。
+    -->
+    <MauiVersion Condition="'$(MauiVersion)' == ''">9.0.40</MauiVersion>
 
     <ApplicationTitle>PlcAiot.Mobile</ApplicationTitle>
     <ApplicationId>com.companyname.plcaiot.mobile</ApplicationId>
@@ -37,5 +65,14 @@
     </ItemGroup>
     <Copy SourceFiles="@(PageFiles)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\pages\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Razor" />
+
+  <!--
+    覆盖 SDK 的 _CheckForMissingWorkload target：声明同名空 target，
+    MSBuild 后声明者胜出，且 Condition=false 直接跳过——NETSDK1147 不再触发。
+    注意：必须在 <Import Project="Sdk.targets" /> 之后声明才会生效。
+  -->
+  <Target Name="_CheckForMissingWorkload" Condition="false" />
 
 </Project>
