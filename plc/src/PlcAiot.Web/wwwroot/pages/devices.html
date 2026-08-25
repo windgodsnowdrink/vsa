@@ -554,7 +554,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
     <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
     <style type="text/tailwindcss">
   @theme inline {
     --color-background: var(--plca-background);
@@ -784,8 +783,7 @@
         <div class="flex items-center gap-2 md:gap-3">
           <div class="relative hidden w-56 sm:block md:w-72">
             <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"></i>
-            <input type="search" name="q" class="plca-input pl-9" placeholder="搜索设备、编码..."
-                   hx-get="/api/devices" hx-target="#device-table-body" hx-trigger="keyup changed delay:300ms, search">
+            <input type="search" id="filter-keyword" name="q" class="plca-input pl-9" placeholder="搜索设备 ID / 协议…" oninput="applyFilter()">
           </div>
           <button type="button" class="relative rounded-md p-2 text-foreground hover:bg-muted" aria-label="通知">
             <i data-lucide="bell" class="h-5 w-5"></i>
@@ -802,20 +800,20 @@
       <main class="flex-1 space-y-6 overflow-auto p-4 md:p-6">
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <div class="plca-card plca-kpi">
-            <div class="plca-kpi-label">在线设备</div>
-            <div class="plca-kpi-value text-emerald-500">1,248</div>
+            <div class="plca-kpi-label">设备总数</div>
+            <div class="plca-kpi-value text-primary" id="dv-total">—</div>
           </div>
           <div class="plca-card plca-kpi">
-            <div class="plca-kpi-label">离线设备</div>
-            <div class="plca-kpi-value text-rose-500">37</div>
+            <div class="plca-kpi-label">已启用</div>
+            <div class="plca-kpi-value text-emerald-500" id="dv-online">—</div>
           </div>
           <div class="plca-card plca-kpi">
-            <div class="plca-kpi-label">告警设备</div>
-            <div class="plca-kpi-value text-amber-500">16</div>
+            <div class="plca-kpi-label">未启用</div>
+            <div class="plca-kpi-value text-rose-500" id="dv-offline">—</div>
           </div>
           <div class="plca-card plca-kpi">
-            <div class="plca-kpi-label">采集点总数</div>
-            <div class="plca-kpi-value text-primary">42,896</div>
+            <div class="plca-kpi-label">协议种类</div>
+            <div class="plca-kpi-value text-amber-500" id="dv-protocols">—</div>
           </div>
         </div>
 
@@ -826,24 +824,15 @@
                 <i data-lucide="filter" class="h-4 w-4"></i>
                 <span class="text-sm font-medium">筛选</span>
               </div>
-              <select name="type" class="plca-input sm:w-40" hx-get="/api/devices" hx-target="#device-table-body" hx-trigger="change">
-                <option value="">全部类型</option>
-                <option value="plc">PLC 控制器</option>
-                <option value="edge">边缘网关</option>
-                <option value="sensor">传感器</option>
-                <option value="meter">智能仪表</option>
-              </select>
-              <select name="status" class="plca-input sm:w-40" hx-get="/api/devices" hx-target="#device-table-body" hx-trigger="change">
+              <select id="filter-status" class="plca-input sm:w-40" onchange="applyFilter()">
                 <option value="">全部状态</option>
-                <option value="online">在线</option>
-                <option value="offline">离线</option>
-                <option value="alarm">告警</option>
+                <option value="enabled">已启用</option>
+                <option value="disabled">未启用</option>
               </select>
-              <input type="search" name="keyword" class="plca-input sm:w-64" placeholder="设备名称 / 编码"
-                     hx-get="/api/devices" hx-target="#device-table-body" hx-trigger="keyup changed delay:400ms">
+              <input id="filter-keyword" type="search" placeholder="搜索 ID / 协议 / 地址" class="plca-input sm:w-64" oninput="applyFilter()">
             </div>
-            <button type="button" class="plca-btn plca-btn-primary" onclick="openPanel()">
-              <i data-lucide="plus" class="h-4 w-4"></i>新增设备
+            <button type="button" class="plca-btn plca-btn-primary" onclick="loadDevices()">
+              <i data-lucide="refresh-cw" class="h-4 w-4"></i>刷新
             </button>
           </form>
         </div>
@@ -853,106 +842,17 @@
             <table class="plca-table">
               <thead>
                 <tr>
-                  <th><button class="inline-flex items-center gap-1 hover:text-foreground" hx-get="/api/devices?sort=name" hx-target="#device-table-body">设备名称<i data-lucide="arrow-up-down" class="h-3 w-3"></i></button></th>
-                  <th><button class="inline-flex items-center gap-1 hover:text-foreground" hx-get="/api/devices?sort=code" hx-target="#device-table-body">设备编码<i data-lucide="arrow-up-down" class="h-3 w-3"></i></button></th>
-                  <th>类型</th>
+                  <th>设备ID</th>
+                  <th>协议</th>
+                  <th>地址</th>
+                  <th class="text-right">UnitId</th>
+                  <th class="text-right">采集间隔</th>
                   <th>状态</th>
-                  <th><button class="inline-flex items-center gap-1 hover:text-foreground" hx-get="/api/devices?sort=heartbeat" hx-target="#device-table-body">最后心跳<i data-lucide="arrow-up-down" class="h-3 w-3"></i></button></th>
-                  <th>采集点</th>
                   <th class="text-right">操作</th>
                 </tr>
               </thead>
               <tbody id="device-table-body">
-                <tr>
-                  <td class="font-medium">包装产线 PLC-01</td>
-                  <td class="font-mono text-muted-foreground">PLC-EDGE-2024001</td>
-                  <td><span class="plca-badge plca-badge-sky">PLC 控制器</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">在线</span></td>
-                  <td class="text-muted-foreground">2026-08-15 09:42:18</td>
-                  <td>128</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('PLC-EDGE-2024001')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/PLC-EDGE-2024001/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/PLC-EDGE-2024001/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">涂装车间网关-A</td>
-                  <td class="font-mono text-muted-foreground">GW-0239-COAT</td>
-                  <td><span class="plca-badge plca-badge-sky">边缘网关</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">在线</span></td>
-                  <td class="text-muted-foreground">2026-08-15 09:41:05</td>
-                  <td>64</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('GW-0239-COAT')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/GW-0239-COAT/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/GW-0239-COAT/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">温湿度传感器-装配区</td>
-                  <td class="font-mono text-muted-foreground">SEN-TEMP-1182</td>
-                  <td><span class="plca-badge plca-badge-sky">传感器</span></td>
-                  <td><span class="plca-badge plca-badge-amber">告警</span></td>
-                  <td class="text-muted-foreground">2026-08-15 09:38:22</td>
-                  <td>4</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('SEN-TEMP-1182')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/SEN-TEMP-1182/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/SEN-TEMP-1182/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">空压机智能电表</td>
-                  <td class="font-mono text-muted-foreground">METER-AIR-056</td>
-                  <td><span class="plca-badge plca-badge-sky">智能仪表</span></td>
-                  <td><span class="plca-badge plca-badge-rose">离线</span></td>
-                  <td class="text-muted-foreground">2026-08-14 22:15:40</td>
-                  <td>12</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('METER-AIR-056')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/METER-AIR-056/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/METER-AIR-056/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">冲压机 PLC-02</td>
-                  <td class="font-mono text-muted-foreground">PLC-EDGE-2024002</td>
-                  <td><span class="plca-badge plca-badge-sky">PLC 控制器</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">在线</span></td>
-                  <td class="text-muted-foreground">2026-08-15 09:42:01</td>
-                  <td>96</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('PLC-EDGE-2024002')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/PLC-EDGE-2024002/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/PLC-EDGE-2024002/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="font-medium">焊接机器人网关</td>
-                  <td class="font-mono text-muted-foreground">GW-ROBOT-007</td>
-                  <td><span class="plca-badge plca-badge-sky">边缘网关</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">在线</span></td>
-                  <td class="text-muted-foreground">2026-08-15 09:40:33</td>
-                  <td>48</td>
-                  <td class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel('GW-ROBOT-007')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/GW-ROBOT-007/command" hx-target="#command-modal"><i data-lucide="terminal" class="h-3.5 w-3.5"></i>指令</button>
-                      <button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" hx-get="/api/devices/GW-ROBOT-007/logs" hx-target="#panel-tab-content"><i data-lucide="scroll-text" class="h-3.5 w-3.5"></i>日志</button>
-                    </div>
-                  </td>
-                </tr>
+                <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-muted-foreground">正在加载设备…</td></tr>
               </tbody>
             </table>
           </div>
@@ -965,39 +865,33 @@
     <div class="flex h-16 items-center justify-between border-b border-border px-6">
       <div>
         <h2 class="text-lg font-semibold">设备详情</h2>
-        <p id="panel-device-code" class="text-xs text-muted-foreground">PLC-EDGE-2024001</p>
+        <p id="panel-device-code" class="text-xs text-muted-foreground">—</p>
       </div>
       <button type="button" class="plca-btn plca-btn-ghost h-9 w-9 p-0" aria-label="关闭" onclick="closePanel()"><i data-lucide="x" class="h-5 w-5"></i></button>
     </div>
-    <div class="border-b border-border px-6 py-3">
-      <div class="plca-tabs" role="tablist">
-        <button type="button" class="plca-tab plca-tab-active" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=info" hx-target="#panel-tab-content">信息</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=heartbeat" hx-target="#panel-tab-content">心跳</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=operation" hx-target="#panel-tab-content">操作</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=logs" hx-target="#panel-tab-content">日志</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=command" hx-target="#panel-tab-content">指令</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=plan" hx-target="#panel-tab-content">计划</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=task" hx-target="#panel-tab-content">任务</button>
-        <button type="button" class="plca-tab" hx-get="/api/devices/PLC-EDGE-2024001/tab?tab=map" hx-target="#panel-tab-content">地图</button>
+    <div class="flex-1 overflow-y-auto p-6 plca-scroll space-y-5">
+      <div id="panel-info" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+
+      <div class="plca-card p-4 space-y-3">
+        <div class="flex items-center gap-2 font-medium"><i data-lucide="download" class="h-4 w-4 text-primary"></i>读取值（/api/gateway/read）</div>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="text-xs text-muted-foreground">起始地址<input id="read-start" type="number" value="0" min="0" class="plca-input w-full"></label>
+          <label class="text-xs text-muted-foreground">数量<input id="read-count" type="number" value="10" min="1" class="plca-input w-full"></label>
+          <label class="text-xs text-muted-foreground">类型<input id="read-type" type="number" value="3" min="0" class="plca-input w-full"></label>
+        </div>
+        <button type="button" class="plca-btn plca-btn-primary w-full" onclick="readDevice()"><i data-lucide="download" class="h-4 w-4"></i>读取</button>
+        <pre id="read-result" class="max-h-40 overflow-auto rounded bg-muted p-3 text-xs font-mono">—</pre>
       </div>
-    </div>
-    <div id="panel-tab-content" class="flex-1 overflow-y-auto p-6 plca-scroll space-y-4">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">设备名称</p><p class="font-medium">包装产线 PLC-01</p></div>
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">设备编码</p><p class="font-mono font-medium">PLC-EDGE-2024001</p></div>
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">设备类型</p><p class="font-medium">PLC 控制器</p></div>
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">当前状态</p><span class="plca-badge plca-badge-emerald">在线</span></div>
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">最后心跳</p><p class="font-medium">2026-08-15 09:42:18</p></div>
-        <div class="plca-card p-4"><p class="text-xs text-muted-foreground">采集点数量</p><p class="font-medium">128</p></div>
-      </div>
-      <div class="plca-map flex h-64 flex-col items-center justify-center p-6 text-center">
-        <i data-lucide="map-pin" class="mb-2 h-8 w-8 text-primary"></i>
-        <p class="font-medium">设备地图占位</p>
-        <p class="text-sm text-muted-foreground">地图组件将在运行时加载并定位设备。</p>
-      </div>
-      <div class="plca-card p-4">
-        <p class="mb-2 text-sm font-medium">备注</p>
-        <p class="text-sm text-muted-foreground">该设备负责包装产线主控，连接 6 组变频器与 2 台扫码枪，固件版本 v2.4.1。</p>
+
+      <div class="plca-card p-4 space-y-3">
+        <div class="flex items-center gap-2 font-medium"><i data-lucide="upload" class="h-4 w-4 text-primary"></i>写入值（/api/gateway/write）</div>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="text-xs text-muted-foreground">起始地址<input id="write-start" type="number" value="0" min="0" class="plca-input w-full"></label>
+          <label class="text-xs text-muted-foreground">类型<input id="write-type" type="number" value="3" min="0" class="plca-input w-full"></label>
+        </div>
+        <label class="text-xs text-muted-foreground">值（ushort，逗号分隔）<input id="write-values" type="text" value="1,2,3" class="plca-input w-full"></label>
+        <button type="button" class="plca-btn plca-btn-primary w-full" onclick="writeDevice()"><i data-lucide="upload" class="h-4 w-4"></i>写入</button>
+        <pre id="write-result" class="max-h-24 overflow-auto rounded bg-muted p-3 text-xs font-mono">—</pre>
       </div>
     </div>
   </div>
@@ -1015,26 +909,150 @@
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('mobile-sidebar-overlay');
+      if (!sidebar) return;
       const isOpen = !sidebar.classList.contains('hidden');
       if (isOpen) {
         sidebar.classList.add('hidden');
         sidebar.classList.remove('flex');
-        overlay.classList.add('hidden');
+        if (overlay) overlay.classList.add('hidden');
       } else {
         sidebar.classList.remove('hidden');
         sidebar.classList.add('flex');
-        overlay.classList.remove('hidden');
+        if (overlay) overlay.classList.remove('hidden');
       }
+    }
+
+    function pick(obj, ...keys) {
+      keys = keys || [];
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (obj[k] !== undefined && obj[k] !== null) return obj[k];
+      }
+      return undefined;
+    }
+
+    function escapeHtml(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    async function apiGet(url) {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error(url + ' → ' + res.status);
+      return res.json();
+    }
+
+    let allDevices = [];
+    let currentDevice = null;
+
+    async function loadDevices() {
+      const body = document.getElementById('device-table-body');
+      body.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-muted-foreground">正在加载设备…</td></tr>';
+      try {
+        const [devices, protocols] = await Promise.all([
+          apiGet('/api/gateway/devices'),
+          apiGet('/api/gateway/protocols').catch(function () { return []; })
+        ]);
+        allDevices = Array.isArray(devices) ? devices : [];
+        const protocolSet = new Set((Array.isArray(protocols) ? protocols : []).map(function (p) { return String(p); }));
+        renderKpis(allDevices, protocolSet);
+        renderTable();
+      } catch (err) {
+        body.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-rose-500">加载失败：' + escapeHtml(err.message) + '</td></tr>';
+      }
+    }
+
+    function renderKpis(devices, protocolSet) {
+      const total = devices.length;
+      const enabled = devices.filter(function (d) { return pick(d, 'Enabled', 'enabled') === true; }).length;
+      document.getElementById('dv-total').textContent = total;
+      document.getElementById('dv-online').textContent = enabled;
+      document.getElementById('dv-offline').textContent = total - enabled;
+      const protos = new Set(devices.map(function (d) { return pick(d, 'Protocol', 'protocol'); }).filter(Boolean).map(String));
+      document.getElementById('dv-protocols').textContent = protos.size || protocolSet.size;
+    }
+
+    function applyFilter() {
+      renderTable();
+    }
+
+    function renderTable() {
+      const status = (document.getElementById('filter-status') || {}).value || '';
+      const keyword = ((document.getElementById('filter-keyword') || {}).value || '').trim().toLowerCase();
+      const rows = allDevices.filter(function (d) {
+        const enabled = pick(d, 'Enabled', 'enabled') === true;
+        if (status === 'enabled' && !enabled) return false;
+        if (status === 'disabled' && enabled) return false;
+        if (keyword) {
+          const hay = [pick(d, 'Id', 'id'), pick(d, 'Protocol', 'protocol'), pick(d, 'Host', 'host')]
+            .filter(Boolean).join(' ').toLowerCase();
+          if (hay.indexOf(keyword) === -1) return false;
+        }
+        return true;
+      });
+      const body = document.getElementById('device-table-body');
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-muted-foreground">无匹配设备</td></tr>';
+        return;
+      }
+      body.innerHTML = rows.map(function (d) {
+        const id = pick(d, 'Id', 'id');
+        const protocol = pick(d, 'Protocol', 'protocol');
+        const host = pick(d, 'Host', 'host');
+        const port = pick(d, 'Port', 'port');
+        const unitId = pick(d, 'UnitId', 'unitId');
+        const poll = pick(d, 'PollIntervalMs', 'pollIntervalMs');
+        const enabled = pick(d, 'Enabled', 'enabled') === true;
+        const statusBadge = enabled
+          ? '<span class="plca-badge plca-badge-emerald">已启用</span>'
+          : '<span class="plca-badge plca-badge-rose">未启用</span>';
+        const code = escapeHtml(id == null ? '—' : id);
+        return '<tr>' +
+          '<td class="font-mono">' + code + '</td>' +
+          '<td>' + escapeHtml(protocol == null ? '—' : protocol) + '</td>' +
+          '<td class="font-mono text-muted-foreground">' + escapeHtml(host == null ? '—' : host) + ':' + escapeHtml(port == null ? '—' : port) + '</td>' +
+          '<td class="text-right font-mono">' + escapeHtml(unitId == null ? '—' : unitId) + '</td>' +
+          '<td class="text-right font-mono">' + escapeHtml(poll == null ? '—' : poll) + ' ms</td>' +
+          '<td>' + statusBadge + '</td>' +
+          '<td class="text-right"><div class="flex items-center justify-end gap-2">' +
+          '<button class="plca-btn plca-btn-secondary h-8 px-2.5 text-xs" onclick="openPanel(\'' + code + '\')"><i data-lucide="file-text" class="h-3.5 w-3.5"></i>详情</button>' +
+          '</div></td>' +
+          '</tr>';
+      }).join('');
+      if (window.lucide) lucide.createIcons();
     }
 
     function openPanel(code) {
       const panel = document.getElementById('device-panel');
       const codeEl = document.getElementById('panel-device-code');
-      if (code) codeEl.textContent = code;
+      currentDevice = allDevices.find(function (d) { return String(pick(d, 'Id', 'id')) === String(code); }) || null;
+      const id = currentDevice ? pick(currentDevice, 'Id', 'id') : code;
+      if (codeEl) codeEl.textContent = id == null ? '—' : id;
+      renderPanelInfo(currentDevice);
       panel.setAttribute('aria-hidden', 'false');
       panel.classList.remove('plca-device-panel-closed');
       panel.classList.add('plca-device-panel-open');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderPanelInfo(d) {
+      const el = document.getElementById('panel-info');
+      if (!el) return;
+      if (!d) { el.innerHTML = '<p class="text-sm text-muted-foreground">未找到设备配置。</p>'; return; }
+      const fields = [
+        ['设备ID', pick(d, 'Id', 'id')],
+        ['协议', pick(d, 'Protocol', 'protocol')],
+        ['地址', pick(d, 'Host', 'host') + ':' + pick(d, 'Port', 'port')],
+        ['UnitId', pick(d, 'UnitId', 'unitId')],
+        ['机架 / 槽号', pick(d, 'Rack', 'rack') + ' / ' + pick(d, 'Slot', 'slot')],
+        ['采集间隔', pick(d, 'PollIntervalMs', 'pollIntervalMs') + ' ms'],
+        ['状态', pick(d, 'Enabled', 'enabled') === true ? '已启用' : '未启用']
+      ];
+      el.innerHTML = fields.map(function (f) {
+        return '<div class="plca-card p-3"><p class="text-xs text-muted-foreground">' + escapeHtml(f[0]) +
+          '</p><p class="font-medium font-mono">' + escapeHtml(f[1] == null ? '—' : f[1]) + '</p></div>';
+      }).join('');
     }
 
     function closePanel() {
@@ -1044,19 +1062,65 @@
       panel.classList.add('plca-device-panel-closed');
     }
 
+    async function readDevice() {
+      const out = document.getElementById('read-result');
+      if (!currentDevice) { out.textContent = '请先选择设备'; return; }
+      const deviceId = pick(currentDevice, 'Id', 'id');
+      const start = parseInt(document.getElementById('read-start').value, 10) || 0;
+      const count = parseInt(document.getElementById('read-count').value, 10) || 1;
+      const type = parseInt(document.getElementById('read-type').value, 10) || 0;
+      out.textContent = '请求中…';
+      try {
+        const res = await fetch('/api/gateway/read', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ deviceId: deviceId, start: start, count: count, type: type })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        const bin = atob(json.data);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const hex = Array.prototype.map.call(bytes, function (b) { return b.toString(16).padStart(2, '0'); }).join(' ');
+        out.textContent = 'bytes=' + bytes.length + '\n' + hex;
+      } catch (err) {
+        out.textContent = '读取失败：' + err.message;
+      }
+    }
+
+    async function writeDevice() {
+      const out = document.getElementById('write-result');
+      if (!currentDevice) { out.textContent = '请先选择设备'; return; }
+      const deviceId = pick(currentDevice, 'Id', 'id');
+      const start = parseInt(document.getElementById('write-start').value, 10) || 0;
+      const type = parseInt(document.getElementById('write-type').value, 10) || 0;
+      const values = document.getElementById('write-values').value
+        .split(',').map(function (s) { return parseInt(s.trim(), 10); }).filter(function (n) { return Number.isFinite(n); });
+      out.textContent = '请求中…';
+      try {
+        const res = await fetch('/api/gateway/write', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ deviceId: deviceId, start: start, type: type, values: values })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        out.textContent = '已写入 ' + (json.written != null ? json.written : values.length) + ' 个值';
+      } catch (err) {
+        out.textContent = '写入失败：' + err.message;
+      }
+    }
+
     document.getElementById('theme-toggle').addEventListener('click', function () {
       const html = document.documentElement;
       html.classList.toggle('dark');
       localStorage.setItem('plca-theme', html.classList.contains('dark') ? 'dark' : 'light');
-      lucide.createIcons();
-    });
-
-    document.addEventListener('htmx:afterSwap', function () {
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
+      loadDevices();
     });
   </script>
 </body>

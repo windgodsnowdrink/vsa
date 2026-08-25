@@ -554,7 +554,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
     <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <style type="text/tailwindcss">
   @theme inline {
     --color-background: var(--plca-background);
@@ -797,20 +796,13 @@
 
       <!-- 页面内容 -->
       <main class="flex-1 p-4 lg:p-6 space-y-6">
-        <!-- KPI 卡片 -->
+        <!-- KPI 卡片：数据来自 /api/gateway/devices + /api/gateway/protocols（真实后端） -->
         <section id="kpiRow"
-                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-                 hx-get="/api/cockpit/kpis"
-                 hx-trigger="every 30s"
-                 hx-swap="none">
+                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
             <div>
               <p class="plca-kpi-label">设备总数</p>
-              <p class="plca-kpi-value">1,248</p>
-              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-                <span>3.2%</span>
-              </div>
+              <p class="plca-kpi-value" id="kpi-total">—</p>
             </div>
             <div class="p-2 rounded-lg bg-primary/10 text-primary">
               <i data-lucide="hard-drive" class="w-6 h-6"></i>
@@ -818,12 +810,8 @@
           </div>
           <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
             <div>
-              <p class="plca-kpi-label">在线率</p>
-              <p class="plca-kpi-value">96.8%</p>
-              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-                <span>0.8%</span>
-              </div>
+              <p class="plca-kpi-label">已启用</p>
+              <p class="plca-kpi-value" id="kpi-enabled">—</p>
             </div>
             <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <i data-lucide="wifi" class="w-6 h-6"></i>
@@ -831,121 +819,74 @@
           </div>
           <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
             <div>
-              <p class="plca-kpi-label">今日告警</p>
-              <p class="plca-kpi-value">18</p>
-              <div class="flex items-center gap-1 mt-2 text-rose-600 dark:text-rose-400 text-sm font-medium">
-                <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
-                <span>12.5%</span>
-              </div>
+              <p class="plca-kpi-label">未启用</p>
+              <p class="plca-kpi-value" id="kpi-disabled">—</p>
             </div>
             <div class="p-2 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
-              <i data-lucide="bell-ring" class="w-6 h-6"></i>
+              <i data-lucide="power-off" class="w-6 h-6"></i>
             </div>
           </div>
           <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
             <div>
-              <p class="plca-kpi-label">采集数据量</p>
-              <p class="plca-kpi-value">4.2M</p>
-              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-                <span>8.4%</span>
-              </div>
+              <p class="plca-kpi-label">协议种类</p>
+              <p class="plca-kpi-value" id="kpi-protocols">—</p>
             </div>
             <div class="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-              <i data-lucide="database" class="w-6 h-6"></i>
+              <i data-lucide="layers" class="w-6 h-6"></i>
             </div>
           </div>
         </section>
 
-        <!-- 主图表 -->
-        <section class="plca-card p-4 lg:p-5"
-                 hx-get="/api/cockpit/trend"
-                 hx-trigger="every 60s"
-                 hx-swap="none">
+        <!-- 主图表：设备启用状态分布（真实后端） -->
+        <section class="plca-card p-4 lg:p-5">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-foreground">设备在线与告警趋势</h2>
-            <span class="text-xs text-muted-foreground">最近 24 小时</span>
+            <h2 class="font-semibold text-foreground">设备启用状态分布</h2>
+            <span class="text-xs text-muted-foreground">实时</span>
           </div>
-          <div class="relative h-72 lg:h-80 w-full">
-            <canvas id="trendChart"></canvas>
+          <div class="relative h-72 lg:h-80 w-full flex items-center justify-center">
+            <canvas id="statusChart"></canvas>
           </div>
         </section>
 
-        <!-- 第二行图表 -->
+        <!-- 第二行图表：协议分布 + 设备采集间隔（真实后端） -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div class="plca-card p-4 lg:p-5">
-            <h2 class="font-semibold text-foreground mb-4">设备状态分布</h2>
-            <div class="relative h-56 w-full flex items-center justify-center">
-              <canvas id="statusChart"></canvas>
+            <h2 class="font-semibold text-foreground mb-4">协议分布（按设备数）</h2>
+            <div class="relative h-56 w-full">
+              <canvas id="protocolChart"></canvas>
             </div>
           </div>
           <div class="plca-card p-4 lg:p-5 lg:col-span-2">
-            <h2 class="font-semibold text-foreground mb-4">CPU / 内存使用率</h2>
+            <h2 class="font-semibold text-foreground mb-4">设备采集间隔（毫秒）</h2>
             <div class="relative h-56 w-full">
-              <canvas id="resourceChart"></canvas>
+              <canvas id="pollChart"></canvas>
             </div>
           </div>
         </section>
 
-        <!-- 最近事件 -->
+        <!-- 设备状态快照（真实后端 /api/gateway/devices） -->
         <section class="plca-card p-4 lg:p-5 overflow-hidden">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="font-semibold text-foreground">最近事件</h2>
-            <button class="plca-btn plca-btn-secondary text-xs"
-                    hx-get="/api/cockpit/events"
-                    hx-target="#eventsTableBody"
-                    hx-swap="none">
+            <h2 class="font-semibold text-foreground">设备状态快照</h2>
+            <button class="plca-btn plca-btn-secondary text-xs" id="refreshDevices" type="button">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
               刷新
             </button>
           </div>
           <div class="overflow-x-auto -mx-4 lg:-mx-5 px-4 lg:px-5">
-            <table class="plca-table min-w-full" id="eventsTable">
+            <table class="plca-table min-w-full" id="deviceSnapshotTable">
               <thead>
                 <tr>
-                  <th class="cursor-pointer select-none" onclick="sortTable(0)">时间</th>
-                  <th class="cursor-pointer select-none" onclick="sortTable(1)">设备</th>
-                  <th class="cursor-pointer select-none" onclick="sortTable(2)">事件类型</th>
-                  <th class="cursor-pointer select-none" onclick="sortTable(3)">级别</th>
-                  <th class="cursor-pointer select-none" onclick="sortTable(4)">状态</th>
+                  <th>设备 ID</th>
+                  <th>协议</th>
+                  <th>地址</th>
+                  <th>单元号</th>
+                  <th>采集间隔(ms)</th>
+                  <th>状态</th>
                 </tr>
               </thead>
-              <tbody id="eventsTableBody">
-                <tr>
-                  <td class="font-mono text-muted-foreground">2026-08-15 09:42:18</td>
-                  <td>PLC-Edge-001</td>
-                  <td>心跳超时</td>
-                  <td><span class="plca-badge plca-badge-rose">严重</span></td>
-                  <td><span class="plca-badge plca-badge-amber">处理中</span></td>
-                </tr>
-                <tr>
-                  <td class="font-mono text-muted-foreground">2026-08-15 09:38:05</td>
-                  <td>PLC-Edge-017</td>
-                  <td>温度越限</td>
-                  <td><span class="plca-badge plca-badge-amber">警告</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">已恢复</span></td>
-                </tr>
-                <tr>
-                  <td class="font-mono text-muted-foreground">2026-08-15 09:25:33</td>
-                  <td>PLC-Edge-009</td>
-                  <td>固件升级</td>
-                  <td><span class="plca-badge plca-badge-sky">信息</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">完成</span></td>
-                </tr>
-                <tr>
-                  <td class="font-mono text-muted-foreground">2026-08-15 09:12:50</td>
-                  <td>PLC-Edge-003</td>
-                  <td>网络抖动</td>
-                  <td><span class="plca-badge plca-badge-amber">警告</span></td>
-                  <td><span class="plca-badge plca-badge-emerald">已恢复</span></td>
-                </tr>
-                <tr>
-                  <td class="font-mono text-muted-foreground">2026-08-15 08:56:21</td>
-                  <td>PLC-Edge-102</td>
-                  <td>数据采集异常</td>
-                  <td><span class="plca-badge plca-badge-rose">严重</span></td>
-                  <td><span class="plca-badge plca-badge-amber">处理中</span></td>
-                </tr>
+              <tbody id="deviceSnapshotBody">
+                <tr><td colspan="6" class="text-muted-foreground">加载中…</td></tr>
               </tbody>
             </table>
           </div>
@@ -1064,151 +1005,113 @@
         return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
       }
 
-      // 图表初始化
-      let trendChart, statusChart, resourceChart;
-      function initCharts() {
-        const c1 = cssVar('--plca-chart-1');
-        const c2 = cssVar('--plca-chart-2');
-        const c3 = cssVar('--plca-chart-3');
-        const c4 = cssVar('--plca-chart-4');
-        const muted = cssVar('--plca-muted-foreground');
-        const border = cssVar('--plca-border');
-        const gridColor = border;
+      // 图表与真实数据接入（/api/gateway/devices + /api/gateway/protocols）
+      let statusChart, protocolChart, pollChart;
 
-        const labels = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'];
+      // 兼容 ASP.NET 默认 camelCase 与服务端大小写差异
+      function pick(obj) {
+        for (var i = 1; i < arguments.length; i++) {
+          var k = arguments[i];
+          if (obj != null && obj[k] !== undefined) return obj[k];
+        }
+        return undefined;
+      }
 
-        // 组合图：在线设备趋势（线）+ 告警数（柱）
-        trendChart = new Chart(document.getElementById('trendChart'), {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                type: 'line',
-                label: '在线设备数',
-                data: [1180, 1195, 1202, 1198, 1210, 1225, 1208, 1218, 1230, 1222, 1215, 1208],
-                borderColor: c1,
-                backgroundColor: c1,
-                borderWidth: 2,
-                tension: 0.4,
-                pointRadius: 3,
-                yAxisID: 'y'
-              },
-              {
-                type: 'bar',
-                label: '告警数',
-                data: [2, 1, 0, 3, 5, 4, 2, 1, 6, 3, 2, 1],
-                backgroundColor: c3 + '99',
-                borderColor: c3,
-                borderWidth: 1,
-                borderRadius: 4,
-                yAxisID: 'y1'
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { labels: { color: muted } }
-            },
-            scales: {
-              x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: muted } },
-              y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                grid: { color: gridColor, drawBorder: false },
-                ticks: { color: muted }
-              },
-              y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                grid: { drawOnChartArea: false },
-                ticks: { color: muted }
-              }
-            }
-          }
+      function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
+      }
 
-        // 设备状态分布（环形图）
+      async function apiGet(url) {
+        var res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error(url + ' -> ' + res.status);
+        return res.json();
+      }
+
+      function renderKpis(devices, protocols) {
+        var total = devices.length;
+        var enabled = devices.filter(function (d) { return !!pick(d, 'enabled', 'Enabled'); }).length;
+        document.getElementById('kpi-total').textContent = total;
+        document.getElementById('kpi-enabled').textContent = enabled;
+        document.getElementById('kpi-disabled').textContent = total - enabled;
+        document.getElementById('kpi-protocols').textContent = protocols.length;
+      }
+
+      function renderSnapshot(devices) {
+        var body = document.getElementById('deviceSnapshotBody');
+        if (!devices.length) {
+          body.innerHTML = '<tr><td colspan="6" class="text-muted-foreground">暂无设备</td></tr>';
+          return;
+        }
+        body.innerHTML = devices.map(function (d) {
+          var en = !!pick(d, 'enabled', 'Enabled');
+          var status = en
+            ? '<span class="plca-badge plca-badge-emerald">已启用</span>'
+            : '<span class="plca-badge plca-badge-rose">未启用</span>';
+          var addr = (pick(d, 'host', 'Host') || '-') + ':' + (pick(d, 'port', 'Port') != null ? pick(d, 'port', 'Port') : '-');
+          var unit = pick(d, 'unitId', 'UnitId');
+          var poll = pick(d, 'pollIntervalMs', 'PollIntervalMs');
+          return '<tr>' +
+            '<td class="font-medium">' + escapeHtml(pick(d, 'id', 'Id')) + '</td>' +
+            '<td><span class="plca-badge plca-badge-sky">' + escapeHtml(pick(d, 'protocol', 'Protocol') || '-') + '</span></td>' +
+            '<td class="font-mono text-muted-foreground">' + escapeHtml(addr) + '</td>' +
+            '<td class="font-mono text-muted-foreground">' + (unit != null ? unit : '-') + '</td>' +
+            '<td>' + (poll != null ? poll : '-') + '</td>' +
+            '<td>' + status + '</td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      function buildCharts() {
+        var muted = cssVar('--plca-muted-foreground');
+        var border = cssVar('--plca-border');
+        var c1 = cssVar('--plca-chart-1');
+        var c2 = cssVar('--plca-chart-2');
+        var c3 = cssVar('--plca-chart-3');
+        var c4 = cssVar('--plca-chart-4');
+
         statusChart = new Chart(document.getElementById('statusChart'), {
           type: 'doughnut',
-          data: {
-            labels: ['在线', '离线', '维护中'],
-            datasets: [{
-              data: [1208, 28, 12],
-              backgroundColor: [c2, c3, c4],
-              borderColor: cssVar('--plca-card'),
-              borderWidth: 2
-            }]
-          },
+          data: { labels: ['已启用', '未启用'], datasets: [{ data: [0, 0], backgroundColor: [c2, c3], borderColor: cssVar('--plca-card'), borderWidth: 2 }] },
+          options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { color: muted } } } }
+        });
+
+        protocolChart = new Chart(document.getElementById('protocolChart'), {
+          type: 'bar',
+          data: { labels: [], datasets: [{ label: '设备数', data: [], backgroundColor: c1 + 'cc', borderColor: c1, borderWidth: 1, borderRadius: 4 }] },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%',
-            plugins: {
-              legend: { position: 'bottom', labels: { color: muted } }
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: border, drawBorder: false }, ticks: { color: muted } },
+              y: { beginAtZero: true, grid: { color: border, drawBorder: false }, ticks: { color: muted, precision: 0, stepSize: 1 } }
             }
           }
         });
 
-        // CPU / 内存使用率（折线图）
-        resourceChart = new Chart(document.getElementById('resourceChart'), {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'CPU 使用率 (%)',
-                data: [32, 35, 31, 38, 42, 45, 41, 39, 46, 43, 40, 37],
-                borderColor: c1,
-                backgroundColor: c1 + '22',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 2
-              },
-              {
-                label: '内存使用率 (%)',
-                data: [58, 59, 57, 60, 62, 64, 63, 61, 65, 62, 60, 59],
-                borderColor: c4,
-                backgroundColor: c4 + '22',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 2
-              }
-            ]
-          },
+        pollChart = new Chart(document.getElementById('pollChart'), {
+          type: 'bar',
+          data: { labels: [], datasets: [{ label: '采集间隔(ms)', data: [], backgroundColor: c4 + 'cc', borderColor: c4, borderWidth: 1, borderRadius: 4 }] },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: {
-              legend: { labels: { color: muted } }
-            },
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
             scales: {
-              x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: muted } },
-              y: {
-                min: 0,
-                max: 100,
-                grid: { color: gridColor, drawBorder: false },
-                ticks: { color: muted }
-              }
+              x: { grid: { color: border, drawBorder: false }, ticks: { color: muted } },
+              y: { beginAtZero: true, grid: { color: border, drawBorder: false }, ticks: { color: muted } }
             }
           }
         });
       }
 
-      function updateCharts() {
-        if (!trendChart) return;
-        const muted = cssVar('--plca-muted-foreground');
-        const border = cssVar('--plca-border');
-        [trendChart, statusChart, resourceChart].forEach(chart => {
+      function updateChartsTheme() {
+        var muted = cssVar('--plca-muted-foreground');
+        var border = cssVar('--plca-border');
+        [statusChart, protocolChart, pollChart].forEach(function (chart) {
           if (!chart) return;
           if (chart.options.plugins.legend) chart.options.plugins.legend.labels.color = muted;
-          Object.values(chart.options.scales || {}).forEach(scale => {
+          Object.keys(chart.options.scales || {}).forEach(function (k) {
+            var scale = chart.options.scales[k];
             if (scale.grid) scale.grid.color = border;
             if (scale.ticks) scale.ticks.color = muted;
           });
@@ -1216,22 +1119,47 @@
         });
       }
 
-      initCharts();
+      // applyTheme() 仍会调用 updateCharts()，此处兼容
+      function updateCharts() { updateChartsTheme(); }
 
-      // 表格排序
-      window.sortTable = function (colIndex) {
-        const table = document.getElementById('eventsTable');
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const asc = !table.dataset.sortAsc || table.dataset.sortAsc === 'false';
-        table.dataset.sortAsc = asc;
-        rows.sort((a, b) => {
-          const aText = a.cells[colIndex].innerText.trim();
-          const bText = b.cells[colIndex].innerText.trim();
-          return asc ? aText.localeCompare(bText, 'zh-CN') : bText.localeCompare(aText, 'zh-CN');
-        });
-        rows.forEach(row => tbody.appendChild(row));
-      };
+      async function loadCockpit() {
+        try {
+          var results = await Promise.all([
+            apiGet('/api/gateway/devices'),
+            apiGet('/api/gateway/protocols')
+          ]);
+          var devices = results[0];
+          var protocols = results[1];
+          renderKpis(devices, protocols);
+          renderSnapshot(devices);
+
+          var enabled = devices.filter(function (d) { return !!pick(d, 'enabled', 'Enabled'); }).length;
+          statusChart.data.datasets[0].data = [enabled, devices.length - enabled];
+          statusChart.update();
+
+          var byProto = {};
+          devices.forEach(function (d) {
+            var k = pick(d, 'protocol', 'Protocol') || 'unknown';
+            byProto[k] = (byProto[k] || 0) + 1;
+          });
+          protocolChart.data.labels = Object.keys(byProto);
+          protocolChart.data.datasets[0].data = Object.keys(byProto).map(function (k) { return byProto[k]; });
+          protocolChart.update();
+
+          pollChart.data.labels = devices.map(function (d) { return pick(d, 'id', 'Id'); });
+          pollChart.data.datasets[0].data = devices.map(function (d) { return pick(d, 'pollIntervalMs', 'PollIntervalMs') || 0; });
+          pollChart.update();
+        } catch (err) {
+          console.error('[cockpit] 加载真实数据失败:', err);
+        }
+      }
+
+      buildCharts();
+      loadCockpit();
+      setInterval(loadCockpit, 30000);
+
+      var refreshBtn = document.getElementById('refreshDevices');
+      if (refreshBtn) refreshBtn.addEventListener('click', loadCockpit);
     })();
   </script>
 </body>

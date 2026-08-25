@@ -9,8 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\PlcAiot.Shared\PlcAiot.Shared.csproj" />
     <ProjectReference Include="..\PlcAiot.Web.Client\PlcAiot.Web.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0-preview.4.25258.110" />
-    <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.11" />
+    <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
   </ItemGroup>
 
   <Target Name="CopyPages" BeforeTargets="Build">

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlcAiot.Shared\PlcAiot.Shared.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-preview.4.25258.110" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
   </ItemGroup>
 
 </Project>

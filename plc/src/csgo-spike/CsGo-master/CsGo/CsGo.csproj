@@ -16,7 +16,7 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.11" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Go\**\*.cs" />

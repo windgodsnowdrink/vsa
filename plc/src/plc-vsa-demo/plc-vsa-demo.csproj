@@ -14,10 +14,10 @@
 
   <ItemGroup>
     <!-- 生产级依赖：对应 8 项需求（使用实际存在的版本号，restore 会自动取兼容版本） -->
-    <PackageReference Include="Disruptor"                            Version="6.0.1" />
-    <PackageReference Include="McMaster.NETCore.Plugins"             Version="1.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading"    Version="18.7.23" />
-    <PackageReference Include="StreamJsonRpc"                        Version="2.21.69" />
+    <PackageReference Include="Disruptor" Version="6.0.1" />
+    <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="18.7.23" />
+    <PackageReference Include="StreamJsonRpc" Version="2.25.29" />
   </ItemGroup>
 
   <ItemGroup>
