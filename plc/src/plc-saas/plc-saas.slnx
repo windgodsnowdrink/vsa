@@ -1,57 +1,78 @@
 <Solution>
 
-  <!-- ===== 核心平台 ===== -->
+  <!-- ============================================================
+       PlcVsa · 微单体（VSA · net11 + minimal）
+       ============================================================ -->
+  <Folder Name="/PlcVsa/">
+    <Project Path="../PlcVsa/PlcVsa.Contracts/PlcVsa.Contracts.csproj" />
+    <Project Path="../PlcVsa/PlcVsa.Frontend/PlcVsa.Frontend.csproj" />
+    <Project Path="../PlcVsa/PlcVsa.Server/PlcVsa.Server.csproj" />
+    <Project Path="../PlcVsa/PlcVsa.Mobile/PlcVsa.Mobile.csproj" />
+  </Folder>
+
+  <!-- ============================================================
+       当前激活入口（向后兼容）
+       ============================================================ -->
   <Project Path="plc-saas.csproj" />
   <Project Path="../plc-vsa-demo/plc-vsa-demo.csproj" />
   <Project Path="../Plc.Plugins.Contracts/Plc.Plugins.Contracts.csproj" />
   <Project Path="../plc-host/plc-host.csproj" />
 
-  <!-- ===== PlcAiot 微服务 ===== -->
-  <Project Path="../PlcAiot.Abstractions/PlcAiot.Abstractions.csproj" />
-  <Project Path="../PlcAiot.Devices/PlcAiot.Devices.csproj" />
-  <Project Path="../PlcAiot.Faults/PlcAiot.Faults.csproj" />
-  <Project Path="../PlcAiot.Faults.Persistent/PlcAiot.Faults.Persistent.csproj" />
-  <Project Path="../PlcAiot.Supervisor/PlcAiot.Supervisor.csproj" />
-  <Project Path="../PlcAiot.Shared/PlcAiot.Shared.csproj" />
-  <Project Path="../PlcAiot.Web/PlcAiot.Web.csproj" />
-  <Project Path="../PlcAiot.WebApi/PlcAiot.WebApi.csproj" />
-  <Project Path="../PlcAiot.Web.Client/PlcAiot.Web.Client.csproj" />
-  <Project Path="../PlcAiot.Mobile/PlcAiot.Mobile.csproj" />
-  <Project Path="../PlcAiot.Desktop/PlcAiot.Desktop.csproj" />
-  <Project Path="../PlcAiot.Stability/DemoHost/DemoHost.csproj" />
+  <!-- ============================================================
+       _legacy · 已由 PlcVsa.* 微单体合并，默认不参与 Build
+       （保留在 solution 中便于源码审查与 diff，不影响 CI）
+       ============================================================ -->
+  <Folder Name="/_legacy/" Build="False">
+    <Folder Name="/_legacy/PlcAiot/" Build="False">
+      <Project Path="../PlcAiot.Abstractions/PlcAiot.Abstractions.csproj" Build="False" />
+      <Project Path="../PlcAiot.Devices/PlcAiot.Devices.csproj" Build="False" />
+      <Project Path="../PlcAiot.Faults/PlcAiot.Faults.csproj" Build="False" />
+      <Project Path="../PlcAiot.Faults.Persistent/PlcAiot.Faults.Persistent.csproj" Build="False" />
+      <Project Path="../PlcAiot.Supervisor/PlcAiot.Supervisor.csproj" Build="False" />
+      <Project Path="../PlcAiot.Shared/PlcAiot.Shared.csproj" Build="False" />
+      <Project Path="../PlcAiot.Web/PlcAiot.Web.csproj" Build="False" />
+      <Project Path="../PlcAiot.WebApi/PlcAiot.WebApi.csproj" Build="False" />
+      <Project Path="../PlcAiot.Web.Client/PlcAiot.Web.Client.csproj" Build="False" />
+      <Project Path="../PlcAiot.Mobile/PlcAiot.Mobile.csproj" Build="False" />
+      <Project Path="../PlcAiot.Desktop/PlcAiot.Desktop.csproj" Build="False" />
+      <Project Path="../PlcAiot.Stability/DemoHost/DemoHost.csproj" Build="False" />
+    </Folder>
 
-  <!-- ===== plc-host 插件 ===== -->
-  <Project Path="../plc-host/plugins/BacnetDevicePlugin/BacnetDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/DemoDevicePlugin/DemoDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/FatekDevicePlugin/FatekDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/FujiDevicePlugin/FujiDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/KeyenceDevicePlugin/KeyenceDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/LoRaDevicePlugin/LoRaDevicePlugin.csproj" />
-  <Project Path="../plc-host/plugins/MelsecDevicePlugin/MelsecDevicePlugin.csproj" />
+    <Folder Name="/_legacy/plc-host-plugins/" Build="False">
+      <Project Path="../plc-host/plugins/BacnetDevicePlugin/BacnetDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/DemoDevicePlugin/DemoDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/FatekDevicePlugin/FatekDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/FujiDevicePlugin/FujiDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/KeyenceDevicePlugin/KeyenceDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/LoRaDevicePlugin/LoRaDevicePlugin.csproj" Build="False" />
+      <Project Path="../plc-host/plugins/MelsecDevicePlugin/MelsecDevicePlugin.csproj" Build="False" />
+    </Folder>
 
-  <!-- ===== 测试/验证 ===== -->
-  <Project Path="../plc-saas.verify/plc-saas.verify.csproj" />
-  <Project Path="../../tests/DeviceProtocols.Verify/DeviceProtocols.Verify.csproj" />
-
-  <!-- ===== csgo-spike (src 转换版) ===== -->
-  <Folder Name="/csgo-src/">
-    <Project Path="../csgo-spike/src/CsGo/CsGo.csproj" />
-    <Project Path="../csgo-spike/src/FormTest/FormTest.csproj" />
-    <Project Path="../csgo-spike/src/GoTest/GoTest.csproj" />
-    <Project Path="../csgo-spike/src/WorkerFlow/WorkerFlow.csproj" />
+    <Folder Name="/_legacy/tests/" Build="False">
+      <Project Path="../plc-saas.verify/plc-saas.verify.csproj" Build="False" />
+      <Project Path="../../tests/DeviceProtocols.Verify/DeviceProtocols.Verify.csproj" Build="False" />
+    </Folder>
   </Folder>
 
-  <!-- ===== csgo-spike (CsGo-master 原始版 + CsGoSpike) ===== -->
-  <Folder Name="/csgo-master/">
-    <Project Path="../csgo-spike/CsGo-master/CsGo/CsGo.csproj" />
-    <Project Path="../csgo-spike/CsGo-master/FormTest/FormTest.csproj" />
-    <Project Path="../csgo-spike/CsGo-master/GoTest/GoTest.csproj" />
-    <Project Path="../csgo-spike/CsGo-master/WorkerFlow/WorkerFlow.csproj" />
-    <Project Path="../csgo-spike/CsGoSpike/CsGoSpike.csproj" />
+  <!-- ============================================================
+       _spikes · 实验仓库（csgo-spike / dapr-spike / Feature）
+       ============================================================ -->
+  <Folder Name="/_spikes/" Build="False">
+    <Folder Name="/_spikes/csgo-src/" Build="False">
+      <Project Path="../csgo-spike/src/CsGo/CsGo.csproj" Build="False" />
+      <Project Path="../csgo-spike/src/FormTest/FormTest.csproj" Build="False" />
+      <Project Path="../csgo-spike/src/GoTest/GoTest.csproj" Build="False" />
+      <Project Path="../csgo-spike/src/WorkerFlow/WorkerFlow.csproj" Build="False" />
+    </Folder>
+    <Folder Name="/_spikes/csgo-master/" Build="False">
+      <Project Path="../csgo-spike/CsGo-master/CsGo/CsGo.csproj" Build="False" />
+      <Project Path="../csgo-spike/CsGo-master/FormTest/FormTest.csproj" Build="False" />
+      <Project Path="../csgo-spike/CsGo-master/GoTest/GoTest.csproj" Build="False" />
+      <Project Path="../csgo-spike/CsGo-master/WorkerFlow/WorkerFlow.csproj" Build="False" />
+      <Project Path="../csgo-spike/CsGoSpike/CsGoSpike.csproj" Build="False" />
+    </Folder>
+    <Project Path="../dapr-spike/dapr-spike.csproj" Build="False" />
+    <Project Path="../../Feature.csproj" Build="False" />
   </Folder>
-
-  <!-- ===== 其他 spike ===== -->
-  <Project Path="../dapr-spike/dapr-spike.csproj" />
-  <Project Path="../../Feature.csproj" />
 
 </Solution>

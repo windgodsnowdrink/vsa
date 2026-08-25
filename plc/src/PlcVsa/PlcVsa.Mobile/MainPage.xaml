@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:fe="clr-namespace:PlcVsa.Frontend.Components;assembly=PlcVsa.Frontend"
+             x:Class="PlcVsa.Mobile.MainPage"
+             BackgroundColor="{AppThemeBinding Light=#f8fafc, Dark=#0f172a}">
+
+    <BlazorWebView HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <!-- 直接引用 Frontend 的 Routes（含 Router + Layout）。 -->
+            <RootComponent Selector="#app" ComponentType="{x:Type fe:Routes}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
+
+</ContentPage>
