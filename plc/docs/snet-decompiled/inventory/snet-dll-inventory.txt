@@ -1,0 +1,64 @@
+=== snet DLL inventory ===
+Root   : E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet
+Packages: 54   Selected DLLs: 56   All DLLs: 109
+
+PLC-CommunTools-master         unknown                27KB  refs=-1   INPOUT32.DLL
+PLC-CommunTools-master         unknown            2567.5KB  refs=-1   HslCommunication.dll
+PLC-CommunTools-master         unknown            1478.5KB  refs=-1   Taurus.CSSkinUI.WF.dll
+snet.allenbradley              net10.0                84KB  refs=-1   Snet.AllenBradley.dll
+snet.beckhoff                  net10.0                49KB  refs=-1   Snet.Beckhoff.dll
+snet.cimon                     net10.0              46.5KB  refs=-1   Snet.Cimon.dll
+snet.core                      net10.0             646.5KB  refs=-1   Snet.Core.dll
+snet.db                        net10.0            2686.5KB  refs=-1   Snet.DB.dll
+snet.delta                     net10.0              74.5KB  refs=-1   Snet.Delta.dll
+snet.driver                    net10.0            2555.5KB  refs=-1   Snet.Driver.dll
+snet.fanuc                     net10.0              46.5KB  refs=-1   Snet.Fanuc.dll
+snet.fatek                     net10.0              54.5KB  refs=-1   Snet.Fatek.dll
+snet.freedom                   net10.0                61KB  refs=-1   Snet.Freedom.dll
+snet.fuji                      net10.0                69KB  refs=-1   Snet.Fuji.dll
+snet.ge                        net10.0                47KB  refs=-1   Snet.GE.dll
+snet.inovance                  net10.0                85KB  refs=-1   Snet.Inovance.dll
+snet.invt                      net10.0              56.5KB  refs=-1   Snet.Invt.dll
+snet.kafka                     net10.0                28KB  refs=-1   Snet.Kafka.dll
+snet.keyence                   net10.0                76KB  refs=-1   Snet.Keyence.dll
+snet.kossi                     net10.0              46.5KB  refs=-1   Snet.Kossi.dll
+snet.log                       net10.0                22KB  refs=-1   Snet.Log.dll
+snet.lsis                      net10.0              68.5KB  refs=-1   Snet.LSis.dll
+snet.megmeet                   net10.0                63KB  refs=-1   Snet.MegMeet.dll
+snet.mitsubishi                net10.0             139.5KB  refs=-1   Snet.Mitsubishi.dll
+snet.modbus                    net10.0                84KB  refs=-1   Snet.Modbus.dll
+snet.model                     net10.0              50.5KB  refs=-1   Snet.Model.dll
+snet.mqtt                      net10.0                56KB  refs=-1   Snet.Mqtt.dll
+snet.netmq                     net10.0                19KB  refs=-1   Snet.NetMQ.dll
+snet.netty                     net10.0                41KB  refs=-1   Snet.Netty.dll
+snet.omron                     net10.0              97.5KB  refs=-1   Snet.Omron.dll
+snet.opc                       net10.0               714KB  refs=-1   Snet.Opc.dll
+snet.orientalmotor             net10.0              47.5KB  refs=-1   Snet.OrientalMotor.dll
+snet.panasonic                 net10.0                62KB  refs=-1   Snet.Panasonic.dll
+snet.performancetesting        net10.0              29.5KB  refs=-1   Snet.PerformanceTesting.dll
+snet.pqdif                     net10.0             112.5KB  refs=-1   Snet.PQDIF.dll
+snet.rabbitmq                  net10.0                30KB  refs=-1   Snet.RabbitMQ.dll
+snet.redis                     net10.0              57.5KB  refs=-1   Snet.Redis.dll
+snet.rkc                       net10.0                54KB  refs=-1   Snet.RKC.dll
+snet.rocketmq                  net10.0              21.5KB  refs=-1   Snet.RocketMQ.dll
+snet.rpc                       net10.0              35.5KB  refs=-1   Snet.Rpc.dll
+snet.siemens                   net10.0              79.5KB  refs=-1   Snet.Siemens.dll
+snet.sim                       net10.0                23KB  refs=-1   Snet.Sim.dll
+snet.tep                       net10.0              90.5KB  refs=-1   Snet.TEP.dll
+snet.toyota                    net10.0                47KB  refs=-1   Snet.Toyota.dll
+snet.turck                     net10.0              46.5KB  refs=-1   Snet.Turck.dll
+snet.utility                   net10.0               192KB  refs=-1   Snet.Utility.dll
+snet.vigor                     net10.0              54.5KB  refs=-1   Snet.Vigor.dll
+snet.wecon                     net10.0              56.5KB  refs=-1   Snet.WeCon.dll
+snet.windows.controls          net10.0-windows7.0   1150.5KB  refs=-1   Snet.Windows.Controls.dll
+snet.windows.core              net10.0-windows7.0      520KB  refs=-1   Snet.Windows.Core.dll
+snet.xinje                     net10.0              69.5KB  refs=-1   Snet.XinJE.dll
+snet.yamatake                  net10.0                55KB  refs=-1   Snet.Yamatake.dll
+snet.yaskawa                   net10.0                55KB  refs=-1   Snet.Yaskawa.dll
+snet.yokogawa                  net10.0              47.5KB  refs=-1   Snet.Yokogawa.dll
+snet.yolo.server               net10.0              43.5KB  refs=-1   Snet.Yolo.Server.dll
+snet.yudian                    net10.0                46KB  refs=-1   Snet.YuDian.dll
+
+CSV : E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet-decompiled\inventory\snet-dll-inventory.csv
+REF : E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet-decompiled\inventory\snet-assembly-refs.csv
+

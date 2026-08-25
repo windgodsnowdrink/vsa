@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Invt</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Invt.InvtData">
+            <summary>
+            英威腾数据
+            </summary>
+        </member>
+        <member name="T:Snet.Invt.InvtData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.StationCheckMatch">
+            <summary>
+            站号检查
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.AddressStartWithZero">
+            <summary>
+            起始地址是否从0开始
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.IsCheckMessageId">
+            <summary>
+            检查消息ID是否一致
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.IsStringReverse">
+            <summary>
+            字节反转
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.Crc16CheckEnable">
+            <summary>
+            CRC16校验检查
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.IsClearCacheBeforeRead">
+            <summary>
+            清空缓冲数据
+            </summary>
+        </member>
+        <member name="P:Snet.Invt.InvtData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Invt.InvtData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Invt.InvtData.ProtocolType.ModbusTcpNet">
+            <summary>
+            英威腾PLC Modbus-Tcp协议的客户端通讯类，方便的和服务器进行数据交互，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Invt.InvtData.ProtocolType.ModbusRtu">
+            <summary>
+            英威腾PLC Modbus-Rtu通讯协议的类库，多项式码0xA001，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="T:Snet.Invt.InvtOperate">
+            <summary>
+            英威腾通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.#ctor(Snet.Invt.InvtData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Invt.InvtOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Invt.InvtOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Invt.InvtOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Invt.InvtOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Invt.InvtOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Invt.InvtOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Invt.InvtOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

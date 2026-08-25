@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Kossi</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Kossi.KossiData">
+            <summary>
+            科伺数据
+            </summary>
+        </member>
+        <member name="T:Snet.Kossi.KossiData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.Slot">
+            <summary>
+            插槽
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Kossi.KossiData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Kossi.KossiData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Kossi.KossiData.ProtocolType.OmronCipNet">
+            <summary>
+            科伺PLC，实际使用欧姆龙的CIP协议来通信，但是必须设置属性 ContextIdAutoIncrement=false, 才能通信
+            </summary>
+        </member>
+        <member name="T:Snet.Kossi.KossiOperate">
+            <summary>
+            科伺通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.#ctor(Snet.Kossi.KossiData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Kossi.KossiOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Kossi.KossiOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Kossi.KossiOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Kossi.KossiOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Kossi.KossiOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Kossi.KossiOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Kossi.KossiOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

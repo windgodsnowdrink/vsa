@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Snet.DB</id>
+    <version>26.235.2</version>
+    <authors>Shun</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://snet.cn/</projectUrl>
+    <description>采集协议：DB（针对于关系数据库数据采集 -  SqlServer、MySql、Oracle、SQLite）</description>
+    <repository type="git" commit="6bec27efc0f2c65dc751ab34757e37960f2b43fe" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Dapper" version="2.1.79" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Data.SqlClient" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Data.Sqlite" version="10.0.11" exclude="Build,Analyzers" />
+        <dependency id="MySqlConnector" version="2.6.2" exclude="Build,Analyzers" />
+        <dependency id="Oracle.ManagedDataAccess.Core" version="23.26.300" exclude="Build,Analyzers" />
+        <dependency id="SQLitePCLRaw.bundle_e_sqlite3" version="3.0.5" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Dapper" version="2.1.79" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Data.SqlClient" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Data.Sqlite" version="10.0.11" exclude="Build,Analyzers" />
+        <dependency id="MySqlConnector" version="2.6.2" exclude="Build,Analyzers" />
+        <dependency id="Oracle.ManagedDataAccess.Core" version="23.26.300" exclude="Build,Analyzers" />
+        <dependency id="SQLitePCLRaw.bundle_e_sqlite3" version="3.0.5" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

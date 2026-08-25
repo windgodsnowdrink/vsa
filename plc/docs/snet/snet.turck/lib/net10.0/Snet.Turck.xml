@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Turck</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Turck.TurckData">
+            <summary>
+            图尔克数据
+            </summary>
+        </member>
+        <member name="T:Snet.Turck.TurckData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Turck.TurckData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Turck.TurckData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Turck.TurckData.ProtocolType.ReaderNet">
+            <summary>
+            Reader协议
+            </summary>
+        </member>
+        <member name="T:Snet.Turck.TurckOperate">
+            <summary>
+            图尔克通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.#ctor(Snet.Turck.TurckData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Turck.TurckOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Turck.TurckOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Turck.TurckOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Turck.TurckOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Turck.TurckOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Turck.TurckOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Turck.TurckOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

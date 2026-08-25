@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Yaskawa</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Yaskawa.YaskawaData">
+            <summary>
+            安川数据
+            </summary>
+        </member>
+        <member name="T:Snet.Yaskawa.YaskawaData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.CpuFrom">
+            <summary>
+            发送源CPU编号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.CpuTo">
+            <summary>
+            发送目标CPU编号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Yaskawa.YaskawaData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaData.ProtocolType.MemobusTcpNet">
+            <summary>
+            安川PLC 扩展的Memobus协议信息，除了支持普通的线圈，输入继电器，保持寄存器，输入寄存器的读写操作，还支持扩展的保持寄存器和输入寄存器读写操作。
+            </summary>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaData.ProtocolType.MemobusUdpNet">
+            <summary>
+            安川PLC 扩展的Memobus协议信息，除了支持普通的线圈，输入继电器，保持寄存器，输入寄存器的读写操作，还支持扩展的保持寄存器和输入寄存器读写操作。
+            </summary>
+        </member>
+        <member name="T:Snet.Yaskawa.YaskawaOperate">
+            <summary>
+            安川通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.#ctor(Snet.Yaskawa.YaskawaData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Yaskawa.YaskawaOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Yaskawa.YaskawaOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Yaskawa.YaskawaOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

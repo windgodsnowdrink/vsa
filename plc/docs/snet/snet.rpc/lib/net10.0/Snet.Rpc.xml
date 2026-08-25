@@ -1,0 +1,713 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Rpc</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Rpc.client.RpcClient">
+            <summary>
+            RPC 客户端<br/>
+            <br/>
+            功能：<br/>
+            - 基于 DotNetty 实现高性能 TCP RPC 通信<br/>
+            - 支持接口代理透明调用远程服务<br/>
+            - 支持身份认证和接口注册<br/>
+            - 支持同步等待异步响应
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.#ctor(Snet.Rpc.data.Client.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据（包含服务器地址、端口、账号密码等）</param>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClient.client">
+            <summary>
+            DotNetty Bootstrap 客户端实例
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClient.ClientGroup">
+            <summary>
+            客户端事件循环组（管理 I/O 线程）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClient.Channel">
+            <summary>
+            与服务端的通信通道
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.client.RpcClient.creates">
+            <summary>
+            已创建的接口代理缓存（按接口名索引）
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.client.RpcClient.iRegister">
+            <summary>
+            接口注册表（接口名称 -> 实现类型）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClient.Await">
+            <summary>
+            异步等待管理器（管理请求/响应的同步等待）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClient.AuthenticationTag">
+            <summary>
+            身份认证标识（用于匹配认证响应）
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.OpenAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.CloseAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.Create``1">
+            <summary>
+            创建接口代理对象<br/>
+            通过动态代理透明调用远程服务方法，自动缓存已创建的代理
+            </summary>
+            <typeparam name="T">目标接口类型</typeparam>
+            <returns>接口代理实例</returns>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.RegisterAsync``2(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)">
+            <summary>
+            处理服务端响应数据<br/>
+            根据消息类型分发：请求、响应、认证、消息
+            </summary>
+            <param name="data">接收到的字节缓冲区</param>
+            <param name="channel">通信通道</param>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.Exception(System.Exception)">
+            <summary>
+            处理异常信息，招出事件并释放资源
+            </summary>
+            <param name="ex">异常对象</param>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClient.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Rpc.client.RpcClientHandler">
+            <summary>
+            RPC 客户端通道处理器，继承自 <see cref="T:DotNetty.Transport.Channels.ChannelHandlerAdapter"/>，负责处理 DotNetty 通道的读取、异常等事件。
+            <para>接收到数据时调用 <see cref="M:Snet.Rpc.client.RpcClient.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)"/> 处理响应，异常时调用 <see cref="M:Snet.Rpc.client.RpcClient.Exception(System.Exception)"/> 通知上层。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.client.RpcClientHandler.rpcClient">
+            <summary>
+            关联的 RPC 客户端实例
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClientHandler.#ctor(Snet.Rpc.client.RpcClient)">
+            <summary>
+            初始化 RPC 客户端通道处理器。
+            </summary>
+            <param name="rpcClient">关联的 RPC 客户端实例</param>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClientHandler.ChannelRead(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            通道读取事件，将接收到的字节缓冲区转发给 <see cref="M:Snet.Rpc.client.RpcClient.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)"/> 进行处理。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="message">接收到的消息（<see cref="T:DotNetty.Buffers.IByteBuffer"/>）</param>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClientHandler.ChannelReadComplete(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            通道读取完成事件，刷新输出缓冲区。
+            </summary>
+            <param name="context">通道上下文</param>
+        </member>
+        <member name="M:Snet.Rpc.client.RpcClientHandler.ExceptionCaught(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            通道异常捕获事件，通知 RPC 客户端并关闭通道。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="exception">捕获到的异常</param>
+        </member>
+        <member name="T:Snet.Rpc.data.Authentication">
+            <summary>
+            RPC 身份认证数据模型，客户端连接时发送给服务端进行身份验证。
+            <para>包含用户名、密码、唯一标识 (ISn) 和可提供的接口列表 (INs)。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Authentication.TAG">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Authentication.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Authentication.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Authentication.ISn">
+            <summary>
+            唯一标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Authentication.INs">
+            <summary>
+            接口名称集合
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.AwaitData">
+            <summary>
+            RPC 等待传递数据模型，封装 <see cref="T:System.Threading.AutoResetEvent"/> 同步信号和响应结果字符串，用于请求-响应的同步等待机制。
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.AwaitData.WaitHandler">
+            <summary>
+            等待处理
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.AwaitData.resultData">
+            <summary>
+            返回的数据
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Client">
+            <summary>
+            RPC 客户端数据配置类
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Client.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.TimeOut">
+            <summary>
+            超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.ISn">
+            <summary>
+            唯一标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Client.Basics.INs">
+            <summary>
+            接口名称集合
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Details">
+            <summary>
+            RPC 接口详情数据模型，用于身份认证时描述客户端可提供的接口信息。
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Details.INames">
+            <summary>
+            接口名称
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Message">
+            <summary>
+            RPC 消息数据模型，用于在客户端与服务端之间传递通知性消息（如连接状态变更、认证结果等）。
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Message.TAG">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Message.Info">
+            <summary>
+            信息
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Message.State">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Message.Time">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.ProxyData">
+            <summary>
+            RPC 动态代理数据容器，包含代理运行所需的基础数据（通道、接口名称、类型信息等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.ProxyData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.ProxyData.Basics.Main">
+            <summary>
+            控制端对象
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.ProxyData.Basics.channel">
+            <summary>
+            通道
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.ProxyData.Basics.iName">
+            <summary>
+            接口名称
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.ProxyData.Basics.type">
+            <summary>
+            结构类型
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.ProxyData.Basics.Await">
+            <summary>
+            等待任务
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Request">
+            <summary>
+            RPC 请求数据模型，封装远程方法调用的接口名称、方法名称和参数列表。
+            <para>由客户端动态代理 <see cref="T:Snet.Rpc.unility.Proxy"/> 构建，通过 DotNetty 通道发送到远端。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Request.TAG">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Request.IName">
+            <summary>
+            接口名称
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Request.MName">
+            <summary>
+            方法名称
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Request.Params">
+            <summary>
+            参数
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Response">
+            <summary>
+            RPC 响应数据模型，封装远程方法调用的返回结果（状态、信息、数据及时间戳）。
+            <para>由远端处理请求后构建，通过 DotNetty 通道返回给调用方。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Response.TAG">
+            <summary>
+            标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Response.info">
+            <summary>
+            info
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Response.status">
+            <summary>
+            成功还是失败
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Response.data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Response.time">
+            <summary>
+            发送端时间
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Service">
+            <summary>
+            RPC 服务端数据配置类
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Service.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Basics.TimeOut">
+            <summary>
+            超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Basics.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Basics.Infos">
+            <summary>
+            信息
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Service.Info">
+            <summary>
+            用户信息
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Info.ISn">
+            <summary>
+            唯一标识
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Service.Info.INs">
+            <summary>
+            接口名称集合
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Type">
+            <summary>
+            RPC 消息类型基类，所有 RPC 数据模型（请求、响应、认证、消息）均包含 <see cref="T:Snet.Rpc.data.Types"/> TAG 标识，用于反序列化时区分消息类型。
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.data.Type.TAG">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.data.Types">
+            <summary>
+            类型枚举
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Types.request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Types.response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Types.authentication">
+            <summary>
+            身份认证
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.data.Types.message">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="T:Snet.Rpc.interface.IRpc">
+            <summary>
+            RPC 通信接口<br/>
+            定义客户端和服务端的公共操作契约
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.RegisterAsync``2(System.Threading.CancellationToken)">
+            <summary>
+            注册接口与实现类的映射关系
+            </summary>
+            <typeparam name="I">接口类型</typeparam>
+            <typeparam name="O">实现类型</typeparam>
+            <param name="token">取消通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.OpenAsync(System.Threading.CancellationToken)">
+            <summary>
+            打开 RPC 连接
+            </summary>
+            <param name="token">取消通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.CloseAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            关闭 RPC 连接
+            </summary>
+            <param name="hardClose">是否强制关闭</param>
+            <param name="token">取消通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.Create``1">
+            <summary>
+            创建接口代理对象，用于透明调用远程服务方法
+            </summary>
+            <typeparam name="T">目标接口类型</typeparam>
+            <returns>接口代理实例</returns>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)">
+            <summary>
+            处理接收到的数据响应
+            </summary>
+            <param name="data">字节缓冲区数据</param>
+            <param name="channel">通信通道</param>
+        </member>
+        <member name="M:Snet.Rpc.interface.IRpc.Exception(System.Exception)">
+            <summary>
+            处理异常信息
+            </summary>
+            <param name="ex">异常对象</param>
+        </member>
+        <member name="T:Snet.Rpc.service.RpcService">
+            <summary>
+            RPC 服务端<br/>
+            <br/>
+            功能：<br/>
+            - 基于 DotNetty 实现高性能 TCP RPC 服务<br/>
+            - 支持客户端身份认证（账号密码 + 唯一标识 + 接口校验）<br/>
+            - 支持接口注册、反射调用和代理创建<br/>
+            - 多客户端并发管理
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.#ctor(Snet.Rpc.data.Service.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据（包含端口、账号密码、客户端信息等）</param>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.server">
+            <summary>
+            DotNetty ServerBootstrap 服务端实例
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.ClientGroup">
+            <summary>
+            连接接受事件循环组（Boss Group）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.ClientMessageGroup">
+            <summary>
+            消息处理事件循环组（Worker Group）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.Channel">
+            <summary>
+            服务端监听通道
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.service.RpcService.iRegister">
+            <summary>
+            接口注册表（接口名称 -> 实现类型）
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.service.RpcService.creates">
+            <summary>
+            已创建的接口代理缓存（按接口名索引）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.clients">
+            <summary>
+            已认证的客户端信息（接口名称列表 -> 通道）
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.service.RpcService.Await">
+            <summary>
+            异步等待管理器（管理请求/响应的同步等待）
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.OpenAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.CloseAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.Create``1">
+            <summary>
+            创建接口代理对象<br/>
+            通过客户端认证信息检索对应通道，创建动态代理
+            </summary>
+            <typeparam name="T">目标接口类型</typeparam>
+            <returns>接口代理实例</returns>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.RegisterAsync``2(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)">
+            <summary>
+            处理客户端请求数据<br/>
+            根据消息类型分发：请求、响应、认证、消息
+            </summary>
+            <param name="data">接收到的字节缓冲区</param>
+            <param name="channel">通信通道</param>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.Exception(System.Exception)">
+            <summary>
+            处理异常信息，招出异常事件
+            </summary>
+            <param name="ex">异常对象</param>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcService.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Rpc.service.RpcServiceHandler">
+            <summary>
+            RPC 服务端通道处理器，继承自 <see cref="T:DotNetty.Transport.Channels.ChannelHandlerAdapter"/>，负责处理 DotNetty 通道的读取、异常等事件。
+            <para>接收到数据时调用 <see cref="M:Snet.Rpc.service.RpcService.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)"/> 处理请求，异常时调用 <see cref="M:Snet.Rpc.service.RpcService.Exception(System.Exception)"/> 通知上层。</para>
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcServiceHandler.#ctor(Snet.Rpc.service.RpcService)">
+            <summary>
+            初始化 RPC 服务端通道处理器。
+            </summary>
+            <param name="rPCServer">关联的 RPC 服务端实例</param>
+        </member>
+        <member name="P:Snet.Rpc.service.RpcServiceHandler.rpcService">
+            <summary>
+            关联的 RPC 服务端实例
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcServiceHandler.ChannelRead(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            通道读取事件，将接收到的字节缓冲区转发给 <see cref="M:Snet.Rpc.service.RpcService.Response(DotNetty.Buffers.IByteBuffer,DotNetty.Transport.Channels.IChannel)"/> 进行处理。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="message">接收到的消息（<see cref="T:DotNetty.Buffers.IByteBuffer"/>）</param>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcServiceHandler.ChannelReadComplete(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            通道读取完成事件，刷新输出缓冲区。
+            </summary>
+            <param name="context">通道上下文</param>
+        </member>
+        <member name="M:Snet.Rpc.service.RpcServiceHandler.ExceptionCaught(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            通道异常捕获事件，通知 RPC 服务端并关闭通道。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="exception">捕获到的异常</param>
+        </member>
+        <member name="T:Snet.Rpc.unility.Await">
+            <summary>
+            RPC 异步等待管理器，基于 <see cref="T:System.Collections.Concurrent.ConcurrentDictionary`2"/> 和 <see cref="T:System.Threading.AutoResetEvent"/> 实现请求-响应的同步等待机制。
+            <para>流程：Start(注册等待) → 发送请求 → Wait(阻塞等待) → Set(远端响应到达后唤醒)。</para>
+            </summary>
+        </member>
+        <member name="P:Snet.Rpc.unility.Await.WaitIoc">
+            <summary>
+            容器
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.unility.Await.Start(System.String)">
+            <summary>
+            注册一个新的等待标识，若该标识尚不存在则创建 <see cref="T:Snet.Rpc.data.AwaitData"/> 实例并添加到容器中。
+            </summary>
+            <param name="tag">等待标识（通常为通道 ID）</param>
+        </member>
+        <member name="M:Snet.Rpc.unility.Await.Set(System.String,System.String)">
+            <summary>
+            设置指定标识的等待结果并唤醒等待线程。
+            <para>当远端响应到达后调用此方法，将结果数据写入 <see cref="P:Snet.Rpc.data.AwaitData.resultData"/> 并通过 <see cref="!:AutoResetEvent.Set"/> 唤醒等待线程。</para>
+            </summary>
+            <param name="tag">等待标识（通常为通道 ID）</param>
+            <param name="rData">远端返回的 JSON 响应数据</param>
+            <exception cref="T:System.Exception">当指定标识不存在时抛出</exception>
+        </member>
+        <member name="M:Snet.Rpc.unility.Await.Wait(System.String)">
+            <summary>
+            阻塞等待指定标识的响应数据，等待完成后自动从容器中移除该标识。
+            <para>通过 <see cref="!:AutoResetEvent.WaitOne()"/> 阻塞当前线程，直到 <see cref="M:Snet.Rpc.unility.Await.Set(System.String,System.String)"/> 方法被调用。</para>
+            </summary>
+            <param name="tag">等待标识（通常为通道 ID）</param>
+            <returns>包含响应数据的 <see cref="T:Snet.Rpc.data.AwaitData"/> 对象</returns>
+            <exception cref="T:System.Exception">当指定标识不存在时抛出</exception>
+        </member>
+        <member name="T:Snet.Rpc.unility.Proxy">
+            <summary>
+            RPC 动态代理类，继承自 <see cref="T:System.Dynamic.DynamicObject"/>，用于拦截接口方法调用并通过 DotNetty 通道发送 RPC 请求。
+            <para>采用单例模式管理代理实例，每个 <see cref="T:Snet.Rpc.data.ProxyData.Basics"/> 对应一个代理对象。</para>
+            <para>调用流程：拦截方法调用 → 序列化为 JSON 请求 → 通过 DotNetty 通道发送 → 等待响应 → 反序列化返回值。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.unility.Proxy.Lock">
+            <summary>
+            锁
+            </summary>
+        </member>
+        <member name="F:Snet.Rpc.unility.Proxy.ThisObjList">
+            <summary>
+            自身对象集合
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.unility.Proxy.Instance(Snet.Rpc.data.ProxyData.Basics)">
+            <summary>
+            获取或创建代理实例（线程安全的双重检查锁定单例模式）。
+            <para>根据 <see cref="T:Snet.Rpc.data.ProxyData.Basics"/> 的比较结果复用已有实例，避免重复创建。</para>
+            </summary>
+            <param name="basics">代理所需的基础数据（通道、接口名称、类型等）</param>
+            <returns>匹配的代理实例</returns>
+        </member>
+        <member name="M:Snet.Rpc.unility.Proxy.#ctor(Snet.Rpc.data.ProxyData.Basics)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.Rpc.unility.Proxy.basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.unility.Proxy.TryInvokeMember(System.Dynamic.InvokeMemberBinder,System.Object[],System.Object@)">
+            <summary>
+            拦截动态方法调用，将其序列化为 RPC 请求并通过 DotNetty 通道发送到远端。
+            <para>流程：构建请求 → JSON 序列化 → 发送 → 阻塞等待响应 → 反序列化返回值。</para>
+            <para>超时或异常时通过 <see cref="M:Snet.Rpc.client.RpcClient.Exception(System.Exception)"/> 或 <see cref="M:Snet.Rpc.service.RpcService.Exception(System.Exception)"/> 回调通知。</para>
+            </summary>
+            <param name="binder">方法调用绑定器，包含方法名称等信息</param>
+            <param name="args">方法调用参数</param>
+            <param name="result">方法返回值（反序列化后的对象）</param>
+            <returns>调用成功返回 true，失败或异常返回 false</returns>
+        </member>
+        <member name="T:Snet.Rpc.unility.Tool">
+            <summary>
+            RPC 工具类，提供网络地址解析等辅助方法。
+            </summary>
+        </member>
+        <member name="M:Snet.Rpc.unility.Tool.IpHandle(System.Net.EndPoint)">
+            <summary>
+            从 <see cref="T:System.Net.EndPoint"/> 中提取 IPv4 地址和端口号。
+            <para>将 IPv6 映射格式（如 [::ffff:127.0.0.1]:8080）解析为 IPv4:Port 格式。</para>
+            </summary>
+            <param name="Ip">网络端点对象</param>
+            <returns>解析后的 IP:Port 字符串，解析失败时返回空字符串</returns>
+        </member>
+    </members>
+</doc>

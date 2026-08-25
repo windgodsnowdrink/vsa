@@ -1,0 +1,1690 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.DB</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.DB.DBData">
+            <summary>
+            数据库数据
+            </summary>
+        </member>
+        <member name="T:Snet.DB.DBData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBData.Basics.ConnectStr">
+            <summary>
+            数据库连接字符串
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBData.Basics.DBType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBData.Basics.HandlerType">
+            <summary>
+            处理类型
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBData.Basics.HandleInterval">
+            <summary>
+            处理间隔；<br/>
+            多少毫秒读取一次点位；<br/>
+            越小CPU占用越高，速度越快<br/>
+            数据库采集默认十秒采集一次
+            </summary>
+        </member>
+        <member name="T:Snet.DB.DBData.DBType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBType.SqlServer">
+            <summary>
+            一个功能强大、安全可靠的关系型数据库
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBType.MySql">
+            <summary>
+            一个流行的开源关系型数据库
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBType.Oracle">
+            <summary>
+            一个功能强大且全面的关系型数据库
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBType.SQLite">
+            <summary>
+            一个轻量级、嵌入式的关系型数据库
+            </summary>
+        </member>
+        <member name="T:Snet.DB.DBData.DBHandlerType">
+            <summary>
+            DB处理器类型
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBHandlerType.Default">
+            <summary>
+            正常的默认操作<br/>
+            增删改查等操作<br/>
+            使用 Snet.DB.sugar
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBData.DBHandlerType.Daq">
+            <summary>
+            采集<br/>
+            使用 Dapper
+            </summary>
+        </member>
+        <member name="T:Snet.DB.DBOperate">
+            <summary>
+            数据库操作
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.DB.DBOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.#ctor(Snet.DB.DBData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.DB.DBOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBOperate.connection">
+            <summary>
+            DB操作（Daq 模式短连接工厂；每次操作新建连接，连接池复用开销小，避免单连接并发共享）
+            </summary>
+        </member>
+        <member name="M:Snet.DB.DBOperate.CreateConnection">
+            <summary>
+            按数据库类型创建连接（不打开）
+            </summary>
+        </member>
+        <member name="M:Snet.DB.DBOperate.WithConnectionAsync``1(System.Func{System.Data.IDbConnection,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken)">
+            <summary>
+            执行数据库操作，自动管理连接生命周期（短连接，连接池复用）
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBOperate.connectionX">
+            <summary>
+            增删改成操作
+            </summary>
+        </member>
+        <member name="P:Snet.DB.DBOperate.IsOpen">
+            <summary>
+            是否已打开（Daq 模式状态标志）
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.DB.DBOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Analysis(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.AddressValue},Snet.Model.data.AddressDetails,Newtonsoft.Json.Linq.JArray)">
+            <summary>
+            解析数据
+            </summary>
+            <param name="Data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Execute``1(System.String,``0)">
+            <summary>
+             增删改
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入实体类型.</param>
+            <returns>int.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.ExecuteAsync``1(System.String,``0)">
+            <summary>
+             增删改
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入实体类型.</param>
+            <returns>int.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Execute``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            批量 增删改
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入泛型类.</param>
+            <returns>int.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.ExecuteAsync``1(System.String,System.Collections.Generic.List{``0})">
+            <summary>
+            批量 增删改
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入泛型类.</param>
+            <returns>int.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Execute(System.String)">
+            <summary>
+            增删改 无实体
+            </summary>
+            <param name="sql">传入sql执行语句</param>
+            <returns>返回执行状态</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.ExecuteAsync(System.String)">
+            <summary>
+            增删改 无实体
+            </summary>
+            <param name="sql">传入sql执行语句</param>
+            <returns>返回执行状态</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Query``1(System.String)">
+            <summary>
+            查询.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <returns>泛型类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryAsync``1(System.String)">
+            <summary>
+            查询.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <returns>泛型类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Query``1(System.String,``0)">
+            <summary>
+            查询指定数据.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入泛型类.</param>
+            <returns>类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryAsync``1(System.String,``0)">
+            <summary>
+            查询指定数据.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="t">传入泛型类.</param>
+            <returns>类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryList``1(System.String,``0)">
+            <summary>
+            查询多条数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sql">查询语句</param>
+            <param name="t">模型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryListAsync``1(System.String,``0)">
+            <summary>
+            查询多条数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sql">查询语句</param>
+            <param name="t">模型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryDataTable``1(System.String,``0)">
+            <summary>
+            查询数据返回datatable（Dapper 无法直接映射 DataTable，用 DataReader 手写填充）
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="sql">传入sql执行语句</param>
+            <param name="t">实体类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryDataTableAsync``1(System.String,``0)">
+            <summary>
+            查询数据返回datatable（Dapper 无法直接映射 DataTable，用 DataReader 手写填充）
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="sql">传入sql执行语句</param>
+            <param name="t">实体类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Query``1(System.String,System.Int32[])">
+            <summary>
+            查询的in操作.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="ids">参数</param>
+            <returns>泛型类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryAsync``1(System.String,System.Int32[])">
+            <summary>
+            查询的in操作.
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <param name="ids">参数</param>
+            <returns>泛型类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryMultiple``1(System.String,``0)">
+            <summary>
+            多语句操作
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryMultipleAsync``1(System.String,``0)">
+            <summary>
+            多语句操作（返回第一结果集）
+            </summary>
+            <typeparam name="T">实体类型.</typeparam>
+            <param name="sql">传入sql执行语句.</param>
+            <returns>第一结果集</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Query(System.String)">
+            <summary>
+            查询指定数据.
+            </summary>
+            <param name="sql">传入sql执行语句.</param>
+            <returns>类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryAsync(System.String)">
+            <summary>
+            查询指定数据.
+            </summary>
+            <param name="sql">传入sql执行语句.</param>
+            <returns>类.</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Create``1">
+            <summary>
+            创建表
+            </summary>
+            <typeparam name="T">
+            表对象
+            </typeparam>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.CreateAsync``1(System.Threading.CancellationToken)">
+            <summary>
+            异步创建表
+            </summary>
+            <typeparam name="T">
+            表对象
+            </typeparam>
+            <param name="token">
+            传播应取消操作的通知
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Delete``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            删除
+            </summary>
+            <typeparam name="T">对象</typeparam>
+            <param name="condition">
+            条件<br/>
+            <code>
+            x => x.age > 18 &amp;&amp; x.name == "test"
+            </code>
+            </param>
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.DeleteAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <summary>
+            异步删除
+            </summary>
+            <typeparam name="T">对象</typeparam>
+            <param name="condition">
+            条件<br/>
+            <code>
+            x => x.age > 18 &amp;&amp; x.name == "test"
+            </code>
+            </param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Exist``1">
+            <summary>
+            判断表是否存在
+            </summary>
+            <typeparam name="T">
+            对象
+            </typeparam>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.ExistAsync``1(System.Threading.CancellationToken)">
+            <summary>
+            异步判断表是否存在
+            </summary>
+            <typeparam name="T">
+            对象
+            </typeparam>
+            <param name="token">
+            传播应取消操作的通知
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Insert``1(``0)">
+            <summary>
+            添加
+            </summary>
+            <typeparam name="T">
+            指定的操作对象
+            </typeparam>
+            <param name="obj">
+            对象
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.InsertAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            异步添加
+            </summary>
+            <typeparam name="T">
+            指定的操作对象
+            </typeparam>
+            <param name="obj">
+            对象
+            </param>
+            <param name="token">
+            传播应取消操作的通知
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Insert``1(System.Collections.Generic.List{``0})">
+            <summary>
+            添加集合
+            </summary>
+            <typeparam name="T">
+            指定的操作对象
+            </typeparam>
+            <param name="objs">
+            对象集合
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.InsertAsync``1(System.Collections.Generic.List{``0},System.Threading.CancellationToken)">
+            <summary>
+            异步添加集合
+            </summary>
+            <typeparam name="T">
+            指定的操作对象
+            </typeparam>
+            <param name="objs">
+            对象集合
+            </param>
+            <param name="token">
+            传播应取消操作的通知
+            </param>
+            <returns>
+            统一操作结果
+            </returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Query``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary> 
+            查询 
+            </summary> 
+            <typeparam name="T">指定的操作对象</typeparam> 
+            <param name="condition">
+            条件<br/> 
+            <code>
+            x => x.age > 18 &amp;&amp; x.name == "test"
+            </code> 
+            </param>
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.QueryAsync``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <summary> 
+            异步查询 
+            </summary> 
+            <typeparam name="T">指定的操作对象</typeparam> 
+            <param name="condition">
+            条件<br/> 
+            <code>
+            x => x.age > 18 &amp;&amp; x.name == "test"
+            </code> 
+            </param>
+            <param name="token">传播应取消操作的通知</param> 
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.Update``1(``0,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            修改
+            </summary> 
+            <typeparam name="T">指定的操作对象</typeparam> 
+            <param name="obj">修改后的值</param> 
+            <param name="updateColumns">
+            修改的列<br/>
+            <code>
+            u => new { u.Name, u.Description }
+            </code>
+            </param> 
+            <param name="condition">
+            条件<br/> 
+            <code>c=>c.id == 1</code> 
+            </param>
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.UpdateAsync``1(``0,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Threading.CancellationToken)">
+            <summary>
+            异步修改
+            </summary> 
+            <typeparam name="T">指定的操作对象</typeparam> 
+            <param name="obj">修改后的值</param> 
+            <param name="updateColumns">
+            修改的列<br/>
+            <code>
+            u => new { u.Name, u.Description }
+            </code>
+            </param> 
+            <param name="condition">
+            条件<br/> 
+            <code>c=>c.id == 1</code> 
+            </param>
+            <param name="token">传播应取消操作的通知</param> 
+            <returns>统一操作结果</returns>
+        </member>
+        <member name="M:Snet.DB.DBOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.DB.DBOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.DB.sugar.AdoProvider">
+            <summary>
+             ** description：ActiveX Data Objects
+             ** author：sunkaixuan
+             ** date：2017/1/2
+             ** email:610262374@qq.com
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.AdoProvider.SqlExecuteCount">
+            <summary>
+            Add, delete and modify: the number of affected items;
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.IDataReaderEntityBuilder`1">
+            <summary>
+             ** description：IDataReader Entity Builder
+             ** author：sunkaixuan
+             ** date：2017/4/2
+             ** qq:610262374
+             </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.DbMaintenanceProvider.CreateDatabase(System.String)">
+             <summary>
+            by current connection string
+             </summary>
+             <param name="databaseDirectory"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.DbMaintenanceProvider.CreateDatabase(System.String,System.String)">
+            <summary>
+            by databaseName
+            </summary>
+            <param name="databaseName"></param>
+            <param name="databaseDirectory"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.DynamicOneselfType">
+            <summary>
+            Dynamically construct Type, the property is self, with this type
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.DynamicOneselfTypeList">
+            <summary>
+            Dynamically construct Type, the property is List self , with this type
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.EntityMaintenance.GetXElementNodeValue(System.Type,System.String)">
+            <summary>
+            Gets the text contents of this XML element node
+            </summary>
+            <param name="entityType">entity type</param>
+            <param name="nodeAttributeName">The value of the name attribute of the XML node</param>
+            <returns>the text contents of this XML element node</returns>
+        </member>
+        <member name="M:Snet.DB.sugar.EntityMaintenance.GetTableAnnotation(System.Type)">
+            <summary>
+            Gets the code annotation for the database table
+            </summary>
+            <param name="entityType">entity type</param>
+            <returns>the code annotation for the database table</returns>
+        </member>
+        <member name="M:Snet.DB.sugar.EntityMaintenance.GetPropertyAnnotation(System.Type,System.String)">
+            <summary>
+            Gets the code annotation for the field
+            </summary>
+            <param name="entityType">entity type</param>
+            <param name="dbColumnName">column name</param>
+            <returns>the code annotation for the field</returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`1.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`1._WhereClassByPrimaryKey(System.Collections.Generic.List{`0})">
+            <summary>
+             if a property that is primary key is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`1._WhereClassByWhereColumns(System.Collections.Generic.List{`0},System.String[])">
+            <summary>
+             if a property that is whereColumns key is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`1.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.NavigatManager`1.GetQueryPropertyNames(Snet.DB.sugar.EntityColumnInfo)">
+            <summary>
+            获取查询的属性名称列表
+            </summary>
+            <param name="navObjectNamePropety"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`2.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`2.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`3.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`3.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`4.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`4.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`5.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`5.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`6.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`6.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`7.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`7.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`8.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.QueryableProvider`8.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.SqlBuilderProvider">
+             <summary>
+            Json model to sql
+             </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SqlSugarProvider">
+            <summary>
+             ** description：Create datathis.access object
+             ** author：sunkaixuan
+             ** date：2017/1/2
+             ** email:610262374@qq.com
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.SqlSugarProvider.Ado">
+             <summary>
+            Datathis.operation
+             </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlSugarProvider.GetDate">
+            <summary>
+            Get datebase time
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlSugarProvider.Queryable``1">
+            <summary>
+            Lambda Query operation
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlSugarProvider.Queryable``1(System.String)">
+            <summary>
+            Lambda Query operation
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlSugarProvider.Queryable(System.String,System.String)">
+            <summary>
+            Lambda Query operation
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SqlSugarScope">
+            <summary>
+            Partial SqlSugarScope
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.UpdateableProvider`1.UpdateParameterIsNull">
+            <summary>
+            true : by expression  update
+            false: by object update
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.ConfigId">
+             <summary>
+            Connection unique code
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.DbType">
+             <summary>
+            DbType.SqlServer Or Other
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.ConnectionString">
+             <summary>
+            Database Connection string
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.DbLinkName">
+            <summary>
+            QueryableWithAttr queries go to DbLinkName, which is commonly used for cross-library queries
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.IsAutoCloseConnection">
+            <summary>
+            true does not need to close the connection
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.ConnectionConfig.InitKeyType">
+            <summary>
+            Default Attribute 
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.LanguageType">
+            <summary>
+            Exception prompt language  
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.ConnectionConfig.ConfigureExternalServices">
+            <summary>
+            Configure External Services replace default services,For example, Redis storage
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.SlaveConnectionConfigs">
+            <summary>
+            If SlaveConnectionStrings has value,ConnectionString is write operation, SlaveConnectionStrings is read operation.
+            All operations within a transaction is ConnectionString
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.MoreSettings">
+            <summary>
+            More Gobal Settings
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ConnectionConfig.SqlMiddle">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.Navigate.QueryPropertyNames">
+            <summary>
+            用于查询指定列
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.PageModel.TotalCount">
+            <summary>
+            output
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.SlaveConnectionConfig.HitRate">
+             <summary>
+            Default value is 1
+            If value is 0 means permanent non execution
+             </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.SqlFilterItem.FilterName">
+            <summary>
+            Equal to NULL representing global
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.SqlFilterItem.IsJoinQuery">
+            <summary>
+            Is it a multiple table query?
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SugarDebugger">
+            <summary>
+            Used for debugging errors or BUG,Used for debugging, which has an impact on Performance
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.SugarDebugger.EnableThreadSecurityValidation">
+            <summary>
+            If you use the same Db object across threads, you will be prompted
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.InitKeyType.SystemTable">
+            <summary>
+            Init primary key and identity key from the system table 
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.InitKeyType.Attribute">
+            <summary>
+            Init primary key and identity key from the attribute 
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.PostgresIdentityStrategy.Serial">
+            <summary>
+            NEXTVAL() function
+            </summary>
+        </member>
+        <member name="F:Snet.DB.sugar.PostgresIdentityStrategy.Identity">
+            <summary>
+            自增长，PGSQL10+版本最佳实践
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.ExpressionItems.Type">
+            <summary>
+            1 memeber, 2 class  ,3 method
+            </summary>
+        </member>
+        <member name="P:Snet.DB.sugar.SugarParameter.SourceVersion">
+            <summary>
+            如果类库是.NET 4.5请删除该属性
+            If the Snet.DB.sugar library is.NET 4.5, delete the property
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlFunc.ToDate(System.Object)">
+            <summary>
+            yyyy-MM-dd HH:mm:ss.fff
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlFunc.ToTime(System.Object)">
+             <summary>
+            HH:mm:ss 
+             </summary>
+             <param name="value"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlFunc.GetSelfAndAutoFill``1(``0)">
+             <summary>
+            Example: new NewT(){name=SqlFunc.GetSelfAndAutoFill(it)}  Generated SQL   it.*
+             </summary>
+             <typeparam name="TResult"></typeparam>
+             <param name="value"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlFunc.Subqueryable``1">
+            <summary>
+            Subquery
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Snet.DB.sugar.ExpressionContext" -->
+        <member name="T:Snet.DB.sugar.BaseResolve">
+            <summary>
+            BaseResolve-Append
+            </summary>
+            <summary>
+            BaseResolve-Append
+            </summary>
+            <summary>
+            BaseResolve-Helper
+            </summary>
+             <summary>
+            BaseResolve New Expression
+             </summary>
+             <summary>
+            BaseResolve New Expression
+             </summary>
+            <summary>
+            BaseResolve-Validate
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.MethodCallExpressionResolve">
+            <summary>
+            MethodCall base DateFomat
+            </summary>
+             <summary>
+            MethodCall Helper
+             </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SubResolve">
+            <summary>
+             ** description：Get subquery sql
+             ** author：sunkaixuan
+             ** date：2017/9/17
+             ** email:610262374@qq.com
+             </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.ContextMethods">
+            <summary>
+            SqlFunc to model
+            </summary>
+            <summary>
+            SqlFunc to model
+            </summary>
+            <summary>
+            Json to model
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToExpandoObject(System.Data.IDataReader)">
+             <summary>
+            DataReader to Dynamic
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToExpandoObjectList(System.Data.IDataReader)">
+             <summary>
+            DataReader to Dynamic List
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToExpandoObjectListAsync(System.Data.IDataReader)">
+             <summary>
+            DataReader to Dynamic List
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToExpandoObjectListNoUsing(System.Data.IDataReader)">
+             <summary>
+            DataReader to Dynamic List
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToExpandoObjectListAsyncNoUsing(System.Data.IDataReader)">
+             <summary>
+            DataReader to Dynamic List
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToDictionary(System.Data.IDataReader)">
+             <summary>
+            DataReader to DataReaderToDictionary
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToDictionary(System.Data.IDataReader,System.Type)">
+             <summary>
+            DataReader to DataReaderToDictionary
+             </summary>
+             <param name="reader"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToList``1(System.Data.IDataReader)">
+            <summary>
+            DataReaderToList
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToListNoUsing``1(System.Data.IDataReader)">
+            <summary>
+            DataReaderToList
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToListAsync``1(System.Data.IDataReader)">
+            <summary>
+            DataReaderToList
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DataReaderToListAsyncNoUsing``1(System.Data.IDataReader)">
+            <summary>
+            DataReaderToList
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.SerializeObject(System.Object)">
+            <summary>
+            Serialize Object
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.DeserializeObject``1(System.String)">
+            <summary>
+            Serialize Object
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ContextMethods.TranslateCopy``1(``0)">
+            <summary>
+            Copy new Object
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sourceObject"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.IContextMethods">
+            <summary>
+            Json to model
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.IDbMaintenance.CreateDatabase(System.String)">
+             <summary>
+            by current connection string
+             </summary>
+             <param name="databaseDirectory"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IDbMaintenance.CreateDatabase(System.String,System.String)">
+            <summary>
+            by databaseName
+            </summary>
+            <param name="databaseName"></param>
+            <param name="databaseDirectory"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IDbMaintenance.SetAutoIncrementInitialValue(System.Type,System.Int32)">
+            <summary>
+            setAuto incrementInitial value
+            </summary>
+            <param name="initialValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IDbMaintenance.SetAutoIncrementInitialValue(System.String,System.Int32)">
+            <summary>
+            setAuto incrementInitial value
+            </summary>
+            <param name="initialValue"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.ISugarQueryable`1">
+            <summary>
+            Includes
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`1.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`1.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.NavISugarQueryable`1">
+            <summary>
+            Includes
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`2.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`2.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`3.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`3.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`4.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`4.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`5.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`5.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`6.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`6.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`7.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`7.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`8.WhereClass``1(``0,System.Boolean)">
+            <summary>
+            if a property that is not empty is a condition
+            </summary>
+            <param name="whereClass"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ISugarQueryable`8.WhereClass``1(System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+             if a property that is not empty is a condition
+            </summary>
+            <param name="whereClassTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.ISqlBuilder">
+            <summary>
+            Json Model to sql
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.IUpdateable`1.Where(System.String,System.String,System.Object)">
+            <summary>
+             
+            </summary>
+            <param name="fieldName"></param>
+            <param name="conditionalType">for example : = </param>
+            <param name="fieldValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IUpdateable`1.WhereColumns(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Non primary key entity update function,.WhereColumns(it=>new{ it.Id })
+            </summary>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IUpdateable`1.UpdateColumns(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            .UpdateColumns(it=>new{ it.Name,it.Price})
+            </summary>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IUpdateable`1.SetColumns(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+             <summary>
+            .SetColumns(it=>it.Name=="a")
+             </summary>
+             <param name="columns"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.IUpdateable`1.SetColumns(System.Linq.Expressions.Expression{System.Func{`0,`0}})">
+            <summary>
+            .SetColumns(it=> new class() { it.Name="a",it.Price=0})
+            </summary>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.JsonQueryableProvider">
+            <summary>
+            ApendJoinLastAfter
+            </summary>
+            <summary>
+            AppendFrom
+            </summary>
+            <summary>
+            AppendGroupBy
+            </summary>
+            <summary>
+            AppendHaving
+            </summary>
+            <summary>
+            AppendJoin
+            </summary>
+            <summary>
+            AppendOrderBy
+            </summary>
+            <summary>
+            AppendPage 
+            </summary>
+            <summary>
+            AppendSelect
+            </summary>
+            <summary>
+            AppendWhere
+            </summary>
+            <summary>
+            Helper
+            </summary>
+            <summary>
+            JsonQueryableProvider
+            </summary>
+            <summary>
+            Property
+            </summary>
+            <summary>
+            RegisterAop
+            </summary>
+            <summary>
+            ResultDefault
+            </summary>
+            <summary>
+            ResultHelper
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SqlDataAdapter">
+            <summary>
+            数据填充器
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlDataAdapter.#ctor(Microsoft.Data.SqlClient.SqlCommand)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlDataAdapter.#ctor(System.String,Microsoft.Data.SqlClient.SqlConnection)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="sql"></param>
+            <param name="_sqlConnection"></param>
+        </member>
+        <member name="P:Snet.DB.sugar.SqlDataAdapter.SelectCommand">
+            <summary>
+            SelectCommand
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlDataAdapter.Fill(System.Data.DataTable)">
+            <summary>
+            Fill
+            </summary>
+            <param name="dt"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlDataAdapter.Fill(System.Data.DataSet)">
+            <summary>
+            Fill
+            </summary>
+            <param name="ds"></param>
+        </member>
+        <member name="T:Snet.DB.sugar.MySqlDataAdapter">
+            <summary>
+            数据填充器
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlDataAdapter.#ctor(MySqlConnector.MySqlCommand)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlDataAdapter.#ctor(System.String,MySqlConnector.MySqlConnection)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="sql"></param>
+            <param name="_sqlConnection"></param>
+        </member>
+        <member name="P:Snet.DB.sugar.MySqlDataAdapter.SelectCommand">
+            <summary>
+            SelectCommand
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlDataAdapter.Fill(System.Data.DataTable)">
+            <summary>
+            Fill
+            </summary>
+            <param name="dt"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlDataAdapter.Fill(System.Data.DataSet)">
+            <summary>
+            Fill
+            </summary>
+            <param name="ds"></param>
+        </member>
+        <member name="T:Snet.DB.sugar.SqliteDataAdapter">
+            <summary>
+            数据填充器
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteDataAdapter.#ctor(Microsoft.Data.Sqlite.SqliteCommand)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteDataAdapter.#ctor(System.String,Microsoft.Data.Sqlite.SqliteConnection)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="sql"></param>
+            <param name="_sqlConnection"></param>
+        </member>
+        <member name="P:Snet.DB.sugar.SqliteDataAdapter.SelectCommand">
+            <summary>
+            SelectCommand
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteDataAdapter.Fill(System.Data.DataTable)">
+            <summary>
+            Fill
+            </summary>
+            <param name="dt"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteDataAdapter.Fill(System.Data.DataSet)">
+            <summary>
+            Fill
+            </summary>
+            <param name="ds"></param>
+        </member>
+        <member name="T:Snet.DB.sugar.MyOracleDataAdapter">
+            <summary>
+            数据填充器
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.MyOracleDataAdapter.#ctor(Oracle.ManagedDataAccess.Client.OracleCommand)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="command"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.MyOracleDataAdapter.#ctor(System.String,Oracle.ManagedDataAccess.Client.OracleConnection)">
+            <summary>
+            SqlDataAdapter
+            </summary>
+            <param name="sql"></param>
+            <param name="_sqlConnection"></param>
+        </member>
+        <member name="P:Snet.DB.sugar.MyOracleDataAdapter.SelectCommand">
+            <summary>
+            SelectCommand
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.MyOracleDataAdapter.Fill(System.Data.DataTable)">
+            <summary>
+            Fill
+            </summary>
+            <param name="dt"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.MyOracleDataAdapter.Fill(System.Data.DataSet)">
+            <summary>
+            Fill
+            </summary>
+            <param name="ds"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteProvider.BeginTran(System.Data.IsolationLevel,System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="iso"></param>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteProvider.ToIDbDataParameter(Snet.DB.sugar.SugarParameter[])">
+            <summary>
+            if SQLite return SQLiteParameter[] pars
+            if sqlerver return SqlParameter[] pars ...
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlBlukCopy`1.DataTableToCsvString(System.Data.DataTable)">
+             <summary>
+            DataTable to CSV
+             </summary>
+             <param name="table">datatable</param>
+             <returns>CSV</returns>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlDbMaintenance.CreateDatabase(System.String,System.String)">
+             <summary>
+            by current connection string
+             </summary>
+             <param name="databaseDirectory"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlProvider.BeginTran(System.Data.IsolationLevel,System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="iso"></param>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.MySqlProvider.ToIDbDataParameter(Snet.DB.sugar.SugarParameter[])">
+            <summary>
+            if mysql return MySqlParameter[] pars
+            if sqlerver return SqlParameter[] pars ...
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.OracleProvider.BeginTran(System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.OracleProvider.BeginTran(System.Data.IsolationLevel,System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="iso"></param>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.OracleProvider.ToIDbDataParameter(Snet.DB.sugar.SugarParameter[])">
+            <summary>
+            if mysql return MySqlParameter[] pars
+            if sqlerver return SqlParameter[] pars ...
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqliteDbMaintenance.CreateDatabase(System.String,System.String)">
+             <summary>
+            by current connection string
+             </summary>
+             <param name="databaseDirectory"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlServerDbMaintenance.CreateDatabase(System.String,System.String)">
+             <summary>
+            by current connection string
+             </summary>
+             <param name="databaseDirectory"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlServerProvider.BeginTran(System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlServerProvider.BeginTran(System.Data.IsolationLevel,System.String)">
+            <summary>
+            Only SqlServer
+            </summary>
+            <param name="iso"></param>
+            <param name="transactionName"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlServerProvider.ToIDbDataParameter(Snet.DB.sugar.SugarParameter[])">
+            <summary>
+            if mysql return MySqlParameter[] pars
+            if sqlerver return SqlParameter[] pars ...
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.SqlServerProvider.GetSqlParameter(Snet.DB.sugar.SugarParameter[])">
+            <summary>
+            if mysql return MySqlParameter[] pars
+            if sqlerver return SqlParameter[] pars ...
+            </summary>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.ISugarUnitOfWork">
+            <summary>
+            ISugarUnitOfWorkClear  not exists Snet.DB.sugar method
+            ISugarUnitOfWork exists Snet.DB.sugar method
+            </summary>
+        </member>
+        <member name="T:Snet.DB.sugar.SugarUnitOfWork">
+            <summary>
+            SugarUnitOfWork->ISugarUnitOfWork->ISaugarUnitOfWorkClear
+            ISaugarUnitOfWorkClear  not exists Snet.DB.sugar method
+            ISugarUnitOfWork exists Snet.DB.sugar method
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.SugarUnitOfWork.AppendTranSuccessEvent(System.Action{Snet.DB.sugar.ISqlSugarClient})">
+            <summary>
+            增加事务成功后事件
+            </summary>
+            <param name="action">需要执行的委托</param>
+        </member>
+        <member name="M:Snet.DB.sugar.SugarUnitOfWork.SubtractTranSuccessEvent(System.Action{Snet.DB.sugar.ISqlSugarClient})">
+            <summary>
+            减少事务成功后事件
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:Snet.DB.sugar.DbExtensions.ToSqlFilter(System.String)">
+             <summary>
+            Sql Filter
+             </summary>
+             <param name="value"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.DbExtensions.ToCheckField(System.String)">
+            <summary>
+            Check field format
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ExpressionBuilderHelper.CreateExpression(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Linq.Expressions.ExpressionType)">
+            <summary>
+            Create Expression
+            </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.FastCopy.Copy``2(``0,``1,System.Boolean)">
+            <summary>
+            复制两个对象同名属性值
+            </summary>
+            <typeparam name="S"></typeparam>
+            <typeparam name="T"></typeparam>
+            <param name="source">源对象</param>
+            <param name="target">目标对象</param>
+            <param name="copyNull">源对象属性值为null时，是否将值复制给目标对象</param>
+        </member>
+        <member name="M:Snet.DB.sugar.FastCopy.CreateCopier``2(System.Boolean)">
+            <summary>
+            为指定的两种类型编译生成属性复制委托
+            </summary>
+            <typeparam name="S"></typeparam>
+            <typeparam name="T"></typeparam>
+            <param name="copyNull">源对象属性值为null时，是否将值复制给目标对象</param>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.DB.sugar.Extensions.UtilExtensions">
+             <summary>
+            Common Extensions for external users
+             </summary>
+        </member>
+        <member name="M:Snet.DB.sugar.UtilMethods.GetFormatValue(System.Object,Snet.DB.sugar.QueryableFormat)">
+            <summary>
+            Available only in Select,Handles logic that cannot be completed by an expression
+            </summary>
+            <param name="addValue"></param>
+            <param name="valueFomatInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.UtilMethods.GetWeekLastDaySun(System.DateTime)">
+            <summary>
+            Get Week Last Day Sun
+            </summary>
+            <param name="datetime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.UtilMethods.GetWeekFirstDayMon(System.DateTime)">
+            <summary>
+            Get Week First Day Mon
+            </summary>
+            <param name="datetime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.DB.sugar.ValidateExtensions.IsNoInt(System.Object)">
+            <returns></returns>
+        </member>
+    </members>
+</doc>

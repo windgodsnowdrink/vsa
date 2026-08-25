@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Snet.Rpc</id>
+    <version>26.235.2</version>
+    <authors>Shun</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://snet.cn/</projectUrl>
+    <description>扩展工具：Rpc（基于DotNetty实现的RPC，远程过程调用）</description>
+    <repository type="git" commit="235ed4cfb645efd1cc69f90ecfd5c1e74df940f1" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="DotNetty.Codecs" version="0.7.6" exclude="Build,Analyzers" />
+        <dependency id="ImpromptuInterface" version="8.0.6" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="DotNetty.Codecs" version="0.7.6" exclude="Build,Analyzers" />
+        <dependency id="ImpromptuInterface" version="8.0.6" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

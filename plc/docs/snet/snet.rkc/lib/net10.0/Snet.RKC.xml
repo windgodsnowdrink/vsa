@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.RKC</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.RKC.RKCData">
+            <summary>
+            理化数据
+            </summary>
+        </member>
+        <member name="T:Snet.RKC.RKCData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.RKC.RKCData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.RKC.RKCData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.RKC.RKCData.ProtocolType.TemperatureControllerOverTcp">
+            <summary>
+            RKC的CD/CH系列数字式温度控制器的网口透传类对象，可以读取测量值，CT1输入值，CT2输入值等等
+            </summary>
+        </member>
+        <member name="F:Snet.RKC.RKCData.ProtocolType.TemperatureController">
+            <summary>
+            RKC的CD/CH系列数字式温度控制器的串口类对象，可以读取测量值，CT1输入值，CT2输入值等等
+            </summary>
+        </member>
+        <member name="T:Snet.RKC.RKCOperate">
+            <summary>
+            理化通信库
+            </summary>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.#ctor(Snet.RKC.RKCData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.RKC.RKCOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.RKC.RKCOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.RKC.RKCOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.RKC.RKCOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.RKC.RKCOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.RKC.RKCOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.RKC.RKCOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

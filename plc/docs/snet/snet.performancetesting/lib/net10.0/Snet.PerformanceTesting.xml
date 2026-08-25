@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.PerformanceTesting</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.PerformanceTesting.PerformanceTestingData">
+            <summary>
+            性能测试数据
+            </summary>
+        </member>
+        <member name="T:Snet.PerformanceTesting.PerformanceTestingData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Basics.Uri">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Basics.Topic">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Basics.TimeOut">
+            <summary>
+            超时时间
+            </summary>
+        </member>
+        <member name="T:Snet.PerformanceTesting.PerformanceTestingData.Pack">
+            <summary>
+            数据包
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Pack.AddressName">
+            <summary>
+            点位地址
+            </summary>
+        </member>
+        <member name="P:Snet.PerformanceTesting.PerformanceTestingData.Pack.Value">
+            <summary>
+            点位的值
+            </summary>
+        </member>
+        <member name="T:YSAI.PerformanceTesting.PerformanceTestingOperate">
+            <summary>
+            性能测试操作
+            </summary>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.#ctor(Snet.PerformanceTesting.PerformanceTestingData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="P:YSAI.PerformanceTesting.PerformanceTestingOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:YSAI.PerformanceTesting.PerformanceTestingOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.subscriber">
+            <summary>
+            netMQ 通信类
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.DataQueue">
+            <summary>
+            数据队列
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.g_token">
+            <summary>
+            任务取消
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.ioc">
+            <summary>
+            容器
+            </summary>
+        </member>
+        <member name="F:YSAI.PerformanceTesting.PerformanceTestingOperate.values">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:YSAI.PerformanceTesting.PerformanceTestingOperate.channelOptions">
+            <summary>
+            通道设置
+            </summary>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.TaskHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            任务处理
+            </summary>
+            <param name="token">任务令牌</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.SubMessageHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            订阅消息处理
+            </summary>
+            <param name="token">生命周期</param>
+            <returns></returns>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:YSAI.PerformanceTesting.PerformanceTestingOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

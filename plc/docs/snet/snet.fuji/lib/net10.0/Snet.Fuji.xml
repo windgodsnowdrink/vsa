@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Fuji</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Fuji.FujiData">
+            <summary>
+            富士数据
+            </summary>
+        </member>
+        <member name="T:Snet.Fuji.FujiData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.ConnectionID">
+            <summary>
+            Cpu或模块站号
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.DataSwap">
+            <summary>
+            进行数据交换
+            </summary>
+        </member>
+        <member name="P:Snet.Fuji.FujiData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Fuji.FujiData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiData.ProtocolType.FujiSPHNet">
+            <summary>
+            富士PLC SPH通信协议，可以和富士PLC进行通信，ConnectionID 默认CPU0，需要根据实际进行调整
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiData.ProtocolType.FujiSPB">
+            <summary>
+            富士PLC SPB协议，地址可以携带站号信息，例如：s=2;D100，PLC侧需要配置无BCC计算，包含0D0A结束码
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiData.ProtocolType.FujiSPBOverTcp">
+            <summary>
+            富士PLC SPB协议，地址可以携带站号信息，例如：s=2;D100，PLC侧需要配置无BCC计算，包含0D0A结束码
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiData.ProtocolType.FujiCommandSettingType">
+            <summary>
+            富士PLC SPH通信协议，基于Command-Setting-Type通信模式的协议实现
+            </summary>
+        </member>
+        <member name="T:Snet.Fuji.FujiOperate">
+            <summary>
+            富士通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.#ctor(Snet.Fuji.FujiData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Fuji.FujiOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Fuji.FujiOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Fuji.FujiOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Fuji.FujiOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Fuji.FujiOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

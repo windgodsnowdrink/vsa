@@ -20,7 +20,11 @@ builder.Services.AddCapabilityModules();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "PLC Plugin Host — Tier1:Plugins(ALC) + Tier2:Foundation Modules(Scrutor+Polly+Carter)");
+// 静态资源：同源托管前端 cockpit / devices 页面，浏览器直接以相对路径调用 /api/gateway/* 与 /api/devices/*，无需反向代理或 CORS
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapGet("/", () => Results.Redirect("/pages/cockpit.html"));
 
 // 模块化 HTTP 端点：Carter 自动发现全部 ICarterModule（含 PluginsModule / SystemInfoCapability）
 app.MapCarter();

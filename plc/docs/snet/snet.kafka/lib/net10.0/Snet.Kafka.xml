@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Kafka</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Kafka.KafkaData">
+            <summary>
+            Kafka 数据配置类，封装 Kafka 生产者/消费者的连接参数（服务器地址、安全协议、SASL 认证等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Kafka.KafkaData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.BootstrapServers">
+            <summary>
+            服务器地址
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.SecurityProtocol">
+            <summary>
+            安全协议
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.AutoOffsetReset">
+            <summary>
+            自动偏移复位
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.SaslMechanism">
+            <summary>
+            SASL 认证机制，指定 Kafka 客户端与服务端的认证方式。<br/>
+            可选类型：
+            <list type="bullet">
+            <item><see cref="F:Confluent.Kafka.SaslMechanism.Gssapi"/>：Kerberos 认证（GSSAPI，常用于企业级安全场景）</item>
+            <item><see cref="F:Confluent.Kafka.SaslMechanism.Plain"/>：PLAIN 认证（用户名密码认证）</item>
+            <item><see cref="F:Confluent.Kafka.SaslMechanism.ScramSha256"/>：SCRAM-SHA-256 认证</item>
+            <item><see cref="F:Confluent.Kafka.SaslMechanism.ScramSha512"/>：SCRAM-SHA-512 认证</item>
+            <item><see cref="F:Confluent.Kafka.SaslMechanism.OAuthBearer"/>：OAuth 2.0 Bearer Token 认证</item>
+            </list>
+            默认值为 <see cref="F:Confluent.Kafka.SaslMechanism.Gssapi"/>。
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.SaslKerberosServiceName">
+            <summary>
+            Kerberos 服务名，需与服务端配置一致。<br/>
+            仅在使用 <see cref="F:Confluent.Kafka.SaslMechanism.Gssapi"/>（Kerberos）时生效。
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.GroupId">
+            <summary>
+            消费组（固定值：同组内消息分摊消费，偏移量延续；不同组各自全量消费）
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.Kafka.KafkaOperate">
+            <summary>
+            Kafka 消息队列操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 Confluent.Kafka 实现消息的生产与消费<br/>
+            - 支持主题的创建、订阅与取消订阅<br/>
+            - 支持多主题并发消费<br/>
+            - 集成 SASL/Kerberos 安全认证
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.#ctor(Snet.Kafka.KafkaData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.producerConfig">
+            <summary>
+            生产者配置（连接参数、幂等性等）
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.producer">
+            <summary>
+            Kafka 生产者实例，用于发送消息
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.consumerConfig">
+            <summary>
+            消费者配置（偏移策略、消费组等）
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.consumer">
+            <summary>
+            Kafka 消费者实例，用于接收消息
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.adminClientConfig">
+            <summary>
+            客户端管理员配置（用于创建/删除主题等管理操作）
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.adminClient">
+            <summary>
+            Kafka 管理员客户端实例
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.TopicArray">
+            <summary>
+            已订阅的主题集合（ConcurrentDictionary 保证线程安全）
+            </summary>
+        </member>
+        <member name="P:Snet.Kafka.KafkaOperate.IsOpen">
+            <summary>
+            是否打开
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.tokenSource">
+            <summary>
+            订阅令牌
+            </summary>
+        </member>
+        <member name="F:Snet.Kafka.KafkaOperate.AsyncLock">
+            <summary>
+            异步锁，保护消费者的创建/订阅/销毁与轮询启动（Subscribe/Consume 并发时防止实例泄漏与双轮询）
+            </summary>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.PollingAsync(System.Threading.CancellationTokenSource)">
+            <summary>
+            轮询消费消息<br/>
+            持续从 Kafka 消费者拉取消息，根据响应类型分发事件<br/>
+            消息处理完成后手动提交偏移量，确保消息不丢失
+            </summary>
+            <param name="source">取消令牌源，用于控制轮询生命周期</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.CreateTopicsAsync(System.Collections.Generic.List{System.String},System.Threading.CancellationToken)">
+            <summary>
+            异步创建主题（内部委托给同步方法）
+            </summary>
+            <param name="Topics">需要创建的主题名称列表</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.CreateTopics(System.Collections.Generic.List{System.String})">
+            <summary>
+            创建 Kafka 主题<br/>
+            自动排除已存在的主题，仅创建差异部分<br/>
+            需要在 On() 打开后调用
+            </summary>
+            <param name="Topics">需要创建的主题名称列表</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.BuildConsumerConfig">
+            <summary>
+            构建消费者配置（固定消费组保证偏移量延续，仅手动提交防止处理失败被自动提交）
+            </summary>
+            <returns>消费者配置</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.ProduceAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            异步生产消息（字符串内容，内部转为 UTF8 字节后委托同步方法）
+            </summary>
+            <param name="Topic">目标主题</param>
+            <param name="Key">消息键（用于分区路由）</param>
+            <param name="Content">消息内容（字符串）</param>
+            <param name="token">传播通知取消</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.ProduceAsync(System.String,System.String,System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            异步生产消息（字节内容，委托同步方法）
+            </summary>
+            <param name="Topic">目标主题</param>
+            <param name="Key">消息键（用于分区路由）</param>
+            <param name="Content">消息内容（字节数组）</param>
+            <param name="token">传播通知取消</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.Produce(System.String,System.String,System.String)">
+            <summary>
+            生产
+            </summary>
+            <param name="Topic">主题</param>
+            <param name="Key">键</param>
+            <param name="Content">值</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.Produce(System.String,System.String,System.Byte[])">
+            <summary>
+            生产
+            </summary>
+            <param name="Topic">主题</param>
+            <param name="Key">键</param>
+            <param name="Content">值</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Kafka.KafkaOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

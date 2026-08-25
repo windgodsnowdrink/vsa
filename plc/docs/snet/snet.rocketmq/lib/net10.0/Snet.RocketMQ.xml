@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.RocketMQ</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.RocketMQ.RocketMQData">
+            <summary>
+            RocketMQ 数据配置类，封装 RocketMQ 5.x 生产者/消费者的连接参数（Broker 地址、ACL 认证、消费组、SSL 等）。
+            </summary>
+        </member>
+        <member name="T:Snet.RocketMQ.RocketMQData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.IpAddress">
+            <summary>
+            Broker 地址
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.Port">
+            <summary>
+            端口（RocketMQ 5.x 客户端通过 gRPC 协议连接 Proxy，默认端口 8081）
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.AccessKey">
+            <summary>
+            AccessKey（开启 ACL 认证时必填）
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.SecretKey">
+            <summary>
+            SecretKey（开启 ACL 认证时必填）
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.ConsumerGroup">
+            <summary>
+            消费组
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.SslEnabled">
+            <summary>
+            启用 SSL（客户端默认开启 TLS，本地自建无 TLS 的 Broker 需关闭）
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.RocketMQ.RocketMQOperate">
+            <summary>
+            RocketMQ 消息队列操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 RocketMQ.Client（Apache RocketMQ 5.x .NET 客户端，gRPC 协议连接 Proxy）实现消息的生产与消费<br/>
+            - 支持主题的动态订阅与取消订阅<br/>
+            - 支持多主题并发消费<br/>
+            - 集成 ACL 认证（AccessKey/SecretKey）与 SSL 开关
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.#ctor(Snet.RocketMQ.RocketMQData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.RocketMQ.RocketMQOperate.producer">
+            <summary>
+            RocketMQ 生产者实例，用于发送消息
+            </summary>
+        </member>
+        <member name="F:Snet.RocketMQ.RocketMQOperate.consumer">
+            <summary>
+            RocketMQ 推送消费者实例，用于接收消息
+            </summary>
+        </member>
+        <member name="F:Snet.RocketMQ.RocketMQOperate.TopicArray">
+            <summary>
+            已订阅的主题集合（PushConsumer 的 Build 要求非空初始订阅，故消费者在首个 ConsumeAsync 时懒创建）
+            </summary>
+        </member>
+        <member name="F:Snet.RocketMQ.RocketMQOperate.AsyncLock">
+            <summary>
+            异步锁，保护消费者/生产者的创建与销毁（Build/Subscribe/DisposeAsync 均为异步网络调用，不能用 lock）
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQOperate.IsOpen">
+            <summary>
+            是否打开
+            </summary>
+        </member>
+        <member name="P:Snet.RocketMQ.RocketMQOperate.IsClosing">
+            <summary>
+            正在关闭（OffAsync 进行中），用于 GetStatusAsync 区分"未连接"与"关闭中"，避免半开状态误报
+            </summary>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.BuildClientConfig">
+            <summary>
+            构建客户端配置：RocketMQ 5.x 客户端经 gRPC 协议连接 Proxy
+            </summary>
+            <returns>客户端配置</returns>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RocketMQ.RocketMQOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.RocketMQ.RocketMQOperate.RocketMQMessageListener">
+            <summary>
+            RocketMQ 消息监听器，收到消息后按响应类型经事件推送<br/>
+            推送失败返回 FAILURE，由 RocketMQ 按重试策略重投
+            </summary>
+        </member>
+    </members>
+</doc>

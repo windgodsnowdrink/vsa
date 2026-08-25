@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>GatewayClient</AssemblyName>
+    <RootNamespace>PlcGateway.Client</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" Version="2.21.69" />
+  </ItemGroup>
+
+  <!-- .NET 11 预览版下 SDK 会在 CoreCompile 前重置程序集特性开关，
+       导致与手动 AssemblyInfo 重复（CS0579）。强制锁定以避免重复生成。 -->
+  <Target Name="LockAssemblyInfoFlags" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    </PropertyGroup>
+  </Target>
+
+</Project>

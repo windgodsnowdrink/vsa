@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.RabbitMQ</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.RabbitMQ.RabbitMQData">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="T:Snet.RabbitMQ.RabbitMQData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.ExChangeName">
+            <summary>
+            交换机名称
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.MessageExpirationTime">
+            <summary>
+            消息过期时间
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.RabbitMQ.RabbitMQOperate">
+            <summary>
+            RabbitMQ 消息队列操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 RabbitMQ.Client 实现消息的发布与消费<br/>
+            - 支持多种交换机类型（direct/fanout/headers/topic）<br/>
+            - 支持消息持久化、过期时间设置<br/>
+            - 支持手动/自动消息确认
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.#ctor(Snet.RabbitMQ.RabbitMQData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.RabbitMQ.RabbitMQOperate.connection">
+            <summary>
+            RabbitMQ 连接对象（管理与服务端的 TCP 连接）
+            </summary>
+        </member>
+        <member name="F:Snet.RabbitMQ.RabbitMQOperate.Channels">
+            <summary>
+            通道集合（按交换机名称索引，线程安全）
+            </summary>
+        </member>
+        <member name="F:Snet.RabbitMQ.RabbitMQOperate.Queues">
+            <summary>
+            已消费的队列集合（用于防止重复消费，线程安全）
+            </summary>
+        </member>
+        <member name="F:Snet.RabbitMQ.RabbitMQOperate.QueueAndBasicProperties">
+            <summary>
+            队列与消息属性的映射关系（包含队列声明结果和消息基本属性）
+            </summary>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.Publish(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            发布 一个交换机可以发布多个消息
+            </summary>
+            <param name="Content">消息内容</param>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.Publish(System.Byte[],System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            发布 一个交换机可以发布多个消息
+            </summary>
+            <param name="Content">消息内容</param>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.PublishAsync(System.String,System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            发布 一个交换机可以发布多个消息
+            </summary>
+            <param name="Content">消息内容</param>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <param name="token">传播消息取消</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.PublishAsync(System.Byte[],System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            发布 一个交换机可以发布多个消息
+            </summary>
+            <param name="Content">消息内容</param>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <param name="token">传播消息取消</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.Consume(System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            消费 一个交换机可以消费多个消息
+            </summary>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="AutoAck">自动确认</param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.ConsumeAsync(System.String,System.String,System.String,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            消费 一个交换机可以消费多个消息
+            </summary>
+            <param name="Topic">主题不为空，则队列、路由设置为主题</param>
+            <param name="Queue">队列名称</param>
+            <param name="RoutingKey">路由键</param>
+            <param name="Type">
+            通道类型
+            direct  //用于AMQP直接交换的交换类型。
+            fanout  //用于AMQP扇出交换的交换类型。
+            headers //用于AMQP报头交换的交换类型。
+            topic   //用于AMQP主题交换的交换类型。
+            </param>
+            <param name="AutoAck">自动确认</param>
+            <param name="Durable">持久化</param>
+            <param name="Exclusive">独有的</param>
+            <param name="AutoDelete">自动删除</param>
+            <param name="token">传播消息取消</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.Consumer_ReceivedAsync(System.Object,RabbitMQ.Client.Events.BasicDeliverEventArgs,System.Boolean)">
+            <summary>
+            消费者消息接收回调<br/>
+            解析消息内容并根据响应类型分发事件<br/>
+            非自动确认模式下手动提交 ACK
+            </summary>
+            <param name="sender">事件源</param>
+            <param name="e">消息事件参数（包含路由键、消息体等）</param>
+            <param name="AutoAck">是否自动确认（false 时需手动 ACK）</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.RabbitMQ.RabbitMQOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

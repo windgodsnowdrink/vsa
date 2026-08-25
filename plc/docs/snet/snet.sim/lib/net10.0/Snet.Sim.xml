@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Sim</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Sim.SimData">
+            <summary>
+            模拟数据
+            </summary>
+        </member>
+        <member name="T:Snet.Sim.SimData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Sim.SimData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="T:Snet.Sim.SimOperate">
+            <summary>
+            采集模拟操作
+            </summary>
+        </member>
+        <member name="P:Snet.Sim.SimOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Sim.SimOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.#ctor(Snet.Sim.SimData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.Sim.SimOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Sim.SimOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Sim.SimOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

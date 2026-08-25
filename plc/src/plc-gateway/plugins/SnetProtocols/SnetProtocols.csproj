@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SnetProtocols</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 禁止 SDK 在 OutputPath 后追加 net11.0，确保输出到宿主 plugins/ 根目录 -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- DotNetCorePlugins 按目录加载：输出到宿主的 plugins/ 子目录 -->
+    <OutputPath>..\..\bin\$(Configuration)\$(TargetFramework)\plugins\</OutputPath>
+    <!-- 强制把 NuGet 依赖（Serilog 等）拷到输出目录，否则不会进入 plugins/ -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj">
+      <!-- 契约程序集由宿主与插件共享（DotNetCorePlugins sharedTypes 机制），不复制到插件目录，避免重复加载 -->
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <!-- SNET 反编译二进制（net8.0），随插件隔离加载 -->
+  <ItemGroup>
+    <Reference Include="..\..\lib\snet\Snet.Core.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Model.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Driver.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Modbus.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Siemens.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Mitsubishi.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Log.dll" />
+  </ItemGroup>
+
+  <!-- SNET 运行期依赖：必须与 SNET 强签名版本一致，并落入 plugins/ 供插件 ALC 解析 -->
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.0" />
+    <!-- System.IO.Ports 精确匹配 SNET 强签名引用(10.0.0.11)，落入 plugins/ 供插件 ALC 解析 -->
+    <PackageReference Include="System.IO.Ports" Version="10.0.0.11" />
+  </ItemGroup>
+
+  <!-- SNET 内部按宿主根目录（AppContext.BaseDirectory）解析 Snet.Core 等兄弟程序集，
+       故将插件输出（plugins/）整体同步到宿主根目录，供其 LoadFromAssemblyPath 命中。 -->
+  <Target Name="CopySnetRuntimeToHost" AfterTargets="Build">
+    <ItemGroup>
+      <_SnetRuntime Include="$(OutDir)*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_SnetRuntime)" DestinationFolder="$(OutDir).." SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

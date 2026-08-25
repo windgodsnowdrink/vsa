@@ -1,0 +1,817 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Redis</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Redis.RedisData">
+            <summary>
+            Redis 数据配置类，封装 Redis 连接参数（连接字符串、数据库 ID、Key 前缀、过期时间等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Redis.RedisData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Redis.RedisData.Basics.TAG">
+            <summary>
+            标识 前缀
+            </summary>
+        </member>
+        <member name="P:Snet.Redis.RedisData.Basics.ConnectStr">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="P:Snet.Redis.RedisData.Basics.DataBaseID">
+            <summary>
+            数据库ID
+            </summary>
+        </member>
+        <member name="P:Snet.Redis.RedisData.Basics.Expiry">
+            <summary>
+            有效时间 ms
+            </summary>
+        </member>
+        <member name="T:Snet.Redis.RedisOperate">
+            <summary>
+            Redis 操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 StackExchange.Redis 实现 Redis 数据库操作<br/>
+            - 支持 String、List、Hash、SortedSet、Key 五大数据类型<br/>
+            - 支持发布/订阅消息模式<br/>
+            - 支持同步/异步双模式操作<br/>
+            - 支持 TAG 前缀自动拼接、模糊查询批量删除
+            </summary>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.#ctor(Snet.Redis.RedisData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.Redis.RedisOperate.conn">
+            <summary>
+            连接的Redis对象
+            </summary>
+        </member>
+        <member name="F:Snet.Redis.RedisOperate.db">
+            <summary>
+            数据库
+            </summary>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Off(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.GetStatus">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.GetBaseObject">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.AddRegisterEvent">
+            <summary>
+            添加注册事件
+            </summary>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_ConnectionRestored(System.Object,StackExchange.Redis.ConnectionFailedEventArgs)">
+            <summary>
+            建立物理连接时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_ConfigurationChangedBroadcast(System.Object,StackExchange.Redis.EndPointEventArgs)">
+            <summary>
+            重新配置广播时（通常意味着主从同步更改）
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_InternalError(System.Object,StackExchange.Redis.InternalErrorEventArgs)">
+            <summary>
+            发生内部错误时（主要用于调试）
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_HashSlotMoved(System.Object,StackExchange.Redis.HashSlotMovedEventArgs)">
+            <summary>
+            更改集群时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_ConfigurationChanged(System.Object,StackExchange.Redis.EndPointEventArgs)">
+            <summary>
+            配置更改时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_ErrorMessage(System.Object,StackExchange.Redis.RedisErrorEventArgs)">
+            <summary>
+            发生错误时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Conn_ConnectionFailed(System.Object,StackExchange.Redis.ConnectionFailedEventArgs)">
+            <summary>
+            物理连接失败时
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSet(System.String,System.String)">
+            <summary>
+            保存单个键值对字符串（如果 key 已存在，则覆盖值）
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringGet(System.String)">
+            <summary>
+            获取键对应值字符串
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSet(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            保存多个多个键值对字符串
+            </summary>
+            <param name="keyValuePairs">键值对容器</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSet``1(System.String,``0)">
+            <summary>
+            存储一个对象（该对象会被序列化保存）
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值（会被序列化）</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringGet``1(System.String)">
+            <summary>
+            获取一个对象（会进行反序列化）
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSetAsync(System.String,System.String)">
+            <summary>
+            保存一个键值对字符串（异步方式）
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringGetAsync(System.String)">
+            <summary>
+            获取单个值
+            </summary>
+            <param name="key">键</param>
+            <param name="expiry">时间间隔</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSetAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            保存一组字符串值
+            </summary>
+            <param name="keyValuePairs">键值对容器</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringSetAsync``1(System.String,``0)">
+            <summary>
+            存储一个对象（该对象会被序列化保存）
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.StringGetAsync``1(System.String)">
+            <summary>
+            获取一个对象（会进行反序列化）
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPop(System.String)">
+            <summary>
+            移除并返回存储在该键列表的第一个元素
+            </summary>
+            <param name="key">键</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPop(System.String)">
+            <summary>
+            移除并返回存储在该键列表的最后一个元素
+            </summary>
+            <param name="key">键</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRemove(System.String,System.String)">
+            <summary>
+            移除列表指定键上与该值相同的元素
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPush(System.String,System.String)">
+            <summary>
+            在列表尾部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPush(System.String,System.String)">
+            <summary>
+            在列表头部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLength(System.String)">
+            <summary>
+            返回列表上该键的长度，如果不存在，返回 0
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRange(System.String,System.Int64,System.Int64)">
+            <summary>
+            返回在该列表上键所对应的元素
+            </summary>
+            <param name="key">键</param>
+            <param name="start">起始点</param>
+            <param name="stop">停止点</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPop``1(System.String)">
+            <summary>
+            移除并返回存储在该键列表的第一个元素对象
+            </summary>
+            <param name="key">键</param>
+            <returns>返回反序列化后对象</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPop``1(System.String)">
+            <summary>
+            移除并返回存储在该键列表的最后一个元素对象
+            </summary>
+            <param name="key">键</param>
+            <returns>返回反序列化后的对象</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPush``1(System.String,``0)">
+            <summary>
+            在列表尾部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPush``1(System.String,``0)">
+            <summary>
+            在列表头部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPopAsync(System.String)">
+            <summary>
+            移除并返回存储在该键列表的第一个元素
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPopAsync(System.String)">
+            <summary>
+            移除并返回存储在该键列表的最后一个元素
+            </summary>
+            <param name="key">键</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRemoveAsync(System.String,System.String)">
+            <summary>
+            移除列表指定键上与该值相同的元素
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPushAsync(System.String,System.String)">
+            <summary>
+            在列表尾部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPushAsync(System.String,System.String)">
+            <summary>
+            在列表头部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLengthAsync(System.String)">
+            <summary>
+            返回列表上该键的长度，如果不存在，返回 0
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRangeAsync(System.String,System.Int64,System.Int64)">
+            <summary>
+            返回在该列表上键所对应的元素（异步方式）
+            </summary>
+            <param name="key">键</param>
+            <param name="start">起始索引</param>
+            <param name="stop">结束索引（-1 表示最后一个）</param>
+            <returns>元素集合</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPopAsync``1(System.String)">
+            <summary>
+            移除并返回存储在该键列表的第一个元素对象
+            </summary>
+            <param name="key"></param>
+            <returns>返回反序列化后的对象</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPopAsync``1(System.String)">
+            <summary>
+            移除并返回存储在该键列表的最后一个元素对象
+            </summary>
+            <param name="key">键</param>
+            <returns>返回反序列化后的对象</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListRightPushAsync``1(System.String,``0)">
+            <summary>
+            在列表尾部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ListLeftPushAsync``1(System.String,``0)">
+            <summary>
+            在列表头部插入值。如果键不存在，先创建再插入值
+            </summary>
+            <param name="key">键</param>
+            <param name="value">值</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashExists(System.String,System.String)">
+            <summary>
+            判断该字段是否存在hash中
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashDelete(System.String,System.String)">
+            <summary>
+            从 hash 中移除指定字段
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashDelete(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            从 hash 中移除指定字段
+            </summary>
+            <param name="key">键</param>
+            <param name="hashFields">字段</param>
+            <returns>返回结果（-1：表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSet(System.String,System.String,System.String)">
+            <summary>
+            在 hash 设定值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <param name="value">值</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSet(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            在 hash 中设定值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashFields">字段容器</param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGet(System.String,System.String)">
+            <summary>
+            在 hash 中获取值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGet(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            在hash获取值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashFields">字段</param>
+            <returns>返回结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashKeys(System.String)">
+            <summary>
+            从 hash 返回所有的字段值
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashValues(System.String)">
+            <summary>
+            根据键获取hash中的所有值
+            </summary>
+            <param name="key">键</param>
+            <returns>返回hash结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSet``1(System.String,System.String,``0)">
+            <summary>
+            在 hash 设定值（序列化）
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <param name="value">值</param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGet``1(System.String,System.String)">
+            <summary>
+            在 hash 中获取值（反序列化）
+            </summary>
+            <param name="key"></param>
+            <param name="hashField"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashExistsAsync(System.String,System.String)">
+            <summary>
+            判断该字段是否存在hash中（异步方式）
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果（true：表示存在）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashDeleteAsync(System.String,System.String)">
+            <summary>
+            从hash中移除指定字段
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashDeleteAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            从hash中移除指定字段
+            </summary>
+            <param name="key">键</param>
+            <param name="hashFields">字段</param>
+            <returns>返回删除结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSetAsync(System.String,System.String,System.String)">
+            <summary>
+            在 hash 设定值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <param name="value">值</param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSetAsync(System.String,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+            在 hash 中设定值
+            </summary>
+            <param name="key"></param>
+            <param name="hashFields"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGetAsync(System.String,System.String)">
+            <summary>
+            在 hash 中获取值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <returns>返回结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGetAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            在 hash 中获取值
+            </summary>
+            <param name="key">键</param>
+            <param name="hashFields">字段</param>
+            <param name="value">值</param>
+            <returns>返回结果</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashKeysAsync(System.String)">
+            <summary>
+            从 hash 返回所有的字段值
+            </summary>
+            <param name="key">键</param>
+            <returns>返回对应的hash字段值</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashValuesAsync(System.String)">
+            <summary>
+            返回 hash 中的所有值
+            </summary>
+            <param name="key">键</param>
+            <returns>返回hash中的所有值</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashSetAsync``1(System.String,System.String,``0)">
+            <summary>
+            在 hash 设定值（序列化）
+            </summary>
+            <param name="key">键</param>
+            <param name="hashField">字段</param>
+            <param name="value">值</param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.HashGetAsync``1(System.String,System.String)">
+            <summary>
+            在 hash 中获取值（反序列化）
+            </summary>
+            <param name="key"></param>
+            <param name="hashField"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetAdd(System.String,System.String,System.Double)">
+            <summary>
+            SortedSet 新增
+            </summary>
+            <param name="key">键</param>
+            <param name="member"></param>
+            <param name="score"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetRangeByRank(System.String,System.Int64,System.Int64,Snet.Redis.RedisOperate.OrderType)">
+            <summary>
+            在有序集合中返回指定范围的元素，默认情况下从低到高
+            </summary>
+            <param name="key"></param>
+            <param name="start"></param>
+            <param name="stop"></param>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetLength(System.String)">
+            <summary>
+            返回有序集合的元素个数
+            </summary>
+            <param name="key"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetRemove(System.String,System.String)">
+            <summary>
+            从存储在键处的已排序集合中删除指定的成员。不存在的成员将被忽略
+            </summary>
+            <param name="key"></param>
+            <param name="memebr"></param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetAdd``1(System.String,``0,System.Double)">
+            <summary>
+            SortedSet 新增
+            </summary>
+            <param name="key"></param>
+            <param name="member"></param>
+            <param name="score"></param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetIncrement(System.String,System.String,System.Double)">
+            <summary>
+            增量的得分排序的集合中的成员存储键值键按增量
+            </summary>
+            <param name="key"></param>
+            <param name="member"></param>
+            <param name="value"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetAddAsync(System.String,System.String,System.Double)">
+            <summary>
+            SortedSet 新增
+            </summary>
+            <param name="key"></param>
+            <param name="member"></param>
+            <param name="score"></param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetRangeByRankAsync(System.String)">
+            <summary>
+            在有序集合中返回指定范围的元素，默认情况下从低到高。
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetLengthAsync(System.String)">
+            <summary>
+            返回有序集合的元素个数
+            </summary>
+            <param name="key"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetRemoveAsync(System.String,System.String)">
+            <summary>
+            返回有序集合的元素个数
+            </summary>
+            <param name="key"></param>
+            <param name="memebr"></param>
+            <returns>返回结果（true:表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetAddAsync``1(System.String,``0,System.Double)">
+            <summary>
+            SortedSet 新增
+            </summary>
+            <param name="key"></param>
+            <param name="member"></param>
+            <param name="score"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SortedSetIncrementAsync(System.String,System.String,System.Double)">
+            <summary>
+            增量的得分排序的集合中的成员存储键值键按增量
+            </summary>
+            <param name="key"></param>
+            <param name="member"></param>
+            <param name="value"></param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="T:Snet.Redis.RedisOperate.OrderType">
+            <summary>
+            Redis 排序类型
+            </summary>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyDelete(System.String)">
+            <summary>
+            删除指定Key
+            </summary>
+            <param name="key">键(带*号支持模糊查询批量删除)</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyDelete(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            删除指定Key列表
+            </summary>
+            <param name="keys">键容器</param>
+            <returns>移除指定键的数量(-1:表示失败)</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyExists(System.String)">
+            <summary>
+            检查Key是否存在
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyRename(System.String,System.String)">
+            <summary>
+            重命名Key
+            </summary>
+            <param name="key">原来的键</param>
+            <param name="newKey">新的键名</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyExpire(System.String,System.Nullable{System.TimeSpan})">
+            <summary>
+            设置 Key 的时间
+            </summary>
+            <param name="key">键</param>
+            <param name="expiry">时间间隔</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyDeleteAsync(System.String)">
+            <summary>
+            移除指定 Key
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyDeleteAsync(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            删除指定 Key 列表
+            </summary>
+            <param name="keys">键</param>
+            <returns>返回结果（-1 表示失败）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyExistsAsync(System.String)">
+            <summary>
+            检查 Key 是否存在
+            </summary>
+            <param name="key">键</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyRenameAsync(System.String,System.String)">
+            <summary>
+            重命名 Key
+            </summary>
+            <param name="key">旧的键名称</param>
+            <param name="newKey">新的键名称</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.KeyExpireAsync(System.String,System.Nullable{System.TimeSpan})">
+            <summary>
+            设置 Key 的时间
+            </summary>
+            <param name="key">键</param>
+            <param name="expiry">间隔时间</param>
+            <returns>返回结果（true：表示成功）</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Subscribe(StackExchange.Redis.RedisChannel,System.Action{StackExchange.Redis.RedisChannel,StackExchange.Redis.RedisValue})">
+            <summary>
+            订阅
+            </summary>
+            <param name="channel"></param>
+            <param name="handle"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Publish(StackExchange.Redis.RedisChannel,StackExchange.Redis.RedisValue)">
+            <summary>
+            发布
+            </summary>
+            <param name="channel"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.Publish``1(StackExchange.Redis.RedisChannel,``0)">
+            <summary>
+            发布（使用序列化）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="channel"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.SubscribeAsync(StackExchange.Redis.RedisChannel,System.Action{StackExchange.Redis.RedisChannel,StackExchange.Redis.RedisValue})">
+            <summary>
+            订阅
+            </summary>
+            <param name="channel"></param>
+            <param name="handle"></param>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.PublishAsync(StackExchange.Redis.RedisChannel,StackExchange.Redis.RedisValue)">
+            <summary>
+            发布
+            </summary>
+            <param name="channel"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.PublishAsync``1(StackExchange.Redis.RedisChannel,``0)">
+            <summary>
+            发布（使用序列化）
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="channel"></param>
+            <param name="message"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.GTAG(System.String)">
+            <summary>
+            获取TAG 前缀
+            </summary>
+            <param name="key">键</param>
+            <returns>返回前缀 + 键</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.ConvertStrings``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            转换为字符串
+            </summary>
+            <typeparam name="T">数据类型</typeparam>
+            <param name="list">数据列表</param>
+            <returns>返回转为字符串后的数据列表</returns>
+        </member>
+        <member name="M:Snet.Redis.RedisOperate.FuzzyQuery(System.String)">
+            <summary>
+            模糊查询
+            </summary>
+            <param name="key">键</param>
+        </member>
+    </members>
+</doc>

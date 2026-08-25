@@ -1,0 +1,3085 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Opc</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Opc.core.AddressBody">
+            <summary>
+            地址结构体<br/>
+            用于创建地址以及修改地址值
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.AddressName">
+            <summary>
+            地址名称
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.Dynamic">
+            <summary>
+            是否为动态地址
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.AccessLevel">
+            <summary>
+            访问级别；<br/>
+            1：读取；<br/>
+            2：写入；<br/>
+            3：读取或写入；
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.DefaultValue">
+            <summary>
+            默认值；<br/>
+            IsDynamic == true；无须赋值
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.AddressBody.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.core.Data">
+            <summary>
+            OPC 公共基础数据类，定义 OPC 客户端/服务端共用的认证类型枚举和证书路径常量。
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.core.Data.AuType">
+            <summary>
+            认证类型
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.core.Data.AuType.Anonymous">
+            <summary>
+            匿名
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.core.Data.AuType.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.core.Data.AuType.Certificate">
+            <summary>
+            证书
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.core.Data.AppCerPath">
+            <summary>
+            证书路径（只读，基于应用基目录拼接 cer 子目录）
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.core.NodeBody">
+            <summary>
+            节点数据结构体
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.Dynamic">
+            <summary>
+            是否为动态节点
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.AccessLevel">
+            <summary>
+            访问级别；<br/>
+            1：只读；<br/>
+            2：只写；<br/>
+            3：读写；
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.Address">
+            <summary>
+            导出使用的地址
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.core.NodeBody.Nodes">
+            <summary>
+            节点
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.Core.UaTelemetry">
+            <summary>
+            OPC UA 遥测上下文
+            
+            统一封装并管理：
+            1. 日志系统（ILogger / Serilog）
+            2. 分布式追踪（ActivitySource）
+            3. 指标采集（Meter）
+            
+            设计目标：
+            - 可通过 DI 注入（推荐）
+            - 也可独立运行（自建 LoggerFactory）
+            - 生命周期清晰、安全
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.Core.UaTelemetry.OpcType">
+            <summary>
+            opc类型
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.Core.UaTelemetry.OpcType.Client">
+            <summary>
+            客户端
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.Core.UaTelemetry.OpcType.Service">
+            <summary>
+            服务端
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.Core.UaTelemetry.AppName">
+            <summary>
+            应用名称（用于日志、追踪、指标命名）
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.Core.UaTelemetry.Version">
+            <summary>
+            当前程序集版本号（优先取 InformationalVersion）
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.Core.UaTelemetry._ownsLoggerFactory">
+            <summary>
+            标识 LoggerFactory 是否由本类创建
+            用于正确处理 Dispose 所有权
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.Core.UaTelemetry.ActivitySource">
+            <summary>
+            分布式追踪源（OpenTelemetry / DiagnosticSource）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.Core.UaTelemetry.Meter">
+            <summary>
+            指标采集器（OpenTelemetry Metrics）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.Core.UaTelemetry.LoggerFactory">
+            <summary>
+            日志工厂（ILoggerFactory）
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.#ctor(Microsoft.Extensions.Logging.ILoggerFactory,Snet.Opc.Core.UaTelemetry.OpcType)">
+            <summary>
+            推荐构造函数（通过依赖注入）
+            
+            LoggerFactory 的生命周期由外部 Host 管理，
+            本类不会 Dispose 它。
+            </summary>
+            <param name="loggerFactory">宿主注入的日志工厂</param>
+            <param name="type">类型</param>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.#ctor(Snet.Opc.Core.UaTelemetry.OpcType)">
+            <summary>
+            备选构造函数（独立运行 / 无 Host 场景）
+            
+            内部会创建 LoggerFactory，并负责释放
+            </summary>
+            <param name="type">类型</param>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.CreateProductionLogger">
+            <summary>
+            创建生产环境可用的 Serilog Logger
+            
+            日志路径规范：
+            logs/
+              └─ yyyy-MM-dd/
+                   └─ yyyyMMddHH.log （按小时滚动）
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.CreateMeter">
+            <summary>
+            创建或返回当前使用的 Meter
+            
+            目前设计为：
+            - 每个 UaTelemetry 实例持有一个 Meter
+            - 避免重复创建导致指标分散
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.Dispose">
+            <summary>
+            释放遥测相关资源
+            
+            注意：
+            - 仅在“自建模式”下释放 LoggerFactory
+            - 外部注入的 LoggerFactory 不归本类管理
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.Core.UaTelemetry.GetInformationalVersion">
+            <summary>
+            获取程序集的 InformationalVersion
+            
+            优先级：
+            1. AssemblyInformationalVersionAttribute
+            2. AssemblyVersion
+            3. fallback
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.client.OpcDaClientData">
+            <summary>
+            OPCDA 客户端数据
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.client.OpcDaClientData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.SName">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.ApiVerType">
+            <summary>
+            接口版本
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.Host">
+            <summary>
+            主机
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.Domain">
+            <summary>
+            与凭证相关的域
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.UpdateRate">
+            <summary>
+            更新频率
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.SubscribeSingleGroupMaxCount">
+            <summary>
+            订阅单组最大数，
+            0：不执行分组，数据少时使用，
+            100：每组订阅100个数据点，自动根据传入的值分组，你有1000个点位，每组最大数是100，这时就会自动分配10个组来执行订阅
+            数据是根据实际情况来定
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientData.Basics.TaskNumber">
+            <summary>
+            任务数量
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.client.OpcDaClientData.ApiVerType">
+            <summary>
+            版本类型
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientData.ApiVerType.COM_DA_10">
+            <summary>
+            1.x api
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientData.ApiVerType.COM_DA_20">
+            <summary>
+            2.x api
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientData.ApiVerType.COM_DA_30">
+            <summary>
+            3.x api
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.client.OpcDaClientOperate">
+            <summary>
+            OPCDA客户端操作 （请以32位启动）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.#ctor(Snet.Opc.da.client.OpcDaClientData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.DefaultGroupName">
+            <summary>
+            默认组名
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.opcDaClient">
+            <summary>
+            OPCDA服务
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.SubscriptionArray">
+            <summary>
+            订阅的组与组下的节点数据
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.AddressArray">
+            <summary>
+            组名下的节点数据信息
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientOperate.channelOptions">
+            <summary>
+            通道设置
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.enevs">
+            <summary>
+            订阅事件集合
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.GetServersArray(OpcDaNetApi.Specification,System.Net.NetworkCredential,System.String)">
+            <summary>
+            获取服务集合
+            </summary>
+            <param name="specif">版本</param>
+            <returns></returns>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.Subscription_DataChanged(System.Object,System.Object,OpcDaNetApi.Da.ItemValueResult[],System.String)">
+            <summary>
+            订阅数据触发
+            </summary>
+            <param name="subscriptionHandle"></param>
+            <param name="requestHandle"></param>
+            <param name="values"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.AddAddressData(System.String,Snet.Model.data.AddressDetails)">
+            <summary>
+            添加地址数据
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.GetAddressData(System.String,System.String)">
+            <summary>
+            通过组名与地址名获取详情
+            </summary>
+            <param name="GroupName"></param>
+            <param name="AddressName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.DeleteAddressData(System.String,System.String)">
+            <summary>
+            删除地址数据
+            </summary>
+            <param name="AddressName"></param>
+            <param name="GroupName"></param>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.AddGroup(System.String,System.Boolean)">
+            <summary>
+            添加组
+            </summary>
+            <param name="GroupName">组名</param>
+            <param name="IsSubscribed">是否需要订阅</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.AddGroupAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            添加组
+            </summary>
+            <param name="GroupName">组名</param>
+            <param name="IsSubscribed">是否需要订阅</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.AddNode(Snet.Model.data.Address,System.String,System.Boolean)">
+            <summary>
+            添加节点，重复的地址直接过滤不重复添加
+            </summary>
+            <param name="address">节点</param>
+            <param name="GroupName">组名，组为空时，自动添加默认组</param>
+            <param name="IsSubscribed">是否订阅组，当为true 时，请绑定事件</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.AddNodeAsync(Snet.Model.data.Address,System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            添加节点，重复的地址直接过滤不重复添加
+            </summary>
+            <param name="address">节点</param>
+            <param name="GroupName">组名，组为空时，自动添加默认组</param>
+            <param name="IsSubscribed">是否订阅组，当为true 时，请绑定事件</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.UpdateGroupSubscribedState(System.String,System.Boolean)">
+            <summary>
+            修改指定组的订阅状态
+            </summary>
+            <param name="GroupName">组名</param>
+            <param name="IsSubscribed">是否订阅</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.UpdateGroupSubscribedStateAsync(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            修改指定组的订阅状态
+            </summary>
+            <param name="GroupName">组名</param>
+            <param name="IsSubscribed">是否订阅</param>
+            <param name="token">取消通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.RemoveGroup(System.String)">
+            <summary>
+            移除组
+            </summary>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.RemoveGroupAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            移除组
+            </summary>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.RemoveNode(System.String,System.String)">
+            <summary>
+            移除节点，两个条件都为 null  则删除所有信息
+            </summary>
+            <param name="NodeName">节点名称</param>
+            <param name="GroupName">此节点在哪个组下，不输入则删除所有节点名相同的数据</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.RemoveNodeAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            移除节点，两个条件都为 null  则删除所有信息
+            </summary>
+            <param name="NodeName">节点名称</param>
+            <param name="GroupName">此节点在哪个组下，不输入则删除所有节点名相同的数据</param>
+            <param name="token">传播消息取消</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Opc.da.client.OpcDaClientOperate.QueueData">
+            <summary>
+            队列数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientOperate.QueueData.values">
+            <summary>
+            地址详情
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.client.OpcDaClientOperate.QueueData.GroupName">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.TaskArray">
+            <summary>
+            任务集合
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.client.OpcDaClientOperate.DataQueue">
+            <summary>
+            数据队列
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.TaskHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            任务处理
+            </summary>
+            <param name="token">任务令牌</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.client.OpcDaClientOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Opc.da.http.OpcDaHttpData">
+            <summary>
+            OPC DA HTTP 转发客户端数据配置类，封装通过 HTTP 接口操作 OPC DA 服务的连接参数、请求方法枚举等。
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.OpcDaHttpData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.SN">
+            <summary>
+            唯一标识
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.IpAddress">
+            <summary>
+            服务IP
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.GroupName">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.ServerName">
+            <summary>
+            服务名 必填
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.AutoOperate">
+            <summary>
+            自动操作<br/>
+            如果http转发工具组名点位已经添加则为false
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpData.Basics.RequestType">
+            <summary>
+            请求类型
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.OpcDaHttpData.RequestMethod">
+            <summary>
+            请求方法
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqOPCServerNameList">
+            <summary>
+            请求OPC服务名清单
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqConnectToOPC">
+            <summary>
+            请求连接某个OPC服务
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqGetGroupsOfOPC">
+            <summary>
+            请求获取指定OPC下已添加的组名清单
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqGetALLItemsOfOPC">
+            <summary>
+            请求浏览某个opc服务下的所有标签列表
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqReConnectOfOPC">
+            <summary>
+            请求重连某个OPC服务
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqDisConnectOfOPC">
+            <summary>
+            请求断开与某个OPC服务的连接
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqDeleteConnectOfOPC">
+            <summary>
+            请求删除与某个OPC服务的连接(该连接下已经建立的组和标签都会被删除)
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqAddGroupOfOPC">
+            <summary>
+            请求添加组
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqDelGroupOfOPC">
+            <summary>
+            请求删除组(该组下已经添加的标签都会被删除)
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqAddItemsOfGroup">
+            <summary>
+            请求批量在某个组下添加标签
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqGetItemsOfGroup">
+            <summary>
+            请求获取指定组下已添加的标签名清单
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqDelItemsOfGroup">
+            <summary>
+            请求批量删除指定组下的指定标签
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqReadItemsValueOfGroup">
+            <summary>
+            请求批量读取某个组下的标签的值
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqGetConnectStatusOfOPC">
+            <summary>
+            请求获取与某个OPC的连接状态
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpData.RequestMethod.ReqWriteItemValue">
+            <summary>
+            请求写某个标签的值
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.OpcDaHttpData.RequestType">
+            <summary>
+            请求类型
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.OpcDaHttpOperate">
+            <summary>
+            OPC DA HTTP 转发客户端操作类，通过 HTTP 接口实现对 OPC DA 服务的连接、读写、订阅等操作。
+            <para>适用于不支持 COM/DCOM 的环境，通过 HTTP 转发工具间接访问 OPC DA 服务器。</para>
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpOperate.SharedHttpClient">
+            <summary>
+            共享的 HttpClient 实例（避免每次请求创建新实例导致 Socket 耗尽）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.#ctor(Snet.Opc.da.http.OpcDaHttpData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.OpcDaHttpOperate.Url">
+            <summary>
+            组织好的 URL 数据（基于请求类型、IP 和端口拼接）
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.HttpRequest(System.String,System.String,System.String)">
+            <summary>
+            执行 HTTP 请求：向指定 URL 发送请求并返回响应数据、状态码和耗时。
+            </summary>
+            <param name="Url">请求地址</param>
+            <param name="Param">请求参数（JSON 格式）</param>
+            <param name="HttpMethod">请求方式，默认为 POST</param>
+            <returns>响应数据、HTTP 状态码、运行时间（毫秒）</returns>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.da.http.OpcDaHttpOperate.ConnectStatus">
+            <summary>
+            连接状态
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.Request(Snet.Opc.da.http.OpcDaHttpData.RequestMethod,System.Object)">
+            <summary>
+            请求
+            </summary>
+            <param name="requestApi">
+            请求方法
+            OPC服务名清单 = 0，
+            连接OPC服务 = 1，
+            浏览OPC服务下的所有标签列表 = 2，
+            重连OPC服务 = 3，
+            断开OPC服务的连接 = 4，
+            删除OPC服务的连接(此服务已经建立的组和标签都会被删除) = 5，
+            添加组 = 6，
+            删除组(该组下已经添加的点位都会被删除) = 7，
+            获取已添加的组名清单 = 9，
+            批量在组下添加标签 = 10，
+            获取组下已添加的点位清单 = 11，
+            批量删除组下点位 = 12，
+            批量读取组下点位值 = 13，
+            获取与OPC的连接状态 = 14，
+            写入点位值 = 15
+            </param>
+            <param name="Param">参数</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.RequestAsync(Snet.Opc.da.http.OpcDaHttpData.RequestMethod,System.Object,System.Threading.CancellationToken)">
+            <summary>
+            请求
+            </summary>
+            <param name="requestApi">
+            请求方法
+            OPC服务名清单 = 0，
+            连接OPC服务 = 1，
+            浏览OPC服务下的所有标签列表 = 2，
+            重连OPC服务 = 3，
+            断开OPC服务的连接 = 4，
+            删除OPC服务的连接(此服务已经建立的组和标签都会被删除) = 5，
+            添加组 = 6，
+            删除组(该组下已经添加的点位都会被删除) = 7，
+            获取已添加的组名清单 = 9，
+            批量在组下添加标签 = 10，
+            获取组下已添加的点位清单 = 11，
+            批量删除组下点位 = 12，
+            批量读取组下点位值 = 13，
+            获取与OPC的连接状态 = 14，
+            写入点位值 = 15
+            </param>
+            <param name="Param">参数</param>
+            <param name="token">取消通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.ResetAsync(System.Threading.CancellationToken)">
+            <summary>
+            重置<br/>
+            把之前的操作都移除,让软件自动创建<br/>
+            必须先连接服务后在进行重置,重置完成会自动连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.da.http.OpcDaHttpOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddGroupOfOPC">
+            <summary>
+            请求添加组
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddGroupOfOPC.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddItemsOfGroup">
+            <summary>
+            请求批量在某个组下添加标签
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Request.itemlist">
+            <summary>
+            节点集合
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqAddItemsOfGroup.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqConnectToOPC">
+            <summary>
+            请求连接某个OPC服务
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqConnectToOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqConnectToOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqConnectToOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqConnectToOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqConnectToOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqConnectToOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC">
+            <summary>
+            请求删除与某个OPC服务的连接(该连接下已经建立的组和标签都会被删除)
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDeleteConnectOfOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelGroupOfOPC">
+            <summary>
+            请求删除组(该组下已经添加的标签都会被删除)
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelGroupOfOPC.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelItemsOfGroup">
+            <summary>
+            请求批量删除指定组下的指定标签
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Request.itemlist">
+            <summary>
+            节点集合
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDelItemsOfGroup.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDisConnectOfOPC">
+            <summary>
+            请求断开与某个OPC服务的连接
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqDisConnectOfOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC">
+            <summary>
+            请求浏览某个opc服务下的所有标签列表
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetALLItemsOfOPC.Response.itemlist">
+            <summary>
+            标签列表
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC">
+            <summary>
+            请求获取与某个OPC的连接状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetConnectStatusOfOPC.Response.connectstatus">
+            <summary>
+            连接状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC">
+            <summary>
+            请求获取指定OPC下已添加的组名清单
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Response.grouplist">
+            <summary>
+            组集合
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetGroupsOfOPC.Response._grouplist.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetItemsOfGroup">
+            <summary>
+            请求获取指定组下已添加的标签名清单
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response.itemlist">
+            <summary>
+            节点集合
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqGetItemsOfGroup.Response._itemlist.itemname">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqOPCServerNameList">
+            <summary>
+            请求OPC服务名清单
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqOPCServerNameList.Response">
+            <summary>
+            响应数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqOPCServerNameList.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqOPCServerNameList.Response.opcnamelist">
+            <summary>
+            OPC名称集合
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqOPCServerNameList.Response._opcnamelist.opcsvrname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqOPCServerNameList.Response._opcnamelist.clsid">
+            <summary>
+            SN
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup">
+            <summary>
+            请求批量读取某个组下的标签的值
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response._itemvalues.itemname">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response._itemvalues.value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response._itemvalues.datatype">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response._itemvalues.timestamp">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReadItemsValueOfGroup.Response._itemvalues.quality">
+            <summary>
+            opcua状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReConnectOfOPC">
+            <summary>
+            请求重连某个OPC服务
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqReConnectOfOPC.Response.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqWriteItemValue">
+            <summary>
+            请求写某个标签的值
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqWriteItemValue.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Request.opcname">
+            <summary>
+            opc服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Request.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Request.itemname">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Request.itemvalue">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.da.http.structure.ReqWriteItemValue.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Response.ret">
+            <summary>
+            状态码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Response.opcname">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Response.groupname">
+            <summary>
+            组名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.da.http.structure.ReqWriteItemValue.Response.itemname">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientController">
+            <summary>
+            OPC UA 客户端读取控制器，针对同一 OPC UA 服务器创建多个客户端会话并分配节点，
+            按服务器最大会话数拆分读取和订阅任务以提升吞吐量。
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientController.Nodes">
+            <summary>
+            读取节点集合
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientController.SubscriptionNodes">
+            <summary>
+            订阅节点集合
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientController.ServerBasics">
+            <summary>
+            OPC UA 服务器基本连接参数
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientController.ServerMaxSession">
+            <summary>
+            OPC UA 服务器支持的最大会话数量
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientController.#ctor(Snet.Opc.ua.client.OpcUaClientData.Basics,System.Int32,Snet.Model.data.Address,Snet.Model.data.Address)">
+            <summary>
+            构造函数：初始化同一 OPC UA 服务器的客户端读取控制器。
+            此控制器通过将节点分配到多个会话来提升 OPC UA 客户端读取速度。
+            </summary>
+            <param name="ServerBasics">OPC UA 服务器基本连接参数</param>
+            <param name="ServerMaxSession">OPC UA 服务器支持的最大会话数量</param>
+            <param name="Nodes">读取节点集合</param>
+            <param name="SubscriptionNodes">订阅节点集合（可选）</param>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientController.Get">
+            <summary>
+            根据最大会话数将节点平均分配到多个 OPC UA 客户端实例，
+            返回客户端实例与对应节点数据的映射字典。
+            </summary>
+            <returns>客户端实例到节点数据的线程安全映射字典</returns>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientData">
+            <summary>
+            OPC UA 客户端数据配置类，封装 OPC UA 客户端连接参数（服务地址、认证类型、会话配置、订阅参数等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.ServerUrl">
+            <summary>
+            服务地址
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.AType">
+            <summary>
+            认证类型
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.Cer">
+            <summary>
+            证书路径
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.SecreKey">
+            <summary>
+            密钥
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.CustomName">
+            <summary>
+            客户端名称(唯一)
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.Timeout">
+            <summary>
+            超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.SessionLifeTime">
+            <summary>
+            会话生命周期(毫秒)
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.InterruptReconnection">
+            <summary>
+            断线重连
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.ReconnectionInterval">
+            <summary>
+            重连间隔(毫秒)
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.SamplingInterval">
+            <summary>
+            取样时间间隔
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.PublishingInterval">
+            <summary>
+            发布时间间隔
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.KeepAliveCount">
+            <summary>
+            保活计数，
+            如果到发布周期但没有新数据，服务端会跳过但保活次数定义了最多可以跳过多少次，之后哪怕是空消息也要发给客户端，告诉客户的订阅仍然有效，但没数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.LifetimeCount">
+            <summary>
+            寿命计数，
+            客户端有责任向服务端发送订阅请求，然后服务端才能发送数据变更通知。服务端通过判断是否有新的请求来判断客户端是否活着。LifeTimeCount定义新请求之前最多允许多少个发布周期，超过后服务端判定客户端失活，清除订阅，
+            必须是【保活计数】的三倍以“上”
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.QueueSize">
+            <summary>
+            队列大小
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.SubscribeSingleGroupMaxCount">
+            <summary>
+            订阅单组最大数<br/>
+            0：不执行分组，数据少时使用<br/>
+            100：每组订阅100个数据点，自动根据传入的值分组，你有1000个点位，每组最大数是100，这时就会自动分配10个组来执行订阅<br/>
+            数据是根据实际情况来定
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientData.Basics.TaskNumber">
+            <summary>
+            任务数量
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientData.Steps">
+            <summary>
+            步骤枚举
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientOperate">
+            <summary>
+            OpcUa 客户端
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.#ctor(Snet.Opc.ua.client.OpcUaClientData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.SessionFactory">
+            <summary>
+            session工厂实例
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.AI">
+            <summary>
+            OPCUA 安装、配置、运行
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.AC">
+            <summary>
+            OPCUA 具体配置
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.clientSession">
+            <summary>
+            管理与服务器的会话
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.Telemetry">
+            <summary>
+            遥测
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.allSubscriptions">
+            <summary>
+            系统所有的订阅节点信息
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.reSubscribeTag">
+            <summary>
+            重新订阅的标识
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.userIdentity">
+            <summary>
+            用户认证方式
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.endpoint">
+            <summary>
+            配置终端
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.tokenSource">
+            <summary>
+            全局的生命周期令牌
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.channelOptions">
+            <summary>
+            通道设置
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.StateChangedStatus">
+            <summary>
+            OPCUA 订阅状态集合
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientOperate.EnumType">
+            <summary>
+            枚举类型
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.EnumParse(System.String,Snet.Opc.ua.client.OpcUaClientOperate.EnumType)">
+            <summary>
+            订阅状态枚举解析：将枚举字符串转换为对应的中文描述文本。
+            支持处理包含多个枚举值的逗号分隔字符串。
+            </summary>
+            <param name="enumStr">枚举字符串（可能包含多个值用逗号分隔）</param>
+            <param name="type">枚举类型（StateChanged/PublishStatusChanged/KeepAlive）</param>
+            <returns>解析后的中文描述文本</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.Subscription_StateChanged(Opc.Ua.Client.Subscription,Opc.Ua.Client.SubscriptionStateChangedEventArgs)">
+            <summary>
+            订阅状态
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.Subscription_PublishStatusChanged(Opc.Ua.Client.Subscription,Opc.Ua.Client.PublishStateChangedEventArgs)">
+            <summary>
+            指示订阅的发布状态已停止或已恢复
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_PublishError(Opc.Ua.Client.ISession,Opc.Ua.Client.PublishErrorEventArgs)">
+            <summary>
+            处理发布响应时发生异常
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_PublishSequenceNumbersToAcknowledge(Opc.Ua.Client.ISession,Opc.Ua.Client.PublishSequenceNumbersToAcknowledgeEventArgs)">
+            <summary>
+            发布请求即将确认序列号
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_SessionClosing(System.Object,System.EventArgs)">
+            <summary>
+            会话正在结束
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_SessionConfigurationChanged(System.Object,System.EventArgs)">
+            <summary>
+            会话配置更改
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_SubscriptionsChanged(System.Object,System.EventArgs)">
+            <summary>
+            添加或删除订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_RenewUserIdentity(Opc.Ua.Client.ISession,Opc.Ua.IUserIdentity)">
+            <summary>
+            在重新连接操作完成之前引发
+            </summary>
+            <param name="session"></param>
+            <param name="identity"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ClientSession_Notification(Opc.Ua.Client.ISession,Opc.Ua.Client.NotificationEventArgs)">
+            <summary>
+            当通知消息到达发布响应中时引发
+            </summary>
+            <param name="session"></param>
+            <param name="e"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ReconnectAsync(System.Threading.CancellationToken)">
+            <summary>
+            彻底重连（循环重试，避免递归调用导致 StackOverflow）
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ReSubscribeAsync(System.Threading.CancellationToken)">
+            <summary>
+            重新订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.Session_KeepAlive(Opc.Ua.Client.ISession,Opc.Ua.Client.KeepAliveEventArgs)">
+            <summary>
+            处理会话中的保持活动事件
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.OnMonitoredItemNotification(Opc.Ua.Client.MonitoredItem,Opc.Ua.Client.MonitoredItemNotificationEventArgs)">
+            <summary>
+            当数据变化更新
+            </summary>
+            <param name="monitoredItem">项</param>
+            <param name="e">事件</param>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ReadNode(Opc.Ua.NodeId)">
+            <summary>
+            从服务器读取指定节点的当前值。
+            </summary>
+            <param name="nodeId">节点 ID</param>
+            <returns>读取结果（包含值、状态码等信息）</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetNodeID">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetAllNode(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetNodeIconType(System.Object,System.Object)">
+            <inheritdoc/>
+            <summary>
+            获取节点图标类型：根据节点类型和数据维度返回对应的图标类型字符串。
+            </summary>
+            <param name="target">目标节点引用描述</param>
+            <param name="sourceId">源节点 ID</param>
+            <returns>图标类型字符串</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.DetailedReadAllNodeData(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetAccessLevel(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.TypeConvert(System.Object)">
+            <inheritdoc/>
+            <summary>
+            OPC UA 内置数据类型转换为系统 DataType 枚举。
+            </summary>
+            <param name="builtInType">待转换的 OPC UA 内置类型</param>
+            <returns>对应的系统数据类型</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetNodeValueType(System.Object)">
+            <inheritdoc/>
+            <summary>
+            获取指定节点的数据类型，返回 OPC UA 内置类型枚举值。
+            </summary>
+            <param name="nodeId">节点 ID</param>
+            <returns>OPC UA 内置数据类型</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetNodeIdValue(Opc.Ua.NodeId,System.Threading.CancellationToken)">
+            <summary>
+            异步获取指定节点的当前值。
+            </summary>
+            <param name="nodeId">节点 ID</param>
+            <param name="ct">取消令牌</param>
+            <returns>节点的当前值</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetValue(System.String,Opc.Ua.BuiltInType)">
+            <summary>
+            获取写入值的类型并返回对应类型（标量值）。
+            根据 OPC UA 内置类型将字符串值解析为对应的 CLR 类型。
+            </summary>
+            <param name="value">待解析的字符串值</param>
+            <param name="builtInType">OPC UA 内置数据类型</param>
+            <returns>解析后的强类型值；解析失败返回 null</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetArrayValue(System.Collections.Generic.IList{System.String},Opc.Ua.BuiltInType)">
+            <summary>
+            获取写入值的类型并返回对应类型（数组值）。
+            根据 OPC UA 内置类型将字符串列表解析为对应的 CLR 数组。
+            </summary>
+            <param name="values">待解析的字符串值列表</param>
+            <param name="builtInType">OPC UA 内置数据类型</param>
+            <returns>解析后的强类型数组；解析失败返回 null</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.AddSubscribeAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.Address},System.Threading.CancellationToken)">
+            <summary>
+            批量添加订阅
+            </summary>
+            <param name="param">参数</param>
+            <returns>只要有一个不成功则直接返回</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.AddSubscribe(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.Address})">
+            <summary>
+            批量添加订阅
+            </summary>
+            <param name="param">参数</param>
+            <returns>只要有一个不成功则直接返回</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.RemoveSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <summary>
+             移除订阅 通过节点来移除订阅，移除指定节点的订阅，没有也返回成功
+            </summary>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.RemoveSubscribe(Snet.Model.data.Address)">
+            <summary>
+             移除订阅 通过节点来移除订阅，移除指定节点的订阅，没有也返回成功
+            </summary>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.DeleteNodeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            删除一个节点的操作，除非服务器配置允许，否则引发异常
+            </summary>
+            <param name="Key">关键字</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.DeleteNode(System.String)">
+            <summary>
+            删除一个节点的操作，除非服务器配置允许，否则引发异常
+            </summary>
+            <param name="Key">关键字</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Opc.ua.client.OpcUaClientOperate.QueueData">
+            <summary>
+            队列数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.QueueData.addressDetails">
+            <summary>
+            地址详情
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.QueueData.NotificationValue">
+            <summary>
+            通知的数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.client.OpcUaClientOperate.QueueData.MonitoredItem">
+            <summary>
+            通知项
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.TaskArray">
+            <summary>
+            任务集合
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.client.OpcUaClientOperate.DataQueue">
+            <summary>
+            数据队列
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.TaskHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            任务处理
+            </summary>
+            <param name="token">任务令牌</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.client.OpcUaClientOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Opc.ua.client.unility.Helper">
+            <summary>
+            辅助类
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.BrowseAsync(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescriptionCollection,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            浏览地址空间
+            </summary>
+            <param name="session"></param>
+            <param name="nodesToBrowse"></param>
+            <param name="throwOnError"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.BrowseAsync(Opc.Ua.Client.ISession,Opc.Ua.BrowseDescription,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            浏览地址空间
+            </summary>
+            <param name="session"></param>
+            <param name="nodeToBrowse"></param>
+            <param name="throwOnError"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.BrowseSuperTypesAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,System.Boolean)">
+            <summary>
+            浏览地址空间并返回指定类型的所有节点
+            </summary>
+            <param name="session"></param>
+            <param name="typeId"></param>
+            <param name="throwOnError"></param>
+            <returns></returns>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.CollectFieldsForInstanceAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            Collects the fields for the instance.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.CollectFieldsForType(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            Collects the fields for the type.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.ConstructEventAsync(Opc.Ua.Client.ISession,Opc.Ua.Client.MonitoredItem,Opc.Ua.EventFieldList,System.Collections.Generic.Dictionary{Opc.Ua.NodeId,System.Type},System.Collections.Generic.Dictionary{Opc.Ua.NodeId,Opc.Ua.NodeId})">
+            <summary>
+            Constructs an event object from a notification.
+            </summary>
+            <param name="session">The session.</param>
+            <param name="monitoredItem">The monitored item that produced the notification.</param>
+            <param name="notification">The notification.</param>
+            <param name="knownEventTypes">The known event types.</param>
+            <param name="eventTypeMappings">Mapping between event types and known event types.</param>
+            <returns>
+            The event object. Null if the notification is not a valid event type.
+            </returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.DiscoverServers(Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Discovers the servers on the local machine.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <returns>A list of server urls.</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.FindEventType(Opc.Ua.Client.MonitoredItem,Opc.Ua.EventFieldList)">
+            <summary>
+            Finds the type of the event for the notification.
+            </summary>
+            <param name="monitoredItem">The monitored item.</param>
+            <param name="notification">The notification.</param>
+            <returns>The NodeId of the EventType.</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.GetAttributeDisplayText(Opc.Ua.Client.ISession,System.UInt32,Opc.Ua.Variant)">
+            <summary>
+            指定的属性的显示文本。
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.SelectEndpoint(System.String,System.Boolean)">
+            <summary>
+            Finds the endpoint that best matches the current settings.
+            </summary>
+            <param name="discoveryUrl">The discovery URL.</param>
+            <param name="useSecurity">if set to <c>true</c> select an endpoint that uses security.</param>
+            <returns>The best available endpoint.</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.TranslateBrowsePaths(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.NamespaceTable,System.Threading.CancellationToken,System.String[])">
+            <summary>
+            返回一组相对路径的节点id
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.CollectFieldsAsync(Opc.Ua.Client.ISession,Opc.Ua.NodeId,Opc.Ua.QualifiedNameCollection,Opc.Ua.SimpleAttributeOperandCollection,System.Collections.Generic.List{Opc.Ua.NodeId},System.Collections.Generic.Dictionary{Opc.Ua.NodeId,Opc.Ua.QualifiedNameCollection})">
+            <summary>
+            Collects the fields for the instance node.
+            </summary>
+            <param name="session">The session.</param>
+            <param name="nodeId">The node id.</param>
+            <param name="parentPath">The parent path.</param>
+            <param name="fields">The event fields.</param>
+            <param name="fieldNodeIds">The node id for the declaration of the field.</param>
+            <param name="foundNodes">The table of found nodes.</param>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.ContainsPath(Opc.Ua.SimpleAttributeOperandCollection,Opc.Ua.QualifiedNameCollection)">
+            <summary>
+            判断指定的select子句包含的浏览路径。
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.GetAccessLevelDisplayText(System.Byte)">
+             <summary>
+            访问级别属性的显示文本。
+             </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.GetEventNotifierDisplayText(System.Byte)">
+            <summary>
+            事件通知属性的显示文本
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.client.unility.Helper.PrepareBrowseNext(Opc.Ua.BrowseResultCollection)">
+            <summary>
+            Create the continuation point collection from the browse result
+            collection for the BrowseNext service.
+            </summary>
+            <param name="browseResultCollection">The browse result collection to use.</param>
+            <returns>The collection of continuation points for the BrowseNext service.</returns>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.DurableSubscription.BatchBase">
+            <summary>
+            Base class for a batch of data
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.Id">
+            <summary>
+            The unique Id of the batch
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.BatchSize">
+            <summary>
+            The number of values in the batch
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.MonitoredItemId">
+            <summary>
+            The Id of the Monitored Item owning the batch
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.IsPersisted">
+            <summary>
+            The batch has been persisted to disk
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.RestoreInProgress">
+            <summary>
+            Restore is currently in progress in a background thread
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.PersistingInProgress">
+            <summary>
+            Peristing is currently in progress in a background thread
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.SetPersisted">
+            <summary>
+            Marks the batch as persisted and removes the data from memory
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.BatchBase.CancelBatchPersist">
+            <summary>
+            Cancel this token to stop the persisting of the batch
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor.RequestBatchPersist(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor.RequestBatchRestore(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor.RestoreSynchronously(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor.PersistSynchronously(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.BatchPersistor.DeleteBatches(System.Collections.Generic.IEnumerable{System.UInt32})">
+            <inheritdoc/>
+        </member>
+        <member name="E:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.Disposed">
+            <summary>
+            Invoked when the queue is disposed
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.#ctor(System.Boolean,System.UInt32,Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor,Opc.Ua.ITelemetryContext)">
+            <summary>
+            Creates an empty queue.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.#ctor(Snet.Opc.ua.service.core.DurableSubscription.StorableEventQueue,Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor)">
+            <summary>
+            Creates a queue from a template
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.IsDurable">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.MonitoredItemId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.QueueSize">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.ItemsInQueue">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.Dequeue(Opc.Ua.EventFieldList@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.Enqueue(Opc.Ua.EventFieldList)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.HandleEnqueueBatching">
+            <summary>
+            persists batches if needed
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.HandleDequeBatching">
+            <summary>
+            Restores batches if needed
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.IsEventContainedInQueue(Opc.Ua.IFilterTarget)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.SetQueueSize(System.UInt32,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.ToStorableQueue">
+            <summary>
+            Brings the queue with contents into a storable format
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.Dispose(System.Boolean)">
+            <summary>
+            Overridable method to dispose of resources.
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.DurableSubscription.DurableEventMonitoredItemQueue.m_enqueueBatch">
+            <summary>
+            the contained in the queue
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.DurableSubscription.EventBatch">
+            <summary>
+            Batch of events
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory">
+            <summary>
+            A factory for <see cref="T:Opc.Ua.Server.IDataChangeMonitoredItemQueue"> and </see> <see cref="T:Opc.Ua.Server.IEventMonitoredItemQueue"/>
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.SupportsDurableQueues">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.CreateDataChangeQueue(System.Boolean,System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.CreateEventQueue(System.Boolean,System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.PersistQueues(System.Collections.Generic.IEnumerable{System.UInt32},System.String)">
+            <summary>
+            Persist the queues of the monitored items with the provided ids
+            Deletes the batches of all queues that are not in the list
+            </summary>
+            <param name="ids">the MonitoredItem ids of the queues to store</param>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.RestoreEventQueue(System.UInt32,System.String)">
+            <summary>
+            Restore an Event queue
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.RestoreDataChangeQueue(System.UInt32,System.String)">
+            <summary>
+            Restore a DataChange queue
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.CleanStoredQueues(System.String,System.Collections.Generic.IEnumerable{System.UInt32})">
+            <summary>
+            Remove all stored queues and batches that are not in the list
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.DurableMonitoredItemQueueFactory.Dispose(System.Boolean)">
+            <summary>
+            An overrideable version of the Dispose.
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor">
+            <summary>
+            Persists batches of queue values to disk
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.RequestBatchPersist(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <summary>
+            Request that a batch shall be persisted in a background thread
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.PersistSynchronously(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <summary>
+            Persist a batch in the main thread
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.RequestBatchRestore(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <summary>
+            Request that a batch shall be restored in a background thread
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.RestoreSynchronously(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <summary>
+            Restore a batch in the main thread
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.DeleteBatches(System.Collections.Generic.IEnumerable{System.UInt32})">
+            <summary>
+            Delete all batches from disk for a monitored item
+            </summary>
+            <param name="batchesToKeep">MonitoredItemIds of the batches to keep on disk</param>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor.DeleteBatch(Snet.Opc.ua.service.core.DurableSubscription.BatchBase)">
+            <summary>
+            Delete a single batch from disk
+            </summary>
+            <param name="batchToRemove">The Batch to remove</param>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.ReferenceServer.Namespaces">
+            <summary>
+            Defines constants for namespaces used by the servers.
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.Namespaces.ReferenceServer">
+            <summary>
+            The namespace for the nodes provided by the reference server.
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager">
+            <summary>
+            A node manager for a server that exposes several variables.
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.folderState">
+            <summary>
+            第一次的地址空间
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.AutoCreateAddress">
+            <summary>
+            自动创建地址
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.AddressSpaceName">
+            <summary>
+            地址空间名称
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.#ctor(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration,System.Boolean,System.String)">
+            <summary>
+            Initializes the node manager.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateAddressSpace(System.Collections.Generic.IDictionary{Opc.Ua.NodeId,System.Collections.Generic.IList{Opc.Ua.IReference}})">
+            <summary>
+            Does any initialization required before the address space can be used.
+            </summary>
+            <remarks>
+            The externalReferences is an out parameter that allows the node manager to link to nodes
+            in other node managers. For example, the 'Objects' node is managed by the CoreNodeManager and
+            should have a reference to the root folder node(s) exposed by this node manager.  
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateFolder(System.String,Opc.Ua.FolderState,System.String)">
+            <summary>
+            创建文件夹
+            </summary>
+            <param name="forlderName">文件夹名称</param>
+            <param name="fs">文件夹状态</param>
+            <returns>返回文件夹状态</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateNode(Snet.Opc.core.NodeBody,Opc.Ua.FolderState)">
+            <summary>
+            创建节点
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateDynamicVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32,System.Byte)">
+            <summary>
+            创建一个动态变量
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateDynamicVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeId,System.Int32,System.Byte)">
+            <summary>
+            创建一个动态变量
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32,System.Boolean,System.Object,System.Byte)">
+            <summary>
+            创建一个新变量
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeId,System.Int32,System.Boolean,System.Object,System.Byte)">
+            <summary>
+            创建一个新变量
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateFolder(Opc.Ua.NodeState,System.String,System.String)">
+            <summary>
+            Creates a new folder.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.StructuralBodyCreateAddress(Snet.Opc.core.NodeBody,Opc.Ua.FolderState)">
+            <summary>
+            通过结构体创建地址
+            </summary>
+            <param name="node">结构体</param>
+            <param name="fs">文件夹</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateFolder(Snet.Opc.core.NodeBody,Opc.Ua.FolderState)">
+            <summary>
+            创建地址
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.RemoveFolder(System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            移除文件夹与文件夹下的节点地址
+            </summary>
+            <param name="folderNameArray">文件夹名称集合</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateAddress(System.Collections.Generic.List{Snet.Opc.core.AddressBody},Opc.Ua.FolderState)">
+            <summary>
+            创建地址
+            </summary>
+            <param name="addressArray">地址集合</param>
+            <param name="fs">文件夹状态</param>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.ReadAddress(Snet.Model.data.Address)">
+            <summary>
+            读取点
+            </summary>
+            <param name="address">地址集合</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.WriteAddress``1(System.Collections.Concurrent.ConcurrentDictionary{System.String,``0})">
+            <summary>
+            写入点
+            </summary>
+            <typeparam name="V">类型</typeparam>
+            <param name="values">键值集合</param>
+            <returns>统一出参</returns>
+            <summary>
+            写入点
+            </summary>
+            <typeparam name="V">类型</typeparam>
+            <param name="values">键值集合</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.RemoveAddress(System.Collections.Generic.List{Snet.Opc.core.AddressBody})">
+            <summary>
+            移除地址
+            </summary>
+            <param name="addressArray">地址集合</param>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.GetNodeId(System.String,System.Nullable{System.Boolean})">
+            <summary>
+            获取nodeid
+            </summary>
+            <param name="addressName">地址全称</param>
+            <param name="dynamic">是不是动态的</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.RemoveNodeId(Opc.Ua.NodeId,System.Nullable{System.Boolean})">
+            <summary>
+            移除nodeid
+            </summary>
+            <param name="nodeId">nodeid</param>
+            <param name="dynamic">是不是动态的，null就是动态静态都删一遍</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.GetFolderAddress(System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            获取文件夹内的地址
+            </summary>
+            <returns>返回nodeid集合</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.GetAddressArray">
+            <summary>
+            获取地址集合
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.#ctor(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration,System.Boolean)">
+            <summary>
+            Initializes the node manager.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.Dispose(System.Boolean)">
+            <summary>
+            An overrideable version of the Dispose.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.New(Opc.Ua.ISystemContext,Opc.Ua.NodeState)">
+            <summary>
+            Creates the NodeId for the specified node.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateMeshVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeState[])">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateDataItemVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateAnalogItemVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateTwoStateDiscreteItemVariable(Opc.Ua.NodeState,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateMultiStateDiscreteItemVariable(Opc.Ua.NodeState,System.String,System.String,System.String[])">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateMultiStateValueDiscreteItemVariable(Opc.Ua.NodeState,System.String,System.String,System.String[])">
+            <summary>
+            Creates a new UInt32 variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateMultiStateValueDiscreteItemVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeId,System.String[])">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeId,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateDynamicVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.BuiltInType,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateDynamicVariable(Opc.Ua.NodeState,System.String,System.String,Opc.Ua.NodeId,System.Int32)">
+            <summary>
+            Creates a new variable.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateView(Opc.Ua.NodeState,System.Collections.Generic.IDictionary{Opc.Ua.NodeId,System.Collections.Generic.IList{Opc.Ua.IReference}},System.String,System.String)">
+            <summary>
+            Creates a new view.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.CreateMethod(Opc.Ua.NodeState,System.String,System.String)">
+            <summary>
+            Creates a new method.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.DeleteAddressSpace">
+            <summary>
+            Frees any resources allocated for the address space.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.GetManagerHandle(Opc.Ua.Server.ServerSystemContext,Opc.Ua.NodeId,System.Collections.Generic.IDictionary{Opc.Ua.NodeId,Opc.Ua.NodeState})">
+            <summary>
+            Returns a unique handle for the node.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceNodeManager.ValidateNode(Opc.Ua.Server.ServerSystemContext,Opc.Ua.Server.NodeHandle,System.Collections.Generic.IDictionary{Opc.Ua.NodeId,Opc.Ua.NodeState})">
+            <summary>
+            Verifies that the specified node exists.
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer">
+            <summary>
+            Implements the Quickstart Reference Server.
+            </summary>
+            <remarks>
+            Each server instance must have one instance of a StandardServer object which is
+            responsible for reading the configuration file, creating the endpoints and dispatching
+            incoming requests to the appropriate handler.
+            
+            This sub-class specifies non-configurable metadata such as Product Name and initializes
+            the EmptyNodeManager which provides access to the data exposed by the Server.
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.#ctor(System.String,System.String,Snet.Opc.core.Data.AuType,System.Boolean,System.String,System.Action{System.Object,Snet.Model.data.EventDataResult})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="User">用户名</param>
+            <param name="Password">密码</param>
+            <param name="AType">验证类型</param>
+            <param name="AutoCreateAddress">自动创建地址</param>
+            <param name="AddressSpaceName">地址空间名称</param>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.ActionEvent">
+            <summary>
+            客户端写入事件抛出
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.User">
+            <summary>
+            账号密码
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.Password">
+            <summary>
+            账号密码
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.AType">
+            <summary>
+            认证类型
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.NodeManage">
+            <summary>
+            地址管理
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.AutoCreateAddress">
+            <summary>
+            自动创建地址
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.AddressSpaceName">
+            <summary>
+            地址空间名称
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.CreateMasterNodeManager(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Creates the node managers for the server.
+            </summary>
+            <remarks>
+            This method allows the sub-class create any additional node managers which it uses. The SDK
+            always creates a CoreNodeManager which handles the built-in nodes defined by the specification.
+            Any additional NodeManagers are expected to handle application specific nodes.
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.CreateSubscriptionStore(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Creates the subscriptionStore for the server.
+            </summary>
+            <param name="server">The server.</param>
+            <param name="configuration">The configuration.</param>
+            <returns>Returns a subscriptionStore for a server, the return type is <seealso cref="T:Opc.Ua.Server.ISubscriptionStore"/>.</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.LoadServerProperties">
+            <summary>
+            Loads the non-configurable properties for the application.
+            </summary>
+            <remarks>
+            These properties are exposed by the server but cannot be changed by administrators.
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.CreateResourceManager(Opc.Ua.Server.IServerInternal,Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Creates the resource manager for the server.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.OnServerStarting(Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Initializes the server before it starts up.
+            </summary>
+            <remarks>
+            This method is called before any startup processing occurs. The sub-class may update the 
+            configuration object or do any other application specific startup tasks.
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.OnServerStarted(Opc.Ua.Server.IServerInternal)">
+            <summary>
+            Called after the server has been started.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.GetUserTokenPolicies(Opc.Ua.ApplicationConfiguration,Opc.Ua.EndpointDescription)">
+            <summary>
+            Override some of the default user token policies for some endpoints.
+            </summary>
+            <remarks>
+            Sample to show how to override default user token policies.
+            </remarks>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.CreateUserIdentityValidators(Opc.Ua.ApplicationConfiguration)">
+            <summary>
+            Creates the objects used to validate the user identity tokens supported by the server.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.SessionManager_ImpersonateUser(Opc.Ua.Server.ISession,Opc.Ua.Server.ImpersonateEventArgs)">
+            <summary>
+            当客户端试图更改身份时调用
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.VerifyUserTokenCertificate(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+            <summary>
+            验证证书
+            </summary>
+            <param name="certificate"></param>
+            <exception cref="T:Opc.Ua.ServiceResultException"></exception>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServer.VerifyPassword(Opc.Ua.UserNameIdentityToken)">
+            <summary>
+            验证账号密码
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServerConfiguration">
+            <summary>
+            Stores the configuration the data access node manager.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServerConfiguration.#ctor">
+            <summary>
+            The default constructor.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServerConfiguration.Initialize(System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes the object during deserialization.
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServerConfiguration.Initialize">
+            <summary>
+            Sets private members to default values.
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.core.ReferenceServer.ReferenceServerConfiguration.ShowCertificateValidationDialog">
+            <summary>
+            Whether the user dialog for accepting invalid certificates should be displayed.
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.OpcUaServiceData">
+            <summary>
+            OPC UA 服务端数据配置类，封装 OPC UA Server 的连接参数（IP 地址、端口、认证类型、地址空间配置等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.OpcUaServiceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.Tag">
+            <summary>
+            标识
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.AType">
+            <summary>
+            认证类型
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.AddressSpaceName">
+            <summary>
+            地址空间名称
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.Cer">
+            <summary>
+            服务端应用证书路径（PFX，含私钥，可选）。
+            不配置时服务端自动生成应用证书；配置时使用指定证书，
+            需包含监听地址（IpAddress）的 SAN 域名。
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.SecreKey">
+            <summary>
+            服务端应用证书密钥（PFX 私钥密码）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.TrustedUserPath">
+            <summary>
+            受信任用户公钥存储路径
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceData.Basics.AutoCreateAddress">
+            <summary>
+            自动创建地址
+            </summary>
+        </member>
+        <member name="T:Snet.Opc.ua.service.OpcUaServiceOperate">
+            <summary>
+            OPC UA 服务端操作类，基于 OPC Foundation UA SDK 实现 OPC UA Server 服务。
+            <para>支持地址空间管理（创建/移除文件夹和地址）、会话管理、订阅监控、数据读写等功能。</para>
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.#ctor(Snet.Opc.ua.service.OpcUaServiceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceOperate.AI">
+            <summary>
+            OPCUA 安装、配置、运行
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.OpcUaServiceOperate.service">
+            <summary>
+            opcua服务
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceOperate.Telemetry">
+            <summary>
+            遥测
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.OpcUaServiceOperate.LastEventTime">
+            <summary>
+            最后活动时间
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.OpcUaServiceOperate.tokenSource">
+            <summary>
+            全局生命周期令牌
+            </summary>
+        </member>
+        <member name="F:Snet.Opc.ua.service.OpcUaServiceOperate._statusTask">
+            <summary>
+            状态监控后台任务（保存引用以便关闭时等待完成）
+            </summary>
+        </member>
+        <member name="P:Snet.Opc.ua.service.OpcUaServiceOperate.IsStart">
+            <summary>
+            是否已启动
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.LoadApplicationCertificate(Opc.Ua.ApplicationConfiguration,System.String)">
+            <summary>
+            加载用户指定的服务端应用证书（PFX）。
+            校验私钥、有效期、密钥大小及 SAN 是否覆盖监听地址，不满足则抛出明确错误；
+            校验通过后把证书复制到 SDK 证书存储，返回标准的证书标识供 SDK 加载。
+            </summary>
+            <param name="config">应用配置</param>
+            <param name="cerRoot">证书根目录</param>
+            <returns>仅包含指定证书的应用证书集合</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.ConfigureUserCertificateStores(Opc.Ua.ApplicationConfiguration,System.String)">
+            <summary>
+            配置证书认证所需的用户证书信任存储。
+            客户端用户证书（公开部分）需放入信任目录，签发 CA 证书放入 issuerUser 目录，
+            未受信任的客户端证书将在会话激活阶段被拒绝。
+            信任目录优先使用 VerifyClientCerPublicKeyPath（用户可配置），未配置时回退到 cerRoot\trustedUser。
+            </summary>
+            <param name="config">应用配置</param>
+            <param name="cerRoot">证书根目录</param>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.StatusThreadAsync(System.Threading.CancellationToken)">
+            <summary>
+            启动线程
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.SessionManager_Session(Opc.Ua.Server.ISession,Opc.Ua.Server.SessionEventReason)">
+            <summary>
+            会话状态
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.SubscriptionManager_Subscription(Opc.Ua.Server.ISubscription,System.Boolean)">
+            <summary>
+            订阅状态
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.PrintSessionStatus(Opc.Ua.Server.ISession,System.String,System.Boolean)">
+            <summary>
+            打印会话状态
+            </summary>
+            <param name="session">会话对象</param>
+            <param name="reason">原因</param>
+            <param name="IsHeartbeatPacket">是不是心跳包</param>
+        </member>
+        <member name="F:Snet.Opc.ua.service.OpcUaServiceOperate.FolderInfo">
+            <summary>
+            文件夹信息
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.CreateFolder(System.String,Opc.Ua.FolderState)">
+            <summary>
+            创建文件夹
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.RemoveFolder(System.Collections.Generic.List{Opc.Ua.NodeId})">
+            <summary>
+            移除文件夹
+            </summary>
+            <param name="folderNameArray">文件夹集合</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.CreateAddress(System.Collections.Generic.List{Snet.Opc.core.AddressBody},Opc.Ua.FolderState)">
+            <summary>
+            创建地址，通过对应文件夹创建
+            </summary>
+            <param name="addresses">地址集合</param>
+            <param name="folderState">文件夹对象</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.IncAddress(Snet.Opc.core.NodeBody,Opc.Ua.FolderState)">
+            <summary>
+            导入地址
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.GetAddressArray">
+            <summary>
+            获取已创建的地址
+            </summary>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.RemoveAddress(System.Collections.Generic.List{Snet.Opc.core.AddressBody})">
+            <summary>
+            移除地址
+            </summary>
+            <param name="addressNames">地址名称</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Off(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.WriteModel})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Read(Snet.Model.data.Address)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.GetStatus">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.WriteModel},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Opc.ua.service.OpcUaServiceOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Opc.utility.OpcHelper">
+            <summary>
+            OPC 辅助工具类，提供地址分组、订阅地址处理等功能，用于 OPC UA/DA 客户端的节点管理。
+            </summary>
+        </member>
+        <member name="M:Snet.Opc.utility.OpcHelper.SubscribeAddressHandle(Snet.Model.data.Address,System.Int32)">
+            <summary>
+            订阅地址处理：将地址按指定数量分组，返回以唯一标签为键的线程安全字典。
+            </summary>
+            <param name="address">地址数据对象，包含待分组的地址列表</param>
+            <param name="groupMaxNumber">每组最大订阅数量</param>
+            <returns>分组后的地址字典；若地址为空则返回 null</returns>
+        </member>
+        <member name="M:Snet.Opc.utility.OpcHelper.SplitList(Snet.Model.data.Address,System.Int32)">
+            <summary>
+            将地址列表按指定数量拆分为多个子集合。
+            </summary>
+            <param name="list">包含待拆分地址的对象</param>
+            <param name="num">每组最大元素数量</param>
+            <returns>以序号为键、子地址集合为值的字典</returns>
+        </member>
+        <member name="E:DurableDataChangeMonitoredItemQueue.Disposed">
+            <summary>
+            Invoked when the queue is disposed
+            </summary>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.#ctor(System.Boolean,System.UInt32,Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor,Opc.Ua.ITelemetryContext)">
+            <summary>
+            Creates an empty queue.
+            </summary>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.#ctor(StorableDataChangeQueue,Snet.Opc.ua.service.core.DurableSubscription.IBatchPersistor)">
+            <summary>
+            Creates a queue from a template
+            </summary>
+        </member>
+        <member name="P:DurableDataChangeMonitoredItemQueue.MonitoredItemId">
+            <inheritdoc/>
+        </member>
+        <member name="P:DurableDataChangeMonitoredItemQueue.QueueSize">
+            <summary>
+            Gets the current queue size.
+            </summary>
+        </member>
+        <member name="P:DurableDataChangeMonitoredItemQueue.ItemsInQueue">
+            <summary>
+            Gets number of elements actually contained in value queue.
+            </summary>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.ToStorableQueue">
+            <summary>
+            Brings the queue with content into a storable format
+            </summary>
+        </member>
+        <member name="P:DurableDataChangeMonitoredItemQueue.IsDurable">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.Enqueue(Opc.Ua.DataValue,Opc.Ua.ServiceResult)">
+            <summary>
+            Adds the value to the queue.
+            </summary>
+            <param name="value">The value to queue.</param>
+            <param name="error">The error to queue.</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.HandleEnqueueBatching">
+            <summary>
+            persists batches if needed
+            </summary>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.OverwriteLastValue(Opc.Ua.DataValue,Opc.Ua.ServiceResult)">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.ResetQueue(System.UInt32,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.PeekLastValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.Dequeue(Opc.Ua.DataValue@,Opc.Ua.ServiceResult@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.HandleDequeBatching">
+            <summary>
+            Restores batches if needed
+            </summary>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.PeekOldestValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:DurableDataChangeMonitoredItemQueue.Dispose(System.Boolean)">
+            <summary>
+            An overrideable version of the Dispose.
+            </summary>
+        </member>
+        <member name="T:DataChangeBatch">
+            <summary>
+            Batch of Datachanges and corresponding errors
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Snet.Windows.Controls</id>
+    <version>26.235.2</version>
+    <authors>Shun</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://snet.cn/</projectUrl>
+    <description>界面组件：Controls（控件、转换器、模型、枚举、处理、消息、多语言）</description>
+    <repository type="git" commit="642ae0fe1de17d99614c0a98e746f5e9068b0c9c" />
+    <dependencies>
+      <group targetFramework="net10.0-windows7.0">
+        <dependency id="Snet.Windows.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0-windows7.0">
+        <dependency id="Snet.Windows.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net10.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WPF" />
+      </group>
+      <group targetFramework="net8.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WPF" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+</package>

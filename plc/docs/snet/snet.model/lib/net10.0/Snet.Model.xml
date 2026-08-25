@@ -1,0 +1,3518 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Model</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Model.attribute.AutoAllocatingAttribute">
+            <summary>
+            自动分割属性特性；<br/>
+            用于协议类型枚举中，快速检索出对应的属性列表；<br/>
+            必须配合 AutoAllocatingTagAttribute 使用；<br/>
+            通过属性名称数组指定当前枚举值对应的参数属性集合
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.AutoAllocatingAttribute.#ctor(System.String[])">
+            <summary>
+            下标集合特性；<br/>
+            用于协议类型枚举中使用；<br/>
+            快速检索出对应的属性列表；<br/>
+            配合　AutoAllocatingTagAttribute　使用
+            </summary>
+            <param name="propertyNameArray">属性名称</param>
+        </member>
+        <member name="P:Snet.Model.attribute.AutoAllocatingAttribute.PropertyNameArray">
+            <summary>
+            属性名称集合
+            </summary>
+        </member>
+        <member name="T:Snet.Model.attribute.AutoAllocatingTagAttribute">
+            <summary>
+            自动分配标识特性；<br/>
+            标识此属性是用于自动分配属性的枚举类型属性；<br/>
+            在当前类中只能出现一个该标识；<br/>
+            必须配合 AutoAllocatingAttribute 使用，指定枚举类型用于参数分配检索
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.AutoAllocatingTagAttribute.#ctor(System.Type)">
+            <summary>
+            自动分配标识特性，标识此属性是用于自动分配属性使用；<br/>
+            在当前类中只能出现一个这样的标识；<br/>
+            用于协议类型枚举中使用；<br/>
+            快速检索出对应的属性列表；<br/>
+            配合　AutoAllocatingAttribute　使用
+            </summary>
+            <param name="enumType">枚举的类型</param>
+        </member>
+        <member name="P:Snet.Model.attribute.AutoAllocatingTagAttribute.EnumType">
+            <summary>
+            枚举的类型
+            </summary>
+        </member>
+        <member name="T:Snet.Model.attribute.ByteStructureAttribute">
+            <summary>
+            字节结构特性；<br/>
+            用于字节数组与结构体的映射；<br/>
+            配置字节下标（Index）、数据长度（Length）和数据类型（DataType）；<br/>
+            提供 Copy 方法从源字节数组中拷贝指定区间的数据
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.ByteStructureAttribute.#ctor(System.Int32,System.Int32,Snet.Model.enum.DataType)">
+            <summary>
+            字节结构特性<br/>
+            用于字节数组映射结构体使用
+            </summary>
+            <param name="index">下标</param>
+            <param name="length">长度</param>
+            <param name="dataType">数据类型</param>
+        </member>
+        <member name="M:Snet.Model.attribute.ByteStructureAttribute.#ctor(System.Int32,Snet.Model.enum.DataType)">
+            <summary>
+            字节结构特性<br/>
+            用于字节数组映射结构体使用
+            </summary>
+            <param name="index">下标</param>
+            <param name="dataType">数据类型</param>
+        </member>
+        <member name="P:Snet.Model.attribute.ByteStructureAttribute.Index">
+            <summary>
+            下标<br/>
+            默认从零开始
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.ByteStructureAttribute.Length">
+            <summary>
+            长度
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.ByteStructureAttribute.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.ByteStructureAttribute.Copy(System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+            通过参数拷贝；<br/>
+            从源字节数组中按 Index 和 Length 拷贝指定区间的数据；<br/>
+            包含边界检查，防止数组越界异常
+            </summary>
+            <param name="source">字节源</param>
+            <param name="offset">偏移量，偏移点为空值</param>
+            <param name="end">末尾预留空偏移量</param>
+            <returns>拷贝后的字节数组</returns>
+            <exception cref="T:System.ArgumentException">源数组长度不足时抛出</exception>
+        </member>
+        <member name="T:Snet.Model.attribute.DisplayAttribute">
+            <summary>
+            展示特性；<br/>
+            用于标记属性在前端 UI 中的展示行为；<br/>
+            配置是否显示、是否可输入、是否必填、数据类别和详细提示；<br/>
+            配合 ParamModel 和反射机制自动生成参数配置界面
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.DisplayAttribute.#ctor(System.Boolean,System.Boolean,System.Boolean,Snet.Model.data.ParamModel.dataCate,System.String)">
+            <summary>
+            展示
+            </summary>
+            <param name="Use">是否使用</param>
+            <param name="Show">是否显示</param>
+            <param name="MustFillIn">必须填写</param>
+            <param name="DataCate">数据类型</param>
+            <param name="DetailsTips">详细提示</param>
+        </member>
+        <member name="P:Snet.Model.attribute.DisplayAttribute.Show">
+            <summary>
+            是否显示；<br/>
+            true:展示；<br/>
+            false:隐藏
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.DisplayAttribute.Use">
+            <summary>
+            是否使用；<br/>
+            false:不让输入<br/>
+            true:正常输入
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.DisplayAttribute.MustFillIn">
+            <summary>
+            必须填写
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.DisplayAttribute.DetailsTips">
+            <summary>
+            详细提示
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.DisplayAttribute.DataCate">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="T:Snet.Model.attribute.MultilingualAttribute">
+            <summary>
+            多语言特性；<br/>
+            用于标记属性的多语言描述，包含中文（Zh）和英文（En）；<br/>
+            配合 LanguageType 枚举和 ILanguage 接口实现多语言支持
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.MultilingualAttribute.#ctor(System.String,System.String)">
+            <summary>
+            多语言特性构造函数
+            </summary>
+            <param name="zh">中文</param>
+            <param name="en">英文</param>
+        </member>
+        <member name="P:Snet.Model.attribute.MultilingualAttribute.Zh">
+            <summary>
+            中文
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.MultilingualAttribute.En">
+            <summary>
+            英文
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.MultilingualAttribute.Get(Snet.Model.enum.LanguageType)">
+            <summary>
+            获取对应的描述；<br/>
+            根据语言类型返回对应的多语言文本
+            </summary>
+            <param name="language">语言类型</param>
+            <returns>对应语言的描述文本，不支持的语言类型返回 null</returns>
+        </member>
+        <member name="T:Snet.Model.attribute.UnitAttribute">
+            <summary>
+            单位特性；<br/>
+            用于标记属性的物理单位（如 ℃、V、A、rpm 等）；<br/>
+            配合反射机制生成前端参数显示
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.UnitAttribute.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="Unit">单位</param>
+        </member>
+        <member name="P:Snet.Model.attribute.UnitAttribute.Unit">
+            <summary>
+            单位
+            </summary>
+        </member>
+        <member name="T:Snet.Model.attribute.VerifyAttribute">
+            <summary>
+            验证特性；<br/>
+            用于标记属性的正则表达式验证规则；<br/>
+            包含正则表达式（Pattern）和验证失败提示（FailTips）；<br/>
+            内置 Regex 超时保护，防止正则表达式拒绝服务攻击（ReDoS）
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.VerifyAttribute.#ctor(System.String,System.String)">
+            <summary>
+            验证
+            </summary>
+            <param name="pattern">正则表达式</param>
+            <param name="failTips">验证失败提示</param>
+        </member>
+        <member name="P:Snet.Model.attribute.VerifyAttribute.Pattern">
+            <summary>
+            正则表达式
+            </summary>
+        </member>
+        <member name="P:Snet.Model.attribute.VerifyAttribute.FailTips">
+            <summary>
+            验证失败提示
+            </summary>
+        </member>
+        <member name="M:Snet.Model.attribute.VerifyAttribute.Verify(System.String,System.String@,System.Boolean)">
+            <summary>
+            验证数据是否符合正则表达式规则；<br/>
+            如果正则匹配成功则视为验证失败（黑名单模式），返回 false 并输出失败提示；<br/>
+            内置超时保护，防止正则表达式拒绝服务攻击（ReDoS）
+            </summary>
+            <param name="source">待验证的数据源字符串</param>
+            <param name="failTips">响应：验证失败时的提示信息</param>
+            <param name="ignoreCase">是否忽略大小写，默认不忽略</param>
+            <returns>true：验证通过；false：验证失败</returns>
+        </member>
+        <member name="T:Snet.Model.data.Address">
+            <summary>
+            地址容器；<br/>
+            包含多个地址详情（AddressDetails）的集合；<br/>
+            通过 SN 唯一标识符区分不同的地址组；<br/>
+            提供地址查询、校验、虚拟地址过滤、实际地址计数等操作
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.Address.#ctor(System.String,System.Collections.Generic.List{Snet.Model.data.AddressDetails},System.DateTime)">
+            <summary>
+            带参构造函数
+            </summary>
+            <param name="sn">唯一标识符</param>
+            <param name="addressDetails">地址详情集合</param>
+            <param name="creationTime">创建时间</param>
+        </member>
+        <member name="M:Snet.Model.data.Address.#ctor(System.Collections.Generic.List{Snet.Model.data.AddressDetails})">
+            <summary>
+            带参构造函数
+            </summary>
+            <param name="addressDetails">地址详情集合</param>
+        </member>
+        <member name="M:Snet.Model.data.Address.#ctor(Snet.Model.data.AddressDetails)">
+            <summary>
+            带参构造函数；<br/>
+            通过单个地址详情创建地址容器
+            </summary>
+            <param name="addressDetails">地址详情</param>
+        </member>
+        <member name="M:Snet.Model.data.Address.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.Address.SN">
+            <summary>
+            可以理解成唯一标识符（可以存机台号、组名、车间、厂）
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.Address.AddressArray">
+            <summary>
+            所有地址 也可以是一个地址  此数组里面的地址应是唯一的
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.Address.CreationTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.Address.GetAddressInfo(System.String,System.String)">
+            <summary>
+            获取地址信息；<br/>
+            根据 PLC 地址名称和/或别名查找对应的地址详情；<br/>
+            两个参数均为空时返回 null
+            </summary>
+            <param name="AddressName">PLC地址</param>
+            <param name="AddressAnotherName">地址别名</param>
+            <returns>地址详情，未找到返回 null</returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.CheckAddress">
+            <summary>
+            检查地址集合是否存在无效数据；<br/>
+            验证所有地址的 AddressName 是否均已填写
+            </summary>
+            <returns>
+            true：所有地址数据有效；<br/>
+            false：存在无效数据（AddressName 为空）
+            </returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.RemoveVirtualAddress">
+            <summary>
+            移除虚拟地址，仅保留实际地址；<br/>
+            常用于订阅场景，过滤掉虚拟模拟地址；<br/>
+            返回新的列表，不会修改原始 AddressArray
+            </summary>
+            <returns>仅包含实际地址的地址详情集合</returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.GetRealityAddressCount">
+            <summary>
+            获取实际地址数量；<br/>
+            排除所有虚拟地址后的实际地址总数；<br/>
+            使用 LINQ Count 避免创建中间 List 对象
+            </summary>
+            <returns>实际地址数量</returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json字符串</returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.Equals(System.Object)">
+            <summary>
+            重写 Equals；<br/>
+            使用对象比较器进行深度比较
+            </summary>
+            <param name="o">待比较的对象</param>
+            <returns>是否一致</returns>
+        </member>
+        <member name="M:Snet.Model.data.Address.GetHashCode">
+            <summary>
+            重写 GetHashCode；<br/>
+            与 Equals 保持一致，基于 SN 生成哈希值
+            </summary>
+            <returns>哈希值</returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressDetails">
+            <summary>
+            单个地址的详细信息；<br/>
+            包含地址名称、别名、属性名、描述、数据类型、地址类型、编码类型、长度等；<br/>
+            支持消息中间件参数（AddressMq）和数据解析参数（AddressParse）；<br/>
+            支持实际地址和多种虚拟地址类型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.#ctor(System.String,System.String,System.String,System.String,System.String,System.Object,Snet.Model.data.AddressMq,Snet.Model.data.AddressParse,Snet.Model.enum.DataType,Snet.Model.enum.AddressType,System.Boolean,System.UInt16,System.Nullable{Snet.Model.enum.EncodingType})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="sn">唯一标识</param>
+            <param name="addressName">
+            唯一；<br/>
+            实际的点位地址名称；<br/>
+            是扩展数据时，可为空；<br/>
+            不是扩展数据时，此项为PLC的地址</param>
+            <param name="addressAnotherName">地址别名</param>
+            <param name="addressPropertyName">地址属性名</param>
+            <param name="addressDescribe">地址描述</param>
+            <param name="addressExtendParam">地址扩展参数</param>
+            <param name="addressMqParam">地址消息中间件参数</param>
+            <param name="addressParseParam">解析参数</param>
+            <param name="addressDataType">数据类型</param>
+            <param name="addressType">地址类型</param>
+            <param name="isEnable">是否启用</param>
+            <param name="length">
+            数组长度，默认值 1；<br/>
+            AddressDataType 存在 Array 类型时，根据实际情况修改此参数；<br/>
+            读取对应的 Array 类型长度
+            </param>
+            <param name="encodingType">编码类型</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.#ctor(System.String,System.String,Snet.Model.enum.DataType,System.UInt16,System.Nullable{Snet.Model.enum.EncodingType})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="sn">唯一标识</param>
+            <param name="addressName">
+            唯一；<br/>
+            实际的点位地址名称；<br/>
+            是扩展数据时，可为空；<br/>
+            不是扩展数据时，此项为PLC的地址
+            </param>
+            <param name="addressDataType">数据类型</param>
+            <param name="length">
+            数组长度，默认值 1；<br/>
+            AddressDataType 存在 Array 类型时，根据实际情况修改此参数；<br/>
+            读取对应的 Array 类型长度
+            </param>
+            <param name="encodingType">编码类型</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.#ctor(System.String,Snet.Model.enum.DataType,System.UInt16,System.Nullable{Snet.Model.enum.EncodingType})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="addressName">
+            唯一；<br/>
+            实际的点位地址名称；<br/>
+            是扩展数据时，可为空；<br/>
+            不是扩展数据时，此项为PLC的地址
+            </param>
+            <param name="addressDataType">数据类型</param>
+            <param name="length">
+            数组长度，默认值 1；<br/>
+            AddressDataType 存在 Array 类型时，根据实际情况修改此参数；<br/>
+            读取对应的 Array 类型长度
+            </param>
+            <param name="encodingType">编码类型</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.SN">
+            <summary>
+            可以理解成唯一标识符（可以存机台号、组名、车间、厂）；<br/>
+            默认为随机guid
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressName">
+            <summary>
+            唯一；<br/>
+            实际的点位地址名称；<br/>
+            是扩展数据时，可为空；<br/>
+            不是扩展数据时，此项为PLC的地址
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.Length">
+            <summary>
+            长度，默认值 1；<br/>
+            AddressDataType 存在 Array 类型时，根据实际情况修改此参数；<br/>
+            读取对应的 Array 类型长度
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.EncodingType">
+            <summary>
+            编码类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressAnotherName">
+            <summary>
+            地址别名
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressPropertyName">
+            <summary>
+            地址属性名称（与定义的实体名称对应）；<br/>
+            是扩展数据时，可为空；<br/>
+            不是扩展数据时，此项为PLC的最后字段名
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressDescribe">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressExtendParam">
+            <summary>
+            指定通信的扩展数据
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.IsEnable">
+            <summary>
+            是否启用
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressMqParam">
+            <summary>
+            地址消息中间件参数<br/>
+            通过指定的消息中间件把数据发送出去
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressParseParam">
+            <summary>
+            数据解析参数
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressDataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressDetails.AddressType">
+            <summary>
+            地址类型，默认实际地址
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.Equals(System.Object)">
+            <summary>
+            重写 Equals；<br/>
+            使用对象比较器进行深度比较
+            </summary>
+            <param name="o">待比较的对象</param>
+            <returns>是否一致</returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressDetails.GetHashCode">
+            <summary>
+            重写 GetHashCode；<br/>
+            与 Equals 保持一致，基于 SN 生成哈希值
+            </summary>
+            <returns>哈希值</returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressMq">
+            <summary>
+            地址消息中间件配置；<br/>
+            用于配置数据采集后通过消息中间件发布数据的参数；<br/>
+            包含主题（Topic）、内容格式（ContentFormat）、实例SN集合（ISns）
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressMq.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressMq.#ctor(System.String,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="topic">主题</param>
+            <param name="contentFormat">内容格式</param>
+            <param name="iSns">实例SN集合</param>
+        </member>
+        <member name="P:Snet.Model.data.AddressMq.Topic">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressMq.ContentFormat">
+            <summary>
+            内容格式；<br/>
+            使用：{0} 必须存在，放数据；<br/>
+            为空：无任何格式，直接放数据
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressMq.ISns">
+            <summary>
+            实例SN；<br/>
+            为空则所有打开的消息中间件进行生产
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressMq.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressParse">
+            <summary>
+            地址解析配置；<br/>
+            每个地址只能存在一个解析配置；<br/>
+            通过反射机制执行指定方法对采集数据进行二次解析处理；<br/>
+            ReflectionParam[0]:反射的基础数据；ReflectionParam[1]:需要执行的方法SN
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressParse.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressParse.#ctor(System.Object[])">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="reflectionParam">反射解析</param>
+        </member>
+        <member name="P:Snet.Model.data.AddressParse.ReflectionParam">
+            <summary>
+            反射解析；<br/>
+            object[0]：反射的基础数据；<br/>
+            object[1]：需要执行哪个方法的SN；<br/>
+            通过反射得到解析后结果，[入参(string 地址名,string 地址值)] - [出参(string)]
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressParse.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressValue">
+            <summary>
+            地址获取到的值；<br/>
+            继承自 AddressDetails，扩展了数据质量、结果值、原始值、消息和时间属性；<br/>
+            提供 SET 方法从 AddressDetails/BytesModel 设置参数；<br/>
+            提供 GetSimplify 方法转换为轻量级传输模型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.#ctor(Snet.Model.enum.QualityType,System.Object,System.Object,System.String,System.DateTime)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="quality">数据质量</param>
+            <param name="resultValue">结果值</param>
+            <param name="originalValue">原始值</param>
+            <param name="message">详细信息</param>
+            <param name="time">更新时间</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.#ctor(Snet.Model.enum.QualityType,System.Object,System.Object,System.String,System.DateTime,Snet.Model.data.AddressDetails)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="quality">数据质量</param>
+            <param name="resultValue">结果值</param>
+            <param name="originalValue">原始值</param>
+            <param name="message">详细信息</param>
+            <param name="time">更新时间</param>
+            <param name="addressDetails">地址详情</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.#ctor(Snet.Model.enum.QualityType,System.Object,System.Object,System.String)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="quality">数据质量</param>
+            <param name="resultValue">结果值</param>
+            <param name="originalValue">原始值</param>
+            <param name="message">详细信息</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.#ctor(Snet.Model.enum.QualityType,System.Object,System.Object,System.String,Snet.Model.data.AddressDetails)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="quality">数据质量</param>
+            <param name="resultValue">结果值</param>
+            <param name="originalValue">原始值</param>
+            <param name="message">详细信息</param>
+            <param name="addressDetails">地址详情</param>
+        </member>
+        <member name="P:Snet.Model.data.AddressValue.Quality">
+            <summary>
+            数据质量；<br/>
+            -1：尚未经过处理；<br/>
+            0：异常；<br/>
+            1：正常；<br/>
+            2：类型错误；<br/>
+            3：数据经过解析，并且解析成功，无法得知数据解析后的正确性；<br/>
+            4：解析错误；
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValue.Message">
+            <summary>
+            详细信息
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValue.ResultValue">
+            <summary>
+            结果值；<br/>
+            解析'后'的值，未经过解析与'OriginalValue'一致
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValue.OriginalValue">
+            <summary>
+            原始值；<br/>
+            解析'前'的值，未经过解析与'ResultValue'一致
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValue.Time">
+            <summary>
+            获取或更新的时间
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.GetDetails(System.Object@,System.Object@,System.String@,System.Nullable{System.DateTime}@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="resultValue">结果值</param>
+            <param name="originalValue">原始值</param>
+            <param name="message">详细信息</param>
+            <param name="time">获取或更新的时间</param>
+            <returns>获取数据质量</returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.GetSimplify">
+            <summary>
+            获取精简版数据；<br/>
+            将当前 AddressValue 转换为轻量级 AddressValueSimplify 传输模型
+            </summary>
+            <returns>精简地址值</returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.SET(Snet.Model.data.AddressDetails)">
+            <summary>
+            设置父类的参数
+            </summary>
+            <param name="addressDetails">地址详情</param>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.SET(System.Object,System.Byte[],System.DateTime,Snet.Model.data.BytesModel,System.String,Snet.Model.enum.QualityType)">
+            <summary>
+            设置参数
+            </summary>
+            <param name="value">值</param>
+            <param name="source">源</param>
+            <param name="time">时间</param>
+            <param name="param">参数</param>
+            <param name="msg">消息</param>
+            <param name="quality">质量</param>
+            <returns>返回标准的 <see cref="T:Snet.Model.data.AddressValue"/></returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.Equals(System.Object)">
+            <summary>
+            重写 Equals；<br/>
+            使用对象比较器进行深度比较，忽略 Time 属性
+            </summary>
+            <param name="o">待比较的对象</param>
+            <returns>是否一致</returns>
+        </member>
+        <member name="M:Snet.Model.data.AddressValue.GetHashCode">
+            <summary>
+            重写 GetHashCode；<br/>
+            与 Equals 保持一致，基于 SN 生成哈希值
+            </summary>
+            <returns>哈希值</returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressValueSimplify">
+            <summary>
+            精简地址值；<br/>
+            用于数据传输的轻量化地址值模型，支持 Protobuf 序列化；<br/>
+            包含 SN、点位地址、数据长度、编码类型、质量、采集数值、详细信息、时间戳、数据类型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplify.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplify.#ctor(System.String,System.String,System.UInt16,System.Nullable{Snet.Model.enum.EncodingType},Snet.Model.enum.QualityType,System.String,System.String,System.Int64,Snet.Model.enum.DataType)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="sn">唯一标识符</param>
+            <param name="add">点位地址</param>
+            <param name="l">数据长度</param>
+            <param name="enc">编码类型</param>
+            <param name="q">数据质量</param>
+            <param name="val">采集数值</param>
+            <param name="msg">详细信息</param>
+            <param name="ts">采集时间</param>
+            <param name="dt">数据类型</param>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.Add">
+            <summary>
+            点位地址
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.L">
+            <summary>
+            数据长度
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.ENC">
+            <summary>
+            编码类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.Q">
+            <summary>
+            数据质量；<br/>
+            -1：尚未经过处理；<br/>
+            0：异常；<br/>
+            1：正常；<br/>
+            2：类型错误；<br/>
+            3：数据经过解析，并且解析成功，无法得知数据解析后的正确性；<br/>
+            4：解析错误；
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.Msg">
+            <summary>
+            详细信息
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.VAL">
+            <summary>
+            采集数值
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.Ts">
+            <summary>
+            采集时间
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplify.DT">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplify.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.Model.data.AddressValueSimplifyProtobuf">
+            <summary>
+            精简地址 Protobuf 专用类；<br/>
+            用于通过 protobuf-net 二进制序列化批量传输精简地址值集合；<br/>
+            包含时间戳和 AddressValueSimplify 集合
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplifyProtobuf.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplifyProtobuf.#ctor(System.Collections.Generic.IEnumerable{Snet.Model.data.AddressValueSimplify})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="simplifys">精简地址集合</param>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplifyProtobuf.Ts">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.AddressValueSimplifyProtobuf.ITM">
+            <summary>
+            精简地址集合；<br/>
+            包含多个精简地址值的可迭代集合
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.AddressValueSimplifyProtobuf.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Snet.Model.data.BaseModel">
+            <summary>
+            基础模型；<br/>
+            所有结果模型的基类，继承自 AsyncEventArgs；<br/>
+            包含状态（Status）、描述信息（Message）和响应时间（Time）；<br/>
+            提供 GetDetails 方法解构结果，重写 ToString 输出 JSON 字符串
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.#ctor">
+            <summary>
+            基础模型；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.#ctor(Snet.Model.data.BaseModel)">
+            <summary>
+            基础模型；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">事件信息结果</param>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.#ctor(System.Boolean,System.String)">
+            <summary>
+            基础模型；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.#ctor(System.Boolean,System.String,System.DateTime)">
+            <summary>
+            基础模型；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="time">响应时间</param>
+        </member>
+        <member name="P:Snet.Model.data.BaseModel.Message">
+            <summary>
+            描述信息
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BaseModel.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BaseModel.Time">
+            <summary>
+            响应时间
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.GetDetails(System.String@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.GetDetails(Snet.Model.data.BaseModel@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="result">抛出结果对象</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.BaseModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.BytesModel">
+            <summary>
+            字节模型；<br/>
+            用于字节数组与结构化数据的映射配置；<br/>
+            包含地址名称、描述、起始位、长度、数据类型、编码类型和字节序格式；<br/>
+            同时支持 System.Text.Json 和 Newtonsoft.Json 枚举字符串序列化
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.BytesModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.BytesModel.#ctor(System.String,System.String,System.Int32,System.UInt16,Snet.Model.enum.DataType,Snet.Model.enum.EncodingType,Snet.Model.enum.DataFormat,System.Int32)">
+            <summary>
+            全属性可选构造函数
+            </summary>
+            <param name="address">地址名称</param>
+            <param name="describe">描述</param>
+            <param name="startBit">起始位</param>
+            <param name="length">长度</param>
+            <param name="dataType">数据类型</param>
+            <param name="encodingType">编码类型</param>
+            <param name="dataFormat">数据格式</param>
+            <param name="boolIndex">布尔位索引，-1表示非布尔位</param>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.Address">
+            <summary>
+            地址名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.Describe">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.StartBit">
+            <summary>
+            起始位
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.Length">
+            <summary>
+            长度
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.BoolIndex">
+            <summary>
+            布尔位索引<br/>
+            一个字节有8位，默认0
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.DataType">
+            <summary>
+            数据类型；<br/>
+            指定该地址的数据读取类型（Bool/Int16/Float 等）
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.EncodingType">
+            <summary>
+            编码类型；<br/>
+            指定字符串数据的编码方式（UTF8/ANSI/Unicode 等）
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.BytesModel.DataFormat">
+            <summary>
+            数据格式；<br/>
+            指定字节序格式（ABCD/DCBA/BADC/CDAB），影响多字节数据的解析方式
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.CustomException">
+            <summary>
+            自定义异常类；<br/>
+            继承自 Exception，自动捕获文件路径、方法名称和行号信息；<br/>
+            通过 CallerFilePath/CallerMemberName/CallerLineNumber 特性实现自动定位；<br/>
+            提供 Create/CreateAsync 工厂方法快速创建异常实例
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.#ctor(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            自定义异常构造函数
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="filePath">文件路径</param>
+            <param name="methodName">方法名称</param>
+            <param name="lineNumber">异常行数</param>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.#ctor(System.String,System.Exception,System.String,System.String,System.Int32)">
+            <summary>
+            自定义异常构造函数
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="innerException">底层异常对象</param>
+            <param name="filePath">文件路径</param>
+            <param name="methodName">方法名称</param>
+            <param name="lineNumber">异常行数</param>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.Create(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            创建自定义异常
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="filePath">文件路径</param>
+            <param name="methodName">方法名称</param>
+            <param name="lineNumber">异常行数</param>
+            <returns>返回快速创建的对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.CreateAsync(System.String,System.Threading.CancellationToken,System.String,System.String,System.Int32)">
+            <summary>
+            异步创建自定义异常
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="token">传播消息取消通知</param>
+            <param name="filePath">文件路径</param>
+            <param name="methodName">方法名称</param>
+            <param name="lineNumber">异常行数</param>
+            <returns>返回快速创建的对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.Create(System.String,System.Exception,System.String,System.String,System.Int32)">
+            <summary>
+            创建自定义异常；<br/>
+            通过异常信息和底层异常对象快速构建自定义异常实例
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="innerException">底层异常对象</param>
+            <param name="filePath">文件路径（编译器自动填充）</param>
+            <param name="methodName">方法名称（编译器自动填充）</param>
+            <param name="lineNumber">异常行数（编译器自动填充）</param>
+            <returns>返回自定义异常的对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.CustomException.CreateAsync(System.String,System.Exception,System.Threading.CancellationToken,System.String,System.String,System.Int32)">
+            <summary>
+            异步创建自定义异常；<br/>
+            通过异常信息和底层异常对象在后台线程中构建自定义异常实例
+            </summary>
+            <param name="message">异常信息</param>
+            <param name="innerException">底层异常对象</param>
+            <param name="token">传播消息取消通知</param>
+            <param name="filePath">文件路径（编译器自动填充）</param>
+            <param name="methodName">方法名称（编译器自动填充）</param>
+            <param name="lineNumber">异常行数（编译器自动填充）</param>
+            <returns>返回自定义异常的对象</returns>
+        </member>
+        <member name="T:Snet.Model.data.EventDataResult">
+            <summary>
+            事件数据结果；<br/>
+            继承自 ResultModel，用于通过 IEvent.OnDataEvent 事件传递数据采集结果；<br/>
+            包含状态、消息和结果数据；<br/>
+            提供 CreateSuccessResult/CreateFailureResult 工厂方法
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.#ctor">
+            <summary>
+            事件数据结果；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.#ctor(Snet.Model.data.EventDataResult)">
+            <summary>
+            事件数据结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">事件数据结果</param>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.#ctor(System.Boolean,System.String,System.Object)">
+            <summary>
+            事件数据结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="resultData">结果数据</param>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.CreateSuccessResult(System.String)">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.CreateSuccessResult``1(System.String,``0)">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <param name="resultData">结果数据</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.CreateFailureResult(System.String)">
+            <summary>
+            快速创建一个失败的结果
+            </summary>
+            <param name="failureMessage">失败的消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventDataResult.GetDetails(Snet.Model.data.EventDataResult@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="result">抛出结果对象</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="T:Snet.Model.data.EventInfoResult">
+            <summary>
+            事件信息结果；<br/>
+            继承自 BaseModel，用于通过 IEvent.OnInfoEvent 事件传递通信状态信息；<br/>
+            包含状态和消息；<br/>
+            提供 CreateSuccessResult/CreateFailureResult 工厂方法
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.#ctor">
+            <summary>
+            事件信息结果；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.#ctor(Snet.Model.data.EventInfoResult)">
+            <summary>
+            事件信息结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">事件信息结果</param>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.#ctor(System.Boolean,System.String)">
+            <summary>
+            事件信息结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.GetDetails(Snet.Model.data.EventInfoResult@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="result">抛出结果对象</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.CreateSuccessResult(System.String)">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.CreateFailureResult(System.String)">
+            <summary>
+            快速创建一个失败的结果
+            </summary>
+            <param name="failureMessage">失败的消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventInfoResult.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.EventLanguageResult">
+            <summary>
+            事件语言结果；<br/>
+            继承自 AsyncEventArgs，用于通过 IEvent.OnLanguageEvent 事件通知语言变更；<br/>
+            包含状态、消息、语言类型和时间；<br/>
+            提供 CreateSuccessResult/CreateFailureResult 工厂方法
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.#ctor">
+            <summary>
+            事件语言结果；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.#ctor(Snet.Model.data.EventLanguageResult)">
+            <summary>
+            事件语言结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">事件信息结果</param>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.#ctor(System.Boolean,System.String,System.Nullable{Snet.Model.enum.LanguageType})">
+            <summary>
+            事件语言结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="language">语言类型</param>
+        </member>
+        <member name="P:Snet.Model.data.EventLanguageResult.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.EventLanguageResult.Message">
+            <summary>
+            信息
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.EventLanguageResult.Language">
+            <summary>
+            语言类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.EventLanguageResult.Time">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.GetDetails(System.String@,System.Nullable{Snet.Model.enum.LanguageType}@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="message">抛出描述信息</param>
+            <param name="language">语言类型</param>
+            <returns>状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.GetDetails(System.Nullable{Snet.Model.enum.LanguageType}@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="language">语言</param>
+            <returns>状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.GetDetails(System.String@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="message">抛出描述信息</param>
+            <returns>状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.GetDetails(Snet.Model.data.EventLanguageResult@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="result">抛出结果对象</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.CreateSuccessResult(System.String)">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.CreateFailureResult(System.String)">
+            <summary>
+            快速创建一个失败的结果
+            </summary>
+            <param name="failureMessage">失败的消息</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.CreateSuccessResult(System.String,System.Nullable{Snet.Model.enum.LanguageType})">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <param name="language">语言类型</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.CreateFailureResult(System.String,System.Nullable{Snet.Model.enum.LanguageType})">
+            <summary>
+            快速创建一个失败的结果
+            </summary>
+            <param name="failureMessage">失败的消息</param>
+            <param name="language">语言类型</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.EventLanguageResult.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.LanguageModel">
+            <summary>
+            语言模型；<br/>
+            用于配置多语言资源的指向信息；<br/>
+            包含资源字典所在的解决方案名称、资源文件名称和程序集文件路径
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.LanguageModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.LanguageModel.#ctor(System.String,System.String,System.String)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="source">存放资源字典的解决方按名称</param>
+            <param name="dictionary">资源文件名称</param>
+            <param name="assemblyFile">包含程序集清单的文件的名称或路径，用于获取程序集</param>
+        </member>
+        <member name="P:Snet.Model.data.LanguageModel.Source">
+            <summary>
+            存放资源字典的解决方按名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.LanguageModel.Dictionary">
+            <summary>
+            资源文件名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.LanguageModel.AssemblyFile">
+            <summary>
+            包含程序集清单的文件的名称或路径，用于获取程序集
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.LanguageModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.OperateResult">
+            <summary>
+            操作结果；<br/>
+            统一的操作返回模型，继承自 ResultModel；<br/>
+            包含状态、消息、结果数据和运行时间（ms）；<br/>
+            提供 CreateSuccessResult/CreateFailureResult 工厂方法快速创建结果对象
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.#ctor">
+            <summary>
+            操作结果；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.#ctor(Snet.Model.data.OperateResult)">
+            <summary>
+            操作结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">操作结果</param>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.#ctor(Snet.Model.data.OperateResult,System.Int32)">
+            <summary>
+            操作结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="result">操作结果</param>
+            <param name="rumTime">此函数运行时间</param>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.#ctor(System.Boolean,System.String,System.Int32,System.Object)">
+            <summary>
+            操作结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="runTime">此函数运行时间</param>
+            <param name="resultData">结果数据</param>
+        </member>
+        <member name="P:Snet.Model.data.OperateResult.RunTime">
+            <summary>
+            此函数运行时间 ( ms )
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.CreateSuccessResult(System.String,System.Nullable{System.Int32})">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <param name="runTime">运行时间</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.CreateSuccessResult``1(System.String,``0,System.Nullable{System.Int32})">
+            <summary>
+            快速创建一个成功的结果
+            </summary>
+            <param name="successMessage">成功消息</param>
+            <param name="resultData">结果数据</param>
+            <param name="runTime">运行时间</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.CreateFailureResult(System.String,System.Nullable{System.Int32})">
+            <summary>
+            快速创建一个失败的结果
+            </summary>
+            <param name="failureMessage">失败的消息</param>
+            <param name="runTime">运行时间</param>
+            <returns>结果对象</returns>
+        </member>
+        <member name="M:Snet.Model.data.OperateResult.GetDetails(Snet.Model.data.OperateResult@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="result">抛出结果对象</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel">
+            <summary>
+            库文件参数模型；<br/>
+            用于通过反射机制自动生成前端 UI 参数配置界面；<br/>
+            包含名称、描述和参数子集（subset）；<br/>
+            内嵌 dataCate 枚举定义前端控件类型，内嵌 propertie/options 类定义属性细节
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.dataCate">
+            <summary>
+            前端使用的数据类别
+            </summary>
+        </member>
+        <member name="F:Snet.Model.data.ParamModel.dataCate.text">
+            <summary>
+            文本框
+            </summary>
+        </member>
+        <member name="F:Snet.Model.data.ParamModel.dataCate.select">
+            <summary>
+            下拉框
+            </summary>
+        </member>
+        <member name="F:Snet.Model.data.ParamModel.dataCate.radio">
+            <summary>
+            单选框
+            </summary>
+        </member>
+        <member name="F:Snet.Model.data.ParamModel.dataCate.unmber">
+            <summary>
+            整数框
+            </summary>
+        </member>
+        <member name="F:Snet.Model.data.ParamModel.dataCate.upload">
+            <summary>
+            上传
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.Code">
+            <summary>
+            代码
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.Subset">
+            <summary>
+            参数集合
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.subset">
+            <summary>
+            参数信息
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subset.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subset.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subset.Propertie">
+            <summary>
+            属性集合
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.propertie">
+            <summary>
+            属性
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.DataCate">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Default">
+            <summary>
+            默认值
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Initial">
+            <summary>
+            初始值
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.PropertyName">
+            <summary>
+            属性名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Show">
+            <summary>
+            是否显示，<br/>
+            true:展示<br/>
+            false:隐藏
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Use">
+            <summary>
+            是否使用，<br/>
+            false:不让输入<br/>
+            true:正常输入
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.MustFillIn">
+            <summary>
+            必须填写
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.DetailsTips">
+            <summary>
+            详细提示
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Pattern">
+            <summary>
+            正则表达式
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.FailTips">
+            <summary>
+            输入错误提示
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertie.Options">
+            <summary>
+            非必填项集合
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.options">
+            <summary>
+            非必填项
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.options.Key">
+            <summary>
+            键
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.options.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.subsetSimplify">
+            <summary>
+            参数信息 精简版
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subsetSimplify.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subsetSimplify.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.subsetSimplify.Propertie">
+            <summary>
+            属性集合精简版
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ParamModel.propertieSimplify">
+            <summary>
+            属性 精简版
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertieSimplify.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ParamModel.propertieSimplify.PropertyName">
+            <summary>
+            属性名称
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.PluginModel">
+            <summary>
+            插件详情模型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.PluginModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.PluginModel.#ctor(System.String,System.String,System.String,System.String,System.String,Snet.Model.enum.PluginType)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="name">插件名称</param>
+            <param name="namespace">插件命名空间</param>
+            <param name="configFormat">配置文件格式模板</param>
+            <param name="path">插件所在目录路径</param>
+            <param name="version">插件版本</param>
+            <param name="type">插件类型</param>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.Namespace">
+            <summary>
+            命名空间
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.ConfigFormat">
+            <summary>
+            配置文件格式模板
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.Path">
+            <summary>
+            插件的路径
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.Type">
+            <summary>
+            插件类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.PluginModel.Version">
+            <summary>
+            版本
+            </summary>
+        </member>
+        <member name="T:Snet.Model.data.ResponseModel">
+            <summary>
+            消息中间件响应模型；<br/>
+            仅支持 ResponseType.ContentWithTopic 主题与内容同时存在时使用；<br/>
+            包含主题（Topic）和内容（Content）属性
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResponseModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResponseModel.#ctor(System.String,System.Object)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="topic">主题</param>
+            <param name="content">内容</param>
+        </member>
+        <member name="P:Snet.Model.data.ResponseModel.Topic">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.ResponseModel.Content">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResponseModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.ResultModel">
+            <summary>
+            结果模型；<br/>
+            继承自 BaseModel，扩展了 ResultData 结果数据属性；<br/>
+            提供多种 GetDetails 重载方法解构状态、消息和结果数据；<br/>
+            支持泛型 GetSource 获取指定类型的数据源
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.#ctor">
+            <summary>
+            结果；<br/>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.#ctor(System.Boolean,System.String,System.Object)">
+            <summary>
+            结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="resultData">结果数据</param>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.#ctor(System.Boolean,System.String,System.DateTime,System.Object)">
+            <summary>
+            结果；<br/>
+            有参构造函数
+            </summary>
+            <param name="status">状态</param>
+            <param name="message">消息</param>
+            <param name="time">响应时间</param>
+            <param name="resultData">结果数据</param>
+        </member>
+        <member name="P:Snet.Model.data.ResultModel.ResultData">
+            <summary>
+            结果数据
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetSource``1">
+            <summary>
+            获取结果数据源
+            </summary>
+            <typeparam name="T">数据类型</typeparam>
+            <returns>指定类型的数据</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails(System.String@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails(System.Object@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="resultData">抛出结果数据</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails``1(``0@)">
+            <summary>
+            获取详情
+            </summary>
+            <typeparam name="T">数据类型</typeparam>
+            <param name="resultData">抛出结果数据源</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails(System.Object@,System.String@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="resultData">抛出结果数据</param>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails``1(``0@,System.String@)">
+            <summary>
+            获取详情
+            </summary>
+            <typeparam name="T">数据类型</typeparam>
+            <param name="resultData">抛出结果数据源</param>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails(System.String@,System.Object@)">
+            <summary>
+            获取详情
+            </summary>
+            <param name="resultData">抛出结果数据</param>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.GetDetails``1(System.String@,``0@)">
+            <summary>
+            获取详情
+            </summary>
+            <typeparam name="T">数据类型</typeparam>
+            <param name="resultData">抛出结果数据源</param>
+            <param name="message">抛出描述信息</param>
+            <returns>获取状态</returns>
+        </member>
+        <member name="M:Snet.Model.data.ResultModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json 字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.WAModel">
+            <summary>
+            WebApi 配置模型；<br/>
+            用于配置数采器内置 WebApi 服务的 IP 地址、端口和跨域策略；<br/>
+            默认监听 127.0.0.1:6688
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WAModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WAModel.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="ipAddress">IP地址</param>
+            <param name="port">端口</param>
+            <param name="crossDomain">跨域</param>
+        </member>
+        <member name="P:Snet.Model.data.WAModel.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.WAModel.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.WAModel.CrossDomain">
+            <summary>
+            跨域
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WAModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json字符串</returns>
+        </member>
+        <member name="T:Snet.Model.data.WriteModel">
+            <summary>
+            写入模型；<br/>
+            定义向设备地址写入数据时的参数，包含值、数据类型和编码类型；<br/>
+            配合 IWrite 接口使用
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WriteModel.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WriteModel.#ctor(System.Object,Snet.Model.enum.DataType,System.Nullable{Snet.Model.enum.EncodingType})">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="value">值</param>
+            <param name="addressDataType">数据类型</param>
+            <param name="encodingType">编码类型</param>
+        </member>
+        <member name="P:Snet.Model.data.WriteModel.Value">
+            <summary>
+            值(不能为空)
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.WriteModel.EncodingType">
+            <summary>
+            编码类型
+            </summary>
+        </member>
+        <member name="P:Snet.Model.data.WriteModel.AddressDataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.data.WriteModel.ToString">
+            <summary>
+            重写ToString；<br/>
+            响应 json 字符串
+            </summary>
+            <returns>json字符串</returns>
+        </member>
+        <member name="T:Snet.Model.enum.AddressType">
+            <summary>
+            地址类型枚举；<br/>
+            定义数据采集地址的类型：实际地址或虚拟地址；<br/>
+            虚拟地址支持多种模拟模式：静态、动态随机、动态随机范围、动态顺序、动态顺序范围
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.Reality">
+            <summary>
+            实际地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.VirtualStatic">
+            <summary>
+            虚拟静态地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.VirtualDynamic_Random">
+            <summary>
+            虚拟动态随机变化地址；<br />
+            地址后添加格式；<br />
+            {100} <br />
+            {更新间隔}
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.VirtualDynamic_RandomScope">
+            <summary>
+            虚拟动态随机范围变化地址；<br />
+            地址后添加格式；<br />
+            {100,1^100} <br /> 
+            {100,1.1^9.9} <br /> 
+            {500,00:00:00^12:00:00} <br /> 
+            {500,2000-01-01^2024-01-01}　<br />
+            {更新间隔,最小值^最大值}
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.VirtualDynamic_Order">
+            <summary>
+            虚拟动态顺序变化地址；<br />
+            地址后添加格式；<br />
+            {100,1} <br />
+            {更新间隔,增长比例}
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.AddressType.VirtualDynamic_OrderScope">
+            <summary>
+            虚拟动态顺序范围变化地址；<br />
+            地址后添加格式；<br />
+            {100,1,1^100} <br />
+            {100,0.1,1.1^9.9} <br />
+            {500,1,00:00:00^12:00:00} <br />
+            {500,1,2000-01-01^2024-01-01}<br />
+            {更新间隔,增长比例,最小值^最大值}
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.DataFormat">
+            <summary>
+            数据格式枚举（字节序）；<br/>
+            应用于多字节数据的解析或生成格式；<br/>
+            ABCD:顺序，BADC:单字反转，CDAB:双字反转，DCBA:倒序
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataFormat.ABCD">
+            <summary>
+            按照顺序排序
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataFormat.BADC">
+            <summary>
+            按照单字反转
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataFormat.CDAB">
+            <summary>
+            按照双字反转
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataFormat.DCBA">
+            <summary>
+            按照倒序排序
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.DataType">
+            <summary>
+            数据类型枚举；<br/>
+            定义地址读取/写入时的数据类型；<br/>
+            包含基本类型（Bool/Int16/Float/Double/String 等）和数组类型（BoolArray/IntArray 等）；<br/>
+            部分类型存在别名（如 Short=Int16、Float=Single、Int=Int32 等）
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.None">
+            <summary>
+            未定义
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Byte">
+            <summary>
+            字节；<br/>
+            1字节8位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Bool">
+            <summary>
+            布尔值；<br/>
+            1字节8位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Double">
+            <summary>
+            双精度浮点数；<br/>
+            8字节64位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Float">
+            <summary>
+            单精度浮点数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Single">
+            <summary>
+            单精度浮点数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Short">
+            <summary>
+            有符号16位整数；<br/>
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int16">
+            <summary>
+            有符号16位整数；
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Ushort">
+            <summary>
+            无符号16位整数；<br/>
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt16">
+            <summary>
+            无符号16位整数；<br/>
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int">
+            <summary>
+            有符号32位整数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int32">
+            <summary>
+            有符号32位整数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Uint">
+            <summary>
+            无符号32位整数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt32">
+            <summary>
+            无符号32位整数；<br/>
+            4字节32位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Long">
+            <summary>
+            有符号64位整数；<br/>
+            8字节64位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int64">
+            <summary>
+            有符号64位整数；<br/>
+            8字节64位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Ulong">
+            <summary>
+            无符号64位整数；<br/>
+            8字节64位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt64">
+            <summary>
+            无符号64位整数；<br/>
+            8字节64位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.DateTime">
+            <summary>
+            日期和时间；<br/>
+            8字节64位；<br/>
+            不支持读取写入
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Date">
+            <summary>
+            日期；<br/>
+            不支持读取写入
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Time">
+            <summary>
+            时间；<br/>
+            不支持读取写入
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.String">
+            <summary>
+            字符串；<br/>
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Char">
+            <summary>
+            Unicode字符；<br/>
+            2字节16位
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.ByteArray">
+            <summary>
+            字节数组；<br/>
+            当在 WebApi 写入时，请以 Byte[] 的 string 表达方式写入 0x00 0x01 0x02 0x03<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.BoolArray">
+            <summary>
+            布尔数组值；<br/>
+            [true,false,true,false]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.DoubleArray">
+            <summary>
+            双精度浮点数组值；<br/>
+            [1.1,2.1,3.1,4.1,5.1,6.1]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.FloatArray">
+            <summary>
+            单精度浮点数组；<br/>
+            [1.1,2.1,3.1,4.1,5.1,6.1]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.SingleArray">
+            <summary>
+            单精度浮点数组；<br/>
+            [1.1,2.1,3.1,4.1,5.1,6.1]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.ShortArray">
+            <summary>
+            有符号16位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int16Array">
+            <summary>
+            有符号16位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UshortArray">
+            <summary>
+            无符号16位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt16Array">
+            <summary>
+            无符号16位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.IntArray">
+            <summary>
+            有符号32位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int32Array">
+            <summary>
+            有符号32位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UintArray">
+            <summary>
+            无符号32位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt32Array">
+            <summary>
+            无符号32位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.LongArray">
+            <summary>
+            有符号64位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.Int64Array">
+            <summary>
+            有符号64位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UlongArray">
+            <summary>
+            无符号64位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.DataType.UInt64Array">
+            <summary>
+            无符号64位整数组；<br/>
+            [1,2,3,4,5,6]<br/>
+            不支持虚拟地址
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.EncodingType">
+            <summary>
+            编码类型枚举；<br/>
+            定义字符串数据的编码方式；<br/>
+            枚举值对应 .NET 编码代码页（CodePage）；<br/>
+            支持 ANSI(0), GB2312(936), Unicode(1200), UTF-8(65001), ASCII(20127) 等
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.Unicode">
+            <summary>
+            UTF-16
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.BigEndianUnicode">
+            <summary>
+            UTF-16
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.UTF32">
+            <summary>
+            UTF-32
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.BigEndianUTF32">
+            <summary>
+            UTF-32
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.UTF8">
+            <summary>
+            UTF-8
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.ASCII">
+            <summary>
+            ASCII
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.GB2312">
+            <summary>
+            GB2312
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.EncodingType.ANSI">
+            <summary>
+            ANSI
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.LanguageType">
+            <summary>
+            语言类型枚举；<br/>
+            定义系统支持的语言类型；<br/>
+            配合 ILanguage 接口和 MultilingualAttribute 特性实现多语言支持
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.LanguageType.zh">
+            <summary>
+            中文
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.LanguageType.en">
+            <summary>
+            英文
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.PluginType">
+            <summary>
+            插件类型
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.PluginType.Daq">
+            <summary>
+            数据采集插件
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.PluginType.Mq">
+            <summary>
+            消息队列传输插件
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.QualityType">
+            <summary>
+            质量类型枚举；<br/>
+            表示数据采集结果的质量状态；<br/>
+            None(-1):未经处理，Exception(0):异常，Normal(1):正常，<br/>
+            DataTypeError(2):类型错误，ParseUnknown(3):解析成功但正确性未知，ParseError(4):解析错误
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.None">
+            <summary>
+            未经过处理
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.Exception">
+            <summary>
+            异常
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.Normal">
+            <summary>
+            正常
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.DataTypeError">
+            <summary>
+            数据类型错误
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.ParseUnknown">
+            <summary>
+            数据经过解析，并且解析成功，无法得知数据的正确性
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.QualityType.ParseError">
+            <summary>
+            解析错误
+            </summary>
+        </member>
+        <member name="T:Snet.Model.enum.ResponseType">
+            <summary>
+            消息中间件响应类型枚举；<br/>
+            定义消息中间件接收数据的格式类型；<br/>
+            Bytes:字节数据，Content:纯内容，ContentWithTopic:主题+内容（使用 ResponseModel 反序列化）
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.ResponseType.Bytes">
+            <summary>
+            字节数据
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.ResponseType.Content">
+            <summary>
+            只有内容
+            </summary>
+        </member>
+        <member name="F:Snet.Model.enum.ResponseType.ContentWithTopic">
+            <summary>
+            有主题的内容；<br/>
+            请使用 ResponseModel 反序列化
+            </summary>
+        </member>
+        <member name="T:Snet.Model.event.EventArgsAsync">
+             <summary>
+            为<see cref="T:Snet.Model.event.EventHandlerAsync`1"/>提供数据，可以异步调用的事件。
+             </summary>
+        </member>
+        <member name="M:Snet.Model.event.EventArgsAsync.#ctor(System.Threading.CancellationToken)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="cancellationToken">传播应取消操作的通知</param>
+        </member>
+        <member name="P:Snet.Model.event.EventArgsAsync.CancellationToken">
+            <summary>
+            传播应取消操作的通知<br/>
+            异步事件所需
+            </summary>
+        </member>
+        <member name="M:Snet.Model.event.EventArgsAsync.CreateOrDefault(System.Threading.CancellationToken)">
+            <summary>
+            创建或默认
+            </summary>
+            <param name="cancellationToken">传播应取消操作的通知</param>
+            <returns>异步事件</returns>
+        </member>
+        <member name="F:Snet.Model.event.EventArgsAsync.Empty">
+            <summary>
+            提供用于没有事件数据的事件的值
+            </summary>
+        </member>
+        <member name="T:Snet.Model.event.EventHandlerAsync`1">
+            <summary>
+            事件处理异步
+            </summary>
+            <typeparam name="TEvent">异步数据对象</typeparam>
+            <param name="sender">源</param>
+            <param name="e">异步数据对象</param>
+            <returns>任务</returns>
+        </member>
+        <member name="T:Snet.Model.event.EventingWrapperAsync`1">
+            <summary>
+            异步事件包装器，线程安全。
+            <para>管理 <see cref="T:Snet.Model.event.EventHandlerAsync`1"/> 的订阅、取消订阅和触发。</para>
+            <para>注意：从 struct 改为 class，确保通过属性 add/remove 访问的是同一引用，避免订阅丢失。</para>
+            </summary>
+            <typeparam name="TEvent">异步事件参数类型，必须继承 <see cref="T:Snet.Model.event.EventArgsAsync"/></typeparam>
+        </member>
+        <member name="T:Snet.Model.interface.IArgs">
+            <summary>
+            参数接口；<br/>
+            定义获取基础数据、参数以及自动分配标识相关参数的同步和异步操作；<br/>
+            支持 AutoAllocatingTagAttribute 特性的自动参数分配
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.UpdateArgs``1(``0)">
+            <summary>
+            修改基础数据<br/>
+            使用场景:<br/>
+            当通过单例模式创建一个对象时，基础数据未赋值，可通过此方法来更新基础数据<br/>
+            如果基础数据已经赋值，想要修改时，可通过此方法来修改基础数据
+            </summary>
+            <typeparam name="T">基础数据对象类型</typeparam>
+            <param name="basics">基础数据</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.UpdateArgsAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            异步修改基础数据<br/>
+            使用场景:<br/>
+            当通过单例模式创建一个对象时，基础数据未赋值，可通过此方法来更新基础数据<br/>
+            如果基础数据已经赋值，想要修改时，可通过此方法来修改基础数据
+            </summary>
+            <typeparam name="T">基础数据对象类型</typeparam>
+            <param name="basics">基础数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.UpdateArgs(System.String)">
+            <summary>
+            修改基础数据<br/>
+            使用场景:<br/>
+            当通过单例模式创建一个对象时，基础数据未赋值，可通过此方法来更新基础数据<br/>
+            如果基础数据已经赋值，想要修改时，可通过此方法来修改基础数据
+            </summary>
+            <param name="json">基础数据JSON字符串</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.UpdateArgsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            异步修改基础数据<br/>
+            使用场景:<br/>
+            当通过单例模式创建一个对象时，基础数据未赋值，可通过此方法来更新基础数据<br/>
+            如果基础数据已经赋值，想要修改时，可通过此方法来修改基础数据
+            </summary>
+            <param name="json">基础数据JSON字符串</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetBasicsArgs">
+            <summary>
+            获取基础数据<br/>
+            此返回的是:操作类实例化传入的基础数据
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetBasicsArgsAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取基础数据<br/>
+            此返回的是:操作类实例化传入的基础数据
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetArgs(System.Boolean)">
+            <summary>
+            获取参数，用于第三方UI展示
+            </summary>
+            <param name="getBasicsParam">
+            获取基础数据<br/>
+            true : 基础数据的'新'对象
+            false : 基础数据组织后的'新'对象
+            </param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetArgsAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            获取参数，用于第三方UI展示
+            </summary>
+            <param name="getBasicsParam">
+            获取基础数据<br/>
+            true : 基础数据的新对象
+            false : 基础数据组织后的新对象 
+            </param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetAutoAllocatingArgs">
+            <summary>
+            获取自动分配标识的属性值所对应参数集合；<br/>
+            基础数据中必须包含　AutoAllocatingTagAttribute 特性；<br/>
+            如果不包含，说明此库参数基本都需要填写
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.GetAutoAllocatingArgsAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取自动分配标识的属性值所对应参数集合；<br/>
+            基础数据中必须包含　AutoAllocatingTagAttribute 特性；<br/>
+            如果不包含，说明此库参数基本都需要填写
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.ExistsAutoAllocatingArgs">
+            <summary>
+            是否存在自动分配参数；<br/>
+            判断当前基础数据中是否存在 AutoAllocatingTagAttribute 特性；
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IArgs.ExistsAutoAllocatingArgsAsync(System.Threading.CancellationToken)">
+            <summary>
+            是否存在自动分配参数；<br/>
+            判断当前基础数据中是否存在 AutoAllocatingTagAttribute 特性；
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IClone">
+            <summary>
+            克隆接口
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IClone.CloneThis">
+            <summary>
+            克隆当前对象，克隆对象不会存储到单例匹配列表中，外部实现完整的闭环
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IClone.CloneThisAsync(System.Threading.CancellationToken)">
+            <summary>
+            异步克隆当前对象，克隆对象不会存储到单例匹配列表中，外部实现完整的闭环
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ICommunication">
+            <summary>
+            底层通信接口；<br/>
+            定义客户端通信的全量能力契约，支持打开/关闭、发送/发送等待、获取对象、获取状态、事件、创建实例、日志、参数、多语言、克隆、资源释放等操作；<br/>
+            继承 IOn, IOff, ISend, ISendWait, IGetObject, IGetStatus, IEvent, ICreateInstance, ILog, IGetParam, ILanguage, IDisposable, IAsyncDisposable
+            </summary>
+        </member>
+        <member name="T:Snet.Model.interface.ICommunicationService">
+            <summary>
+            底层通信接口（服务端）；<br/>
+            定义服务端通信的全量能力契约，支持打开/关闭、服务端发送（单发/群发）、获取对象、获取状态、移除客户端、事件、创建实例、日志、多语言、克隆、参数、资源释放等操作；<br/>
+            继承 IOn, IOff, ISendService, IGetObject, IGetStatus, IRemove, IEvent, ICreateInstance, ILog, ILanguage, IDisposable, IAsyncDisposable
+            </summary>
+        </member>
+        <member name="T:Snet.Model.interface.IConsumer">
+            <summary>
+            消费者接口；<br/>
+            定义消息中间件消费数据的同步和异步操作；<br/>
+            支持按主题订阅消费和取消消费；<br/>
+            继承 IEvent，通过事件通知消费到的数据
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IConsumer.Consume(System.String)">
+            <summary>
+            消费
+            </summary>
+            <param name="topic">主题</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IConsumer.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            消费
+            </summary>
+            <param name="topic">主题</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IConsumer.UnConsume(System.String)">
+            <summary>
+            移除消费
+            </summary>
+            <param name="topic">主题</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IConsumer.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            移除消费
+            </summary>
+            <param name="topic">主题</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IDaq">
+            <summary>
+            数采接口（数据采集）；<br/>
+            定义数据采集器的全量能力契约，支持打开/关闭、读取/写入、订阅/取消订阅、获取状态、事件、参数、创建实例、日志、WebApi、获取对象、多语言、克隆、地址自动组包与解包、资源释放等操作；<br/>
+            继承 IOn, IOff, IRead, IWrite, ISubscribe, IGetStatus, IEvent, IGetParam, ICreateInstance, ILog, IWA, IGetObject, ILanguage, IDisposable, IAsyncDisposable
+            </summary>
+        </member>
+        <member name="T:Snet.Model.interface.IEvent">
+            <summary>
+            事件接口；<br/>
+            定义数据传递、信息传递、语言变更的同步和异步事件；<br/>
+            通过事件驱动模式向外部通知通信状态、采集数据和语言变更
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnDataEvent">
+            <summary>
+            数据传递事件
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnDataEventAsync">
+            <summary>
+            数据传递事件异步
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnInfoEvent">
+            <summary>
+            信息传递事件
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnInfoEventAsync">
+            <summary>
+            信息传递事件异步
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnLanguageEvent">
+            <summary>
+            语言传递事件
+            </summary>
+        </member>
+        <member name="E:Snet.Model.interface.IEvent.OnLanguageEventAsync">
+            <summary>
+            语言传递事件异步
+            </summary>
+        </member>
+        <member name="T:Snet.Model.interface.IInstance">
+            <summary>
+            实例接口（单例模式）；<br/>
+            定义通过泛型参数或 JSON 字符串创建实例的同步和异步操作；<br/>
+            特殊情况下使用，返回包含自身单例对象的统一结果
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IInstance.CreateInstance``1(``0)">
+            <summary>
+            创建一个实例，创建的实例会存储到单例匹配列表中，参数与匹配表一致则会返回历史对象
+            </summary>
+            <typeparam name="T">泛型基础数据</typeparam>
+            <param name="param">基础数据</param>
+            <returns>统一返回包含自身单例对象</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IInstance.CreateInstanceAsync``1(``0,System.Threading.CancellationToken)">
+            <summary>
+            异步创建一个实例，创建的实例会存储到单例匹配列表中，参数与匹配表一致则会返回历史对象
+            </summary>
+            <typeparam name="T">泛型基础数据</typeparam>
+            <param name="param">基础数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一返回包含自身单例对象</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IInstance.CreateInstance(System.String)">
+            <summary>
+            创建一个实例，创建的实例会存储到单例匹配列表中，参数与匹配表一致则会返回历史对象
+            </summary>
+            <param name="json">基础数据反序列化为JSON的字符串</param>
+            <returns>统一返回包含自身单例对象</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IInstance.CreateInstanceAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            异步创建一个实例，创建的实例会存储到单例匹配列表中，参数与匹配表一致则会返回历史对象
+            </summary>
+            <param name="json">基础数据反序列化为JSON的字符串</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一返回包含自身单例对象</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ILanguage">
+            <summary>
+            多语言接口；<br/>
+            定义语言的获取、设置以及根据关键字获取当前语言环境下对应键值的同步和异步操作；<br/>
+            支持通过 LanguageModel 指定自定义语言资源文件
+            </summary>
+        </member>
+        <member name="P:Snet.Model.interface.ILanguage.LanguageOperate">
+            <summary>
+            语言操作属性<br/>
+            如果外部自定义了语言资源<br/>
+            重写此属性，实例化指向对应的资源文件<br/>
+            通过此属性的扩展方法根据关键字获取当前语言环境下的对应的键值信息
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.GetLanguageValue(System.String,Snet.Model.data.LanguageModel)">
+            <summary>
+            根据关键字获取当前语言环境下的对应的键值信息
+            </summary>
+            <param name="key">关键字</param>
+            <param name="languageModel">
+            语言模型<br/>
+            存放基础数据，指向对应资源<br/>
+            如果外部自定义了语言资源<br/>
+            此属性"必传"<br/>
+            否则获取对应的键值<br/>
+            也可使用"LanguageOperate"属性来进行根据关键字获取当前语言环境下的对应的键值信息<br/>
+            为空将认定为是内部操作
+            </param>
+            <returns>对应语言的值</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.GetLanguageValueAsync(System.String,Snet.Model.data.LanguageModel,System.Threading.CancellationToken)">
+            <summary>
+            根据关键字获取当前语言环境下的对应的键值信息异步
+            </summary>
+            <param name="key">关键字</param>
+            <param name="languageModel">
+            语言模型<br/>
+            存放基础数据，指向对应资源<br/>
+            如果外部自定义了语言资源<br/>
+            此属性"必传"<br/>
+            否则获取对应的键值<br/>
+            也可使用"LanguageOperate"属性来进行根据关键字获取当前语言环境下的对应的键值信息<br/>
+            为空将认定为是内部操作
+            </param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>对应语言的值</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.GetLanguage">
+            <summary>
+            获取当前使用的语言
+            </summary>
+            <returns>返回语言类型</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.GetLanguageAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取当前使用的语言异步
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>返回语言类型</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.SetLanguage(Snet.Model.enum.LanguageType)">
+            <summary>
+            设置语言
+            </summary>
+            <param name="language">语言类型</param>
+            <returns>成功与失败</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILanguage.SetLanguageAsync(Snet.Model.enum.LanguageType,System.Threading.CancellationToken)">
+            <summary>
+            设置语言异步
+            </summary>
+            <param name="language">语言类型</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>成功与失败</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ILog">
+            <summary>
+            日志通用接口；<br/>
+            定义日志操作参数的设置和获取；<br/>
+            支持控制日志本地写入、控制台输出、外部通知回调（Func/Action）；<br/>
+            支持通过 LogModel 批量设置日志参数
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSet(System.Boolean,System.Nullable{System.Boolean},System.Func{System.Object,Serilog.Events.LogEventLevel,System.String,System.Exception,System.Threading.Tasks.Task})">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <param name="noticeAsync">
+            异步通知；<br/>
+            外部传入的 Func 方法；<br/>
+            用于给外部通知日志信息；<br/>
+            此方法常用于日志入库</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSetAsync(System.Boolean,System.Nullable{System.Boolean},System.Func{System.Object,Serilog.Events.LogEventLevel,System.String,System.Exception,System.Threading.Tasks.Task},System.Threading.CancellationToken)">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <param name="noticeAsync">
+            异步通知；<br/>
+            外部传入的 Func 方法；<br/>
+            用于给外部通知日志信息；<br/>
+            此方法常用于日志入库</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSet(System.Boolean,System.Nullable{System.Boolean},System.Action{System.Object,Serilog.Events.LogEventLevel,System.String,System.Exception})">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <param name="notice">
+            通知；<br/>
+            外部传入的 Action 方法；<br/>
+            用于给外部通知日志信息；<br/>
+            此方法常用于日志入库</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSetAsync(System.Boolean,System.Nullable{System.Boolean},System.Action{System.Object,Serilog.Events.LogEventLevel,System.String,System.Exception},System.Threading.CancellationToken)">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <param name="notice">
+            通知；<br/>
+            外部传入的 Action 方法；<br/>
+            用于给外部通知日志信息；<br/>
+            此方法常用于日志入库</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSet(System.Boolean,System.Nullable{System.Boolean})">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSetAsync(System.Boolean,System.Nullable{System.Boolean},System.Threading.CancellationToken)">
+            <summary>
+            日志操作参数设置；<br/>
+            logOut为false时,consoleOut将不生效<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logOut">
+            true:打开日志本地写入记录；<br/>
+            false:关闭日志本地写入记录
+            </param>
+            <param name="consoleOut">
+            true:控制台输出日志；<br/>
+            false:控制不输出日志；<br/>
+            null:根据底层代码传入的参数来做操作
+            </param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSet(Snet.Log.LogModel)">
+            <summary>
+            日志操作参数设置<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logModel">日志数据</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateSetAsync(Snet.Log.LogModel,System.Threading.CancellationToken)">
+            <summary>
+            日志操作参数设置<br/>
+            最高优先级执行，这样才会整体生效
+            </summary>
+            <param name="logModel">日志数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateGet">
+            <summary>
+            日志操作参数获取
+            </summary>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ILog.LogOperateGetAsync(System.Threading.CancellationToken)">
+            <summary>
+            日志操作参数获取
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IMq">
+            <summary>
+            消息中间件接口；<br/>
+            定义消息队列的全量能力契约，支持打开/关闭、生产/消费、获取状态、事件、参数、创建实例、日志、多语言、克隆、资源释放等操作；<br/>
+            继承 IOn, IOff, IProducer, IConsumer, IGetStatus, IEvent, IGetParam, ICreateInstance, ILog, ILanguage, IDisposable, IAsyncDisposable
+            </summary>
+        </member>
+        <member name="T:Snet.Model.interface.IObject">
+            <summary>
+            对象接口；<br/>
+            定义获取底层通信对象的同步和异步操作；<br/>
+            用于外部直接访问底层 Socket/串口等通信对象
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IObject.GetBaseObject">
+            <summary>
+            获取底层通信对象
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IObject.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取底层通信对象异步
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IOff">
+            <summary>
+            关闭接口；<br/>
+            定义通信连接或服务关闭的同步和异步关闭操作；<br/>
+            支持强制关闭（不验证状态）和 CancellationToken 取消机制
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IOff.Off(System.Boolean)">
+            <summary>
+            关闭
+            </summary>
+            <param name="hardClose">强制关闭，不验证状态</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOff.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            关闭
+            </summary>
+            <param name="hardClose">强制关闭，不验证状态</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IOn">
+            <summary>
+            打开接口；<br/>
+            定义通信连接或服务启动的同步和异步打开操作；<br/>
+            支持 CancellationToken 取消机制
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IOn.On">
+            <summary>
+            打开
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOn.OnAsync(System.Threading.CancellationToken)">
+            <summary>
+            异步打开
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IOu">
+            <summary>
+            OPC UA 操作接口；<br/>
+            定义 OPC UA 协议下读取所有节点、获取节点信息、数据类型转换等操作；<br/>
+            继承 IDaq，具备数据采集器的全部能力；<br/>
+            注意：当点位过多时可能存在读取不到的情况
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.GetNodeID">
+            <summary>
+            获取当前服务ID
+            </summary>
+            <returns>object 对象 NodeId</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.GetAllNode(System.Object)">
+            <summary>
+            获取指定分支下的节点
+            </summary>
+            <param name="nodeId">id 对象 NodeId</param>
+            <returns>object 对象 ReferenceDescriptionCollection</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.GetNodeIconType(System.Object,System.Object)">
+            <summary>
+            获取树节点图片类型
+            </summary>
+            <param name="target">目标 对象 ReferenceDescription</param>
+            <param name="sourceId">id 对象 NodeId</param>
+            <returns>图片类型</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.DetailedReadAllNodeData(System.Object)">
+            <summary>
+            详细读取所有节点数据
+            </summary>
+            <param name="nodeIds">节点id集合,对象 List(NodeId) </param>
+            <returns>object 对象 DataValue[]</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.GetAccessLevel(System.Object)">
+            <summary>
+            获取访问级别
+            </summary>
+            <param name="value">数据值 对象 DataValue</param>
+            <returns>访问级别</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.TypeConvert(System.Object)">
+            <summary>
+            OPCUA 数据类型转换成 Core 数据类型
+            </summary>
+            <param name="builtInType">类型 对象 BuiltInType</param>
+            <returns>数据类型</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IOu.GetNodeValueType(System.Object)">
+            <summary>
+            获取指定节点的数据类型
+            </summary>
+            <param name="nodeId">id 对象 NodeId</param>
+            <returns>object 对象 BuiltInType</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IPacker">
+            <summary>
+            自动地址组包与解包流程
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.Packer(Snet.Model.data.Address,System.String,System.Int32,Snet.Model.enum.DataFormat)">
+            <summary>
+            智能地址自动组包 — 传入供应商 ProtocolType 枚举名和地址集合，自动判断是否支持组包。
+            <para>支持组包 → 执行地址合并优化后返回</para>
+            <para>不支持组包 → 原样返回传入的 address</para>
+            <para>永远不会返回 null</para>
+            </summary>
+            <param name="address">原始地址集合</param>
+            <param name="protocolTypeKey">
+            供应商 ProtocolType 枚举的字符串名，例如：
+            "SiemensS7Net_S1200"、"ModbusTcpNet"、"OmronFinsNet" 等。
+            支持各供应商数据类中 <c>ProtocolType.ToString()</c> 的返回值。
+            </param>
+            <param name="maxByteLength">单次批量读取最大字节数。0 = 自动使用协议上限（推荐）。也可以使用调试工具直接读取来得知最大字节数</param>
+            <param name="format">数据字节序格式</param>
+            <returns>
+            支持组包 → 优化后的 Address；不支持 → 原始 address。
+            传入 null 返回 null。
+            </returns>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.PackerAsync(Snet.Model.data.Address,System.String,System.Int32,Snet.Model.enum.DataFormat,System.Threading.CancellationToken)">
+            <summary>
+            异步智能地址自动组包 — 传入供应商 ProtocolType 枚举名和地址集合，自动判断是否支持组包。
+            <para>支持组包 → 执行地址合并优化后返回</para>
+            <para>不支持组包 → 原样返回传入的 address</para>
+            <para>永远不会返回 null</para>
+            </summary>
+            <param name="address">原始地址集合</param>
+            <param name="protocolTypeKey">
+            供应商 ProtocolType 枚举的字符串名，例如：
+            "SiemensS7Net_S1200"、"ModbusTcpNet"、"OmronFinsNet" 等。
+            支持各供应商数据类中 <c>ProtocolType.ToString()</c> 的返回值。
+            </param>
+            <param name="maxByteLength">单次批量读取最大字节数。0 = 自动使用协议上限（推荐）。也可以使用调试工具直接读取来得知最大字节数</param>
+            <param name="format">数据字节序格式</param>
+            <param name="token">取消通知</param>
+            <returns>
+            支持组包 → 优化后的 Address；不支持 → 原始 address。
+            传入 null 返回 null。
+            </returns>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.UnPacker(Snet.Model.data.AddressValue,System.Boolean)">
+            /// <summary>
+            自动解包
+            </summary>
+            <param name="addressValue">
+            地址获取的值<br/>
+            必须是组包后获取的 AddressValue<br/>
+            组包时会设置特定参数
+            </param>
+            <param name="isStringReverseByteWord">String 解包是否按字反转字节（连接级配置，如欧姆龙 FINS；默认 false）</param>
+            <returns>返回对应的键值数据:ConcurrentDictionary《string, AddressValue》</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.UnPackerAsync(Snet.Model.data.AddressValue,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            异步自动解包
+            </summary>
+            <param name="addressValue">
+            地址获取的值<br/>
+            必须是组包后获取的 AddressValue<br/>
+            组包时会设置特定参数
+            </param>
+            <param name="isStringReverseByteWord">String 解包是否按字反转字节（连接级配置，如欧姆龙 FINS；默认 false）</param>
+            <param name="token">取消通知</param>
+            <returns>返回对应的键值数据:ConcurrentDictionary《string, AddressValue》</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.UnPacker(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.AddressValue},System.Boolean)">
+            <summary>
+            自动解包
+            </summary>
+            <param name="pairs">
+            地址获取的值<br/>
+            必须是组包后获取的 ConcurrentDictionary《string, AddressValue》<br/>
+            组包时会设置特定参数
+            </param>
+            <param name="isStringReverseByteWord">String 解包是否按字反转字节（连接级配置，如欧姆龙 FINS；默认 false）</param>
+            <returns>返回对应的键值数据:List《ConcurrentDictionary《string, AddressValue》》</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IPacker.UnPackerAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.AddressValue},System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            异步自动解包
+            </summary>
+            <param name="pairs">
+            地址获取的值<br/>
+            必须是组包后获取的 ConcurrentDictionary《string, AddressValue》<br/>
+            组包时会设置特定参数
+            </param>
+            <param name="isStringReverseByteWord">String 解包是否按字反转字节（连接级配置，如欧姆龙 FINS；默认 false）</param>
+            <param name="token">取消通知</param>
+            <returns>返回对应的键值数据:List《ConcurrentDictionary《string, AddressValue》》</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IProducer">
+            <summary>
+            生产者接口；<br/>
+            定义消息中间件生产数据的同步和异步操作；<br/>
+            支持字符串内容（可指定编码）和字节数组内容两种生产模式
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IProducer.Produce(System.String,System.String,System.Text.Encoding)">
+            <summary>
+            生产
+            </summary>
+            <param name="topic">主题</param>
+            <param name="content">内容</param>
+            <param name="encoding">编码格式</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IProducer.ProduceAsync(System.String,System.String,System.Text.Encoding,System.Threading.CancellationToken)">
+            <summary>
+            生产
+            </summary>
+            <param name="topic">主题</param>
+            <param name="content">内容</param>
+            <param name="encoding">编码格式</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IProducer.Produce(System.String,System.Byte[])">
+            <summary>
+            生产
+            </summary>
+            <param name="topic">主题</param>
+            <param name="content">内容</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IProducer.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            生产
+            </summary>
+            <param name="topic">主题</param>
+            <param name="content">内容</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IRead">
+            <summary>
+            读取接口；<br/>
+            定义对设备地址的同步和异步数据读取操作；<br/>
+            通过 Address 对象指定读取的地址集合
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IRead.Read(Snet.Model.data.Address)">
+            <summary>
+            读取
+            </summary>
+            <param name="address">地址的数据</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IRead.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <summary>
+            异步读取
+            </summary>
+            <param name="address">地址的数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IRemove">
+            <summary>
+            移除指定客户端接口；<br/>
+            定义服务端主动断开指定客户端连接的同步和异步操作；<br/>
+            通过地址数组指定要移除的客户端
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IRemove.Remove(System.String[])">
+            <summary>
+            移除指定客户端
+            </summary>
+            <param name="address">地址</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IRemove.RemoveAsync(System.String[],System.Threading.CancellationToken)">
+            <summary>
+            移除指定客户端
+            </summary>
+            <param name="address">地址</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ISend">
+            <summary>
+            发送接口；<br/>
+            定义客户端字节数据的同步和异步发送操作；<br/>
+            适用于 TCP/串口等客户端通信场景
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ISend.Send(System.Byte[])">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISend.SendAsync(System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ISendService">
+            <summary>
+            服务端发送接口；<br/>
+            定义服务端向客户端发送数据的同步和异步操作；<br/>
+            支持单发（指定地址）和群发（地址为空则广播）
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ISendService.Send(System.Byte[],System.String[])">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="address">地址为空则群发</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISendService.SendAsync(System.Byte[],System.String[],System.Threading.CancellationToken)">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="address">地址为空则群发</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISendService.Send(System.Byte[],System.String)">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="address">地址为空则群发</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISendService.SendAsync(System.Byte[],System.String,System.Threading.CancellationToken)">
+            <summary>
+            发送
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="address">地址为空则群发</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ISendWait">
+            <summary>
+            发送等待接口；<br/>
+            定义发送数据并等待应答结果的同步和异步操作；<br/>
+            适用于单次命令应答模式（请求-响应）
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ISendWait.SendWait(System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            发送等待结果，适用于单次命令应答模式<br/>
+            会先关闭数据监控,在进行数据发送,函数内捕获数据,完成后在启动数据监控<br/>
+            只要收到一次数据就会立马返回收到的数据
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISendWait.SendWaitAsync(System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            异步发送等待结果，适用于单次命令应答模式<br/>
+            会先关闭数据监控,在进行数据发送,函数内捕获数据,完成后在启动数据监控<br/>
+            只要收到一次数据就会立马返回收到的数据
+            </summary>
+            <param name="data">字节数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IStatus">
+            <summary>
+            状态接口；<br/>
+            定义获取当前通信/数采/消息队列连接状态的同步和异步操作
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IStatus.GetStatus">
+            <summary>
+            获取状态
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IStatus.GetStatusAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取状态
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.ISubscribe">
+            <summary>
+            自定义订阅接口；<br/>
+            定义地址数据的订阅与取消订阅操作；<br/>
+            订阅后通过 IEvent 事件接收数据变更通知；<br/>
+            继承 IEvent
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.ISubscribe.Subscribe(Snet.Model.data.Address)">
+            <summary>
+            订阅
+            </summary>
+            <param name="address">节点数据</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISubscribe.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <summary>
+            订阅
+            </summary>
+            <param name="address">节点数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISubscribe.UnSubscribe(Snet.Model.data.Address)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="address">节点数据</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="M:Snet.Model.interface.ISubscribe.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <summary>
+            取消订阅
+            </summary>
+            <param name="address">节点数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一出参</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IWA">
+            <summary>
+            WebApi 接口；<br/>
+            定义数采器内置 WebApi 服务的启动、停止、状态查询和请求示例获取等操作；<br/>
+            通过 WAModel 配置 IP 地址、端口和跨域策略
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAOn(Snet.Model.data.WAModel)">
+            <summary>
+            启动WebApi
+            </summary>
+            <param name="wAModel">WebApi模型</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAOnAsync(Snet.Model.data.WAModel,System.Threading.CancellationToken)">
+            <summary>
+            启动WebApi
+            </summary>
+            <param name="wAModel">WebApi模型</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAOff">
+            <summary>
+            停止WebApi
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAOffAsync(System.Threading.CancellationToken)">
+            <summary>
+            停止WebApi
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAStatus">
+            <summary>
+            WebApi状态
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WAStatusAsync(System.Threading.CancellationToken)">
+            <summary>
+            WebApi状态
+            </summary>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WARequestExample">
+            <summary>
+            WebApi请求示例
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWA.WARequestExampleAsync(System.Threading.CancellationToken)">
+            <summary>
+            WebApi请求示例
+            </summary>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.Model.interface.IWrite">
+            <summary>
+            写入接口；<br/>
+            定义向设备地址写入数据的同步和异步操作；<br/>
+            支持多种写入模式：基础键值对、指定编码类型、WriteModel 完整模型
+            </summary>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.Object})">
+            <summary>
+            写入
+            </summary>
+            <param name="values">写入的数据点，与数据</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.Object},System.Threading.CancellationToken)">
+            <summary>
+            异步写入
+            </summary>
+            <param name="values">写入的数据点，与数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}})">
+            <summary>
+            写入
+            </summary>
+            <param name="values">写入的数据点，数据，编码类型</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <summary>
+            异步写入
+            </summary>
+            <param name="values">写入的数据点，数据，编码类型</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.Write(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.WriteModel})">
+            <summary>
+            写入
+            </summary>
+            <param name="values">写入的数据点，与数据</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Model.interface.IWrite.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,Snet.Model.data.WriteModel},System.Threading.CancellationToken)">
+            <summary>
+            异步写入
+            </summary>
+            <param name="values">写入的数据点，与数据</param>
+            <param name="token">传播应取消操作的通知</param>
+            <returns>统一结果</returns>
+        </member>
+    </members>
+</doc>

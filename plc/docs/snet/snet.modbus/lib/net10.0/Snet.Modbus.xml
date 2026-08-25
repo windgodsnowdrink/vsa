@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Modbus</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Modbus.ModbusData">
+            <summary>
+            Modbus数据
+            </summary>
+        </member>
+        <member name="T:Snet.Modbus.ModbusData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.AddressStartWithZero">
+            <summary>
+            起始地址是否从0开始
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.IsCheckMessageId">
+            <summary>
+            检查消息ID是否一致
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.IsStringReverse">
+            <summary>
+            字节反转
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.Crc16CheckEnable">
+            <summary>
+            CRC16校验检查
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.IsClearCacheBeforeRead">
+            <summary>
+            清空缓冲数据
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.StationCheckMatch">
+            <summary>
+            站号检查
+            </summary>
+        </member>
+        <member name="P:Snet.Modbus.ModbusData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Modbus.ModbusData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusTcpNet">
+            <summary>
+            Modbus-Tcp协议的客户端通讯类，方便的和服务器进行数据交互，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusUdpNet">
+            <summary>
+            Modbus-Udp协议的客户端通讯类，方便的和服务器进行数据交互，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusRtu">
+            <summary>
+            Modbus-Rtu通讯协议的类库，多项式码0xA001，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusRtuOverTcp">
+            <summary>
+            Modbus-Rtu通讯协议的类库的网口透传，多项式码0xA001，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusAscii">
+            <summary>
+            Modbus-Ascii通讯协议的类库，基于rtu类库完善过来，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusData.ProtocolType.ModbusAsciiOverTcp">
+            <summary>
+            Modbus-Ascii通讯协议的网口透传类，基于rtu类库完善过来，支持标准的功能码，也支持扩展的功能码实现，地址采用富文本的形式
+            </summary>
+        </member>
+        <member name="T:Snet.Modbus.ModbusOperate">
+            <summary>
+            Modbus通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.#ctor(Snet.Modbus.ModbusData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Modbus.ModbusOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Modbus.ModbusOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Modbus.ModbusOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Modbus.ModbusOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Modbus.ModbusOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

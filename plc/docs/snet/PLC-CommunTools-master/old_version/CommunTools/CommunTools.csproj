@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B907527A-675C-400B-AD88-129581690C0B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CommunTools</RootNamespace>
+    <AssemblyName>CommunTools</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>login.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Taurus.CSSkinUI.WF">
+      <HintPath>..\UsingLib\Taurus.CSSkinUI.WF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\AttributesContext.cs" />
+    <Compile Include="Common\ByteDataCommon.cs" />
+    <Compile Include="Common\FuncGroupAttribute.cs" />
+    <Compile Include="Common\FuncURIAttribute.cs" />
+    <Compile Include="Common\GdiPlusCommon.cs" />
+    <Compile Include="Common\MessageCommon.cs" />
+    <Compile Include="Common\PassDataEventArgs.cs" />
+    <Compile Include="Common\TCPClientServices.cs" />
+    <Compile Include="Common\Twain\TwainDefs.cs" />
+    <Compile Include="Common\Twain\TwainGui.cs" />
+    <Compile Include="Common\Twain\TwainLib.cs" />
+    <Compile Include="Common\Twain\TwainScanCommon.cs" />
+    <Compile Include="Entity\TCPClient.cs" />
+    <Compile Include="Entity\TCPComServer.cs" />
+    <Compile Include="Entity\TCPServer.cs" />
+    <Compile Include="Enums\CommunTCPEnum.cs" />
+    <Compile Include="Enums\Encoding.cs" />
+    <Compile Include="Enums\FuncItemCom.cs" />
+    <Compile Include="Enums\SerialPortEnum.cs" />
+    <Compile Include="FrmBaseCom\Frm_ComLPT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_ComLPT.Designer.cs">
+      <DependentUpon>Frm_ComLPT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_ComWebSocket.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_ComWebSocket.Designer.cs">
+      <DependentUpon>Frm_ComWebSocket.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_SerialServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_SerialServer.Designer.cs">
+      <DependentUpon>Frm_SerialServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_TCPServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_TCPServer.Designer.cs">
+      <DependentUpon>Frm_TCPServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMenu.Designer.cs">
+      <DependentUpon>FrmMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmOther\Frm_Twain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmOther\Frm_Twain.Designer.cs">
+      <DependentUpon>Frm_Twain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmProto\Frm_SCHNEIDER.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmProto\Frm_SCHNEIDER.Designer.cs">
+      <DependentUpon>Frm_SCHNEIDER.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmProto\Frm_MQTT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmProto\Frm_MQTT.Designer.cs">
+      <DependentUpon>Frm_MQTT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_SerialPort.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_SerialPort.Designer.cs">
+      <DependentUpon>Frm_SerialPort.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_TCPClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaseCom\Frm_TCPClient.Designer.cs">
+      <DependentUpon>Frm_TCPClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\SerialPortEventArgs.cs" />
+    <EmbeddedResource Include="FrmBaseCom\Frm_ComLPT.resx">
+      <DependentUpon>Frm_ComLPT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBaseCom\Frm_ComWebSocket.resx">
+      <DependentUpon>Frm_ComWebSocket.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBaseCom\Frm_SerialServer.resx">
+      <DependentUpon>Frm_SerialServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBaseCom\Frm_TCPServer.resx">
+      <DependentUpon>Frm_TCPServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmOther\Frm_Twain.resx">
+      <DependentUpon>Frm_Twain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmProto\Frm_SCHNEIDER.resx">
+      <DependentUpon>Frm_SCHNEIDER.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmProto\Frm_MQTT.resx">
+      <DependentUpon>Frm_MQTT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmMenu.resx">
+      <DependentUpon>FrmMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBaseCom\Frm_SerialPort.resx">
+      <DependentUpon>Frm_SerialPort.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBaseCom\Frm_TCPClient.resx">
+      <DependentUpon>Frm_TCPClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="UseLib\InpOut\INPOUT32.DPR" />
+    <None Include="UseLib\InpOut\INPOUT32.FRM" />
+    <None Include="UseLib\InpOut\INPOUT32.VBP" />
+    <None Include="UseLib\InpOut\INPOUT32.vbw" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Commun.NetWork\Commun.NetWork.csproj">
+      <Project>{93FDC7D0-9623-4858-8B43-9342F0473007}</Project>
+      <Name>Commun.NetWork</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZCS_Common\ZCS_Common.csproj">
+      <Project>{C0F44B62-2DC6-4C2D-8713-A38ACB20B7D9}</Project>
+      <Name>ZCS_Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZCS_FormUI\ZCS_FormUI.csproj">
+      <Project>{99387794-5DCA-4F92-8E55-F6C415B2CF0B}</Project>
+      <Name>ZCS_FormUI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="login.ico" />
+    <Content Include="UseLib\InpOut\INPOUT32.BAS" />
+    <Content Include="UseLib\InpOut\INPOUT32.DLL" />
+    <Content Include="UseLib\InpOut\INPOUT32.TXT" />
+    <None Include="Resources\shichang.png" />
+    <None Include="Resources\close.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

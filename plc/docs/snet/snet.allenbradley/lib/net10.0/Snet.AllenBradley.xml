@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.AllenBradley</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.AllenBradley.AllenBradleyData">
+            <summary>
+            罗克韦尔数据
+            </summary>
+        </member>
+        <member name="T:Snet.AllenBradley.AllenBradleyData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.ReadArrayUseSegment">
+            <summary>
+            使用52片段功能码
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.Slot">
+            <summary>
+            插槽
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.ContextCheck">
+            <summary>
+            将自增Senderontext属性当为消息id，接收消息匹配处理
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.DstNode">
+            <summary>
+            目标节点号
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.SrcNode">
+            <summary>
+            源节点号
+            </summary>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.AllenBradley.AllenBradleyData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleyNet">
+            <summary>
+            罗克韦尔PLC 数据通信类，使用CIP协议实现，适用1756，1769等型号，支持使用标签的形式进行读写操作，支持标量数据，一维数组，二维数组，三维数组等等。如果是局部变量，那么使用 Program:MainProgram.[变量名]
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleyConnectedCipNet">
+            <summary>
+            罗克韦尔PLC 基于连接的对象访问的CIP协议的实现，用于对罗克韦尔 PLC进行标签的数据读写，对数组，多维数组进行读写操作
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleyMicroCip">
+            <summary>
+            罗克韦尔PLC cip通信实现类，适用Micro800系列控制系统
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleyPcccNet">
+            <summary>
+            罗克韦尔PLC 在CIP协议里，使用PCCC命令进行访问设备的原始数据文件的通信方法
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleySLCNet">
+            <summary>
+            罗克韦尔PLC 针对SLC系列的通信的实现
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyData.ProtocolType.AllenBradleyDF1Serial">
+            <summary>
+            罗克韦尔PLC DF1通信协议，基于串口实现，通信机制为半双工，目前适用于 Micro-Logix1000,SLC500,SLC 5/03,SLC 5/04，地址示例：N7:1
+            </summary>
+        </member>
+        <member name="T:Snet.AllenBradley.AllenBradleyOperate">
+            <summary>
+            罗克韦尔通信库
+            </summary>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.#ctor(Snet.AllenBradley.AllenBradleyData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.AllenBradley.AllenBradleyOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.AllenBradley.AllenBradleyOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.AllenBradley.AllenBradleyOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

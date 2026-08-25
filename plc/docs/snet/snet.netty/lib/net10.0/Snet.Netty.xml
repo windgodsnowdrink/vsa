@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Netty</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Netty.client.NettyClientData">
+            <summary>
+            Netty 客户端数据配置类
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.client.NettyClientData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.SslFilePath">
+            <summary>
+            SSL文件路径
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.SslFilePassword">
+            <summary>
+            SSL文件密码
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.TaskNumber">
+            <summary>
+            任务数量
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.client.NettyClientHandler">
+            <summary>
+            Netty 客户端通道处理器，继承自 <see cref="T:DotNetty.Transport.Channels.ChannelHandlerAdapter"/>，负责处理 DotNetty 客户端通道的读取和异常事件。
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientHandler.nettyClientOperate">
+            <summary>
+            关联的 Netty 客户端操作实例
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientHandler.#ctor(Snet.Netty.client.NettyClientOperate)">
+            <summary>
+            初始化 Netty 客户端通道处理器。
+            </summary>
+            <param name="nettyClientOperate">关联的客户端操作实例</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientHandler.ChannelRead(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            通道读取事件，将接收到的消息转发给 <see cref="M:Snet.Netty.client.NettyClientOperate.Response(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)"/> 处理。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="message">接收到的消息</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientHandler.ChannelReadComplete(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            通道读取完成事件，刷新输出缓冲区。
+            </summary>
+            <param name="context">通道上下文</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientHandler.ExceptionCaught(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            通道异常捕获事件，通知客户端操作实例处理异常。
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="exception">捕获到的异常</param>
+        </member>
+        <member name="T:Snet.Netty.client.NettyClientOperate">
+            <summary>
+            Netty 客户端操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 DotNetty 实现高性能 TCP 客户端通信<br/>
+            - 支持 SSL/TLS 加密传输<br/>
+            - 支持主题订阅和消息发布<br/>
+            - 多任务并发消费队列
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.#ctor(Snet.Netty.client.NettyClientData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.Communication">
+            <summary>
+            通信库
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.Group">
+            <summary>
+            组
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.Channel">
+            <summary>
+            通道
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.TaskArray">
+            <summary>
+            任务集合
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.DataQueue">
+            <summary>
+            数据队列
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.client.NettyClientOperate.SubIoc">
+            <summary>
+            订阅的主题项容器
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.channelOptions">
+            <summary>
+            通道设置
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.client.NettyClientOperate.M">
+            <summary>
+            内部消息
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.M.T">
+            <summary>
+            主题
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.M.C">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.client.NettyClientOperate.Info">
+            <summary>
+            信息
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.Info.Context">
+            <summary>
+            通道处理程序上下文
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.client.NettyClientOperate.Info.Msg">
+            <summary>
+            信息
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.TaskHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            任务处理
+            </summary>
+            <param name="token">任务令牌</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.Response(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            接收响应数据（由 Handler 内部调用）<br/>
+            将接收到的消息写入数据队列供消费线程处理
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="message">接收到的消息对象</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.Exception(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            异常处理（由 Handler 内部调用）<br/>
+            招出异常信息、关闭通道并断开连接
+            </summary>
+            <param name="context">通道上下文</param>
+            <param name="exception">异常信息</param>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.IpHandle(System.Net.EndPoint)">
+            <summary>
+            解析网络地址，提取 IP:Port 字符串<br/>
+            兼容 IPv4 与 IPv6 格式的 EndPoint 地址
+            </summary>
+            <param name="Ip">网络端点地址</param>
+            <returns>IP:Port 字符串</returns>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.ProduceAsync(System.String,System.String,System.Text.Encoding,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.client.NettyClientOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Netty.service.NettyServiceData">
+            <summary>
+            Netty 服务端数据配置类，封装 DotNetty TCP 服务器的连接参数（端口、SSL 证书路径及密码等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.service.NettyServiceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.service.NettyServiceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.service.NettyServiceData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.service.NettyServiceData.Basics.SslFilePath">
+            <summary>
+            SSL文件路径
+            </summary>
+        </member>
+        <member name="P:Snet.Netty.service.NettyServiceData.Basics.SslFilePassword">
+            <summary>
+            SSL文件密码
+            </summary>
+        </member>
+        <member name="T:Snet.Netty.service.NettyServiceHandler">
+            <summary>
+            Netty 服务端通道处理器，继承自 <see cref="T:DotNetty.Transport.Channels.ChannelHandlerAdapter"/>，负责处理 DotNetty 服务端通道的激活、读取和异常事件。
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceHandler.#ctor(Snet.Netty.service.NettyServiceOperate)">
+            <summary>
+            初始化 Netty 服务端通道处理器。
+            </summary>
+            <param name="server">关联的服务端操作实例</param>
+        </member>
+        <member name="P:Snet.Netty.service.NettyServiceHandler.nettyServiceOperate">
+            <summary>
+            关联的 Netty 服务端操作实例
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceHandler.ChannelActive(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            通道激活
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceHandler.ChannelRead(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            通道读取
+            </summary>
+            <param name="context"></param>
+            <param name="message">消息</param>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceHandler.ExceptionCaught(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            通道异常
+            </summary>
+            <param name="context"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="T:Snet.Netty.service.NettyServiceChannelMatcherHandler">
+            <summary>
+            群发送至连上服务器的所有客户端，过滤掉发送端
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceChannelMatcherHandler.#ctor(DotNetty.Transport.Channels.IChannelId)">
+            <summary>
+            群发送至连上服务器的所有客户端，过滤掉发送端
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="T:Snet.Netty.service.NettyServiceOperate">
+            <summary>
+            netty 操作类
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.#ctor(Snet.Netty.service.NettyServiceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.ClientGroup">
+            <summary>
+            客户端组
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.ClientMessageGroup">
+            <summary>
+            客户端消息组
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.Communication">
+            <summary>
+            通信库
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.Channel">
+            <summary>
+            通道
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.ClientIoc">
+            <summary>
+            客户端容器
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.ChannelGroup">
+            <summary>
+            组
+            </summary>
+        </member>
+        <member name="F:Snet.Netty.service.NettyServiceOperate.IsStart">
+            <summary>
+            是否打开
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Active(DotNetty.Transport.Channels.IChannelHandlerContext)">
+            <summary>
+            激活，内部使用
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Response(DotNetty.Transport.Channels.IChannelHandlerContext,System.Object)">
+            <summary>
+            响应，内部使用（群发并过滤发送端，避免消息回显给发送者）
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Exception(DotNetty.Transport.Channels.IChannelHandlerContext,System.Exception)">
+            <summary>
+            异常，内部使用
+            </summary>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.IpHandle(System.Net.EndPoint)">
+            <summary>
+            IP处理（兼容 IPv4 与 IPv6）
+            </summary>
+            <param name="Ip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Off(System.Boolean)">
+            <summary>
+            关闭 Netty 服务端<br/>
+            优雅关闭事件循环组，关闭通道并释放资源
+            </summary>
+            <param name="hardClose">是否强制关闭（跳过状态检查）</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.GetStatus">
+            <summary>
+            获取 Netty 服务端运行状态
+            </summary>
+            <returns>操作结果（Status=true 表示已启动）</returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Send(System.Byte[],System.String[])">
+            <summary>
+            发送数据到客户端<br/>
+            支持指定 IP:Port 定向发送，或不指定时群发到所有客户端
+            </summary>
+            <param name="Data">要发送的字节数据</param>
+            <param name="IpPort">目标客户端 IP:Port 数组（为 null 时群发）</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.SendAsync(System.Byte[],System.String[],System.Threading.CancellationToken)">
+            <summary>
+            异步发送数据到客户端（委托同步方法）
+            </summary>
+            <param name="Data">要发送的字节数据</param>
+            <param name="IpPort">目标客户端 IP:Port 数组（为 null 时群发）</param>
+            <param name="token">取消令牌</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.Send(System.String,System.String,System.String[])">
+            <summary>
+            群发数据
+            </summary>
+            <param name="Topic">主题</param>
+            <param name="Content">内容</param>
+            <param name="IpPort">IP端口</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Netty.service.NettyServiceOperate.SendAsync(System.String,System.String,System.String[],System.Threading.CancellationToken)">
+            <summary>
+            群发数据
+            </summary>
+            <param name="Topic">主题</param>
+            <param name="Content">内容</param>
+            <param name="IpPort">IP端口</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

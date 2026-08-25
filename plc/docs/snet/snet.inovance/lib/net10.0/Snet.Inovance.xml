@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Inovance</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Inovance.InovanceData">
+            <summary>
+            汇川数据
+            </summary>
+        </member>
+        <member name="T:Snet.Inovance.InovanceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.AddressStartWithZero">
+            <summary>
+            起始地址是否从0开始
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.IsStringReverse">
+            <summary>
+            字节反转
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.InovanceSeries">
+            <summary>
+            型号系列
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.WaittingTime">
+            <summary>
+            报文等待时间，范围(0-15)
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.SumCheck">
+            <summary>
+            使用和校验
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.Format">
+            <summary>
+            协议格式信息[1,2,3,4]
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.TOConnectionId">
+            <summary>
+            T-O网络连接ID
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.OTConnectionId">
+            <summary>
+            O-T网络连接ID
+            </summary>
+        </member>
+        <member name="P:Snet.Inovance.InovanceData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Inovance.InovanceData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceTcpNet">
+            <summary>
+            汇川PLC 网口通信协议，A适用于AM400、 AM400_800、 AC800、H3U, XP, H5U 等系列底层走的是MODBUS-TCP协议
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceSerial">
+            <summary>
+            汇川PLC 串口通信协议，A适用于AM400、 AM400_800、 AC800、H3U, XP, H5U 等系列底层走的是MODBUS-RTU协议
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceSerialOverTcp">
+            <summary>
+            汇川PLC 串口转网口通信协议，A适用于AM400、 AM400_800、 AC800、H3U, XP, H5U 等系列底层走的是MODBUS-RTU协议
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceComputerLink">
+            <summary>
+            汇川PLC 计算机链接协议，使用PLC得COM1口，设置 D8126=06h, D8120.14=1 才能正常通信
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceConnectedCipNet">
+            <summary>
+            汇川PLC CIP协议
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceData.ProtocolType.InovanceEasyNet">
+            <summary>
+            汇川PLC Easy系列的通信协议，使用的是专用的报文
+            </summary>
+        </member>
+        <member name="T:Snet.Inovance.InovanceOperate">
+            <summary>
+            汇川通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.#ctor(Snet.Inovance.InovanceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Inovance.InovanceOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Inovance.InovanceOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Inovance.InovanceOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Inovance.InovanceOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Inovance.InovanceOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

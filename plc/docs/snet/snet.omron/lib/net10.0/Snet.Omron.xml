@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Omron</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Omron.OmronData">
+            <summary>
+            欧姆龙数据
+            </summary>
+        </member>
+        <member name="T:Snet.Omron.OmronData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.OmronPlcType">
+            <summary>
+            PLC类型
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.DA2">
+            <summary>
+            节点地址
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.ReceiveUntilEmpty">
+            <summary>
+            接收数据直到空为止
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.IsStringReverseByteWord">
+            <summary>
+            字节按照字单位反转
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SA1">
+            <summary>
+            节点地址
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.GCT">
+            <summary>
+            网络信息层
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.DA1">
+            <summary>
+            节点地址
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.Slot">
+            <summary>
+            插槽
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.UnitNumber">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SID">
+            <summary>
+            服务标识号
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.SA2">
+            <summary>
+            上位机单元地址
+            </summary>
+        </member>
+        <member name="P:Snet.Omron.OmronData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Omron.OmronData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronFinsNet">
+            <summary>
+            欧姆龙PLC 采用Fins-Tcp通信协议
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronFinsUdp">
+            <summary>
+            欧姆龙PLC Udp协议，地址类型和Fins-TCP一致
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronCipNet">
+            <summary>
+            欧姆龙PLC CIP协议，支持NJ,NX,NY系列PLC，支持tag名的方式读写数据，假设你读取的是局部变量，那么使用 Program:MainProgram.变量名
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronConnectedCipNet">
+            <summary>
+            欧姆龙PLC 基于连接的对象访问的CIP协议，用于对Omron PLC进行标签的数据读写，对数组，多维数组进行读写操作
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronHostLink">
+            <summary>
+            欧姆龙PLC HostLink协议，地址支持示例 DM区:D100; CIO区:C100; Work区:W100; Holding区:H100; Auxiliary区: A100
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronHostLinkOverTcp">
+            <summary>
+            欧姆龙PLC HostLink协议，基于Tcp实现，地址支持示例 DM区:D100; CIO区:C100; Work区:W100; Holding区:H100; Auxiliary区: A100
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronHostLinkCMode">
+            <summary>
+            欧姆龙PLC HostLink的C-Mode实现形式，地址支持携带站号信息，例如：s=2;D100
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronData.ProtocolType.OmronHostLinkCModeOverTcp">
+            <summary>
+            欧姆龙PLC HostLink的C-Mode实现形式，当前的类是通过以太网透传实现。地址支持携带站号信息，例如：s=2;D100
+            </summary>
+        </member>
+        <member name="T:Snet.Omron.OmronOperate">
+            <summary>
+            欧姆龙通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.#ctor(Snet.Omron.OmronData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Omron.OmronOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Omron.OmronOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Omron.OmronOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Omron.OmronOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Omron.OmronOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

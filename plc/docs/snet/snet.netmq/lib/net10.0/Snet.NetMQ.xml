@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.NetMQ</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.NetMQ.NetMQData">
+            <summary>
+            NetMQ (ZeroMQ) 数据配置类，封装发布/订阅模式的连接参数（地址、超时、使用模式等）。
+            </summary>
+        </member>
+        <member name="T:Snet.NetMQ.NetMQData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQData.Basics.UModel">
+            <summary>
+            使用模式
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQData.Basics.Address">
+            <summary>
+            地址；
+            通过 UModel 来确定模式
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQData.Basics.TimeOut">
+            <summary>
+            超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.NetMQ.NetMQData.UseModel">
+            <summary>
+            使用类型
+            </summary>
+        </member>
+        <member name="F:Snet.NetMQ.NetMQData.UseModel.SubModel">
+            <summary>
+            使用订阅模式；<br/>
+            Connect 方式；<br/>
+            多 [ 订阅 ] 对 一 [ 发布 ]
+            </summary>
+        </member>
+        <member name="F:Snet.NetMQ.NetMQData.UseModel.PubModel">
+            <summary>
+            使用发布模式；<br/>
+            Bind 方式；<br/>
+            一 [ 发布 ] 对 多 [ 订阅 ]
+            </summary>
+        </member>
+        <member name="T:Snet.NetMQ.NetMQOperate">
+            <summary>
+            NetMQ 操作类<br/>
+            基于轻量级消息传递库 ZeroMQ 的 100% 原生 C# 实现<br/>
+            支持发布/订阅模式：一个发布者对应多个订阅者
+            </summary>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.NetMQ.NetMQOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.#ctor(Snet.NetMQ.NetMQData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.NetMQ.NetMQOperate.netMQ">
+            <summary>
+            NetMQ 套接字实例（发布或订阅，根据 UModel 决定类型）
+            </summary>
+        </member>
+        <member name="F:Snet.NetMQ.NetMQOperate.g_token">
+            <summary>
+            消息处理任务的生命周期控制令牌
+            </summary>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.SubMessageHandleAsync(System.Threading.CancellationTokenSource)">
+            <summary>
+            订阅消息处理循环<br/>
+            持续从 SubscriberSocket 接收消息，按帧语义解析后根据响应类型分发事件<br/>
+            使用超时机制避免无限阻塞
+            </summary>
+            <param name="token">取消令牌源，控制循环生命周期</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.NetMQ.NetMQOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

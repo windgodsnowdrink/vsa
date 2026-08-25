@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.LSis</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.LSis.LSisData">
+            <summary>
+            LSis数据
+            </summary>
+        </member>
+        <member name="T:Snet.LSis.LSisData.CpuType">
+            <summary>
+            LSIS Cpu类型
+            </summary>
+        </member>
+        <member name="T:Snet.LSis.LSisData.CompanyID">
+            <summary>
+            公司ID
+            </summary>
+        </member>
+        <member name="T:Snet.LSis.LSisData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.SlotNo">
+            <summary>
+            槽位号
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.CpuType">
+            <summary>
+            CPU类型
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.CompanyID">
+            <summary>
+            公司ID
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.LSis.LSisData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.LSis.LSisData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisData.ProtocolType.LSFastEnet">
+            <summary>
+            LSis PLC XGB Fast Enet I/F模块网口通信
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisData.ProtocolType.LSCnet">
+            <summary>
+            LSis PLC XGB Cnet I/F模块串口通信
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisData.ProtocolType.LSCpu">
+            <summary>
+            LSis PLC XGB CPU I/F模块串口通信
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisData.ProtocolType.LSCnetOverTcp">
+            <summary>
+            LSis PLC XGB Cnet I/F模块网口透传
+            </summary>
+        </member>
+        <member name="T:Snet.LSis.LSisOperate">
+            <summary>
+            LSis通信库
+            </summary>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.#ctor(Snet.LSis.LSisData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.LSis.LSisOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.LSis.LSisOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.LSis.LSisOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.LSis.LSisOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.LSis.LSisOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

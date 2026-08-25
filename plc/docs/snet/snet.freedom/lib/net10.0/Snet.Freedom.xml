@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Freedom</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Freedom.FreedomData">
+            <summary>
+            自由协议数据
+            </summary>
+        </member>
+        <member name="T:Snet.Freedom.FreedomData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.IsStringReverseByteWord">
+            <summary>
+            字节按照字单位反转
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Freedom.FreedomData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Freedom.FreedomData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomData.ProtocolType.FreedomTcpNet">
+            <summary>
+            基于TCP/IP协议的自由协议，需要在地址里传入报文信息，也可以传入数据偏移信息
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomData.ProtocolType.FreedomUdpNet">
+            <summary>
+            基于UDP/IP协议的自由协议，需要在地址里传入报文信息，也可以传入数据偏移信息
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomData.ProtocolType.FreedomSerial">
+            <summary>
+            基于串口的自由协议，需要在地址里传入报文信息，也可以传入数据偏移信息
+            </summary>
+        </member>
+        <member name="T:Snet.Freedom.FreedomOperate">
+            <summary>
+            自由协议通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.#ctor(Snet.Freedom.FreedomData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Freedom.FreedomOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Freedom.FreedomOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Freedom.FreedomOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Freedom.FreedomOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Freedom.FreedomOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

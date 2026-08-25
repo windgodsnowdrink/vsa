@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Keyence</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Keyence.KeyenceData">
+            <summary>
+            基恩士数据
+            </summary>
+        </member>
+        <member name="T:Snet.Keyence.KeyenceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.EnableWriteBitToWordRegister">
+            <summary>
+            写入位到字寄存器功能
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.IsStringReverseByteWord">
+            <summary>
+            字节按照字单位反转
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.UseStation">
+            <summary>
+            启用站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Keyence.KeyenceData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceData.ProtocolType.KeyenceMcNet">
+            <summary>
+            基恩士PLC 使用QnA兼容3E帧的通信协议实现，使用二进制的格式，地址同时支持三菱的地址格式及基恩士自身的地址格式
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceData.ProtocolType.KeyenceMcAsciiNet">
+            <summary>
+            基恩士PLC 使用QnA兼容3E帧的通信协议实现，使用ASCII的格式，地址格式需要进行转换成三菱的格式
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceData.ProtocolType.KeyenceNanoSerial">
+            <summary>
+            基恩士PLC KV上位链路串口通信的对象,适用于Nano系列串口数据,KV1000以及L20V通信模块
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceData.ProtocolType.KeyenceNanoSerialOverTcp">
+            <summary>
+            基恩士PLC KV上位链路协议的通信对象,适用于KV5000/5500/3000,KV1000,KV700,以及L20V通信模块，本类是基于tcp通信
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceData.ProtocolType.KeyenceKvOld">
+            <summary>
+            老型号的基恩士通信，适用于 Kv-10xx, 16xx, 24xx, 40xx, kv-80, kv-300，其中 xx 表示 AR/AT/DR/DT
+            </summary>
+        </member>
+        <member name="T:Snet.Keyence.KeyenceOperate">
+            <summary>
+            基恩士通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.#ctor(Snet.Keyence.KeyenceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Keyence.KeyenceOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Keyence.KeyenceOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Keyence.KeyenceOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

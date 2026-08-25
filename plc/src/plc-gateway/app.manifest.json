@@ -1,0 +1,47 @@
+{
+  "gateway": {
+    "name": "plc-gateway",
+    "rpc": {
+      "transport": "namedPipe",
+      "pipeName": "plc-gateway",
+      "autoStart": true
+    },
+    "plugins": {
+      "directory": "plugins",
+      "autoLoad": true
+    },
+    "pipeline": {
+      "ringBufferSize": 16384,
+      "consumerThreads": 2
+    },
+    "devices": [
+      {
+        "id": "dev-modbus-1",
+        "protocol": "snet.modbus.tcp",
+        "host": "127.0.0.1",
+        "port": 502,
+        "unitId": 1,
+        "pollIntervalMs": 1000,
+        "enabled": false
+      },
+      {
+        "id": "dev-siemens-1",
+        "protocol": "snet.siemens.tcp",
+        "host": "127.0.0.1",
+        "port": 102,
+        "rack": 0,
+        "slot": 1,
+        "pollIntervalMs": 2000,
+        "enabled": false
+      },
+      {
+        "id": "dev-sim-1",
+        "protocol": "builtin.sim",
+        "host": "memory",
+        "port": 0,
+        "pollIntervalMs": 500,
+        "enabled": true
+      }
+    ]
+  }
+}

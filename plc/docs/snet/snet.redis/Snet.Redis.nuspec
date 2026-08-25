@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Snet.Redis</id>
+    <version>26.235.2</version>
+    <authors>Shun</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://snet.cn/</projectUrl>
+    <description>扩展工具：Redis（非关系型内存数据库，用于数据快速出站入站存储）</description>
+    <repository type="git" commit="9f2214f5720028cb59246a846a7581b9982a1a3b" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+        <dependency id="StackExchange.Redis" version="3.1.31" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+        <dependency id="StackExchange.Redis" version="3.1.31" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

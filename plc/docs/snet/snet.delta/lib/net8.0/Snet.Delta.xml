@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Delta</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Delta.DeltaData">
+            <summary>
+            台达数据
+            </summary>
+        </member>
+        <member name="T:Snet.Delta.DeltaData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.DeltaSeries">
+            <summary>
+            系列
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Delta.DeltaData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Delta.DeltaData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaData.ProtocolType.DeltaTcpNet">
+            <summary>
+            台达PLC 网口通讯类，基于Modbus-Rtu协议开发，按照台达的地址进行实现
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaData.ProtocolType.DeltaSerial">
+            <summary>
+            台达PLC 串口通讯类，基于Modbus-Rtu协议开发，按照台达的地址进行实现
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaData.ProtocolType.DeltaSerialOverTcp">
+            <summary>
+            台达PLC 串口转网口透传类，基于Modbus-Rtu协议开发，但是实际的通信管道使用的是网络，但是实际的地址是台达的地址进行读写操作
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaData.ProtocolType.DeltaSerialAscii">
+            <summary>
+            台达PLC 串口通讯类，基于Modbus-Ascii协议开发，按照台达的地址进行实现
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaData.ProtocolType.DeltaSerialAsciiOverTcp">
+            <summary>
+            台达PLC 串口通讯类，基于Modbus-Ascii协议开发，使用串口转网口的透传实现，按照台达的地址进行实现
+            </summary>
+        </member>
+        <member name="T:Snet.Delta.DeltaOperate">
+            <summary>
+            台达通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.#ctor(Snet.Delta.DeltaData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Delta.DeltaOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Delta.DeltaOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Delta.DeltaOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Delta.DeltaOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Delta.DeltaOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

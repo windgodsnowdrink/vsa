@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.XinJE</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.XinJE.XinJEData">
+            <summary>
+            信捷数据
+            </summary>
+        </member>
+        <member name="T:Snet.XinJE.XinJEData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.AddressStartWithZero">
+            <summary>
+            起始地址是否从0开始
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.IsStringReverse">
+            <summary>
+            字节反转
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.XinJESeries">
+            <summary>
+            系列
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.XinJE.XinJEData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.XinJE.XinJEData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEData.ProtocolType.XinJETcpNet">
+            <summary>
+            信捷PLC XC,XD,XL系列的网口通讯类，底层使用ModbusTcp协议实现，每个系列支持的地址类型及范围不一样
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEData.ProtocolType.XinJESerial">
+            <summary>
+            信捷PLC XC,XD,XL系列的串口通讯类，底层使用ModbusRtu协议实现，每个系列支持的地址类型及范围不一样
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEData.ProtocolType.XinJESerialOverTcp">
+            <summary>
+            信捷PLC XC,XD,XL系列的串口转网口通讯类，虽然硬件层走的是TCP协议，但是底层使用ModbusRtu协议实现，每个系列支持的地址类型及范围不一样
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEData.ProtocolType.XinJEInternalNet">
+            <summary>
+            信捷PLC 内部的TCP信息，该协议是信捷基于modbus协议扩展而来，支持更多的地址类型，以及更广泛的地址范围
+            </summary>
+        </member>
+        <member name="T:Snet.XinJE.XinJEOperate">
+            <summary>
+            信捷通信库
+            </summary>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.#ctor(Snet.XinJE.XinJEData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.XinJE.XinJEOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.XinJE.XinJEOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.XinJE.XinJEOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.XinJE.XinJEOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.XinJE.XinJEOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

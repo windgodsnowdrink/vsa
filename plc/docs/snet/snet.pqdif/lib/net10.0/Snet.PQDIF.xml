@@ -1,0 +1,291 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.PQDIF</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.PQDIF.PQDIFData">
+            <summary>
+            电力通讯规约数据
+            </summary>
+        </member>
+        <member name="T:Snet.PQDIF.PQDIFData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.StationStr">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.EnableCodeFE">
+            <summary>
+            增加FE命令头
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.UseSecurityResquest">
+            <summary>
+            使用安全的请求模式
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.CA">
+            <summary>
+            客户机地址
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.IsServerActivePush">
+            <summary>
+            服务器主动推送功能
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.AddressStartWithZero">
+            <summary>
+            起始地址是否从0开始
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.IsStringReverse">
+            <summary>
+            字节反转
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.DataFormat">
+            <summary>
+            解析格式
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.Crc16CheckEnable">
+            <summary>
+            CRC16校验检查
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.IsClearCacheBeforeRead">
+            <summary>
+            清空缓冲数据
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.StationCheckMatch">
+            <summary>
+            站号检查
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.CheckDataId">
+            <summary>
+            检查读取返回报文中的数据ID信息
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.OpCode">
+            <summary>
+            操作者代码
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.InstrumentType">
+            <summary>
+            仪表类型
+            </summary>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.PQDIF.PQDIFData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT698TcpNet">
+            <summary>
+            698.45协议的TCP通信类(不是串口透传通信)，面向对象的用电信息数据交换协议，使用明文的通信方式。支持读取功率，总功，电压，电流，频率，功率因数等数据
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT698">
+            <summary>
+            698.45协议的串口通信，面向对象的用电信息数据交换协议，使用明文的通信方式。支持读取功率，总功，电压，电流，频率，功率因数等数据
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT698OverTcp">
+            <summary>
+            698.45协议的串口转网口透传通信类(不是TCP通信)，面向对象的用电信息数据交换协议，使用明文的通信方式。支持读取功率，总功，电压，电流，频率，功率因数等数据
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DTSU6606Serial">
+            <summary>
+            DTSU6606型三相四线电子式电能表的Modbus-RTU通信协议
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT645">
+            <summary>
+            基于多功能电能表通信协议实现的串口通讯，参考的文档是DLT645-2007，主要实现了对电表数据的读取和一些功能方法，数据标识格式为 00-00-00-00
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT645OverTcp">
+            <summary>
+            基于多功能电能表通信协议实现的串口转网口透传通信，参考的文档是DLT645-2007，主要实现了对电表数据的读取和一些功能方法，数据标识格式为 00-00-00-00
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT645With1997">
+            <summary>
+            基于多功能电能表通信协议实现的串口通讯，参考的文档是DLT645-1997，主要实现了对电表数据的读取和一些功能方法，数据标识格式为 B6-11
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.DLT645With1997OverTcp">
+            <summary>
+            基于多功能电能表通信协议实现的串口转网口透传通信，参考的文档是DLT645-1997，主要实现了对电表数据的读取和一些功能方法，数据标识格式为 B6-11
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.CJT188">
+            <summary>
+            城市建设部的188协议，基于DJ/T188-2004实现的协议
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFData.ProtocolType.CJT188OverTcp">
+            <summary>
+            城市建设部的188协议网口透传，基于DJ/T188-2004实现的协议
+            </summary>
+        </member>
+        <member name="T:Snet.PQDIF.PQDIFOperate">
+            <summary>
+            电力通讯规约通信库
+            </summary>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.#ctor(Snet.PQDIF.PQDIFData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.PQDIF.PQDIFOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.PQDIF.PQDIFOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.PQDIF.PQDIFOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

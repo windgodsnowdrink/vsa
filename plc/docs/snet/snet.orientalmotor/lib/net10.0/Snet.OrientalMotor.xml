@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.OrientalMotor</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.OrientalMotor.OrientalMotorData">
+            <summary>
+            东方马达数据
+            </summary>
+        </member>
+        <member name="T:Snet.OrientalMotor.OrientalMotorData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.RunIdleHeader">
+            <summary>
+            回发消息的时候RunIdle
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.RPITime">
+            <summary>
+            RPI的时间，单位是毫秒，默认100ms
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.ActualTimeout">
+            <summary>
+            EIP协议超时时间，单位是秒，只能设置2得指数倍，例如1,2,4,8,16,32,64,128,256等，默认2秒
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.OrientalMotor.OrientalMotorData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.OrientalMotor.OrientalMotorData.ProtocolType.OrientalMotorEipNet">
+            <summary>
+            东方马达EIP通信协议，适用控制器
+            </summary>
+        </member>
+        <member name="T:Snet.OrientalMotor.OrientalMotorOperate">
+            <summary>
+            东方马达通信库
+            </summary>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.#ctor(Snet.OrientalMotor.OrientalMotorData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.OrientalMotor.OrientalMotorOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.OrientalMotor.OrientalMotorOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.OrientalMotor.OrientalMotorOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.OrientalMotor.OrientalMotorOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.OrientalMotor.OrientalMotorOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.OrientalMotor.OrientalMotorOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

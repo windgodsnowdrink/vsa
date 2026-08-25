@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>PlcGateway</AssemblyName>
+    <RootNamespace>PlcGateway</RootNamespace>
+    <!-- .NET 11 预览版 SDK 会自动生成 AssemblyInfo / TargetFramework 两次导致 CS0579，
+         与 plc-host 一致关闭，由运行时提供最小特性即可。 -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <!-- 关闭默认的递归 **/*.cs 编译，仅显式包含宿主根目录源码，
+         避免把 GatewayClient / plugins 子目录的 .cs 也编进来（否则多入口点 CS0017）。 -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 外部能力库（需求 3/5/6/7） -->
+    <PackageReference Include="McMaster.NETCore.Plugins" Version="1.1.0" />
+    <PackageReference Include="Disruptor" Version="4.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.11.20" />
+    <PackageReference Include="StreamJsonRpc" Version="2.21.69" />
+    <!-- 与 SNET 二进制（net8.0）对齐的扩展包版本，避免运行时绑定冲突 -->
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
+  </ItemGroup>
+
+  <!-- SNET 反编译二进制由插件程序集（SnetProtocols）隔离加载，宿主本身不引用 -->
+
+  <!-- 仅包含宿主自身源码（根目录 + Protocols 等子目录），排除 GatewayClient / plugins
+         子项目（它们由各自治工程独立构建，否则多入口点 CS0017）；
+         同时排除 obj/bin 以防生成文件被编入导致重复特性。 -->
+  <ItemGroup>
+    <Compile Include="**/*.cs" Exclude="GatewayClient/**;plugins/**;**/obj/**;**/bin/**" />
+    <Content Include="app.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="app.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

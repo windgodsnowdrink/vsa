@@ -18,6 +18,8 @@
     <!-- 排除子目录源码被宿主默认编译（否则与 ProjectReference 同名类型冲突 / 重复 AssemblyInfo） -->
     <Compile Remove="Plc.Plugins.Contracts\**\*.cs" />
     <Compile Remove="tests\**\*.cs" />
+    <!-- 插件源码由各自工程独立编译并经 ALC 运行时加载，禁止宿主重复编译 -->
+    <Compile Remove="plugins\**\*.cs" />
     <None Remove="Plc.Plugins.Contracts\**" />
     <None Remove="tests\**" />
   </ItemGroup>
@@ -32,8 +34,70 @@
     <None Include="plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
   </ItemGroup>
 
+  <!-- 前端 cockpit / devices 静态页面（源自 PlcAiot.Web/wwwroot/pages），同源托管到输出 wwwroot/pages -->
+  <ItemGroup>
+    <Content Include="..\PlcAiot.Web\wwwroot\pages\**">
+      <Link>wwwroot\pages\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="plugins\Snet.AllenBradley\Snet.AllenBradley.decompiled.cs" />
+    <Compile Include="plugins\Snet.Beckhoff\Snet.Beckhoff.decompiled.cs" />
+    <Compile Include="plugins\Snet.Cimon\Snet.Cimon.decompiled.cs" />
+    <Compile Include="plugins\Snet.Core\Snet.Core.decompiled.cs" />
+    <Compile Include="plugins\Snet.DB\Snet.DB.decompiled.cs" />
+    <Compile Include="plugins\Snet.Delta\Snet.Delta.decompiled.cs" />
+    <Compile Include="plugins\Snet.Driver\Snet.Driver.decompiled.cs" />
+    <Compile Include="plugins\Snet.Fanuc\Snet.Fanuc.decompiled.cs" />
+    <Compile Include="plugins\Snet.Fatek\Snet.Fatek.decompiled.cs" />
+    <Compile Include="plugins\Snet.Freedom\Snet.Freedom.decompiled.cs" />
+    <Compile Include="plugins\Snet.Fuji\Snet.Fuji.decompiled.cs" />
+    <Compile Include="plugins\Snet.GE\Snet.GE.decompiled.cs" />
+    <Compile Include="plugins\Snet.Inovance\Snet.Inovance.decompiled.cs" />
+    <Compile Include="plugins\Snet.Invt\Snet.Invt.decompiled.cs" />
+    <Compile Include="plugins\Snet.Kafka\Snet.Kafka.decompiled.cs" />
+    <Compile Include="plugins\Snet.Keyence\Snet.Keyence.decompiled.cs" />
+    <Compile Include="plugins\Snet.Kossi\Snet.Kossi.decompiled.cs" />
+    <Compile Include="plugins\Snet.Log\Snet.Log.decompiled.cs" />
+    <Compile Include="plugins\Snet.LSis\Snet.LSis.decompiled.cs" />
+    <Compile Include="plugins\Snet.MegMeet\Snet.MegMeet.decompiled.cs" />
+    <Compile Include="plugins\Snet.Mitsubishi\Snet.Mitsubishi.decompiled.cs" />
+    <Compile Include="plugins\Snet.Modbus\Snet.Modbus.decompiled.cs" />
+    <Compile Include="plugins\Snet.Model\Snet.Model.decompiled.cs" />
+    <Compile Include="plugins\Snet.Mqtt\Snet.Mqtt.decompiled.cs" />
+    <Compile Include="plugins\Snet.NetMQ\Snet.NetMQ.decompiled.cs" />
+    <Compile Include="plugins\Snet.Netty\Snet.Netty.decompiled.cs" />
+    <Compile Include="plugins\Snet.Omron\Snet.Omron.decompiled.cs" />
+    <Compile Include="plugins\Snet.Opc\Snet.Opc.decompiled.cs" />
+    <Compile Include="plugins\Snet.OrientalMotor\Snet.OrientalMotor.decompiled.cs" />
+    <Compile Include="plugins\Snet.Panasonic\Snet.Panasonic.decompiled.cs" />
+    <Compile Include="plugins\Snet.PerformanceTesting\Snet.PerformanceTesting.decompiled.cs" />
+    <Compile Include="plugins\Snet.PQDIF\Snet.PQDIF.decompiled.cs" />
+    <Compile Include="plugins\Snet.RabbitMQ\Snet.RabbitMQ.decompiled.cs" />
+    <Compile Include="plugins\Snet.Redis\Snet.Redis.decompiled.cs" />
+    <Compile Include="plugins\Snet.RKC\Snet.RKC.decompiled.cs" />
+    <Compile Include="plugins\Snet.RocketMQ\Snet.RocketMQ.decompiled.cs" />
+    <Compile Include="plugins\Snet.Rpc\Snet.Rpc.decompiled.cs" />
+    <Compile Include="plugins\Snet.Siemens\Snet.Siemens.decompiled.cs" />
+    <Compile Include="plugins\Snet.Sim\Snet.Sim.decompiled.cs" />
+    <Compile Include="plugins\Snet.TEP\Snet.TEP.decompiled.cs" />
+    <Compile Include="plugins\Snet.Toyota\Snet.Toyota.decompiled.cs" />
+    <Compile Include="plugins\Snet.Turck\Snet.Turck.decompiled.cs" />
+    <Compile Include="plugins\Snet.Utility\Snet.Utility.decompiled.cs" />
+    <Compile Include="plugins\Snet.Vigor\Snet.Vigor.decompiled.cs" />
+    <Compile Include="plugins\Snet.WeCon\Snet.WeCon.decompiled.cs" />
+    <Compile Include="plugins\Snet.XinJE\Snet.XinJE.decompiled.cs" />
+    <Compile Include="plugins\Snet.Yamatake\Snet.Yamatake.decompiled.cs" />
+    <Compile Include="plugins\Snet.Yaskawa\Snet.Yaskawa.decompiled.cs" />
+    <Compile Include="plugins\Snet.Yokogawa\Snet.Yokogawa.decompiled.cs" />
+    <Compile Include="plugins\Snet.Yolo.Server\Snet.Yolo.Server.decompiled.cs" />
+    <Compile Include="plugins\Snet.YuDian\Snet.YuDian.decompiled.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Carter" Version="10.0.0" />
+    <PackageReference Include="StreamJsonRpc" Version="2.21.69" />
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="10.9.0" />
     <PackageReference Include="OpenTelemetry" Version="1.17.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />

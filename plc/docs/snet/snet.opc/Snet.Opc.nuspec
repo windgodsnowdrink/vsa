@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Snet.Opc</id>
+    <version>26.235.2</version>
+    <authors>Shun</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://snet.cn/</projectUrl>
+    <description>采集协议：Opc（工业标准通信协议 - UaClient、UaService、DaClient、DaHttp）</description>
+    <repository type="git" commit="6bec27efc0f2c65dc751ab34757e37960f2b43fe" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="OPCFoundation.NetStandard.Opc.Ua" version="1.5.378.156" exclude="Build,Analyzers" />
+        <dependency id="Serilog.Expressions" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Serilog.Extensions.Logging" version="10.0.0" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="OPCFoundation.NetStandard.Opc.Ua" version="1.5.378.156" exclude="Build,Analyzers" />
+        <dependency id="Serilog.Expressions" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Serilog.Extensions.Logging" version="10.0.0" exclude="Build,Analyzers" />
+        <dependency id="Snet.Core" version="26.235.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Beckhoff</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Beckhoff.BeckhoffData">
+            <summary>
+            倍福数据
+            </summary>
+        </member>
+        <member name="T:Snet.Beckhoff.BeckhoffData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.UseServerActivePush">
+            <summary>
+            激活从设备主动推送
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.AmsPort">
+            <summary>
+            Ams端口
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.SenderAMSNetId">
+            <summary>
+            原目标地址
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.TargetAMSNetId">
+            <summary>
+            目标的地址
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.UseAutoAmsNetID">
+            <summary>
+            使用服务器自动的NETID信息
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.UseTagCache">
+            <summary>
+            名称缓存
+            </summary>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Beckhoff.BeckhoffData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Beckhoff.BeckhoffData.ProtocolType.BeckhoffAdsNet">
+            <summary>
+            倍福PLC ADS协议，支持读取倍福的地址数据，关于端口号的选择，TwinCAT2，端口号801；TwinCAT3，端口号为851，NETID可以选择手动输入，自动输入方式
+            </summary>
+        </member>
+        <member name="T:Snet.Beckhoff.BeckhoffOperate">
+            <summary>
+            倍福通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.#ctor(Snet.Beckhoff.BeckhoffData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Beckhoff.BeckhoffOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Beckhoff.BeckhoffOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Beckhoff.BeckhoffOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Beckhoff.BeckhoffOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Beckhoff.BeckhoffOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Beckhoff.BeckhoffOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

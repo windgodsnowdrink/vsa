@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Siemens</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Siemens.SiemensData">
+            <summary>
+            西门子数据
+            </summary>
+        </member>
+        <member name="T:Snet.Siemens.SiemensData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.PDULength">
+            <summary>
+            PDU的长度信息
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.LocalTSAP">
+            <summary>
+            本地TSAP参数信息
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.Rack">
+            <summary>
+            PLC的机架号
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.Slot">
+            <summary>
+            插槽
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Siemens.SiemensData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Siemens.SiemensData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S200">
+            <summary>
+            西门子PLC S7_S200协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S200Smart">
+            <summary>
+            西门子PLC S7_S200Smart协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S300">
+            <summary>
+            西门子PLC S7_S300协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S400">
+            <summary>
+            西门子PLC S7_S400协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S1200">
+            <summary>
+            西门子PLC S7_S1200协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Net_S1500">
+            <summary>
+            西门子PLC S7_S1500协议
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensFetchWriteNet">
+            <summary>
+            西门子PLC 使用了Fetch/Write协议来和西门子进行通讯，该种方法需要在PLC侧进行一些配置
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensPPI">
+            <summary>
+            西门子PLC PPI协议，适用于s7-200plc，地址支持携带站号，例如：s=2;M100
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensPPIOverTcp">
+            <summary>
+            西门子PLC PPI协议网络透传，适用于s7-200plc，地址支持携带站号，例如：s=2;M100
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensData.ProtocolType.SiemensS7Plus">
+            <summary>
+            西门子PLC PLUS网络协议
+            </summary>
+        </member>
+        <member name="T:Snet.Siemens.SiemensOperate">
+            <summary>
+            西门子通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.#ctor(Snet.Siemens.SiemensData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Siemens.SiemensOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Siemens.SiemensOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Siemens.SiemensOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Siemens.SiemensOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Siemens.SiemensOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

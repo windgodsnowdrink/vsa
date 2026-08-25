@@ -1,0 +1,1001 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.TEP</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.TEP.core.CoreBasicsData">
+            <summary>
+            核芯基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.channelOptions">
+            <summary>
+            通道配置（延迟创建）
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.timeOutMS">
+            <summary>
+            超时时间（毫秒）
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.minLength">
+            <summary>
+            不包含数据包的字节长度
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.dataStartBit">
+            <summary>
+            数据包起始位长度
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.dataEndBit">
+            <summary>
+            数据包结束位长度
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.head">
+            <summary>
+            针头
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.trail">
+            <summary>
+            针尾
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.directionServerToClient">
+            <summary>
+            方向：服务端 → 客户端（缓存复用，避免重复分配）
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.directionClientToServer">
+            <summary>
+            方向：客户端 → 服务端（缓存复用，避免重复分配）
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.bigDataPackLength">
+            <summary>
+            大数据包的长度
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.Command">
+            <summary>
+            命令
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.握手">
+            <summary>
+            发送到客户端命令，表示客户端可以发数据给服务端了
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.身份验证">
+            <summary>
+            握手后5秒内必须发送身份认证，不然会被服务端强制踢出
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.会话心跳包">
+            <summary>
+            认证后5秒内必须主动请求一次，不然会被服务端强制踢出
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.获取客户端状态">
+            <summary>
+            服务端通过设备名设备ID获取设备状态
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.数据上传">
+            <summary>
+            客户端主动上传设备采集的数据
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Command.数据写入">
+            <summary>
+            服务端下发至客户端写入数据，无法写入直接在Message中表现
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.Terminal">
+            <summary>
+            终端
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Terminal.客户端">
+            <summary>
+            客户端
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.core.CoreBasicsData.Terminal.服务端">
+            <summary>
+            服务端
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.PackDetails">
+            <summary>
+            包的详情
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.Command">
+            <summary>
+            命令
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.Direction">
+            <summary>
+            方向
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.DataLength">
+            <summary>
+            数据长度；
+            动态的；
+            如果是分包的话，包的增加数据长度也得增加
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.DataPack">
+            <summary>
+            数据包；
+            动态的；
+            如果是分包的话，直接添加
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.CRCState">
+            <summary>
+            CRC效验状态
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.PackDetails.IsCompleteData">
+            <summary>
+            完整的数据
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.StructuralBodyBasics">
+            <summary>
+            都需要的数据
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.StructuralBodyBasics.DevName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.StructuralBodyBasics.DevID">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.BasicsResponse">
+            <summary>
+            基础响应
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.BasicsResponse.State">
+            <summary>
+            状态；
+            -1 身份未认证；0 未响应；1 成功/正常；2 异常； 
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.BasicsResponse.Message">
+            <summary>
+            消息
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.KeyValue">
+            <summary>
+            键值
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.KeyValue.Key">
+            <summary>
+            键
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.KeyValue.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CoreBasicsData.Data">
+            <summary>
+            收到的字节数据
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.Data.IpPort">
+            <summary>
+            Ip端口
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.core.CoreBasicsData.Data.Bytes">
+            <summary>
+            字节数据
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.core.CorePackHandle">
+            <summary>
+            核芯包处理
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.core.CorePackHandle.GetFullPack(System.Byte[],System.Byte[],System.Byte[],System.Byte[]@)">
+            <summary>
+            获取完整的包；
+            并返回没有被匹配的数据，给外部更新在缓存中，以便下次数据的完整性
+            </summary>
+            <param name="data">数据</param>
+            <param name="header">包头</param>
+            <param name="footer">包尾</param>
+            <param name="remainingData">没有匹配的数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.core.CorePackHandle.KmpIndexOf(System.Byte[],System.Byte[],System.Int32,System.Int32[])">
+            <summary>
+            使用KMP算法查找子数组的索引
+            </summary>
+            <param name="data">数据</param>
+            <param name="pattern">需要查找的字节</param>
+            <param name="startIndex">起始下标</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.core.CorePackHandle.ComputeLpsArray(System.Byte[])">
+            <summary>
+             计算部分匹配表（前缀表）
+            </summary>
+            <param name="pattern">需要查找的字节</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.core.CorePackHandle.ParsePackDetails(System.Byte[])">
+            <summary>
+            解析包
+            </summary>
+            <param name="bytes">字节数据，必须是一个完整的包</param>
+            <returns>包详情</returns>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore">
+            <summary>
+            客户端数据
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.Authentication">
+            <summary>
+            身份认证 客户端主动请求
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.Authentication.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.Authentication.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.core.DataCore.Authentication.Receive.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.core.DataCore.Authentication.Receive.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.SessionHeartBeat">
+            <summary>
+            心跳包 客户端主动
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.SessionHeartBeat.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.SessionHeartBeat.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.GetClientStatus">
+            <summary>
+            获取客户端状态 服务端主动
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.GetClientStatus.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.GetClientStatus.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataUpload">
+            <summary>
+            数据上传 客户端主动
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataUpload.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataUpload.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.core.DataCore.DataUpload.Receive.AddressValue">
+            <summary>
+            地址值集合
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataWriting">
+            <summary>
+            数据写入 服务端主动
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataWriting.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.DataCore.DataWriting.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.core.ManageCore">
+            <summary>
+            客户端管理<br/>
+            以IP为介质来进行单例管理
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.#ctor(System.String)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.masterOperate">
+            <summary>
+            主端对象
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.masterOperateBasics">
+            <summary>
+            主端基础数据
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.serviceOperate">
+            <summary>
+            服务端操作
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.byteBuffer">
+            <summary>
+            字节缓存
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.tokenSource">
+            <summary>
+            此类的生命周期
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.byteQueue">
+            <summary>
+            字节队列
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.corePackHandle">
+            <summary>
+            包处理类
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.AValue">
+            <summary>
+            地址键值集合
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.writeResponseJson">
+            <summary>
+            写入响应json
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.stateResponseJson">
+            <summary>
+            状态响应json
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.authenticationJson">
+            <summary>
+            身份认证JSON
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.devName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.devID">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.core.ManageCore.heartbeatTime">
+            <summary>
+            心跳包
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.core.ManageCore.authenticationStatus">
+            <summary>
+            认证状态
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.EnqueueAsync(System.Byte[],System.Threading.CancellationToken)">
+            <summary>
+            入队；
+            将接收到的字节数据写入队列，供处理线程消费
+            </summary>
+            <param name="byteData">收到的字节数据</param>
+            <param name="token">取消通知</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetInfo">
+            <summary>
+            获取当前类的设备信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetAuthenticationStatus">
+            <summary>
+            获取认证状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetMsgHead">
+            <summary>
+            获取信息头
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.StartAsync(Snet.TEP.master.TepMasterOperate,Snet.Core.communication.net.tcp.service.TcpServiceOperate,System.Threading.CancellationToken)">
+            <summary>
+            开始
+            </summary>
+            <param name="masterOperate">主端对象</param>
+            <param name="serviceOperate">tcp对象</param>
+            <param name="token">消息取消通知</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            结束
+            </summary>
+            <param name="token">取消通知</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.HandshakeAsync(System.Threading.CancellationToken)">
+            <summary>
+            与客户端握手
+            </summary>
+            <param name="token">取消通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetClientBaseStatusAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取客户端底层状态
+            </summary>
+            <param name="token">取消通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetAddressValue(System.String)">
+            <summary>
+            获取地址值
+            </summary>
+            <param name="addressName">地址名称</param>
+            <returns>返回值</returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.SetAddressValueAsync(System.Collections.Generic.List{Snet.TEP.core.CoreBasicsData.KeyValue},System.Threading.CancellationToken)">
+            <summary>
+            写入地址值
+            </summary>
+            <param name="keyValue">键值</param>
+            <param name="token">取消通知</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.HandleConnectAsync">
+            <summary>
+            处理连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.HandleSessionAsync(System.Threading.CancellationToken)">
+            <summary>
+            会话心跳包处理；
+            定时检查客户端心跳包更新时间，超时则强制关闭连接
+            </summary>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.HandleQueueAsync(System.Threading.CancellationToken)">
+            <summary>
+            处理队列数据<br/>
+            这里使用一个线程去处理,多线程数据会混乱
+            </summary>
+            <param name="token">生命周期</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.HandleAsync(Snet.TEP.core.CoreBasicsData.PackDetails,System.Threading.CancellationToken)">
+            <summary>
+            业务处理 
+            </summary>
+            <param name="packDetails">数据包详情</param>
+            <param name="token">生命周期</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.Burstification(System.Collections.Generic.List{System.Byte},System.Byte[])">
+            <summary>
+            组包
+            </summary>
+            <param name="bytes_Send">发送的数据</param>
+            <param name="pack">数据包</param>
+        </member>
+        <member name="M:Snet.TEP.master.core.ManageCore.GetStatusAsync(System.Threading.CancellationToken)">
+            <summary>
+            获取状态
+            </summary>
+            <param name="token">传播消息取消通知</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="T:Snet.TEP.master.TepMasterData">
+            <summary>
+            TEP 主服务数据
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.TepMasterData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.MaxNumber">
+            <summary>
+            最大连接数
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.master.TepMasterOperate">
+            <summary>
+            TEP(TCP扩展插件) 服务端操作
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.TEP.master.TepMasterOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.#ctor(Snet.TEP.master.TepMasterData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.WaitDataSendSuccessTime">
+            <summary>
+            等待数据发送成功时间
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.serviceOperate">
+            <summary>
+            服务端操作
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.tokenSource">
+            <summary>
+            全局生命周期
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.manageCores">
+            <summary>
+            客户端管理
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.master.TepMasterOperate.manageEnevs">
+            <summary>
+            客户端的事件管理
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.getStatusAsync(System.Threading.CancellationToken)">
+            <summary>
+            私有的获取状态；<br/>
+            由于接口的获取状态函数需要像底层发送数据得知底层的状态才定此私有获取状态
+            </summary>
+            <param name="token">消息取消</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.ServiceOperate_OnDataEventAsync(System.Object,Snet.Model.data.EventDataResult)">
+            <summary>
+            事件消息
+            </summary>
+            <param name="sender">源</param>
+            <param name="e">事件</param>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.ManageCore_OnInfoEventAsync(System.Object,Snet.Model.data.EventInfoResult,System.String)">
+            <summary>
+            客户端管理信息事件
+            </summary>
+            <param name="sender">源</param>
+            <param name="e">结果</param>
+            <param name="ipPort">IP端口</param>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.RemoveClientWaitAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            移除客户端等待，得让数据先发送出去
+            </summary>
+            <param name="ipPort">IP端口</param>
+            <param name="token">取消令牌</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.master.TepMasterOperate.RemoveClient(System.String)">
+            <summary>
+            移除客户端所有信息,必须同步执行
+            </summary>
+            <param name="ipPort">IP地址</param>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore">
+            <summary>
+            数据核心
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.Authentication">
+            <summary>
+            身份认证 客户端主动请求
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.Authentication.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.core.DataCore.Authentication.Request.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.core.DataCore.Authentication.Request.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.Authentication.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.SessionHeartBeat">
+            <summary>
+            心跳包
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.SessionHeartBeat.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.SessionHeartBeat.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.GetClientStatus">
+            <summary>
+            获取客户端状态
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.GetClientStatus.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.GetClientStatus.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataUpload">
+            <summary>
+            数据上传
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataUpload.Request">
+            <summary>
+            请求
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.core.DataCore.DataUpload.Request.AddressValue">
+            <summary>
+            地址值集合
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataUpload.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataWriting">
+            <summary>
+            数据写入 服务端主动
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataWriting.Receive">
+            <summary>
+            接收
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.core.DataCore.DataWriting.Response">
+            <summary>
+            响应
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.TepSlaveData">
+            <summary>
+            tep 从端数据
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.TepSlaveData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.TepSlaveData.Basics.DevName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.TepSlaveData.Basics.DevID">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.TepSlaveData.Basics.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Snet.TEP.slave.TepSlaveData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Snet.TEP.slave.TepSlaveOperate">
+            <summary>
+            tep 从端操作
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.#ctor(Snet.TEP.slave.TepSlaveData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.clientOperate">
+             <summary>
+            SOCKET TCP Client
+             </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.corePackHandle">
+            <summary>
+            包处理类
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.GetBaseWriteState">
+            <summary>
+            获取底层写入状态
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.GetBaseState">
+            <summary>
+            获取底层状态
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.byteBuffer">
+            <summary>
+            字节缓存
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.tokenSource">
+            <summary>
+            此类的生命周期
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.byteQueue">
+            <summary>
+            字节队列
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.SessionTask">
+            <summary>
+            会话心跳包任务
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.authenticationJson">
+            <summary>
+            身份认证JSON
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.heartbeatJson">
+            <summary>
+            心跳包JSON
+            </summary>
+        </member>
+        <member name="F:Snet.TEP.slave.TepSlaveOperate.dataUploadJson">
+            <summary>
+            数据上传JSON
+            </summary>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.SetBaseStateFunc(System.Func{System.Boolean})">
+            <summary>
+            设置状态函数；
+            服务器获取底层通信运行状态至此；
+            服务器下发了命令，并且执行传入的对应的方法
+            </summary>
+            <param name="func">函数</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.SetBaseWriteFunc(System.Func{System.Collections.Generic.List{Snet.TEP.core.CoreBasicsData.KeyValue},Snet.Model.data.OperateResult})">
+            <summary>
+            设置底层写入函数；
+            服务器写入数据至此；
+            服务器下发了命令，并且执行传入的对应的方法
+            </summary>
+            <param name="func">函数</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.Off(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.GetStatus">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.ClientOperate_OnDataEventAsync(System.Object,Snet.Model.data.EventDataResult)">
+            <summary>
+            数据事件
+            </summary>
+            <param name="sender">源</param>
+            <param name="e">结果</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.HandleQueueAsync(System.Threading.CancellationToken)">
+            <summary>
+            处理队列数据
+            </summary>
+            <param name="token">生命周期</param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.HandleAsync(Snet.TEP.core.CoreBasicsData.PackDetails,System.Threading.CancellationToken)">
+            <summary>
+            业务处理 
+            </summary>
+            <param name="packDetails">数据包详情</param>
+            <param name="token">生命周期</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.Burstification(System.Collections.Generic.List{System.Byte},System.Byte[])">
+            <summary>
+            组包
+            </summary>
+            <param name="bytes_Send">发送的数据</param>
+            <param name="pack">数据包</param>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.SessionHandleAsync(System.Threading.CancellationToken)">
+            <summary>
+            会话状态；
+            心跳包检测
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.AuthenticationAsync(System.Threading.CancellationToken)">
+            <summary>
+            身份验证
+            </summary>
+            <returns>统一操作结构</returns>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.DataUploadAsync(System.Collections.Generic.List{Snet.TEP.core.CoreBasicsData.KeyValue},System.Threading.CancellationToken)">
+            <summary>
+            数据上传
+            </summary>
+            <param name="keyValues">键值集合</param>
+            <param name="token">消息取消</param>
+            <returns>统一操作结构</returns>
+        </member>
+        <member name="M:Snet.TEP.slave.TepSlaveOperate.DataUpload(System.Collections.Generic.List{Snet.TEP.core.CoreBasicsData.KeyValue})">
+            <summary>
+            数据上传
+            </summary>
+            <param name="keyValues">键值集合</param>
+            <returns>统一操作结构</returns>
+        </member>
+    </members>
+</doc>

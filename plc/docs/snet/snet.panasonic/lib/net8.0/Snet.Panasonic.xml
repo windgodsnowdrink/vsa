@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Panasonic</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Panasonic.PanasonicData">
+            <summary>
+            松下数据
+            </summary>
+        </member>
+        <member name="T:Snet.Panasonic.PanasonicData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Panasonic.PanasonicData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicData.ProtocolType.PanasonicMcNet">
+            <summary>
+            松下PLC 数据读写类，基于MC协议的实现
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicData.ProtocolType.PanasonicMewtocol">
+            <summary>
+            松下PLC 数据交互协议，采用Mewtocol协议通讯
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicData.ProtocolType.PanasonicMewtocolOverTcp">
+            <summary>
+            松下PLC 数据交互协议，采用Mewtocol协议通讯，基于Tcp透传实现的机制
+            </summary>
+        </member>
+        <member name="T:Snet.Panasonic.PanasonicOperate">
+            <summary>
+            松下通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.#ctor(Snet.Panasonic.PanasonicData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Panasonic.PanasonicOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Panasonic.PanasonicOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Panasonic.PanasonicOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>

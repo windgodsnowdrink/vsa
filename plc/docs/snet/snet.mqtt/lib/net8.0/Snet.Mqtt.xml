@@ -1,0 +1,546 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Mqtt</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Mqtt.client.MqttClientData">
+            <summary>
+            mqtt 客户端数据
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.client.MqttClientData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.IpAddress">
+            <summary>
+            Ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.ClientID">
+            <summary>
+            客户端ID
+            不输入默认生成随机
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.MessageExpirationTime">
+            <summary>
+            消息过期时间
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.QualityOfServiceLevel">
+            <summary>
+            QoS0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+            QoS1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+            QoS2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientData.Basics.ResponseType">
+            <summary>
+            响应类型
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.client.MqttClientOperate">
+            <summary>
+            MQTT 客户端操作类<br/>
+            <br/>
+            功能：<br/>
+            - 基于 MQTTnet 实现 MQTT 客户端连接、发布、订阅<br/>
+            - 支持 QoS 0/1/2 三种消息质量等级<br/>
+            - 支持消息保留和过期时间设置<br/>
+            - 自动处理断开重连
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Mqtt.client.MqttClientOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.#ctor(Snet.Mqtt.client.MqttClientData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.#ctor">
+            <summary>
+            无参构造函数
+            </summary>
+        </member>
+        <member name="F:Snet.Mqtt.client.MqttClientOperate.mqttClient">
+            <summary>
+            MQTT 客户端
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.MqttClient_DisconnectedAsync(MQTTnet.MqttClientDisconnectedEventArgs)">
+            <summary>
+            服务端断开
+            </summary>
+            <param name="arg"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.BuildClientOptions">
+            <summary>
+            构建客户端连接选项（账号密码、keepalive 等）
+            </summary>
+            <returns>客户端选项</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.MqttClient_ApplicationMessageReceivedAsync(MQTTnet.MqttApplicationMessageReceivedEventArgs)">
+            <summary>
+            消息事件
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.PublishAsync(System.String,System.String,System.Int32,System.Boolean,System.Threading.CancellationToken)">
+             <summary>
+             发布订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="Content">内容</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <param name="Retain">消息是否保留</param>
+             <param name="token">传播消息取消</param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.PublishAsync(System.String,System.Byte[],System.Int32,System.Boolean,System.Threading.CancellationToken)">
+             <summary>
+             发布订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="Content">内容</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <param name="Retain">消息是否保留</param>
+             <param name="token">传播消息取消</param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.Publish(System.String,System.String,System.Int32,System.Boolean)">
+             <summary>
+             发布订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="Content">内容</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <param name="Retain">消息是否保留</param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.Publish(System.String,System.Byte[],System.Int32,System.Boolean)">
+             <summary>
+             发布订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="Content">内容</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <param name="Retain">消息是否保留</param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.AddSubscribeAsync(System.String,System.Int32,System.Threading.CancellationToken)">
+             <summary>
+             添加订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <param name="token">传播消息取消</param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.AddSubscribe(System.String,System.Int32)">
+             <summary>
+             添加订阅
+             </summary>
+             <param name="Topic">主题</param>
+             <param name="QoSLevel">
+             消息等级<br/>
+             QoS 0 是最低级别，基本上等同于 Fire and Forget 模式，发送者发送完数据之后，不关心消息是否已经投递到了接收者那边。<br/>
+             QoS 1 是中间级别，保证消息至少送达一次。MQTT 通过简单的 ACK 机制来保证 QoS1。<br/>
+             QoS 2 是最高级别，保证到且仅到一次。这通过更加复杂的消息流程保证。<br/>
+            <br/>
+             注意：QoS 级别越高，流程越复杂，系统资源消耗越大
+             </param>
+             <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.RemoveSubscribeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            移除订阅
+            </summary>
+            <param name="Topic">主题</param>
+            <param name="token">传播消息取消</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.RemoveSubscribe(System.String)">
+            <summary>
+            移除订阅
+            </summary>
+            <param name="Topic">主题</param>
+            <returns>统一结果</returns>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.ProduceAsync(System.String,System.Byte[],System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.ConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.UnConsumeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.client.MqttClientOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Mqtt.service.MqttServiceData">
+            <summary>
+            MQTT 服务端数据配置类，封装 MQTT Broker 的连接参数（端口、认证信息、最大连接数等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.MqttServiceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.MqttServiceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.MqttServiceData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.MqttServiceData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.MqttServiceData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.MqttServiceData.Basics.MaxNumber">
+            <summary>
+            最大连接数
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.MqttServiceData.Steps">
+            <summary>
+            哪一个步骤
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.MqttServiceData.States">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="F:Snet.Mqtt.service.MqttServiceData.States.On">
+            <summary>
+            已启动
+            </summary>
+        </member>
+        <member name="F:Snet.Mqtt.service.MqttServiceData.States.Off">
+            <summary>
+            已停止
+            </summary>
+        </member>
+        <member name="F:Snet.Mqtt.service.MqttServiceData.States.Null">
+            <summary>
+            啥也没干
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.MqttServiceOperate">
+            <summary>
+            MQTT 服务端操作类，基于 MQTTnet 实现 MQTT Broker 服务。
+            <para>支持客户端连接/断开监听、主题订阅/取消订阅、消息接收等功能。</para>
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.#ctor(Snet.Mqtt.service.MqttServiceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="F:Snet.Mqtt.service.MqttServiceOperate.mqttServer">
+            <summary>
+            MQTT 服务
+            </summary>
+        </member>
+        <member name="F:Snet.Mqtt.service.MqttServiceOperate.states">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_StoppedAsync(System.EventArgs)">
+            <summary>
+            服务停止后
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_StartedAsync(System.EventArgs)">
+            <summary>
+            服务启动后
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ClientUnsubscribedTopicAsync(MQTTnet.Server.ClientUnsubscribedTopicEventArgs)">
+            <summary>
+            客户端取消订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ClientSubscribedTopicAsync(MQTTnet.Server.ClientSubscribedTopicEventArgs)">
+            <summary>
+            客户端订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ApplicationMessageNotConsumedAsync(MQTTnet.Server.ApplicationMessageNotConsumedEventArgs)">
+            <summary>
+            客户端消息接收
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ClientDisconnectedAsync(MQTTnet.Server.ClientDisconnectedEventArgs)">
+            <summary>
+            客户端断开
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ClientConnectedAsync(MQTTnet.Server.ClientConnectedEventArgs)">
+            <summary>
+            客户端连接
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.MqttServer_ValidatingConnectionAsync(MQTTnet.Server.ValidatingConnectionEventArgs)">
+            <summary>
+            身份验证
+            </summary>
+            <param name="arg"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.Off(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.GetStatus">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.MqttServiceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceData">
+            <summary>
+            MQTT WebSocket 服务端数据配置类，封装 MQTT + WebSocket 服务的连接参数（MQTT 端口、WebSocket 端口、认证信息、URI 路径等）。
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.Port">
+            <summary>
+            MQTT服务端口
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.WsPort">
+            <summary>
+            端口 Mqtt WEBSOCKET 使用
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics.Uri">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Steps">
+            <summary>
+            哪一个步骤
+            </summary>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate">
+            <summary>
+            MQTT WebSocket 服务端操作类，基于 ASP.NET Core Kestrel 和 MQTTnet 实现同时支持 MQTT 和 WebSocket 协议的 Broker 服务。
+            <para>通过 <see cref="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Startup"/> 配置 Kestrel 监听双端口，通过 <see cref="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController"/> 处理 MQTT 事件。</para>
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.mqttServiceData_Static">
+            <summary>
+            启动时快照的 Basics（供无参构造的 Startup/MqttController 读取；启动后不再变更，多实例互不污染）
+            </summary>
+        </member>
+        <member name="P:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.OnEventHandler_Static">
+            <summary>
+            启动时快照的事件转发（供 Startup/MqttController 使用）
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.#ctor(Snet.Mqtt.service.websocket.MqttWebSocketServiceData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name="basics">基础数据</param>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.On">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Off(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.GetStatus">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Startup">
+            <summary>
+            启动
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController)">
+            <summary>
+            配置
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            配置服务
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="T:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController">
+            <summary>
+            MQTT控制器
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ClientUnsubscribedTopicAsync(MQTTnet.Server.ClientUnsubscribedTopicEventArgs)">
+            <summary>
+            客户端取消订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ClientSubscribedTopicAsync(MQTTnet.Server.ClientSubscribedTopicEventArgs)">
+            <summary>
+            客户端订阅
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ApplicationMessageNotConsumedAsync(MQTTnet.Server.ApplicationMessageNotConsumedEventArgs)">
+            <summary>
+            客户端消息接收
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ClientDisconnectedAsync(MQTTnet.Server.ClientDisconnectedEventArgs)">
+            <summary>
+            客户端断开
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ClientConnectedAsync(MQTTnet.Server.ClientConnectedEventArgs)">
+            <summary>
+            客户端连接
+            </summary>
+        </member>
+        <member name="M:Snet.Mqtt.service.websocket.MqttWebSocketServiceOperate.MqttController.MqttServer_ValidatingConnectionAsync(MQTTnet.Server.ValidatingConnectionEventArgs)">
+            <summary>
+            身份验证
+            </summary>
+            <param name="arg"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+    </members>
+</doc>

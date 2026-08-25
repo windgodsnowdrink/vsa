@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Snet.Mitsubishi</name>
+    </assembly>
+    <members>
+        <member name="T:Snet.Mitsubishi.MitsubishiData">
+            <summary>
+            三菱数据
+            </summary>
+        </member>
+        <member name="T:Snet.Mitsubishi.MitsubishiData.Basics">
+            <summary>
+            基础数据
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.SN">
+            <summary>
+            唯一标识符
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.IpAddress">
+            <summary>
+            ip地址
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.Port">
+            <summary>
+            端口
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.ConnectTimeOut">
+            <summary>
+            连接超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.ReceiveTimeOut">
+            <summary>
+            接收超时时间
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.SleepTime">
+            <summary>
+            休息的时间
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.SocketKeepAliveTime">
+            <summary>
+            心跳检测
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.IsPersistentConnection">
+            <summary>
+            管道是否是长连接
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.Slot">
+            <summary>
+            插槽
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.NetworkNumber">
+            <summary>
+            网络号
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.NetworkStationNumber">
+            <summary>
+            网络站号
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.TargetIOStation">
+            <summary>
+            IO编号
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.EnableWriteBitToWordRegister">
+            <summary>
+            写入位到字寄存器功能
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.IsStringReverseByteWord">
+            <summary>
+            字节按照字单位反转
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.SerialPortInfo">
+            <summary>
+            串口信息
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.RtsEnable">
+            <summary>
+            请求发送 (RTS) 信号
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.DtrEnable">
+            <summary>
+            启用数据终端
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.IsNewVersion">
+            <summary>
+            前的编程口协议是否为新版
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.AutoChangeBaudRate">
+            <summary>
+            否动态修改PLC的波特率
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.UseGOT">
+            <summary>
+            是否使用GOT连接三菱的PLC
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.Station">
+            <summary>
+            站号信息
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.WaittingTime">
+            <summary>
+            报文等待时间，范围(0-15)
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.SumCheck">
+            <summary>
+            使用和校验
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.Format">
+            <summary>
+            协议格式信息[1,2,3,4]
+            </summary>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiData.Basics.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="T:Snet.Mitsubishi.MitsubishiData.ProtocolType">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecCipNet">
+            <summary>
+            三菱PLC EIP协议的实现，当PLC使用了 QJ71EIP71 模块时就需要使用本类来访问
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecA1ENet">
+            <summary>
+            三菱PLC 采用A兼容1E帧协议实现，使用二进制码通讯，请根据实际型号来进行选取
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecA1EAsciiNet">
+            <summary>
+            三菱PLC 采用A兼容1E帧协议实现，使用ASCII码通讯，请根据实际型号来进行选取
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecMcNet">
+            <summary>
+            三菱PLC 采用Qna兼容3E帧协议实现，需要在PLC侧先的以太网模块先进行配置，必须为二进制通讯
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecMcUdp">
+            <summary>
+            三菱PLC 采用UDP的协议实现，采用Qna兼容3E帧协议实现，需要在PLC侧先的以太网模块先进行配置，必须为二进制通讯
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecMcAsciiNet">
+            <summary>
+            三菱PLC 采用Qna兼容3E帧协议实现，需要在PLC侧先的以太网模块先进行配置，必须为ASCII通讯格式
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecMcAsciiUdp">
+            <summary>
+            三菱PLC通讯类，采用UDP的协议实现，采用Qna兼容3E帧协议实现，需要在PLC侧先的以太网模块先进行配置，必须为ascii通讯
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecMcRNet">
+            <summary>
+            三菱PLC R系列的MC协议，支持的地址类型
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecFxSerial">
+            <summary>
+            三菱PLC 串口通信的对象，适用于读取FX系列的串口数据
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecFxSerialOverTcp">
+            <summary>
+            三菱PLC 串口协议的网络版，如果使用的是 FX3U编程口(fx2n) -&gt; GOT1000(RS232)(或是GOT2000)  -&gt; 上位机(以太网) 的方式，那么就需要把 UseGOT 设置为True
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecFxLinks">
+            <summary>
+            三菱PLC 计算机链接协议，适用FX3U系列，FX3G，FX3S等等系列，通常在PLC侧连接的是485的接线口
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecFxLinksOverTcp">
+            <summary>
+            三菱PLC 计算机链接协议的网口版本，适用FX3U系列，FX3G，FX3S等等系列，通常在PLC侧连接的是485的接线口
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecA3CNet">
+            <summary>
+            三菱PLC 基于Qna 兼容3C帧的格式一的通讯，具体的地址需要参照三菱的基本地址
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiData.ProtocolType.MelsecA3CNetOverTcp">
+            <summary>
+            三菱PLC 基于Qna 兼容3C帧的格式一的通讯，具体的地址需要参照三菱的基本地址，本类是基于tcp通讯的实现
+            </summary>
+        </member>
+        <member name="T:Snet.Mitsubishi.MitsubishiOperate">
+            <summary>
+            三菱通信库
+            </summary>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.#ctor">
+            <summary>
+            无惨构造函数
+            </summary>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.#ctor(Snet.Mitsubishi.MitsubishiData.Basics)">
+            <summary>
+            有参构造函数
+            </summary>
+            <param name = "basics">基础数据</param>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiOperate.CN">
+            <inheritdoc/>
+        </member>
+        <member name="P:Snet.Mitsubishi.MitsubishiOperate.CD">
+            <inheritdoc/>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiOperate.plcBase">
+            <summary>
+            Plc连接对象
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiOperate.plcLog">
+            <summary>
+            plc日志操作对象
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiOperate.subscribeOperate">
+            <summary>
+            实现订阅功能
+            </summary>
+        </member>
+        <member name="F:Snet.Mitsubishi.MitsubishiOperate.VAM">
+            <summary>
+            虚拟地址
+            </summary>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.OnAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.OffAsync(System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.ReadAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.WriteAsync(System.Collections.Concurrent.ConcurrentDictionary{System.String,System.ValueTuple{System.Object,System.Nullable{Snet.Model.enum.EncodingType}}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.SubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.UnSubscribeAsync(Snet.Model.data.Address,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.GetStatusAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.GetBaseObjectAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.LanguageHandler">
+            <summary>
+            语言处理
+            </summary>
+        </member>
+        <member name="M:Snet.Mitsubishi.MitsubishiOperate.LanguageEventAsync(System.Object,Snet.Model.data.EventLanguageResult)">
+            <summary>
+            语言切换触发事件
+            </summary>
+            <param name = "sender">源</param>
+            <param name = "e">事件</param>
+        </member>
+    </members>
+</doc>
