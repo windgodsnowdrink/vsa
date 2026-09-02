@@ -41,6 +41,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <!-- 根 SPA（wwwroot/index.html + app.js + pages/*）同源托管到 /console/，浏览器以相对路径调用 /api/gateway/* 与 /api/devices/*，
+       与 cockpit/devices 同源方案对齐；置于 /console/ 子目录避免覆盖已验证的 /pages/ 成品。 -->
+  <ItemGroup>
+    <Content Include="..\..\wwwroot\**">
+      <Link>wwwroot\console\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <!-- 反编译 SNET 生产 DLL 参考源码：不参与宿主编译（运行时经 ALC 加载的是各自插件工程的产物），仅作为项目内参考文件 -->
   <ItemGroup>
     <None Include="plugins\**\*.decompiled.cs" />

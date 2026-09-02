@@ -24,7 +24,7 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapGet("/", () => Results.Redirect("/pages/cockpit.html"));
+app.MapGet("/", () => Results.Redirect("/console/"));
 
 // 模块化 HTTP 端点：Carter 自动发现全部 ICarterModule（含 PluginsModule / SystemInfoCapability）
 app.MapCarter();

@@ -320,6 +320,14 @@ code { font-family: var(--mono); font-size: 11px; color: var(--brand-600); }
 .dev-card .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 12px; color: var(--text-3); }
 .dev-card .foot .go { color: var(--brand-500); font-weight: 600; }
 
+/* 空态 / 图表占位 / 分页器（真实后端就绪前的诚实占位） */
+.empty-state { display: flex; gap: 12px; align-items: center; padding: 28px; color: var(--text-3); }
+.empty-state .ico-lg { width: 34px; height: 34px; color: var(--brand-400); flex: 0 0 auto; }
+.empty-state b { color: var(--text); display: block; margin-bottom: 2px; }
+.empty-state .sub { font-size: 12px; }
+.chart-empty { display: flex; align-items: center; justify-content: center; min-height: 120px; color: var(--text-3); font-size: 12px; border: 1px dashed var(--border); border-radius: 12px; }
+.pager-info { font-size: 13px; color: var(--text-2); min-width: 92px; text-align: center; }
+
 /* 过滤器 select */
 .select {
   padding: 9px 12px; border-radius: 11px; border: 1px solid var(--border);

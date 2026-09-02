@@ -18,32 +18,12 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="entities.cs" />
-    <Compile Include="GlobalUsings.cs" />
-    <Compile Include="infra.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="seed.cs" />
-    <Compile Include="slices\ai.assistant.cs" />
-    <Compile Include="slices\billing.plan.cs" />
-    <Compile Include="slices\billing.quota.cs" />
-    <Compile Include="slices\billing.usage.cs" />
-    <Compile Include="slices\devices.list.cs" />
-    <Compile Include="slices\faults.ack.cs" />
-    <Compile Include="slices\faults.stream.cs" />
-    <Compile Include="slices\identity.login.cs" />
-    <Compile Include="slices\identity.members.cs" />
-    <Compile Include="slices\identity.mqtt.cs" />
-    <Compile Include="slices\ingest.bridge.cs" />
-    <Compile Include="slices\ingest.http.cs" />
-    <Compile Include="slices\metering.agent.cs" />
-    <Compile Include="slices\ops.health.cs" />
-    <Compile Include="slices\ops.pricing.cs" />
-    <Compile Include="slices\ops.roles.cs" />
-    <Compile Include="slices\ops.tenants.cs" />
-    <Compile Include="slices\tenant.activate.cs" />
-    <Compile Include="slices\tenant.register.cs" />
-  </ItemGroup>
+  <!--
+    File-based 源（entities/infra/seed/Program + slices）含 #include / #r 指令，
+    不能直接由常规 MSBuild 编译。改为：全部源由 strip-app 剥离指令后落到
+    obj/.../stripped，仅编译 stripped 产物（与 plc-saas.verify 的 PrepareStrippedSources 对齐）。
+    注意：不要在此处再 <Compile Include> 原始 *.cs，否则会与 stripped 产物重复定义。
+  -->
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -75,7 +55,7 @@
   </ItemGroup>
 
   <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->
-  <!--<Target Name="PrepareStrippedApp" BeforeTargets="CoreCompile">
+  <Target Name="PrepareStrippedApp" BeforeTargets="CoreCompile">
     <RemoveDir Directories="$(IntermediateOutputPath)stripped" Condition="Exists('$(IntermediateOutputPath)stripped')" />
     <Exec Condition="'$(OS)' == 'Windows_NT'"
           Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)strip-app.ps1&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\stripped&quot;" />
@@ -84,6 +64,6 @@
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)stripped\**\*.cs" />
     </ItemGroup>
-  </Target>-->
+  </Target>
 
 </Project>

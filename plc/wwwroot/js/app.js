@@ -69,11 +69,73 @@
   }
   function viewerRole() { return (DATA && DATA.saas && DATA.saas.viewerRole) || "管理员"; }
 
-  /* ---------- 数据加载（唯一数据源；后端就绪改此处为 /api/...） ---------- */
+  /* ---------- 数据加载（唯一数据源；同源调用 /api/gateway/*，与 cockpit/devices 对齐） ---------- */
+  const escapeHtml = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const PAGE_SIZE = 12;
+  let devPage = 1;
+  let refreshTimer = null;
+
   async function loadData() {
-    const res = await axios.get("data/data.json", { responseType: "json" });
-    DATA = res.data;
+    let devRes = { data: [] }, protoRes = { data: [] };
+    try {
+      const [d, p] = await Promise.all([
+        axios.get("/api/gateway/devices", { responseType: "json" }),
+        axios.get("/api/gateway/protocols", { responseType: "json" })
+      ]);
+      devRes = d; protoRes = p;
+    } catch (err) {
+      // 边缘网关未连接：优雅降级为空数据，避免白屏（视图会显示「未接入」）
+      console.warn("网关数据获取失败，降级为空数据", err);
+    }
+    const rawDevices = (devRes && devRes.data) || [];
+    const protocols = (protoRes && protoRes.data) || [];
+
+    // 真实设备配置（DeviceCfg: Id/Protocol/Host/Port/UnitId/Rack/Slot/PollIntervalMs/Enabled）
+    // 映射为前端视图模型：名称/型号/坐标在配置态缺失，明确标为「—」/null。
+    const devices = rawDevices.map(d => ({
+      id: d.id,
+      name: d.id,
+      model: d.protocol || "—",
+      proto: d.protocol || "—",
+      status: d.enabled ? "在线" : "离线",
+      host: d.host, port: d.port, unitId: d.unitId,
+      poll: d.pollIntervalMs,
+      last: "—",
+      lat: null, lon: null
+    }));
+
+    const enabled = devices.filter(d => d.status === "在线").length;
+    const kpis = [
+      { label: "设备总数", value: fmtNum(devices.length), unit: "", trend: "up", delta: "", pct: 100, accent: "brand" },
+      { label: "在线设备", value: fmtNum(enabled), unit: "", trend: "up", delta: "", pct: devices.length ? Math.round(enabled / devices.length * 100) : 0, accent: "ok" },
+      { label: "离线设备", value: fmtNum(devices.length - enabled), unit: "", trend: "down", delta: "", pct: devices.length ? Math.round((devices.length - enabled) / devices.length * 100) : 0, accent: "muted" },
+      { label: "协议种类", value: fmtNum(protocols.length), unit: "", trend: "up", delta: "", pct: 100, accent: "brand" }
+    ];
+    const statusDist = [
+      { label: "在线", value: enabled, color: "var(--ok)" },
+      { label: "离线", value: devices.length - enabled, color: "var(--text-3)" }
+    ];
+
+    DATA = {
+      devices, protocols, kpis, statusDist,
+      alarms: [],                                // 边缘网关未暴露告警端点
+      throughput: { series: [], labels: [] },    // 实时遥测未接入（配置态）
+      aggregate: [],
+      activity: [],
+      social: null, notion: null, saas: null     // 社媒 / Notion / 多租户后端未接入
+    };
     return DATA;
+  }
+
+  function startRefresh(ms) {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(async () => {
+      try {
+        await loadData();
+        const root = document.querySelector("#view [data-page]");
+        if (root && renderers[currentPage]) renderers[currentPage](DATA, root);
+      } catch (_) { /* 静默：下次轮询重试 */ }
+    }, ms);
   }
 
   /* 配额 meter（AC-11：progressbar + 文本值；阈值色用既有语义色） */
@@ -91,6 +153,8 @@
      SVG 图表工具（响应式，离线可用）
      ========================================================= */
   function lineChart(series, labels) {
+    if (!series || !series.length || !labels || labels.length < 2)
+      return `<div class="chart-empty">实时遥测未接入（配置态）</div>`;
     const W = 600, H = 220, pad = 26;
     const all = series.flatMap(s => s.data);
     const max = Math.max.apply(null, all) * 1.15 || 1;
@@ -113,6 +177,7 @@
   }
 
   function barChart(items, color) {
+    if (!items || !items.length) return `<div class="chart-empty">暂无数据</div>`;
     const W = 600, H = 160, pad = 20;
     const max = Math.max.apply(null, items.map(i => i.value)) * 1.2 || 1;
     const bw = (W - 2 * pad) / items.length * 0.58;
@@ -128,6 +193,7 @@
   }
 
   function donut(items) {
+    if (!items || !items.length) return `<div class="chart-empty">暂无数据</div>`;
     const R = 50, C = 2 * Math.PI * R;
     const total = items.reduce((a, b) => a + b.value, 0) || 1;
     let off = 0, circles = "";
@@ -212,24 +278,46 @@
 
     devices(data, root) {
       const grid = $("#devGrid", root);
+      const pager = $("#devPager", root);
+      function pageCount() { return Math.max(1, Math.ceil(data.devices.length / PAGE_SIZE)); }
       function render() {
-        const f = $("#devFilter", root).value;
+        const f = $("#devFilter", root) ? $("#devFilter", root).value : "";
         const q = searchQ;
         const list = data.devices.filter(d => (!f || d.status === f) && (!q || (d.id + " " + d.name + " " + d.model).toLowerCase().includes(q)));
+        const total = list.length;
+        if (devPage > pageCount()) devPage = pageCount();
+        const start = (devPage - 1) * PAGE_SIZE;
+        const pageItems = list.slice(start, start + PAGE_SIZE);
         grid.innerHTML = "";
-        list.forEach(d => {
-          const c = el("div", "card hover dev-card");
-          c.innerHTML = `
-            <div class="row"><span style="font-weight:600">${d.name}</span><span class="badge ${d.status === "在线" ? "ok" : d.status === "预警" ? "warn" : d.status === "告警" ? "bad" : "muted"}">${d.status}</span></div>
-            <div class="meta">${d.id} · ${d.model} · ${d.proto}</div>
-            <div class="foot"><span>心跳 ${d.last}</span><span class="go">详情 →</span></div>`;
-          c.onclick = () => openDrawer(d);
-          grid.appendChild(c);
-        });
+        if (!pageItems.length) {
+          grid.innerHTML = `<div class="card empty-state">${iconSvg("cpu", "ico ico-lg")}<div><b>无匹配设备</b><div class="sub">调整筛选或搜索条件</div></div></div>`;
+        } else {
+          pageItems.forEach(d => {
+            const c = el("div", "card hover dev-card");
+            c.innerHTML = `
+              <div class="row"><span style="font-weight:600">${escapeHtml(d.name)}</span><span class="badge ${d.status === "在线" ? "ok" : "muted"}">${d.status}</span></div>
+              <div class="meta">${escapeHtml(d.id)} · ${escapeHtml(d.proto)} · ${escapeHtml(String(d.host || "—"))}:${escapeHtml(String(d.port || "—"))}</div>
+              <div class="foot"><span>采集间隔 ${escapeHtml(String(d.poll || "—"))} ms</span><span class="go">详情 →</span></div>`;
+            c.onclick = () => openDrawer(d);
+            grid.appendChild(c);
+          });
+        }
         const cnt = $("#devCount", root);
-        if (cnt) cnt.textContent = `${list.length} 台设备` + (q ? `（匹配「${q}」）` : "");
+        if (cnt) cnt.textContent = `${total} 台设备` + (q ? `（匹配「${q}」）` : "") + ` · 第 ${devPage}/${pageCount()} 页`;
+        if (pager) {
+          pager.innerHTML = "";
+          const prev = el("button", "btn btn-ghost btn-sm", "上一页");
+          prev.disabled = devPage <= 1;
+          prev.onclick = () => { if (devPage > 1) { devPage--; render(); } };
+          const info = el("span", "pager-info", `第 ${devPage} / ${pageCount()} 页`);
+          const next = el("button", "btn btn-ghost btn-sm", "下一页");
+          next.disabled = devPage >= pageCount();
+          next.onclick = () => { if (devPage < pageCount()) { devPage++; render(); } };
+          pager.appendChild(prev); pager.appendChild(info); pager.appendChild(next);
+        }
       }
-      $("#devFilter", root).onchange = render;
+      const fsel = $("#devFilter", root);
+      if (fsel) fsel.onchange = () => { devPage = 1; render(); };
       render();
     },
 
@@ -330,8 +418,10 @@
       for (let j = 1; j < 7; j++) { const y = j * H / 7; grid += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--brand-500)" stroke-opacity=".06"/>`; }
       const proj = (lat, lon) => [(lon + 180) / 360 * W, (90 - lat) / 180 * H];
       const hub = proj(34.75, 113.62);
-      let arcs = "", pins = "", list = "";
+      let arcs = "", pins = "", list = "", placed = 0;
       data.devices.forEach(d => {
+        if (d.lat == null || d.lon == null) return;   // 配置态设备无坐标，跳过
+        placed++;
         const [px, py] = proj(d.lat, d.lon); const col = STATUS_COLOR[d.status];
         const mx = (px + hub[0]) / 2, my = (py + hub[1]) / 2 - 60;
         arcs += `<path d="M${px},${py} Q${mx},${my} ${hub[0]},${hub[1]}" fill="none" stroke="#60a5fa" stroke-opacity=".28" stroke-width="1"/>`;
@@ -343,6 +433,10 @@
         ${grid}${arcs}${pins}<circle cx="${hub[0]}" cy="${hub[1]}" r="7" fill="#fff" stroke="var(--brand-500)" stroke-width="3"/>
         <text x="10" y="24" font-size="12" fill="var(--text-3)">全球设备分布 · 中心枢纽 郑州</text></svg>`;
       $("#mapList", root).innerHTML = list;
+      if (placed === 0) {
+        const info = $("#mapInfo", root);
+        if (info) info.innerHTML = `<div class="card empty-state">${iconSvg("map", "ico ico-lg")}<div><b>设备未携带地理坐标</b><div class="sub">当前为配置态，设备尚无经纬度；地图定位将在遥测接入后启用。</div></div></div>`;
+      }
       const svg = $("#worldSvg", root);
       const info = $("#mapInfo", root);
       svg.addEventListener("mousemove", e => {
@@ -981,7 +1075,19 @@
     $$(".seg", root).forEach(seg => seg.addEventListener("click", e => {
       if (e.target.tagName === "BUTTON") { $$("button", seg).forEach(b => b.classList.remove("on")); e.target.classList.add("on"); }
     }));
-    if (renderers[page]) renderers[page](DATA, root);
+    if (renderers[page]) {
+      // 社媒 / Notion / 多租户（组织·用量·运营）后端尚未接入：显示明确空态，避免引用未定义数据崩溃
+      const backendless = {
+        "social": DATA.social, "notion": DATA.notion,
+        "account/usage": DATA.saas, "account/plan": DATA.saas, "account/members": DATA.saas, "account/billing": DATA.saas,
+        "ops/tenants": DATA.saas, "ops/pricing": DATA.saas, "ops/roles": DATA.saas, "ops/audit": DATA.saas, "ops/health": DATA.saas
+      };
+      if (Object.prototype.hasOwnProperty.call(backendless, page) && !backendless[page]) {
+        root.innerHTML = `<div class="card empty-state">${iconSvg("cloud-off", "ico ico-lg")}<div><b>该视图尚未接入后端</b><div class="sub">设备与协议数据已实时接入；组织 / 用量 / 社媒 / Notion 视图将在对应后端就绪后启用。</div></div></div>`;
+        return;
+      }
+      renderers[page](DATA, root);
+    }
     if (page === "devices" && ctx.deviceId) {
       const d = DATA.devices.find(x => x.id === ctx.deviceId);
       if (d) { searchQ = d.id.toLowerCase(); const si = $("#globalSearch"); if (si) si.value = d.id; renderers.devices(DATA, root); openDevice(d.id); }
@@ -1002,7 +1108,10 @@
       await loadData();
     } catch (err) {
       console.error("数据加载失败", err);
+      // 降级为空数据，保证视图不崩溃（显示「未接入」）
+      DATA = { devices: [], protocols: [], kpis: [], statusDist: [], alarms: [], throughput: { series: [], labels: [] }, aggregate: [], activity: [], social: null, notion: null, saas: null };
     }
+    startRefresh(30000);
     if (DATA && DATA.saas) {
       tenantContext = {
         id: DATA.saas.currentTenantId,

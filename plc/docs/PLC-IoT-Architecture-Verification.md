@@ -78,3 +78,113 @@ V9 文档是一份**详尽且高质量的设计蓝图**，但把它描绘成"生
 
 - 新建 SaaS 多租户架构：`docs/saas-architecture.svg` + `docs/SaaS-Architecture-Spec.md`（已回写 Phase 3 状态 / ADR-108）
 - 文档分层索引：`docs/README.md`
+
+---
+
+## 6. 新增层核验（2026-08-26）
+
+> 本次增量覆盖 2026-08-25 待办评估（BACKLOG-ASSESSMENT-2026-08-25.md）中「新层」相关项：  
+> **#5** plc-saas 绿构建、**#2/#3** 前端接真实后端、**#1** 容器化交付、**#8** 本报告刷新。  
+> 核验方法：构建产物 + 端到端脚本 `scripts/verify-cockpit.sh`（10 项检查，自动规避 Windows 保留端口段）+ 直接读码 `file:line`。
+
+### 6.1 一句话结论
+
+V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地**改写：多租户 SaaS 后端（`plc-saas`）可绿构建、ADR-113 MQTT/EMQX 摄取桥已编译进该后端、边缘网关经 NamedPipe 被 WebApi 宿主（`plc-host`）以 `/api/gateway/*` 暴露且 e2e 全 PASS、前端（cockpit/devices + 根 SPA `/console/`）已同源接线真实后端。原 V9 的「samples 可运行骨架 + 根驱动占位」结论仍成立（见 §1），**但新增层已把"网关契约 / 数据平面 / 前端接线"从文档推进到可运行**。
+
+### 6.2 plc-saas 多租户 SaaS 后端（#5 · 绿构建）
+
+| 项 | 结果 | 证据 |
+| -- | -- | -- |
+| 构建（Release） | **0 错误 / 4 警告** | `dotnet build src/plc-saas -c Release` → `已成功生成`；仅 `NU1608`（Npgsql.EF 11.0.0-preview.6 需 EF Core preview.6，实际解析 preview.7，预览包漂移，非阻断） |
+| strip 目标（解除潜伏编译阻断） | 已恢复 | `src/plc-saas/plc-saas.csproj` 的 `PrepareStrippedApp` target 重新启用，将 `#include`/`#r` 指令经 `strip-app.ps1`/`.sh` 剥离后编译（prior 段已完成 #5） |
+
+> 说明：NU1608 为 .NET 11 Preview 多预览源版本错配告警；不影响编译与运行。建议后续统一 Npgsql.EF / EF Core 到同一 preview 修订号以消除告警。
+
+### 6.3 ADR-113 真实 MQTT/EMQX 摄取桥（构建验证已解锁）
+
+| 项 | 结果 | 证据 |
+| -- | -- | -- |
+| 决策状态 | Accepted · V1-now 已落地 | `docs/ADR-113-implementation.md:1,3` |
+| 实现代码 | 已编译进 plc-saas（随 #5 绿构建） | `src/plc-saas/slices/ingest.bridge.cs`、`src/plc-saas/slices/ingest.http.cs`（BACKLOG #6 ✅实现） |
+| 双摄取路径 | HTTP 主路径 + MQTTnet 边缘中继，统一收敛 `Ingest*Command` | `ADR-113-implementation.md:13-35`（① EMQX 规则引擎→`POST /api/v1/ingest/telemetry|fault`；② `Mqtt:Bridge:Enabled=true` 时 MQTTnet 直订 `tenants/+/devices/+/telemetry`） |
+| 构建验证 | 随 #5 解除后已可绿构建 | 见 6.2（plc-saas 0 错误） |
+
+> 端点级实测（起 PG+EMQX）受沙箱 `wslc`/网络限制未跑（BACKLOG #4 🔶），属部署前置冒烟，非代码缺陷。
+
+### 6.4 边缘网关 + WebApi 宿主 `/api/gateway/*` 契约（e2e 全 PASS）
+
+`plc-host` 以 **StreamJsonRpc 经 NamedPipe（`plc-gateway`）** 调边缘网关；`/api/devices/*` 走宿主内置 `IDeviceCatalog`（Tier1 插件路径），`/api/gateway/*` 走边缘网关。
+
+| 端点 | 映射 | 证据（file:line） |
+| -- | -- | -- |
+| `GET /api/gateway/health` | 网关健康 | `src/plc-host/Modules/GatewayModule.cs:35` |
+| `GET /api/gateway/protocols` | `string[]`（如 `builtin.sim`） | `GatewayModule.cs:38` |
+| `GET /api/gateway/devices` | `DeviceCfg[]` | `GatewayModule.cs:50` |
+| `POST /api/gateway/read` | 读保持寄存器 | `GatewayModule.cs:62` |
+| `POST /api/gateway/write` | 写保持寄存器 | `GatewayModule.cs:86` |
+| `GET/POST /api/devices/{protocolId}/...` | 宿主内置目录（Tier1 插件） | `src/plc-host/Modules/DeviceProtocolsModule.cs:32,40,60` |
+| `GET /` | 重定向 `/console/` | `src/plc-host/Program.cs:27` |
+
+**e2e 实测（`scripts/verify-cockpit.sh`，自动端口，10 项全 PASS，0 失败）：**
+
+| 检查 | 请求 / 期望 | 实测结果 |
+| -- | -- | -- |
+| protocols | `GET /api/gateway/protocols` | `["builtin.sim"]` ✅ |
+| devices | `GET /api/gateway/devices` | 3 台：`dev-modbus-1`(snet.modbus.tcp)、`dev-siemens-1`(snet.siemens.tcp)、`dev-sim-1`(builtin.sim) ✅ |
+| read | `POST /api/gateway/read` dev-sim-1 | `{"deviceId":"dev-sim-1","data":"AAEAAg==","bytes":4}` ✅ |
+| write | `POST /api/gateway/write` dev-sim-1 values=[11,22] | `{"deviceId":"dev-sim-1","written":2}` ✅ |
+
+> 关键事实：e2e 全程 NamedPipe 通联成功，证明"宿主→网关"控制面可用；此前 Kestrel TCP 绑定偶发 `10013` 系 **Windows Hyper-V/WSL2 保留端口段**所致（非代码缺陷），验证脚本已改为从候选端口自动选首个可绑定端口自愈。
+
+### 6.5 前端同源接线：cockpit/devices + 根 SPA `/console/`
+
+根 SPA 与 cockpit/devices 均采用**同源托管**（无需 CORS / 反向代理），浏览器以相对路径调用 `/api/*`。
+
+| 检查 | 期望 | 实测 | 证据 |
+| -- | -- | -- | -- |
+| cockpit-wired | cockpit.html 引用 `/api/gateway/devices` | PASS | `src/plc-host/bin/Debug/net11.0/wwwroot/pages/cockpit.html:1128-1129`（`apiGet('/api/gateway/devices')` + `apiGet('/api/gateway/protocols')`） |
+| devices-wired | devices.html 引用 `/api/gateway/read` | PASS | e2e `devices-wired` |
+| console-root-redirect | `/` → `Location: /console/` | PASS | `Program.cs:27` + e2e |
+| console-index | `/console/` 含 `js/app.js` | PASS | e2e `console-index` |
+| console-appjs-wired | `/console/js/app.js` 含 `/api/gateway/devices` | PASS | `wwwroot/js/app.js:82-83`（`Promise.all([axios.get("/api/gateway/devices"), axios.get("/api/gateway/protocols")])`） |
+| console-devices-fragment | `/console/pages/devices.html` 含 `data-page="devices"` | PASS | `wwwroot/pages/devices.html:1` + e2e `console-devices-fragment` |
+
+**根 SPA 分页**：`app.js` 以 `PAGE_SIZE=12` + `devPage` 状态机实现设备列表分页（`wwwroot/js/app.js:74-75, 279-322`），与 cockpit 同源方案对齐。社媒 / Notion / 多租户后端视图显式空态降级（`app.js:1080-1088`），避免未接后端时白屏。
+
+### 6.6 容器化交付（#1 · Dockerfile）
+
+| 交付物 | 内容 | 状态 |
+| -- | -- | -- |
+| `Dockerfile`（根） | 多阶段：构建 `plc-host` + `plc-gateway`（`src/plc-host`、`src/plc-gateway` 相对路径引用 `../PlcAiot.Web/wwwroot/pages`、`../../wwwroot`），运行阶段非 root `app` 用户，`EXPOSE 8080`，`ENTRYPOINT ["/app/docker-entrypoint.sh"]` | 已落盘（2026-08-26） |
+| `Dockerfile.plc-saas` | 多阶段：`dotnet publish plc-saas.csproj -c Release`，运行阶段非 root，依赖外部 PG（`ConnectionStrings__Default` 注入），`EXPOSE 8080` | 已落盘 |
+| `docker-entrypoint.sh` | 先起 `PlcGateway.dll`（NamedPipe），待就绪后起 `plc-host.dll`，trap 清理 | 已落盘 |
+| 可复现 | `ARG DOTNET_REGISTRY` / `DOTNET_VERSION=11.0-preview` 支持受限网络镜像覆盖 | 支持 |
+
+> 说明：当前环境无法实跑 `docker build`（无 Docker 守护）；Dockerfile 已按 .NET 11 多阶段最佳实践编写并人工复核，构建验证留作 CI 前置。
+
+### 6.7 新增层核验总表
+
+| 新增层 | 判定 | 关键证据 |
+| -- | -- | -- |
+| plc-saas 绿构建（#5） | ✅ | `dotnet build` 0 错误 / 4 警告 |
+| ADR-113 MQTT/EMQX 桥（构建验证） | ✅ | 随 plc-saas 绿构建编译进后端 |
+| `/api/gateway/*` 契约 | ✅ | e2e protocols/devices/read/write 全 PASS + `GatewayModule.cs` |
+| cockpit/devices 同源接线 | ✅ | e2e cockpit-wired / devices-wired + `cockpit.html:1128-1129` |
+| 根 SPA `/console/` 同源托管 | ✅ | e2e console-* 4 项全 PASS + `app.js:82-83` |
+| 容器化交付（#1） | ✅(落盘) / ⏳(docker build 待 CI) | `Dockerfile` / `Dockerfile.plc-saas` / `docker-entrypoint.sh` |
+
+### 6.8 遗留约束 / 风险
+
+1. **预览包告警**：plc-saas `NU1608`（EF Core vs Npgsql.EF 版本漂移）—— 建议统一 preview 修订号。
+2. **部署前置冒烟**：PG+EMQX 端到端（`ADR-113` HTTP/MQTTnet 双路径、`/api/v1/ingest/*` 端点）需 `wslc`+网络，沙箱未跑，留作部署验证。
+3. **Windows 保留端口**：本地 e2e 若强制 `PORT=` 落于 Hyper-V/WSL2 保留段会 `10013`；验证脚本已自愈，部署到 Linux 容器无此问题。
+4. **Docker 构建验证**：无 Docker 守护，Dockerfile 正确性依赖人工复核，建议接入 CI `docker build` 门禁。
+
+---
+
+## 5.1 关联文档（新增层）
+
+- 新增层待办评估：`docs/BACKLOG-ASSESSMENT-2026-08-25.md`
+- ADR-113 摄取桥：`docs/ADR-113-implementation.md`
+- 容器化交付：`Dockerfile`（plc-host）、`Dockerfile.plc-saas`、`docker-entrypoint.sh`
+- 端到端验证脚本：`scripts/verify-cockpit.sh`（10 项检查，自动端口）
