@@ -1,0 +1,8 @@
+# PlcVsa dev-branch transfer artifacts (generated 2026-09-02T15:59:28Z)
+# sha256  size(bytes)  path
+b25f8fbb38544706cc07ddb1ff1c73de8a2f4db48e25661b3b49b4c2bd62cae8       10090  /workspace/plc/scripts/06-fix-github-dev-push.ps1
+ca362733bf5234015136ab9454aa178c8594751ef1e851ddffe216d1fa743122        3201  /workspace/plc/scripts/README-github-dev-push-fix.txt
+2d9f014f0298f99c6ffd9f1d604e675217ab19bdd61cf9eb57fb4c9eff93641e       15099  /workspace/plc/transfer-patches/0001-chore-scripts-add-Windows-fix-for-GitHub-dev-push-ab.patch
+5bc48deaaab6ee95a7093070f83826c3f0337593e1d38447097cc573dfc474a7        7035  /workspace/plc/dev-ahead.bundle
+fa6137f26b98a51daab0344380a79e2563dc28c27ab76bda22adff3f46e66523      217434  /workspace/plc/stash-plcvsa.bundle
+999b5fc8d859a7caaaa5eb8c4028ada7f0efda8285fb86ad4876f9280103b956    72616080  /workspace/plc/dev-latest-full.bundle
