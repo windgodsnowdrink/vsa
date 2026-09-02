@@ -1,0 +1,27 @@
+# Offline-transfer manifest for PlcVsa dev branch
+#
+# 用法 (Windows / Linux / macOS 通用)：
+#   1) 把与本文件同级的交付物放到同一目录
+#   2) Linux/macOS:  sha256sum -c SHA256SUMS.txt
+#      Windows 10+:   Get-FileHash -Algorithm SHA256 dev-latest-full.bundle
+#                     (与下面文件对应行的 hash 比对即可)
+#   3) 恢复仓库：
+#      git clone dev-latest-full.bundle plcvsa-latest
+#      # 或用增量 (需要 prerequisite commit 3f0cd66 存在)
+#      git bundle unbundle dev-ahead.bundle
+#      git cherry-pick 9e8dde5baa5d3b3da5c7458028a4788a1fc2b16c
+#   4) Stash 快照 (恢复 PlcVsa 4-project 微单体原始 stash)：
+#      git clone stash-plcvsa.bundle stash-snapshot
+#      # 或：
+#      git bundle unbundle stash-plcvsa.bundle
+#      git stash store 6f3a99151c08f42b538c8fba5eb48576e6d14f52
+#
+# generated UTC: 2026-09-02T16:02:55Z
+#
+# <sha256>                                                        size(B) <path>
+b25f8fbb38544706cc07ddb1ff1c73de8a2f4db48e25661b3b49b4c2bd62cae8      10090 scripts/06-fix-github-dev-push.ps1
+ca362733bf5234015136ab9454aa178c8594751ef1e851ddffe216d1fa743122       3201 scripts/README-github-dev-push-fix.txt
+2d9f014f0298f99c6ffd9f1d604e675217ab19bdd61cf9eb57fb4c9eff93641e      15099 transfer-patches/0001-chore-scripts-add-Windows-fix-for-GitHub-dev-push-ab.patch
+5bc48deaaab6ee95a7093070f83826c3f0337593e1d38447097cc573dfc474a7       7035 dev-ahead.bundle
+fa6137f26b98a51daab0344380a79e2563dc28c27ab76bda22adff3f46e66523     217434 stash-plcvsa.bundle
+999b5fc8d859a7caaaa5eb8c4028ada7f0efda8285fb86ad4876f9280103b956   72616080 dev-latest-full.bundle
