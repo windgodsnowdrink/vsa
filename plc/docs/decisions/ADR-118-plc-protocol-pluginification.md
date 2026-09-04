@@ -7,17 +7,19 @@
 
 ## 0. 背景与目标
 
-优先级 1 已建立独立插件宿主 `plc-host`（DotNetCorePlugins 式 `AssemblyLoadContext` 隔离加载，ADR-114/115）。
-优先级 2 已落地基础能力栈（Scrutor 扫描 + Polly 弹性 + Carter 模块化 + HybridCache/ScottPlot/OTel/CommunityToolkit/Foundatio/Dapr，ADR-117）。
+优先级 1 已建立独立插件宿主 `plc-host`（DotNetCorePlugins 式 `AssemblyLoadContext` 隔离加载，ADR-114/115）。  
+优先级 2 已落地基础能力栈（Scrutor 扫描 + Polly 弹性 + Carter 模块化 + HybridCache/ScottPlot/OTel/CommunityToolkit/Foundatio/Dapr，ADR-117）。  
 优先级 3 目标：**将 PLC 设备协议以 Tier1 ALC 插件形态落地，消除根目录"空壳"协议类**（当前 `Modbus.cs / Melsec.cs / Fatek.cs / Fuji.cs / Keyence.cs / BACnet.cs / LoRa.cs` 及其 `*Test.cs` 仅为占位，未实现），使协议驱动可热插拔、隔离加载、按设备类型动态发现。
 
 ## 1. 设计
 
 ### 1.1 信任边界（复用 ADR-115 两层）
+
 - **Tier1 = ALC 插件**（不可信 / 设备协议 / 可热重载）：每个协议一个独立程序集，经 `PluginLoadContext` 隔离加载，互不污染、可独立升级。
 - 共享契约程序集 `Plc.Plugins.Contracts`（`Private=false`）继续承担类型身份统一角色——新增的设备协议契约放入此共享程序集，避免插件与宿主间类型分裂。
 
 ### 1.2 新增契约（置于 `Plc.Plugins.Contracts`）
+
 ```csharp
 // 设备协议抽象：一个插件可实现一个或多个协议
 public interface IDeviceProtocol
@@ -46,6 +48,7 @@ public interface IDeviceCatalog
 ```
 
 ### 1.3 宿主侧落地
+
 - `DeviceCatalog : IDeviceCatalog` 以单例注册进 DI（宿主内部实现）。
 - 插件在 `IPlugin.StartAsync(ctx)` 内通过 `ctx.Services.GetRequiredService<IDeviceCatalog>().Register(this)` 自注册（插件同时实现 `IPlugin` 与 `IDeviceProtocol`）。
 - `DeviceProtocolsModule : ICapabilityModule + ICarterModule`：暴露
@@ -53,6 +56,7 @@ public interface IDeviceCatalog
   - `GET/POST /api/devices/{protocolId}/read|write` —— 网关式透传（便于前端/HMI 经宿主访问现场设备）。
 
 ### 1.4 参考实现：ModbusTcpDevicePlugin
+
 - 将现有 `DemoModbusPlugin` 升级为**真实 Modbus TCP 协议插件**：自实现 MBAP 头 + PDU 帧（读保持寄存器 `0x03`、写单寄存器 `0x06`、写多寄存器 `0x10`、写多线圈 `0x0F`），基于 `System.Net.Sockets` TCP，**无额外依赖**。
 - 启动即注册到 `DeviceCatalog`；`/api/devices/protocols` 应返回 `modbus.tcp`。
 
@@ -60,19 +64,19 @@ public interface IDeviceCatalog
 
 按协议逐个转为 `plc-host/plugins/` 下独立 ALC 插件；每个插件迁移完成后，从根目录删除对应空壳 `.cs` 与 `*Test.cs`。
 
-| 现有空壳 | 目标插件 | 顺序 |
-|----------|----------|------|
-| `Modbus.cs` | `ModbusTcpDevicePlugin`（参考实现，首做） | 1 |
-| `Melsec.cs` | `MelsecMCDevicePlugin` | 2 |
-| `Fatek.cs` | `FatekDevicePlugin` | 3 |
-| `Fuji.cs` | `FujiDevicePlugin` | 4 |
-| `Keyence.cs` | `KeyenceDevicePlugin` | 5 |
-| `BACnet.cs` | `BacnetDevicePlugin` | 6 |
-| `LoRa.cs` | `LoRaDevicePlugin` | 7 |
+| 现有空壳         | 目标插件                             | 顺序 |
+| ------------ | -------------------------------- | -- |
+| `Modbus.cs`  | `ModbusTcpDevicePlugin`（参考实现，首做） | 1  |
+| `Melsec.cs`  | `MelsecMCDevicePlugin`           | 2  |
+| `Fatek.cs`   | `FatekDevicePlugin`              | 3  |
+| `Fuji.cs`    | `FujiDevicePlugin`               | 4  |
+| `Keyence.cs` | `KeyenceDevicePlugin`            | 5  |
+| `BACnet.cs`  | `BacnetDevicePlugin`             | 6  |
+| `LoRa.cs`    | `LoRaDevicePlugin`               | 7  |
 
 ## 3. Native AOT 兼容性提示
 
-设备协议插件依赖 ALC 动态加载与反射，与 Native AOT 修剪根本冲突（详见 ADR-117）。
+设备协议插件依赖 ALC 动态加载与反射，与 Native AOT 修剪根本冲突（详见 ADR-117）。  
 **结论**：协议插件以"解释执行 + ALC 隔离"为主，**不纳入宿主 AOT 裁剪图**；若未来宿主核心走 AOT，仅对插件加载入口做 `[DynamicDependency]` 标注，协议实现本身保持 JIT/ALC。
 
 ## 4. 风险与跟进
@@ -87,3 +91,38 @@ public interface IDeviceCatalog
 - `ModbusTcpDevicePlugin` 真实读/写（MBAP+PDU）跑通；
 - `GET /api/devices/protocols` 返回 `modbus.tcp`；端到端验证通过；
 - 根目录 `Modbus.cs` 等空壳的迁移/删除计划明确并在后续提交中执行。
+
+## 6. 协议矩阵收口（2026-09-02）
+
+### 6.1 覆盖判定
+
+ADR-118 显式目标矩阵 = §2 迁移计划所列 7 协议（Modbus / Melsec / Fatek / Fuji / Keyence / BACnet / LoRa）。  
+经核查，**7 个均为真实 ALC 插件并已功能验证**（`scripts/verify-cockpit.sh` 15/15 PASS，  
+`GET /api/devices/protocols` 返回 7 协议、`GET /plugins` 列 7 插件），**P3 目标矩阵 100% 覆盖**。
+
+根目录协议壳（`Modbus.cs / Melsec.cs / …`）已不存在（§0 所述空壳早已消除）；  
+所谓的「目标设备集」即上述 7 协议，已无遗留空壳。
+
+### 6.2 SNET 参考集 = 扩展候选（非 ADR-118 范围）
+
+SNET 生产组件反编译还原出 41+ 驱动（Siemens / Omron / Allen-Bradley / Beckhoff / Mitsubishi / …），  
+其规范全量语料位于 `docs/snet/decompiled/`，集成蓝图见 `docs/snet/RECOVERY_AND_INTEGRATION.md`。  
+该集合是**未来协议扩展的参考源**，不属 ADR-118 的 P3 收口范围。
+
+### 6.3 去壳动作（plugins/ 命名空间清理）
+
+`src/plc-host/plugins/` 下原有 51 个 `Snet.*` 目录，每个仅含 1 个 `.decompiled.cs`、无 `.csproj`、  
+非可构建插件骨架，且与 `docs/snet/decompiled/` 对应文件**逐字节一致（SHA256 全量比对 51/51 匹配）**。  
+它们使 `plugins/` 看似有 51 个插件、实为 7 个，误导插件发现语义。
+
+**处置**：2026-09-02 将 51 个 `Snet.*` 重复目录从 `plugins/` 删除（规范副本留存 `docs/snet/decompiled/`，  
+零数据丢失）；同步在 `plc-host.csproj` 移除已无匹配对象的 `<None Include="plugins\**\*.decompiled.cs" />`。  
+`plugins/` 现仅含 7 个可构建 ALC 插件，`PluginManager` 扫描语义清晰。详见 `src/plc-host/plugins/README.md`。
+
+### 6.4 完成判据复核
+
+- [x] 7 协议真实插件落地并自注册到 `DeviceCatalog`
+- [x] `GET /api/devices/protocols` 返回 7 协议；端到端验证通过
+- [x] 根目录空壳已消除（无残留）
+- [x] `plugins/` 命名空间仅含可构建插件（去壳完成）
+- [x] 新增协议（SNET 参考集）按需逐个迁移 —— 见未来 ADR / 任务，非本 ADR 范围

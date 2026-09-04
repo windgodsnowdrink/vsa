@@ -187,4 +187,27 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 - 新增层待办评估：`docs/BACKLOG-ASSESSMENT-2026-08-25.md`
 - ADR-113 摄取桥：`docs/ADR-113-implementation.md`
 - 容器化交付：`Dockerfile`（plc-host）、`Dockerfile.plc-saas`、`docker-entrypoint.sh`
-- 端到端验证脚本：`scripts/verify-cockpit.sh`（10 项检查，自动端口）
+- 端到端验证脚本：`scripts/verify-cockpit.sh`（15 项检查，自动端口；含 Tier1 插件体系）
+
+---
+
+## 7. ADR-118 插件化功能验证（2026-09-02）
+
+- **结论**：P3 PLC 插件化（Tier1 ALC）已落地并可运行。7 个真实设备协议插件经 `PluginManager`（ALC 隔离）加载并自注册到宿主 `DeviceCatalog`，`/api/devices/{protocolId}/read|write` 端到端可路由到具体协议驱动。
+- **修复点（构建/部署接线）**：原 `src/plc-host/plc-host.csproj` 仅以 `<None>` 引用插件 `.csproj`，既不构建插件、也不复制插件 DLL 到运行时 `plugins/`，致 `PluginManager` 扫描不到任何插件、目录恒空（`/api/devices/*` 不可用）。改为在 `plc-host.csproj` 增加 7 个 `ProjectReference(ReferenceOutputAssembly=false, Private=false)`（保持 ALC 隔离、不进宿主依赖图）+ `AfterBuild CopyPluginAssemblies` 目标，把 `plugins/<Name>/bin/<Name>.dll` 复制到 `$(OutDir)plugins/<Name>/bin/`。
+- **插件清单（协议 id → 工程）**：`modbus.tcp`→DemoDevicePlugin（ModbusTcpDevicePlugin）、`melsec.mc`→MelsecDevicePlugin、`fatek`→FatekDevicePlugin、`fuji.sph`→FujiDevicePlugin、`keyence.kv`→KeyenceDevicePlugin、`lora.wan`→LoRaDevicePlugin、`bacnet.ip`→BacnetDevicePlugin。均为真实实现（含帧编解码），非空壳。
+- **关键证据（file:line）**：`src/plc-host/PluginManager.cs:34`（ALC 扫描 + 热重载）、`src/plc-host/Program.cs:48-49`（启动期 `DiscoverAndLoad`+`StartAllAsync`）、`src/Plc.Plugins.Contracts/IDeviceProtocol.cs:48`（契约）、`src/plc-host/plugins/MelsecDevicePlugin/MelsecDevicePlugin.cs:19`（真实 Qna-3E 二进制帧编解码）、`src/plc-host/plugins/DemoDevicePlugin/ModbusTcpDevicePlugin.cs:13`（MBAP+PDU，含 `len-1` PDU 读修复）、`src/plc-host/PluginLoadContext.cs:23-34`（共享 `Plc.Plugins.Contracts` 回退默认 ALC，保类型身份）。
+- **e2e 实测（`scripts/verify-cockpit.sh`，15 项全 PASS）**：`GET /plugins` 列出 7 插件；`GET /api/devices/protocols` 列出 7 协议（均 `supportsRead/Write=true`，`supportedTypes [3,4,1,2]`）；`POST /api/devices/modbus.tcp/read` 指向死主机 `127.0.0.1:1` 返回非 404（证明路由到已注册插件；连接失败返回 500 属预期）。
+- **残留（已解决，2026-09-02）**：原 `plugins/**/*.decompiled.cs` 为反编译 SNET 生产 DLL 参考源码（标记 `<None>`，不参与编译）。2026-09-02 已去壳——51 个 `Snet.*` 重复目录（与 `docs/snet/decompiled/` 逐字节一致）从 `plugins/` 删除，规范副本留存 `docs/snet/decompiled/`；`plc-host.csproj` 移除对应 `<None>` 行。`plugins/` 现仅含 7 个可构建 ALC 插件。详见 §8 与 `src/plc-host/plugins/README.md`。
+
+---
+
+## 8. 协议矩阵收口（2026-09-02）
+
+- **目标矩阵覆盖**：ADR-118 显式目标 = 7 协议（Modbus/Melsec/Fatek/Fuji/Keyence/BACnet/LoRa），均已落地为真实 ALC 插件并经 e2e 验证（15/15 PASS）。**P3 目标矩阵 100% 覆盖，无遗留空壳。**
+- **去壳动作**：`plugins/` 下 51 个 `Snet.*` 目录（纯 `.decompiled.cs`、无 `.csproj`、非可构建插件）与 `docs/snet/decompiled/` 逐字节一致，作为重复副本删除；`plc-host.csproj` 同步移除 `<None Include="plugins\**\*.decompiled.cs" />`。
+- **扩展候选矩阵**：SNET 参考集 41+ 驱动（Siemens/Omron/Allen-Bradley/Beckhoff/Mitsubishi/…）为未来协议迁移参考源，规范语料 `docs/snet/decompiled/`，集成蓝图 `docs/snet/RECOVERY_AND_INTEGRATION.md`；不属 ADR-118 P3 范围。
+- **交付物**：`src/plc-host/plugins/README.md`（插件开发指南 + 协议矩阵）、`docs/decisions/ADR-118-plc-protocol-pluginification.md §6`（收口判定）、本 §8。
+- **构建验证（已跑）**：`dotnet build src/plc-host -c Debug` → **0 警告 / 0 错误**，8 个项目全部编译（Plc.Plugins.Contracts + 7 插件 + plc-host），7 个插件 DLL 正确落到运行时 `bin/Debug/net11.0/plugins/<Name>/bin/`。
+- **e2e 复验（已跑）**：`scripts/verify-cockpit.sh` **15 项全 PASS、0 失败**。关键证据：`POST /api/devices/modbus.tcp/read` 调用栈穿透至 `DemoDevicePlugin.ModbusTcpSession.EnsureConnectedAsync → ModbusTcpSession.ReadAsync → DeviceProtocolsModule.cs:51-52`，返回 500 而非 404（死主机 `127.0.0.1:1` 的 `SocketException 10061` 属预期），证明请求确实被路由到已注册插件。
+- **注**：本轮曾因批量 `git rm -r` 被 SIGTERM 中断，导致 `plc-host.csproj` 的 ADR-118 接线修复（7 个 `ProjectReference` + `CopyPluginAssemblies`）这一**未提交**改动丢失；已按原方案重建，并由上述构建 + e2e 重新验证通过。

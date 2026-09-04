@@ -34,6 +34,20 @@
     <None Include="plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" />
   </ItemGroup>
 
+  <!-- Tier1 设备协议插件：作为构建依赖触发各自编译，但不进宿主依赖图 / 默认 ALC。
+       ReferenceOutputAssembly=false → 宿主编译不静态引用插件程序集；
+       Private=false → 不自动复制插件 DLL（改由下方 CopyPluginAssemblies 显式复制）。
+       注：这些 ProjectReference 仅用于驱动插件工程构建 + 建立构建顺序，运行时仍由 PluginManager 经 ALC 加载各自产物。 -->
+  <ItemGroup>
+    <ProjectReference Include="plugins\BacnetDevicePlugin\BacnetDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\DemoDevicePlugin\DemoDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\FatekDevicePlugin\FatekDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\FujiDevicePlugin\FujiDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\KeyenceDevicePlugin\KeyenceDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\LoRaDevicePlugin\LoRaDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="plugins\MelsecDevicePlugin\MelsecDevicePlugin.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
   <!-- 前端 cockpit / devices 静态页面（源自 PlcAiot.Web/wwwroot/pages），同源托管到输出 wwwroot/pages -->
   <ItemGroup>
     <Content Include="..\PlcAiot.Web\wwwroot\pages\**">
@@ -49,10 +63,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <!-- 反编译 SNET 生产 DLL 参考源码：不参与宿主编译（运行时经 ALC 加载的是各自插件工程的产物），仅作为项目内参考文件 -->
-  <ItemGroup>
-    <None Include="plugins\**\*.decompiled.cs" />
-  </ItemGroup>
+  <!-- 反编译 SNET 生产 DLL 参考源码已迁出 plugins/ 命名空间：规范全量语料见 docs/snet/decompiled/
+       （plugins/Snet.* 曾为与其逐字节重复的副本，已于 2026-09-02 去壳删除）。
+       其不再作为宿主工程内容；新增协议插件请置于 plugins/<Name>/ 并实现 IPlugin + IDeviceProtocol（详见 plugins/README.md）。 -->
 
   <ItemGroup>
     <PackageReference Include="Carter" Version="10.0.0" />
@@ -74,5 +87,16 @@
   <ItemGroup>
     <ProjectReference Include="..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
   </ItemGroup>
+
+  <!-- 把各插件工程的产物 DLL 显式复制到运行时 plugins/<Name>/bin/ 下，供 PluginManager 扫描发现。
+       插件工程自带的 CopyPluginToHost 目标只复制到源码树 plugins/<Name>/bin/，此处完成「源码树 → 输出目录」的搬运。 -->
+  <Target Name="CopyPluginAssemblies" AfterTargets="Build">
+    <ItemGroup>
+      <_PluginDll Include="plugins\*\bin\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PluginDll)"
+          DestinationFiles="@(_PluginDll->'$(OutDir)plugins\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>
