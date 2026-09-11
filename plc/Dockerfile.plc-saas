@@ -1,0 +1,47 @@
+# =========================================================
+# plc-saas — PLC·AIOT 多租户 SaaS 后端（.NET 11 Preview, File-based App）
+# 构建期经 strip-app 剥离 #include/#r 后编译（plc-saas.csproj 的 PrepareStrippedApp target）。
+# 依赖外部 PostgreSQL（连接串由 ConnectionStrings__Default 注入）。
+#
+# 构建（在仓库根执行）：
+#   docker build -f Dockerfile.plc-saas -t plc-aiot-saas .
+# 运行：
+#   docker run -d -p 8081:8080 \
+#     -e ConnectionStrings__Default="Server=pg;Database=plc_aiot_saas;User Id=app;Password=***;Encrypt=False" \
+#     plc-aiot-saas
+#
+# 受限网络：可用 --build-arg DOTNET_REGISTRY=<mirror> 覆盖基础镜像源。
+# =========================================================
+
+ARG DOTNET_REGISTRY=mcr.microsoft.com
+ARG DOTNET_VERSION=11.0-preview
+
+# ---------- 1. 构建阶段 ----------
+FROM ${DOTNET_REGISTRY}/dotnet/sdk:${DOTNET_VERSION} AS build
+WORKDIR /src
+
+COPY src/plc-saas/plc-saas.csproj ./
+RUN dotnet restore plc-saas.csproj
+
+# 复制全部源（File-based 顶层 *.cs + slices/*.cs），构建期由 PrepareStrippedApp 剥离指令
+COPY src/plc-saas/ ./
+
+RUN dotnet publish plc-saas.csproj -c Release -o /app --no-restore
+
+# ---------- 2. 运行阶段 ----------
+FROM ${DOTNET_REGISTRY}/dotnet/aspnet:${DOTNET_VERSION} AS final
+WORKDIR /app
+
+# 非 root 用户运行（安全基线）
+RUN groupadd -r app && useradd -r -g app app
+
+COPY --from=build /app ./
+RUN chown -R app:app /app
+
+USER app
+
+ENV DOTNET_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080
+
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "plc-saas.dll"]
