@@ -211,3 +211,45 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 - **构建验证（已跑）**：`dotnet build src/plc-host -c Debug` → **0 警告 / 0 错误**，8 个项目全部编译（Plc.Plugins.Contracts + 7 插件 + plc-host），7 个插件 DLL 正确落到运行时 `bin/Debug/net11.0/plugins/<Name>/bin/`。
 - **e2e 复验（已跑）**：`scripts/verify-cockpit.sh` **15 项全 PASS、0 失败**。关键证据：`POST /api/devices/modbus.tcp/read` 调用栈穿透至 `DemoDevicePlugin.ModbusTcpSession.EnsureConnectedAsync → ModbusTcpSession.ReadAsync → DeviceProtocolsModule.cs:51-52`，返回 500 而非 404（死主机 `127.0.0.1:1` 的 `SocketException 10061` 属预期），证明请求确实被路由到已注册插件。
 - **注**：本轮曾因批量 `git rm -r` 被 SIGTERM 中断，导致 `plc-host.csproj` 的 ADR-118 接线修复（7 个 `ProjectReference` + `CopyPluginAssemblies`）这一**未提交**改动丢失；已按原方案重建，并由上述构建 + e2e 重新验证通过。
+
+---
+
+## 9. ADR-113 EMQX 端到端实测：可行性探测与交付（2026-09-11）
+
+> **结论：本环境无法实跑，已转为交付「可执行脚本 + 手册」，待具备 Docker 守护的机器执行后回填结果。**
+
+### 9.1 环境探测（实测）
+
+| 探测项 | 结果 |
+|--------|------|
+| `wslc` / `wsl` / `docker` / `docker-compose` | 均已安装（`wslc` 在 `C:\Program Files\WSL\wslc`） |
+| Docker Desktop 守护 | **未运行** —— `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine` |
+| `wsl.exe` | **被沙箱安全策略列入程序黑名单**，禁止启动（且不得绕过） |
+| 端口 1883 / 8883 / 18083 / 5432 | 全部未开放（EMQX、PG 均未起） |
+| `mosquitto_pub` / `nc` / `psql` | 未安装（故脚本改用 EMQX REST `/api/v5/publish` 发布） |
+| MQTTnet | 已引用：`src/plc-saas/plc-saas.csproj:37`（v5.2.0.1603） |
+| 基础设施定义 | `src/plc-saas/docker-compose.yml`（PG16 + EMQX 5.8.5）、`src/plc-saas/start-dev-env.ps1`（wslc + `docker.1ms.run` 镜像源，PG18 + EMQX 6.1.4） |
+
+阻塞根因：**无 Docker 守护 + `wsl.exe` 被禁** → 无法拉起 PG/EMQX 容器 → 真实双路径联调不可行。
+
+### 9.2 交付物（已落盘）
+
+- `scripts/verify-emqx-e2e.sh` —— 自动化实测脚本，覆盖：
+  - 路径①（主）：`POST /api/v1/ingest/telemetry` / `ingest/fault`（`X-Tenant-Id` + `X-Ingest-Key`）
+  - 负向：错误 Key→401、未知租户→404
+  - 路径②（边缘）：经 EMQX REST `/api/v5/publish` 发到 `tenants/<tid>/devices/<dev>/telemetry`
+  - 持久化断言：PG `devices`（自动纳管）/ `fault_events` / `outbox_messages` / `usage_meters.telemetry_points`
+- `docs/ADR-113-emqx-e2e-runbook.md` —— 手册：两套起服务方式（wslc / compose，含**镜像与凭据不一致**提示）、plc-saas 启动的环境变量覆盖（**必须覆盖 `ConnectionStrings__Default`，默认是 `Integrated Security=True` 连容器会失败**；路径②需 `Mqtt__Bridge__Enabled=true`）、断言清单、EMQX 规则引擎 SQL 与 Webhook 配置、故障排查表。
+
+### 9.3 已知不一致（待统一，已记入手册）
+
+1. `start-dev-env.ps1`（wslc，PG18/postgres、EMQX 6.1.4）与 `docker-compose.yml`（docker，PG16/plcsaas、EMQX 5.8.5）**镜像版本与 PG 凭据不同**，混用会踩坑。
+2. `src/plc-saas/appsettings.json` 连接串为 `Integrated Security=True`，与容器 PG（用户名/密码）不匹配，必须环境变量覆盖。
+
+### 9.4 判定
+
+| 项 | 判定 |
+|----|------|
+| ADR-113 双路径代码落地 | ✅ 已随 plc-saas 绿构建编译通过（此前结论） |
+| EMQX/PG 真实联调 | ⏳ **未执行** —— 环境阻塞（无 Docker 守护 + wsl 被禁）；脚本与手册已就绪 |
+| EMQX 规则引擎主路径 | ⏳ 待实测（配置步骤见手册 §4） |
