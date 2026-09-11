@@ -8,7 +8,7 @@
 
 ## 0. 前置条件
 - [x] 5432 占用已解决（本机原生 PostgreSQL 服务已停用）—— 2026-08-17 用户确认
-- [x] wslc 镜像已拉取：`docker.1ms.run/library/postgres:18-alpine3.23`、`docker.1ms.run/emqx/emqx:6.1.4`
+- [x] wslc 镜像已拉取（镜像版本现以 `src/plc-saas/docker-compose.yml` 为单一真源：`postgres:16` / `emqx:5.8.5`，脚本自动加 `docker.1ms.run` 前缀解析）
 - [x] `dotnet run` 启动期三处崩溃/RLS 失效已修（提交 `676b968`）；`start-dev-env.ps1` 已加固（提交 `6c5ccd8`）
 
 ---

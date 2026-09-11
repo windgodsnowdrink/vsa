@@ -22,18 +22,28 @@
 
 ---
 
-## 1. 前置：两套起服务方式（二选一）
+## 1. 前置：两套起服务方式（二选一，凭据与版本完全一致）
 
-> ⚠️ 两种方式**镜像与凭据不同**，不要混用：
+> ✅ **已统一**：`src/plc-saas/docker-compose.yml` 是基础设施**单一真源**（镜像版本 / PG 凭据 / 端口）。
+> `start-dev-env.ps1` 启动时会**解析该文件**取值，只额外加 `docker.1ms.run` 镜像源前缀，
+> 因此两条路径产出**同一套凭据**，可任意混用、无需区分。
 
-| 方式 | 命令 | 镜像 | PG 凭据 | EMQX |
-|------|------|------|---------|------|
-| **A. wslc（项目约定，推荐）** | `pwsh src/plc-saas/start-dev-env.ps1` | postgres:18-alpine3.23、emqx **6.1.4** | `postgres / postgres` | admin / Admin123 |
-| **B. docker compose** | `docker compose -f src/plc-saas/docker-compose.yml up -d` | postgres:16、emqx **5.8.5** | superuser `postgresql`；应用角色 `plcsaas / plcsaas` | admin / Admin123 |
+| 方式 | 命令 | 差异 |
+|------|------|------|
+| **A. wslc（无 Docker Desktop，推荐）** | `pwsh src/plc-saas/start-dev-env.ps1` | 走 `docker.1ms.run` 镜像源；应用角色 `plcsaas` 由脚本 `psql` 等效创建 |
+| **B. docker compose** | `docker compose -f src/plc-saas/docker-compose.yml up -d` | 直连 Docker Hub；应用角色 `plcsaas` 由 `initdb/01-roles.sql` 创建 |
 
-- 方式 A 经 `docker.1ms.run` 镜像源拉取（**Docker Hub 在本机不可达**）。
-- 方式 B 的 `initdb/01-roles.sql` 会创建应用角色 `plcsaas`。
-- 端口：MQTT 1883 / WS 8083·8084 / SSL 8883 / 控制台 18083；PG 5432。
+统一后的真值（改这里即可，`docker-compose.yml`）：
+
+| 项 | 值 |
+|----|----|
+| PostgreSQL 镜像 | `postgres:16` |
+| EMQX 镜像 | `emqx/emqx:5.8.5`（REST 为 `/api/v5`） |
+| PG 超级用户 | `postgresql / postgresql` |
+| PG 应用角色（连接串用） | `plcsaas / plcsaas` |
+| 数据库 | `plc_aiot_saas` |
+| EMQX 控制台 | `admin / Admin123` |
+| 端口 | MQTT 1883 / WS 8083·8084 / SSL 8883 / 控制台 18083 / PG 5432 |
 
 **起服务后自检**（三者都应返回）：
 ```bash
@@ -44,14 +54,18 @@ timeout 2 bash -c "</dev/tcp/127.0.0.1/5432" && echo "pg 5432 open"
 
 ---
 
-## 2. 启动 plc-saas（关键：必须覆盖连接串与开启桥接）
+## 2. 启动 plc-saas（默认即可；路径② 需开启桥接）
 
-`src/plc-saas/appsettings.json` 默认 `Integrated Security=True`（Windows 集成认证），**连容器 PG 会失败**，必须用环境变量覆盖；路径② 还需显式开启 MQTTnet 订阅桥。
+> ✅ **已修复**：`src/plc-saas/appsettings.json` 的 `ConnectionStrings:Default` 默认值已从
+> `Integrated Security=True`（Windows 集成认证，连容器 PG 必失败）改为容器友好形式
+> `Host=localhost;Port=5432;Database=plc_aiot_saas;Username=plcsaas;Password=plcsaas`，
+> **开箱即连**，无需环境变量覆盖。仅当宿主端口被平移（如 `PG_HOST_PORT=55432`）时才需覆盖。
 
 ```bash
 cd src/plc-saas
 
-export ConnectionStrings__Default="Host=localhost;Port=5432;Database=plc_aiot_saas;Username=postgres;Password=postgres"
+# 可选：仅当 PG 宿主端口不是 5432 时才需要
+# export ConnectionStrings__Default="Host=localhost;Port=55432;Database=plc_aiot_saas;Username=plcsaas;Password=plcsaas"
 export Mqtt__BrokerUrl="mqtt://localhost:1883"
 export Mqtt__Bridge__Enabled="true"                 # 启用路径②（边缘中继）
 export Mqtt__Bridge__Username="plc-saas"
@@ -61,8 +75,6 @@ export Ingest__SharedKey="plc-aiot-saas-ingest-dev-key-Change-Me"
 dotnet run --project plc-saas.csproj
 # 默认 http://localhost:5000；健康端点 GET /api/v1/ops/health
 ```
-
-> 方式 B（compose）时用 `Username=plcsaas;Password=plcsaas`。
 
 ---
 
@@ -126,10 +138,11 @@ FROM "tenants/+/devices/+/telemetry"
 |------|------|------|
 | `failed to connect to the docker API at npipe://...` | Docker Desktop 守护未启动 | 启动 Docker Desktop，或改用 `wslc` |
 | `wsl.exe: Permission denied` / 被安全策略拦截 | `wsl.exe` 在程序黑名单 | 需在安全中心 → 命令安全 → 程序黑名单中移除；**不要尝试绕过** |
-| 绑端口报 `WSAEACCES` / `10013` | Windows（Hyper-V/WSL2）保留端口段 | 覆盖宿主端口：方式 A 用 `PG_HOST_PORT=55432`（容器内仍 5432） |
+| 绑端口报 `WSAEACCES` / `10013` | Windows（Hyper-V/WSL2）保留端口段 | 覆盖宿主端口：`$env:PG_HOST_PORT='55432'`（容器内仍 5432），并同步 `ConnectionStrings__Default` 的 `Port` |
 | 拉镜像超时/失败 | Docker Hub 不可达 | 用 `docker.1ms.run` 镜像源（见 `start-dev-env.ps1`） |
-| SaaS 起不来，报 PG 认证失败 | 连接串用了 `Integrated Security=True` | 用 `ConnectionStrings__Default` 环境变量覆盖为用户名/密码形式 |
-| EMQX REST 返回 404 | EMQX 6.x 与 5.x 的 API 路径有差异 | 确认镜像版本（方式 A=6.1.4，方式 B=5.8.5），按需调整 `/api/v5` |
+| SaaS 起不来，报 PG 认证失败 | 连接串与容器凭据不匹配 | 默认已是 `plcsaas/plcsaas`；若改过 compose 的 `POSTGRES_*`，同步改 `appsettings.json` 或用 `ConnectionStrings__Default` 覆盖 |
+| `role "plcsaas" does not exist` | wslc 路径未创建应用角色 | `wslc exec plc-saas-postgres psql -U postgresql -d plc_aiot_saas -c "CREATE ROLE plcsaas LOGIN PASSWORD 'plcsaas' SUPERUSER;"` |
+| EMQX REST 返回 404 | EMQX 版本与 API 路径不匹配 | 当前统一为 5.8.5，REST 前缀 `/api/v5`；若自行升 6.x 需改脚本 `EMQX_REST` 路径 |
 | 路径② 无消费 | 未开桥接 | `Mqtt__Bridge__Enabled=true` 并确认日志出现「MQTT 桥已连接 … 订阅 tenants/+/devices/+/telemetry\|fault」 |
 
 ---
@@ -137,5 +150,5 @@ FROM "tenants/+/devices/+/telemetry"
 ## 6. 待办
 
 - [ ] 在具备 Docker 守护的机器上实跑本手册，回填 `docs/PLC-IoT-Architecture-Verification.md` 的真实结果。
-- [ ] 统一两套起服务方式（镜像版本 + PG 凭据）为单一来源，消除 A/B 差异。
-- [ ] `appsettings.json` 的 `Integrated Security=True` 建议改为容器友好的默认（或用 `.Development.json` 区分）。
+- [x] **已修复**——统一两套起服务方式：`docker-compose.yml` 定为单一真源，`start-dev-env.ps1` 解析它取版本/凭据（PG16 + EMQX 5.8.5，superuser `postgresql`，应用角色 `plcsaas` 两条路径等效创建）。
+- [x] **已修复**——`appsettings.json` 的 `Integrated Security=True` 改为容器友好默认（`plcsaas/plcsaas`），开箱即连。

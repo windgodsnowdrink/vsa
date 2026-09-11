@@ -228,7 +228,7 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 | 端口 1883 / 8883 / 18083 / 5432 | 全部未开放（EMQX、PG 均未起） |
 | `mosquitto_pub` / `nc` / `psql` | 未安装（故脚本改用 EMQX REST `/api/v5/publish` 发布） |
 | MQTTnet | 已引用：`src/plc-saas/plc-saas.csproj:37`（v5.2.0.1603） |
-| 基础设施定义 | `src/plc-saas/docker-compose.yml`（PG16 + EMQX 5.8.5）、`src/plc-saas/start-dev-env.ps1`（wslc + `docker.1ms.run` 镜像源，PG18 + EMQX 6.1.4） |
+| 基础设施定义 | `src/plc-saas/docker-compose.yml`（PG16 + EMQX 5.8.5）**= 单一真源**；`src/plc-saas/start-dev-env.ps1`（wslc + `docker.1ms.run` 镜像源）**解析该文件取版本/凭据**（已统一，见 §9.3） |
 
 阻塞根因：**无 Docker 守护 + `wsl.exe` 被禁** → 无法拉起 PG/EMQX 容器 → 真实双路径联调不可行。
 
@@ -239,12 +239,18 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
   - 负向：错误 Key→401、未知租户→404
   - 路径②（边缘）：经 EMQX REST `/api/v5/publish` 发到 `tenants/<tid>/devices/<dev>/telemetry`
   - 持久化断言：PG `devices`（自动纳管）/ `fault_events` / `outbox_messages` / `usage_meters.telemetry_points`
-- `docs/ADR-113-emqx-e2e-runbook.md` —— 手册：两套起服务方式（wslc / compose，含**镜像与凭据不一致**提示）、plc-saas 启动的环境变量覆盖（**必须覆盖 `ConnectionStrings__Default`，默认是 `Integrated Security=True` 连容器会失败**；路径②需 `Mqtt__Bridge__Enabled=true`）、断言清单、EMQX 规则引擎 SQL 与 Webhook 配置、故障排查表。
+- `docs/ADR-113-emqx-e2e-runbook.md` —— 手册：两套起服务方式（wslc / compose，**凭据与版本已统一**）、plc-saas 启动配置（连接串默认已容器友好，仅路径②需 `Mqtt__Bridge__Enabled=true`）、断言清单、EMQX 规则引擎 SQL 与 Webhook 配置、故障排查表。
 
-### 9.3 已知不一致（待统一，已记入手册）
+### 9.3 已知不一致 —— 已修复 ✅
 
-1. `start-dev-env.ps1`（wslc，PG18/postgres、EMQX 6.1.4）与 `docker-compose.yml`（docker，PG16/plcsaas、EMQX 5.8.5）**镜像版本与 PG 凭据不同**，混用会踩坑。
-2. `src/plc-saas/appsettings.json` 连接串为 `Integrated Security=True`，与容器 PG（用户名/密码）不匹配，必须环境变量覆盖。
+原两条隐患已在本次修复中闭环：
+
+| # | 隐患 | 修复 |
+|---|------|------|
+| 1 | `start-dev-env.ps1`（wslc，PG18/`postgres`、EMQX 6.1.4）与 `docker-compose.yml`（PG16/`postgresql`+`plcsaas`、EMQX 5.8.5）**版本与凭据双轨** | `docker-compose.yml` 定为**单一真源**；`start-dev-env.ps1` 启动期解析该文件取 `image:` / `POSTGRES_*` / `EMQX_DASHBOARD__*`（解析失败有硬编码兜底），仅追加 `docker.1ms.run` 镜像源前缀。应用角色 `plcsaas` 在 wslc 路径由脚本用 `psql` 等效创建，与 compose 的 `initdb/01-roles.sql` 对齐。EMQX 环境变量名同步为 5.x 的 `EMQX_DASHBOARD__DEFAULT_USERNAME/PASSWORD`，补齐 8883 端口映射 |
+| 2 | `appsettings.json` 连接串 `Integrated Security=True`（Windows 集成认证），连容器 PG 必失败 | 默认改为 `Host=localhost;Port=5432;Database=plc_aiot_saas;Username=plcsaas;Password=plcsaas`（`Include Error Detail=true` 便于排障）；e2e 脚本 `PG_USER` 默认值同步为 `postgresql` |
+
+校验：`docker compose -f src/plc-saas/docker-compose.yml config` 通过；`start-dev-env.ps1` 经 PowerShell 解析器校验无语法错误；`appsettings.json` JSON 解析通过。
 
 ### 9.4 判定
 
