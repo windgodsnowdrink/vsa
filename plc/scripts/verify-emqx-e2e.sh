@@ -13,8 +13,15 @@
 # 说明：本脚本**不负责拉起**容器（不同环境运行时差异大），只做检测与验证；
 #       未检测到 PG/EMQX 时会明确报错退出，便于先按 runbook 起服务。
 #
+# SaaS 启动前置（路径② 必需）：appsettings.json 里 Mqtt:Bridge:Enabled 默认 **false**，
+# 且 BrokerUrl 默认 mqtt://localhost:1883（宿主 1883 常被 Windows 保留段占用，容器多映射在 11883）。
+# 跑全量（含路径②）必须以桥接启用方式启动 SaaS：
+#   cd src/plc-saas
+#   Mqtt__Bridge__Enabled=true Mqtt__BrokerUrl=mqtt://localhost:11883 dotnet bin/Debug/net11.0/plc-saas.dll
+# 桥接未启用时，只有路径② 的 pg-mqtt-bridge-consumed 会失败，其余 15 项仍应通过。
+#
 # 用法：
-#   bash scripts/verify-emqx-e2e.sh
+#   EMQX_MQTT_PORT=11883 bash scripts/verify-emqx-e2e.sh
 #   SAAS_URL=http://localhost:5000 TENANT_ID=<guid> bash scripts/verify-emqx-e2e.sh
 #
 # 相关文档：docs/ADR-113-implementation.md、docs/ADR-113-emqx-e2e-runbook.md
@@ -205,8 +212,41 @@ echo "      usage_meters.\"TelemetryPoints\"(总): ${UM:-<查询失败>}"
 
 # 路径②专属证据：该设备只经 MQTT 发布（从未走 HTTP 摄取），出现在 devices 表即证明订阅桥生效。
 MQ_CNT=$(run_psql "select count(*) from devices where \"Id\"='$MQ_DEVICE_ID';")
-if [ -n "$MQ_CNT" ] && [ "$MQ_CNT" -ge 1 ] 2>/dev/null; then chk "pg-mqtt-bridge-consumed" 0; else chk "pg-mqtt-bridge-consumed" 1; fi
+if [ -n "$MQ_CNT" ] && [ "$MQ_CNT" -ge 1 ] 2>/dev/null; then
+  chk "pg-mqtt-bridge-consumed" 0
+else
+  chk "pg-mqtt-bridge-consumed" 1
+  # 最常见的失败原因不是代码，而是 SaaS 启动时桥接未开 / BrokerUrl 指向了未映射的端口。
+  echo "      !! 桥接未消费。请确认 SaaS 以桥接启用方式启动（appsettings.json 默认 Enabled=false）："
+  echo "         Mqtt__Bridge__Enabled=true Mqtt__BrokerUrl=mqtt://localhost:$EMQX_MQTT_PORT dotnet bin/Debug/net11.0/plc-saas.dll"
+  echo "         启动日志应出现「MQTT 桥已连接 …」；若 BrokerUrl 用 1883 会连不上（宿主 1883 常为 Windows 保留段）。"
+fi
 echo "      devices(仅经MQTT的设备): ${MQ_CNT:-<查询失败>}"
+
+# 批量聚合回归（IX_usage_meters_TenantId_Period 重复键 23505 的守门用例）：
+# DrainOutbox 是「循环累加 + 批末一次 SaveChanges」，若 UpsertUsage 只查数据库不查变更跟踪器，
+# 同一批里同一租户的第 2 条起会被误判为「不存在」而重复 Add，撞唯一约束 -> 整批回滚、用量卡死。
+# 因此这里连发 N 条单指标遥测（每条 1 点），断言计量**精确累加 N**。
+BATCH_N=5
+echo "      批量聚合回归：连发 $BATCH_N 条单指标遥测（每条记 1 点）..."
+# 先等计量 quiesce（Metering:PollIntervalSeconds 默认 30s），否则基线里混入上一批未 drain 的余量。
+sleep 32
+UM_BEFORE=$(run_psql "select coalesce(sum(\"TelemetryPoints\"),0) from usage_meters where \"TenantId\"='$TENANT_ID';")
+BATCH_TS=$(date +%s)
+for i in $(seq 1 "$BATCH_N"); do
+  curl -s -o /dev/null -m 10 -X POST "$API/ingest/telemetry" \
+    -H "Content-Type: application/json" -H "X-Tenant-Id: $TENANT_ID" -H "X-Ingest-Key: $INGEST_KEY" \
+    -d "{\"deviceId\":\"$DEVICE_ID\",\"ts\":$BATCH_TS,\"metrics\":{\"temp\":$((30+i))}}"
+done
+UM_AFTER=""
+for _ in $(seq 1 15); do
+  sleep 5
+  UM_AFTER=$(run_psql "select coalesce(sum(\"TelemetryPoints\"),0) from usage_meters where \"TenantId\"='$TENANT_ID';")
+  [ -n "$UM_AFTER" ] && [ "$UM_AFTER" -ge $((UM_BEFORE + BATCH_N)) ] 2>/dev/null && break
+done
+BATCH_DELTA=$(( ${UM_AFTER:-0} - ${UM_BEFORE:-0} ))
+if [ "$BATCH_DELTA" = "$BATCH_N" ]; then chk "pg-metering-batch-aggregation" 0; else chk "pg-metering-batch-aggregation" 1; fi
+echo "      TelemetryPoints +$BATCH_DELTA（期望 +$BATCH_N；为 0 = 批量撞唯一约束整批回滚）"
 
 # ---------------- 结果 ----------------
 echo

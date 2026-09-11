@@ -28,8 +28,11 @@ public sealed class IssueMqttCredentialHandler : IRequestHandler<IssueMqttCreden
     {
         var tid = _current.IsRoot ? SaasTenant.Root : _current.TenantId.ToString();
         var uid = _ctx.HttpContext?.User.CurrentUserId() ?? Guid.Empty;
-        var token = JwtIssuer.IssueMqttToken(tid, uid.ToString(), _jwt);
-        var minutes = double.Parse(_jwt["MqttTokenMinutes"]!);
+        // _jwt 注入的是**根**配置，而 Jwt:Key / MqttTokenMinutes 都在 "Jwt" 节下。
+        // 直接对根配置取 ["Key"]/["MqttTokenMinutes"] 恒为 null -> GetBytes(null) 抛 ArgumentNullException。
+        var jwt = _jwt.GetSection("Jwt");
+        var token = JwtIssuer.IssueMqttToken(tid, uid.ToString(), jwt);
+        var minutes = double.Parse(jwt["MqttTokenMinutes"]!);
         return ValueTask.FromResult(new MqttCredentialResponse(
             Url: _cfg["Mqtt:BrokerUrl"] ?? "mqtts://broker.plc-aiot.example:8883",
             Username: tid,

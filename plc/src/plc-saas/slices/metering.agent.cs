@@ -109,7 +109,10 @@ public sealed class MeteringAgent : BackgroundService
 
     private async Task EnsureUsageRow(BaseDbContext db, Guid tenantId, string period, CancellationToken ct)
     {
-        if (!await db.UsageMeters.AnyAsync(m => m.TenantId == tenantId && m.Period == period, ct))
+        // 与 UpsertUsage 同源：同一 UoW 内可能已有未提交的 UsageMeter，只看数据库会重复建行。
+        var exists = db.UsageMeters.Local.Any(x => x.TenantId == tenantId && x.Period == period)
+                     || await db.UsageMeters.AnyAsync(m => m.TenantId == tenantId && m.Period == period, ct);
+        if (!exists)
         {
             db.UsageMeters.Add(new UsageMeter
             {
@@ -127,7 +130,12 @@ public sealed class MeteringAgent : BackgroundService
 
     private async Task UpsertUsage(BaseDbContext db, Guid tenantId, string period, int deviceDelta, long pointDelta, CancellationToken ct)
     {
-        var m = await db.UsageMeters.FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Period == period, ct);
+        // 必须**先查变更跟踪器**：SaveChanges 在整批 pending 消息处理完后才统一提交（见 DrainOutbox），
+        // 若只看数据库，同一批里同一租户的第二条遥测（例如路径①HTTP + 路径②MQTT 各一条）会再次判定为
+        // "不存在" 而重复 Add，最终撞 IX_usage_meters_TenantId_Period 唯一约束（23505 duplicate key），
+        // 导致整批计量写入失败、用量统计卡住。
+        var m = db.UsageMeters.Local.FirstOrDefault(x => x.TenantId == tenantId && x.Period == period)
+                ?? await db.UsageMeters.FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Period == period, ct);
         if (m is null)
             db.UsageMeters.Add(new UsageMeter
             {

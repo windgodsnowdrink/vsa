@@ -62,7 +62,11 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, TokenResponse>
 
     private TokenResponse IssueTokens(string tid, Guid uid, string role)
     {
-        var access = JwtIssuer.IssueAccessToken(tid, uid.ToString(), role, _jwt);
+        // _jwt 注入的是**根**配置；JwtIssuer 需要的是 "Jwt" 节本身（它读 ["Key"]/["Issuer"]/["Audience"]）。
+        // 传根配置会让 jwt["Key"] 为 null -> Encoding.UTF8.GetBytes(null) 抛 ArgumentNullException，
+        // 表现为登录接口只回 50000（异常被 EndpointHelpers 吞掉时更难定位）。
+        var jwt = _jwt.GetSection("Jwt");
+        var access = JwtIssuer.IssueAccessToken(tid, uid.ToString(), role, jwt);
         var refresh = JwtIssuer.NewRefreshToken();
         _db.RefreshTokens.Add(new RefreshToken
         {
@@ -113,7 +117,8 @@ public sealed class RefreshHandler : IRequestHandler<RefreshCommand, TokenRespon
         });
         _db.SaveChanges();
 
-        var access = JwtIssuer.IssueAccessToken(tid, user.Id.ToString(), role, _jwt);
+        // 同上：必须传 "Jwt" 节，不能传根配置。
+        var access = JwtIssuer.IssueAccessToken(tid, user.Id.ToString(), role, _jwt.GetSection("Jwt"));
         return new TokenResponse(access, newRefresh, 900, "Bearer", tid);
     }
 }

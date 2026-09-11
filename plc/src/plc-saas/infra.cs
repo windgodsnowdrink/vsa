@@ -526,7 +526,12 @@ public static class EndpointHelpers
         catch (DomainException e) { return Api.Fail(e.Code, e.Message); }
         catch (CrossTenantWriteException) { return Api.Fail(40300, "跨租户写入被拒绝"); }
         catch (DbUpdateException e) when (IsUniqueViolation(e)) { return Api.Fail(40900, "资源冲突：唯一约束被违反"); }
-        catch (Exception) { return Api.Fail(50000, "内部服务器错误"); }
+        catch (Exception e)
+        {
+            // 未分类异常必须留痕：此前超管登录只回 50000 而日志无任何线索，无法定位。
+            Console.Error.WriteLine($"[50000] 未处理异常：{e}");
+            return Api.Fail(50000, "内部服务器错误");
+        }
     }
 
     private static bool IsUniqueViolation(DbUpdateException e)
