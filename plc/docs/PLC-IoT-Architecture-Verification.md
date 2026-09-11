@@ -252,10 +252,70 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 
 校验：`docker compose -f src/plc-saas/docker-compose.yml config` 通过；`start-dev-env.ps1` 经 PowerShell 解析器校验无语法错误；`appsettings.json` JSON 解析通过。
 
-### 9.4 判定
+### 9.4 真实联调：已执行 ✅（2026-09-11）
+
+**原「环境阻塞」判定已被推翻**：它只覆盖了两种运行时，遗漏了第三条可用路径
+**`wslc`（WSL 容器 CLI，`C:\Program Files\WSL\wslc`）** —— 不在沙箱黑名单内（`wsl.exe` 仍被禁，且不得绕过）。
+实测已在真实容器上跑通全套双路径断言。
+
+实际运行环境（与 compose 声明的差异属本机约束，非设计变更）：
+
+| 组件 | compose 单一真源声明 | 本次实测实际运行 | 差异原因 |
+|------|---------------------|-----------------|---------|
+| PostgreSQL | `postgres:16` | `docker.1ms.run/library/postgres:18-alpine3.23`（`server_version`=`18.6`） | `postgres:16` 标签在本机拉取不可靠；**compose 仍以 16 为声明目标**，实测用 18 仅为拿到可运行环境 |
+| EMQX | `emqx/emqx:5.8.5` | 同（5.8.5） | — |
+| EMQX MQTT 宿主端口 | `1883` | **11883**（容器内仍 1883） | Windows 保留段 `1802-1901` 吞掉 1883 → `WSAEACCES`；以 `EMQX_MQTT_PORT=11883` 覆盖 |
+
+**实测结果：`scripts/verify-emqx-e2e.sh` → 16/16 PASS，0 失败。**
+
+| 分组 | 断言 | 结果 |
+|------|------|------|
+| 0 基础设施 | `emqx-mqtt-11883` / `emqx-rest-18083` / `postgres-5432` | ✅ 3/3 |
+| 1 健康 | `saas-health-responds(401)` | ✅（`/ops/health` 为 `SuperAdminOnly`，匿名 401 属**预期契约**） |
+| 2 租户 | `tenant-created` | ✅ 连续开通 3 个租户成功 |
+| 3 **路径① HTTP 摄取** | `ingest-telemetry` 200 / `ingest-fault` 200 | ✅ |
+| 4 负向 | `bad-ingest-key-401` / `unknown-tenant-404` / `empty-tenant-guid-403` | ✅ 3/3 |
+| 5 **路径② MQTT 桥** | `mqtt-publish`（原生 MQTT QoS1 收到 PUBACK） | ✅ |
+| 6 持久化 | `pg-device-autoprovisioned` / `pg-fault-event` / `pg-outbox-written` / `pg-metering-readable` | ✅ 4/4 |
+| 6 路径②专属证据 | `pg-mqtt-bridge-consumed`（**仅经 MQTT、从未走 HTTP 的全新设备**被写入 `devices`） | ✅ 确证订阅桥真的消费并落库 |
+
+### 9.5 实测暴露的真实缺陷（已修复，提交 `1bad03c`）
+
+真实联调的价值正在于此 —— 以下三项在「只编译、不跑」时**完全不可见**：
+
+| # | 缺陷 | 症状 | 根因 | 修复 |
+|---|------|------|------|------|
+| 1 | **平台上只能存在 1 个租户** | 第 2 个租户开通必返回 `40900 资源冲突：唯一约束被违反` | `base.OnModelCreating`（ASP.NET Identity）额外建了**全局唯一**的 `RoleNameIndex(asp_net_roles.NormalizedName)` 与 `UserNameIndex(asp_net_users.NormalizedUserName)`，与「共享库 + TenantId 行级隔离」冲突 | `infra.cs`：两者降级为**非唯一**，唯一性交由既有复合索引 `(TenantId, NormalizedName)` / `(TenantId, NormalizedEmail)` 保证 |
+| 2 | **超管种子导致进程启动即退出** | `Unhandled exception: User security stamp cannot be null.` @ `AddToRoleAsync` | 默认密码策略（长度 8 + 数字/大小写/非字母数字）拒绝既定降级凭据 `root/admin`；`CreateAsync` 失败结果**未被校验**，`SecurityStamp` 始终为空 | `seed.cs`：显式赋 `SecurityStamp` + 直写密码哈希 + 显式校验创建结果（**仅放宽这一个种子账号**，不动全站租户密码强度） |
+| 3 | e2e 脚本与真实契约脱节 5 处 | 断言大面积误报 | 见下 | `verify-emqx-e2e.sh` 全部对齐 |
+
+脚本脱节的具体修复：
+
+1. 租户载荷字段应为 `companyName`（非 `name`），对齐 `TenantCreateRequest(CompanyName, Slug, AdminEmail, AdminPassword)`；
+2. 「未知租户」须传**合法随机 Guid** 才得 404；`Guid.Empty` 走鉴权分支返回 403，是**另一个**负向用例（`ingest.http.cs: IngestAuth.Authenticate`）；
+3. `/ops/health` 显式 `RequireAuthorization("SuperAdminOnly")`，匿名 401 是**预期契约**而非失败；
+4. PG 列名是 PascalCase，`usage_meters."TelemetryPoints"` **必须加双引号**，否则被 PG 折叠成小写报列不存在；
+5. 路径②改走**原生 MQTT 直发**（新增 `scripts/mqtt_publish.py`，stdlib 实现）：EMQX REST `/api/v5/publish` 需要 **API Key**，Dashboard 的 basic auth 对这类写接口一律 401（自证：`/api/v5/nodes` 带不带 auth 均 401，而 `/api/v5/status` 是公开端点返回 200）。
+
+> 另注：已由 EnsureCreated 建库的**存量环境不会因改模型而自动变更索引**，需手动执行
+> `DROP INDEX "RoleNameIndex"; CREATE INDEX "RoleNameIndex" ON asp_net_roles("NormalizedName");`
+> （`UserNameIndex` 同理）。本次已在 dev 库执行：`tenants` 现 3 行、每租户各有独立角色集
+> （Admin/Operator/Analyst/DeviceEng 各 ×3），多租户隔离恢复生效。
+
+### 9.6 暂未闭环（记为已知项）
+
+| 项 | 状态 | 说明 |
+|----|------|------|
+| 超管登录 `POST /api/v1/auth/login`（`root/admin`） | ⚠️ 返回 `50000 内部服务器错误` | `EndpointHelpers` 吞掉原始异常、日志无堆栈。已排除种子与密码问题（修复后用户已正确落库）；怀疑在 `IssueTokens` 写 `refresh_tokens` 时受 RLS / `TenantStampInterceptor` 影响（超管 `TenantId=Guid.Empty`）。**不阻塞 ADR-113**（e2e 不依赖登录），但阻碍 `/ops/health` 取回 Healthy 载荷，建议专项排查 |
+| EMQX 规则引擎主路径（①的 Webhook **自动**触发） | ⏳ 待实测 | 已验证 `/api/v1/ingest/*` 端点契约与持久化；规则引擎→Webhook 的自动触发仍需在 EMQX 侧配 Webhook 后复测（步骤见手册 §4）。因 REST 写接口需 API Key，脚本化配置尚未自动化 |
+
+### 9.7 判定（更新）
 
 | 项 | 判定 |
 |----|------|
-| ADR-113 双路径代码落地 | ✅ 已随 plc-saas 绿构建编译通过（此前结论） |
-| EMQX/PG 真实联调 | ⏳ **未执行** —— 环境阻塞（无 Docker 守护 + wsl 被禁）；脚本与手册已就绪 |
-| EMQX 规则引擎主路径 | ⏳ 待实测（配置步骤见手册 §4） |
+| ADR-113 双路径代码落地 | ✅ 已随 plc-saas 绿构建编译通过 |
+| EMQX/PG 真实联调 | ✅ **已执行**：真实 PG 18.6 + EMQX 5.8.5 + plc-saas，16/16 PASS |
+| 路径① HTTP 摄取（主） | ✅ telemetry/fault 均 200；设备自动纳管、故障与 outbox 落库已确证 |
+| 路径② MQTTnet 订阅桥（边缘） | ✅ 仅经 MQTT 的全新设备被写入 `devices`，确证桥消费生效 |
+| 多租户隔离回归 | ✅ 修复后可连续开通多个租户（实测 3 个），此前上限为 1 |
+| EMQX 规则引擎主路径 | ⏳ 待实测（见 §9.6） |

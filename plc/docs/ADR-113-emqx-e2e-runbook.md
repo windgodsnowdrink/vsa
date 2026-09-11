@@ -8,17 +8,29 @@
 
 ## 0. 当前状态（务必先读）
 
-**本仓库所在环境尚未实跑**（2026-09-11 探测结论）：
+**已实跑并通过**（2026-09-11，`scripts/verify-emqx-e2e.sh` → **16/16 PASS**）：
 
 | 探测项 | 结果 |
 |--------|------|
-| `wslc` / `wsl` / `docker` / `docker-compose` | 均已安装 |
-| Docker Desktop 守护 | **未运行**（`npipe:////./pipe/dockerDesktopLinuxEngine` 不可连接） |
-| `wsl.exe` | **被沙箱安全策略列入黑名单**，禁止启动 |
-| 端口 1883 / 18083 / 5432 | 全部未开放（服务未起） |
-| MQTTnet | 已引用（`plc-saas.csproj:37`，v5.2.0.1603） |
+| `wslc`（WSL 容器 CLI） | ✅ **可用** —— 第三条运行时路径，不在沙箱黑名单内 |
+| Docker Desktop 守护 | ❌ 未运行（`npipe:////./pipe/dockerDesktopLinuxEngine` 不可连接），`docker compose` 不可用 |
+| `wsl.exe` | ❌ 被沙箱安全策略列入黑名单，禁止启动（且不得绕过） |
+| EMQX 5.8.5 / PG 18.6 | ✅ 已在 `wslc` 容器运行（详见 §1） |
 
-结论：**本机无法拉起容器，实测需在具备 Docker 守护（或可用 WSL）的机器上执行**。脚本与手册已按真实契约写好，可直接运行。
+> ⚠️ 2026-09-11 早前的「本机无法拉起容器」结论**已被推翻**：它只覆盖了 Docker 与 `wsl.exe`，
+> 遗漏了 **`wslc`**（`C:\Program Files\WSL\wslc`）。详见 `docs/PLC-IoT-Architecture-Verification.md` §9.4。
+
+### 0.1 实测踩坑补遗（本次实际遇到，按此操作可复现）
+
+| # | 坑 | 现象 | 处置 |
+|---|-----|------|------|
+| 1 | **容器被会话回收** | 隔天后 `wslc ps` 为空，但容器只是退出（`wslc ps -a` 仍可见） | `wslc start plc-saas-postgres plc-saas-emqx` 直接复用**已存在容器**（保留原端口映射与数据卷），**不要**重新 `run`（后者会改用 compose 声明的 `postgres:16`，本机拉取不可靠） |
+| 2 | **应用进程读取不到 `appsettings.json`** | `The ConnectionString property has not been initialized.`，同时伴随 `WARN: Jwt:Key 未配置` | `dotnet run --project …/plc-saas.csproj` 的**内容根取当前工作目录**。必须 `cd` 到 **`src/plc-saas/`** 再启动（`Content root path` 需等于该目录），或显式传 `ConnectionStrings__Default` 环境变量 |
+| 3 | Windows 保留段吞掉 1883 | 绑定 MQTT 宿主端口报 `WSAEACCES`（排除段 `1802-1901`） | MQTT 宿主端口平移到 **11883**，运行脚本时 `EMQX_MQTT_PORT=11883` |
+| 4 | **EMQX REST 写接口需要 API Key** | `POST /api/v5/publish` 返回 401（Dashboard 的 basic auth 无效，`emqx ctl admins passwd` 重置后仍 401） | 路径②改为**原生 MQTT 直发**：`python scripts/mqtt_publish.py 127.0.0.1 11883 <topic> <payload>`（stdlib 实现，无 pip 依赖）。自证：`/api/v5/nodes` 带不带 auth 均 401，而 `/api/v5/status` 是公开端点返回 200 |
+| 5 | **PG 18+ 数据目录布局** | 旧布局数据挂在 `/var/lib/postgresql/data` 时容器立即退出 | 数据卷挂在**父目录** `/var/lib/postgresql` |
+| 6 | **存量库的多租户索引阻塞第二个租户** | 第 2 个租户开通返回 `40900 唯一约束被违反` | 代码已修（`infra.cs` 把 Identity 默认全局唯一索引降级）；**存量库仍需手动**：`DROP INDEX "RoleNameIndex"; CREATE INDEX "RoleNameIndex" ON asp_net_roles("NormalizedName");`（`UserNameIndex` 同理）。详见验证报告 §9.5 |
+| 7 | 持久 shell 的 `$$` 恒定 | 重复跑脚本时租户 slug 撞车 409 | 脚本已改为 `$$-$RANDOM` 组合生成唯一 slug/email/companyName |
 
 ---
 
@@ -144,11 +156,20 @@ FROM "tenants/+/devices/+/telemetry"
 | `role "plcsaas" does not exist` | wslc 路径未创建应用角色 | `wslc exec plc-saas-postgres psql -U postgresql -d plc_aiot_saas -c "CREATE ROLE plcsaas LOGIN PASSWORD 'plcsaas' SUPERUSER;"` |
 | EMQX REST 返回 404 | EMQX 版本与 API 路径不匹配 | 当前统一为 5.8.5，REST 前缀 `/api/v5`；若自行升 6.x 需改脚本 `EMQX_REST` 路径 |
 | 路径② 无消费 | 未开桥接 | `Mqtt__Bridge__Enabled=true` 并确认日志出现「MQTT 桥已连接 … 订阅 tenants/+/devices/+/telemetry\|fault」 |
+| `The ConnectionString property has not been initialized.` + `WARN: Jwt:Key 未配置` | **`appsettings.json` 没被加载**：内容根不对 | 内容根取**当前工作目录**，须 `cd src/plc-saas` 再启动（不要只在 `--project` 里指 Domino 路径）；确认日志 `Content root path` 指向 `src/plc-saas` |
+| EMQX REST `POST /api/v5/publish` 返回 401 | EMQX 5.x 该写接口需要 **API Key**，Dashboard basic auth 无效 | 改走原生 MQTT 直发：`python scripts/mqtt_publish.py 127.0.0.1 11883 <topic> <payload>` |
+| 第 2 个租户开通报 `40900 资源冲突：唯一约束被违反` | Identity 默认索引 `RoleNameIndex` / `UserNameIndex` 是**全局唯一**（代码已修，但存量库不会自动变更） | 存量库手动执行：`DROP INDEX "RoleNameIndex"; CREATE INDEX "RoleNameIndex" ON asp_net_roles("NormalizedName");`（`UserNameIndex` 同理） |
+| 种子崩溃 `User security stamp cannot be null.` | 默认密码策略拒绝 `root/admin` 且 `CreateAsync` 结果未校验 | 已在 `seed.cs` 修复（显式赋 `SecurityStamp` + 直写哈希 + 校验结果），重构建即可 |
 
 ---
 
 ## 6. 待办
 
-- [ ] 在具备 Docker 守护的机器上实跑本手册，回填 `docs/PLC-IoT-Architecture-Verification.md` 的真实结果。
+- [x] **已完成**——在本机用 `wslc` 起真实 PG 18.6 + EMQX 5.8.5 实跑本手册：**16/16 PASS**，结果已回填 `docs/PLC-IoT-Architecture-Verification.md` §9.4–§9.7。
 - [x] **已修复**——统一两套起服务方式：`docker-compose.yml` 定为单一真源，`start-dev-env.ps1` 解析它取版本/凭据（PG16 + EMQX 5.8.5，superuser `postgresql`，应用角色 `plcsaas` 两条路径等效创建）。
 - [x] **已修复**——`appsettings.json` 的 `Integrated Security=True` 改为容器友好默认（`plcsaas/plcsaas`），开箱即连。
+- [x] **已修复（实测发现）**——多租户阻塞：Identity 默认全局唯一索引导致平台只能有 1 个租户。
+- [x] **已修复（实测发现）**——超管种子 `SecurityStamp` 为空导致进程启动即退出。
+- [ ] **待排查**——超管登录 `POST /api/v1/auth/login`（`root/admin`）返回 `50000`，怀疑 `IssueTokens` 写 `refresh_tokens` 受 RLS / `TenantStampInterceptor` 影响（超管 `TenantId=Guid.Empty`）。不阻塞 ADR-113，但阻碍 `/ops/health` 取回 Healthy 载荷。
+- [ ] **待实测**——EMQX 规则引擎 → Webhook 的**自动**触发（路径①的生产形态）；需在 EMQX 侧配 Webhook 后复测，REST 写接口需 API Key 故暂未脚本化。
+- [ ] 可选——把 `docker-compose.yml` 的 `postgres:16` 与实测可用的 `18-alpine3.23` 对齐（当前 16 为声明目标，本机 16 标签拉取不可靠）。
