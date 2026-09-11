@@ -8,7 +8,7 @@
 
 ## 0. 当前状态（务必先读）
 
-**已实跑并通过**（2026-09-11，`scripts/verify-emqx-e2e.sh` → **16/16 PASS**）：
+**已实跑并通过**（2026-09-11，`scripts/verify-emqx-e2e.sh` → **17/17 PASS**；另 `scripts/verify-emqx-rule-webhook.sh` → **15/15 PASS** 验证路径①生产形态）：
 
 | 探测项 | 结果 |
 |--------|------|
@@ -31,6 +31,15 @@
 | 5 | **PG 18+ 数据目录布局** | 旧布局数据挂在 `/var/lib/postgresql/data` 时容器立即退出 | 数据卷挂在**父目录** `/var/lib/postgresql` |
 | 6 | **存量库的多租户索引阻塞第二个租户** | 第 2 个租户开通返回 `40900 唯一约束被违反` | 代码已修（`infra.cs` 把 Identity 默认全局唯一索引降级）；**存量库仍需手动**：`DROP INDEX "RoleNameIndex"; CREATE INDEX "RoleNameIndex" ON asp_net_roles("NormalizedName");`（`UserNameIndex` 同理）。详见验证报告 §9.5 |
 | 7 | 持久 shell 的 `$$` 恒定 | 重复跑脚本时租户 slug 撞车 409 | 脚本已改为 `$$-$RANDOM` 组合生成唯一 slug/email/companyName |
+| 8 | **路径②桥接默认关闭** | 不显式覆盖时 `pg-mqtt-bridge-consumed` 失败（消息进了 EMQX 但不被 SaaS 消费） | `appsettings.json` 的 `Mqtt:Bridge:Enabled` 默认 `false`、`BrokerUrl` 默认 `mqtt://localhost:1883`（被 Windows 保留段 `1802-1901` 吞掉）；启动加 `Mqtt__Bridge__Enabled=true Mqtt__BrokerUrl=mqtt://localhost:11883` |
+| 9 | **`http_proxy` 拦截本机 127.0.0.1** | `curl http://127.0.0.1:5000/...` 返回 502 | 用 `curl --noproxy '*'` 或 `export no_proxy='*' NO_PROXY='*'` 绕过 |
+| 10 | **后台进程随 Bash 调用结束被回收** | `(cmd &)` 起的进程在工具调用返回后被回收，端口随即不可达 | 用 `run_in_background: true` 或 `nohup ... &` 持久化，或在本机终端常驻 |
+| 11 | **EMQX 首把 API Key 引导** | `/api/v5/api_key` 自身拒绝 API Key 自管理（`API_KEY_NOT_ALLOWED`），无既有凭据无法建 Key | 用 `api_key.bootstrap_file` + `emqx ctl conf load --merge`（无需重启、无需既有凭据）建首把 Key；详见脚本 `verify-emqx-rule-webhook.sh` |
+| 12 | **EMQX 鉴权探测端点误用** | 误把 `/api/v5/status` 当鉴权探针（其公开返回 200） | 正确探针是 `/api/v5/nodes`：401 未授权 → 带 key 200 |
+| 13 | **容器→宿主网络不通** | 容器内 Webhook 打不到宿主 SaaS（action `success=0`） | 容器内只可达 **Hyper-V 默认交换机**（如 `172.25.64.1`），LAN IP / docker 网关均不可达；宿主须监听 `0.0.0.0`（非 `localhost`），Webhook URL 用该交换机 IP |
+| 14 | **EMQX action 地址格式** | `DELETE /api/v5/actions/<name>` 静默 404 | action 地址是 **id** `http:<name>`（非 name）；用 `DELETE /api/v5/actions/http:<name>`；重配前先删旧 action，避免复用旧 `X-Tenant-Id` 把数据写错租户 |
+| 15 | **HTTP method 枚举小写** | EMQX action 的 method 用大写 `POST` 校验失败 | 枚举为小写 `post`/`get` |
+| 16 | **规则引擎 → Webhook 已验证（路径①生产形态）** | 设备仅经 MQTT 发布即落 `devices`（排除法证明走规则引擎而非桥，桥默认关闭） | `verify-emqx-rule-webhook.sh` → **15/15 PASS**（提交 `3396566`）：bootstrap API Key 建 connector(`http`)→action(`http`)→rule（SQL `SELECT payload.deviceId as deviceId, payload.ts as ts, payload.metrics.temp as temp FROM "tenants/+/devices/+/telemetry"`） |
 
 ---
 
@@ -49,7 +58,7 @@
 
 | 项 | 值 |
 |----|----|
-| PostgreSQL 镜像 | `postgres:16` |
+| PostgreSQL 镜像 | `postgres:18-alpine3.23` |
 | EMQX 镜像 | `emqx/emqx:5.8.5`（REST 为 `/api/v5`） |
 | PG 超级用户 | `postgresql / postgresql` |
 | PG 应用角色（连接串用） | `plcsaas / plcsaas` |
@@ -160,16 +169,20 @@ FROM "tenants/+/devices/+/telemetry"
 | EMQX REST `POST /api/v5/publish` 返回 401 | EMQX 5.x 该写接口需要 **API Key**，Dashboard basic auth 无效 | 改走原生 MQTT 直发：`python scripts/mqtt_publish.py 127.0.0.1 11883 <topic> <payload>` |
 | 第 2 个租户开通报 `40900 资源冲突：唯一约束被违反` | Identity 默认索引 `RoleNameIndex` / `UserNameIndex` 是**全局唯一**（代码已修，但存量库不会自动变更） | 存量库手动执行：`DROP INDEX "RoleNameIndex"; CREATE INDEX "RoleNameIndex" ON asp_net_roles("NormalizedName");`（`UserNameIndex` 同理） |
 | 种子崩溃 `User security stamp cannot be null.` | 默认密码策略拒绝 `root/admin` 且 `CreateAsync` 结果未校验 | 已在 `seed.cs` 修复（显式赋 `SecurityStamp` + 直写哈希 + 校验结果），重构建即可 |
+| EMQX 规则引擎 → Webhook 自动触发失败（matched=0） | 未建 connector/action/rule 或 SQL 主题不匹配 | 用 bootstrap API Key 建 `http` connector → `http` action（body 渲染 `${deviceId}/${ts}/${temp}`）→ rule（SQL `SELECT payload.deviceId as deviceId, payload.ts as ts, payload.metrics.temp as temp FROM "tenants/+/devices/+/telemetry"`）；`matched`/`actions.success` 应各 =1。脚本 `verify-emqx-rule-webhook.sh` 已封装，15/15 PASS |
+| 容器内 SaaS 收不到 Webhook（action success=0） | 容器→宿主网络不通 | 容器内只可达 **Hyper-V 默认交换机**（如 `172.25.64.1`）；宿主须监听 `0.0.0.0`（非 `localhost`），Webhook URL 用该交换机 IP |
+| `DELETE /api/v5/actions/<name>` 静默 404 | action 地址是 **id** `http:<name>`，非 name | 改用 `DELETE /api/v5/actions/http:<name>`；重配前先删旧 action，避免复用旧 `X-Tenant-Id` 把数据写错租户 |
+| 超管登录 `POST /api/v1/auth/login` 返回 50000 | `JwtIssuer` 从根配置读 `jwt["Key"]` 为 null → `GetBytes(null)` | `identity.login.cs` 改为 `GetSection("Jwt")` 传 section（提交 `2f05064`）；`infra.cs` catch 打印原始堆栈便于定位 |
 
 ---
 
 ## 6. 待办
 
-- [x] **已完成**——在本机用 `wslc` 起真实 PG 18.6 + EMQX 5.8.5 实跑本手册：**16/16 PASS**，结果已回填 `docs/PLC-IoT-Architecture-Verification.md` §9.4–§9.7。
+- [x] **已完成**——在本机用 `wslc` 起真实 PG 18.6 + EMQX 5.8.5 实跑本手册：**17/17 PASS**（另 `verify-emqx-rule-webhook.sh` 15/15 PASS 验证路径①生产形态），结果已回填 `docs/PLC-IoT-Architecture-Verification.md` §9.4–§9.7。
 - [x] **已修复**——统一两套起服务方式：`docker-compose.yml` 定为单一真源，`start-dev-env.ps1` 解析它取版本/凭据（PG16 + EMQX 5.8.5，superuser `postgresql`，应用角色 `plcsaas` 两条路径等效创建）。
 - [x] **已修复**——`appsettings.json` 的 `Integrated Security=True` 改为容器友好默认（`plcsaas/plcsaas`），开箱即连。
 - [x] **已修复（实测发现）**——多租户阻塞：Identity 默认全局唯一索引导致平台只能有 1 个租户。
 - [x] **已修复（实测发现）**——超管种子 `SecurityStamp` 为空导致进程启动即退出。
-- [ ] **待排查**——超管登录 `POST /api/v1/auth/login`（`root/admin`）返回 `50000`，怀疑 `IssueTokens` 写 `refresh_tokens` 受 RLS / `TenantStampInterceptor` 影响（超管 `TenantId=Guid.Empty`）。不阻塞 ADR-113，但阻碍 `/ops/health` 取回 Healthy 载荷。
-- [ ] **待实测**——EMQX 规则引擎 → Webhook 的**自动**触发（路径①的生产形态）；需在 EMQX 侧配 Webhook 后复测，REST 写接口需 API Key 故暂未脚本化。
+- [x] **已修复**——超管登录 `POST /api/v1/auth/login`（`root/admin`）的 `50000`：根因 `JwtIssuer` 从根配置读 `jwt["Key"]` 为 null，已改为 `GetSection("Jwt")` 传 section（提交 `2f05064`），详见验证报告 §9.5/#4、§9.6。
+- [x] **已验证**——EMQX 规则引擎 → Webhook 的**自动**触发（路径①的生产形态）：`scripts/verify-emqx-rule-webhook.sh` → **15/15 PASS**（提交 `3396566`），详见验证报告 §9.6。
 - [ ] 可选——把 `docker-compose.yml` 的 `postgres:16` 与实测可用的 `18-alpine3.23` 对齐（当前 16 为声明目标，本机 16 标签拉取不可靠）。

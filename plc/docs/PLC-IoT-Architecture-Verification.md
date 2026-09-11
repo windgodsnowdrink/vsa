@@ -262,11 +262,13 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 
 | 组件 | compose 单一真源声明 | 本次实测实际运行 | 差异原因 |
 |------|---------------------|-----------------|---------|
-| PostgreSQL | `postgres:16` | `docker.1ms.run/library/postgres:18-alpine3.23`（`server_version`=`18.6`） | `postgres:16` 标签在本机拉取不可靠；**compose 仍以 16 为声明目标**，实测用 18 仅为拿到可运行环境 |
+| PostgreSQL | `postgres:18-alpine3.23` | 同（`server_version`=`18.6`） | **已对齐**：compose 现与实测一致（18.x）。`postgres:16` 标签在本机拉取不可靠，故统一到 `18-alpine3.23`；`start-dev-env.ps1` 仍会自动加 `docker.1ms.run` 镜像源前缀 |
 | EMQX | `emqx/emqx:5.8.5` | 同（5.8.5） | — |
 | EMQX MQTT 宿主端口 | `1883` | **11883**（容器内仍 1883） | Windows 保留段 `1802-1901` 吞掉 1883 → `WSAEACCES`；以 `EMQX_MQTT_PORT=11883` 覆盖 |
 
-**实测结果：`scripts/verify-emqx-e2e.sh` → 16/16 PASS，0 失败。**
+**实测结果：`scripts/verify-emqx-e2e.sh` → 17/17 PASS，0 失败。** 第 17 项 `pg-metering-batch-aggregation` 为批量聚合回归守护：同租户连续发 5 条单指标遥测，断言 `usage_meters."TelemetryPoints"` 恰好 +5（批量提交后不重复 `Add` 行，杜绝 23505）。
+
+> 注：**路径②**（组 5/6 桥消费）依赖 `Mqtt__Bridge__Enabled=true` 且 `Mqtt__BrokerUrl=mqtt://localhost:11883`。`appsettings.json` 默认桥接为 `false`、`BrokerUrl` 指向 1883（被 Windows 保留段 `1802-1901` 吞掉），须显式覆盖，否则 `pg-mqtt-bridge-consumed` 失败。
 
 | 分组 | 断言 | 结果 |
 |------|------|------|
@@ -278,6 +280,7 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 | 5 **路径② MQTT 桥** | `mqtt-publish`（原生 MQTT QoS1 收到 PUBACK） | ✅ |
 | 6 持久化 | `pg-device-autoprovisioned` / `pg-fault-event` / `pg-outbox-written` / `pg-metering-readable` | ✅ 4/4 |
 | 6 路径②专属证据 | `pg-mqtt-bridge-consumed`（**仅经 MQTT、从未走 HTTP 的全新设备**被写入 `devices`） | ✅ 确证订阅桥真的消费并落库 |
+| 6 批量聚合回归 | `pg-metering-batch-aggregation`（同租户 5 条遥测 → `TelemetryPoints` +5，0 次 23505） | ✅ 确证批量提交不重复 `Add` |
 
 ### 9.5 实测暴露的真实缺陷（已修复，提交 `1bad03c`）
 
@@ -288,6 +291,8 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 | 1 | **平台上只能存在 1 个租户** | 第 2 个租户开通必返回 `40900 资源冲突：唯一约束被违反` | `base.OnModelCreating`（ASP.NET Identity）额外建了**全局唯一**的 `RoleNameIndex(asp_net_roles.NormalizedName)` 与 `UserNameIndex(asp_net_users.NormalizedUserName)`，与「共享库 + TenantId 行级隔离」冲突 | `infra.cs`：两者降级为**非唯一**，唯一性交由既有复合索引 `(TenantId, NormalizedName)` / `(TenantId, NormalizedEmail)` 保证 |
 | 2 | **超管种子导致进程启动即退出** | `Unhandled exception: User security stamp cannot be null.` @ `AddToRoleAsync` | 默认密码策略（长度 8 + 数字/大小写/非字母数字）拒绝既定降级凭据 `root/admin`；`CreateAsync` 失败结果**未被校验**，`SecurityStamp` 始终为空 | `seed.cs`：显式赋 `SecurityStamp` + 直写密码哈希 + 显式校验创建结果（**仅放宽这一个种子账号**，不动全站租户密码强度） |
 | 3 | e2e 脚本与真实契约脱节 5 处 | 断言大面积误报 | 见下 | `verify-emqx-e2e.sh` 全部对齐 |
+| 4 | **超管登录返回 50000** | `POST /api/v1/auth/login`（`root/admin`）返回 `50000 内部服务器错误`，日志无堆栈 | `JwtIssuer.IssueAccessToken` 从**根**配置读 `jwt["Key"]`（为 null）→ `Encoding.UTF8.GetBytes(null)` 抛 `ArgumentNullException`；`IConfiguration` 的 section 语义要求 `GetSection("Jwt")` | `identity.login.cs` 两处调用改为 `var jwt = _jwt.GetSection("Jwt");` 后传 section；`infra.cs` 的 `EndpointHelpers.Run` catch 改为打印原始堆栈 `Console.Error.WriteLine($"[50000] 未处理异常：{e}")` 并返回 `Api.Fail(50000,...)` |
+| 5 | **计量批量 23505 重复键** | 同租户同周期多条遥测并发落库时偶发 `23505 唯一约束被违反`（`usage_meters` 重复 `Add`） | 批量提交模型（循环内查 DbSet、循环末 `SaveChangesAsync` 一次）下未先查 `DbSet.Local`，导致同周期第二行 `Add` 重复 | `metering.agent.cs`：`UpsertUsage`/`EnsureUsageRow` 均先查 `db.UsageMeters.Local` 再回退 DB 查询；`DrainOutbox` 循环后单次提交。修复后同租户 5 条批量 → `TelemetryPoints` +5，0 次 23505 |
 
 脚本脱节的具体修复：
 
@@ -306,16 +311,16 @@ V9 报告（§0）判定的「核心底座仅文档」已被**四块真实落地
 
 | 项 | 状态 | 说明 |
 |----|------|------|
-| 超管登录 `POST /api/v1/auth/login`（`root/admin`） | ⚠️ 返回 `50000 内部服务器错误` | `EndpointHelpers` 吞掉原始异常、日志无堆栈。已排除种子与密码问题（修复后用户已正确落库）；怀疑在 `IssueTokens` 写 `refresh_tokens` 时受 RLS / `TenantStampInterceptor` 影响（超管 `TenantId=Guid.Empty`）。**不阻塞 ADR-113**（e2e 不依赖登录），但阻碍 `/ops/health` 取回 Healthy 载荷，建议专项排查 |
-| EMQX 规则引擎主路径（①的 Webhook **自动**触发） | ⏳ 待实测 | 已验证 `/api/v1/ingest/*` 端点契约与持久化；规则引擎→Webhook 的自动触发仍需在 EMQX 侧配 Webhook 后复测（步骤见手册 §4）。因 REST 写接口需 API Key，脚本化配置尚未自动化 |
+| 超管登录 `POST /api/v1/auth/login`（`root/admin`） | ✅ **已修复**（提交 `2f05064`） | 根因：`JwtIssuer.IssueAccessToken` 从**根**配置读 `jwt["Key"]`（为 null）→ `Encoding.UTF8.GetBytes(null)` 抛 `ArgumentNullException`；`IConfiguration` 的 section 语义要求 `GetSection("Jwt")`。修复：`identity.login.cs` 两处改为 `var jwt = _jwt.GetSection("Jwt");` 后传 section；`infra.cs` 的 `EndpointHelpers.Run` catch 改为打印原始堆栈 `Console.Error.WriteLine($"[50000] 未处理异常：{e}")` 并返回 `Api.Fail(50000,...)`。登录后 `/ops/health` 可取回 Healthy 载荷 |
+| EMQX 规则引擎主路径（①的 Webhook **自动**触发） | ✅ **已验证**（提交 `3396566`） | 真实链路跑通：`scripts/verify-emqx-rule-webhook.sh` → **15/15 PASS**（EMQX 5.8.5 + PG 18.6 + plc-saas）。用 bootstrap API Key 建 connector(`http`)→action(`http`)→rule（SQL `SELECT payload.deviceId as deviceId, payload.ts as ts, payload.metrics.temp as temp FROM "tenants/+/devices/+/telemetry"`）；设备**仅经 MQTT** 发布即落 `devices`（排除法证明走的是规则引擎而非桥，因 SaaS 桥接默认关闭）。API Key 引导、容器→宿主网络、action id 格式等坑已沉淀到手册 §0.1 |
 
 ### 9.7 判定（更新）
 
 | 项 | 判定 |
 |----|------|
 | ADR-113 双路径代码落地 | ✅ 已随 plc-saas 绿构建编译通过 |
-| EMQX/PG 真实联调 | ✅ **已执行**：真实 PG 18.6 + EMQX 5.8.5 + plc-saas，16/16 PASS |
+| EMQX/PG 真实联调 | ✅ **已执行**：真实 PG 18.6 + EMQX 5.8.5 + plc-saas，17/17 PASS |
 | 路径① HTTP 摄取（主） | ✅ telemetry/fault 均 200；设备自动纳管、故障与 outbox 落库已确证 |
 | 路径② MQTTnet 订阅桥（边缘） | ✅ 仅经 MQTT 的全新设备被写入 `devices`，确证桥消费生效 |
 | 多租户隔离回归 | ✅ 修复后可连续开通多个租户（实测 3 个），此前上限为 1 |
-| EMQX 规则引擎主路径 | ⏳ 待实测（见 §9.6） |
+| EMQX 规则引擎主路径 | ✅ 已验证（见 §9.6，脚本 `verify-emqx-rule-webhook.sh` 15/15 PASS，提交 `3396566`） |
