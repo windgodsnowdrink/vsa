@@ -16,24 +16,46 @@ public enum RegisterType
     InputRegister = 4,
 }
 
+/// <summary>元素数据类型（品牌无关；适配层映射到各驱动原生的 DataType）。</summary>
+public enum ElementType
+{
+    Unspecified = 0,
+    Bool,
+    Int16,
+    UInt16,
+    Int32,
+    UInt32,
+    Float,
+    Double,
+    String,
+    ByteArray,
+}
+
 /// <summary>设备连接参数。</summary>
 public sealed record DeviceConnectionOptions(
     string Host,
     int Port,
     byte UnitId = 1,
-    int TimeoutMs = 3000);
+    int TimeoutMs = 3000,
+    int? Rack = null,
+    int? Slot = null);
 
 /// <summary>读请求。</summary>
 public sealed record ReadRequest(
     ushort StartAddress,
     ushort Count,
-    RegisterType Type);
+    RegisterType Type,
+    string? AddressText = null,
+    ElementType ElementType = ElementType.Unspecified);
 
 /// <summary>写请求（单值或多值）。</summary>
 public sealed record WriteRequest(
     ushort StartAddress,
     RegisterType Type,
-    ushort[] Values);
+    ushort[] Values,
+    string? AddressText = null,
+    ElementType ElementType = ElementType.Unspecified,
+    object[]? TypedValues = null);
 
 /// <summary>协议能力声明。</summary>
 public sealed record DeviceCapabilities(

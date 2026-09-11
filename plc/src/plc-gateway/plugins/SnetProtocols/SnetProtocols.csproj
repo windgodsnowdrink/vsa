@@ -30,6 +30,15 @@
     <Reference Include="..\..\lib\snet\Snet.Siemens.dll" />
     <Reference Include="..\..\lib\snet\Snet.Mitsubishi.dll" />
     <Reference Include="..\..\lib\snet\Snet.Log.dll" />
+    <!-- 其余 snet 设备协议 DLL（系列），随插件隔离加载；逐个注册到宿主设备目录 -->
+    <Reference Include="..\..\lib\snet\Snet.Sim.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Fatek.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Omron.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Keyence.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Fuji.dll" />
+    <Reference Include="..\..\lib\snet\Snet.AllenBradley.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Delta.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Panasonic.dll" />
   </ItemGroup>
 
   <!-- SNET 运行期依赖：必须与 SNET 强签名版本一致，并落入 plugins/ 供插件 ALC 解析 -->
