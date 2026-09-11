@@ -27,6 +27,10 @@ SAAS_URL="${SAAS_URL:-http://localhost:5000}"
 API="${SAAS_URL}/api/v1"
 INGEST_KEY="${INGEST_KEY:-plc-aiot-saas-ingest-dev-key-Change-Me}"
 EMQX_REST="${EMQX_REST:-http://localhost:18083}"
+EMQX_REST_PORT="${EMQX_REST_PORT:-18083}"
+# Windows（Hyper-V/WSL2）会保留部分 TCP 段（本机 1802-1901 被占，1883 无法绑定），
+# 起容器时若把 MQTT 宿主端口平移到 11883，用 EMQX_MQTT_PORT 覆盖即可。
+EMQX_MQTT_PORT="${EMQX_MQTT_PORT:-1883}"
 EMQX_USER="${EMQX_USER:-admin}"
 EMQX_PASS="${EMQX_PASS:-Admin123}"
 PG_HOST_PORT="${PG_HOST_PORT:-5432}"
@@ -43,22 +47,24 @@ chk() { # chk <名称> <0|1>
 has() { grep -qi "$2" <<<"$1" && return 0 || return 1; }
 
 echo "== ADR-113 EMQX 端到端实测 =="
-echo "SaaS: $SAAS_URL   EMQX REST: $EMQX_REST   PG: localhost:$PG_HOST_PORT/$PG_DB"
+echo "SaaS: $SAAS_URL   EMQX REST: $EMQX_REST   EMQX MQTT: localhost:$EMQX_MQTT_PORT   PG: localhost:$PG_HOST_PORT/$PG_DB"
 echo
 
 # ---------------- 0. 基础设施可达性 ----------------
 echo "== 0) 基础设施可达性 =="
 port_open() { timeout 2 bash -c "</dev/tcp/127.0.0.1/$1" 2>/dev/null; }
-port_open 1883  && chk "emqx-mqtt-1883" 0 || chk "emqx-mqtt-1883" 1
-port_open 18083 && chk "emqx-rest-18083" 0 || chk "emqx-rest-18083" 1
+port_open "$EMQX_MQTT_PORT" && chk "emqx-mqtt-$EMQX_MQTT_PORT" 0 || chk "emqx-mqtt-$EMQX_MQTT_PORT" 1
+port_open "$EMQX_REST_PORT" && chk "emqx-rest-$EMQX_REST_PORT" 0 || chk "emqx-rest-$EMQX_REST_PORT" 1
 port_open "$PG_HOST_PORT" && chk "postgres-$PG_HOST_PORT" 0 || chk "postgres-$PG_HOST_PORT" 1
 
-if ! port_open 1883 || ! port_open "$PG_HOST_PORT"; then
+if ! port_open "$EMQX_MQTT_PORT" || ! port_open "$PG_HOST_PORT"; then
   echo
   echo "!! EMQX / PostgreSQL 未就绪，无法继续实测。"
   echo "   请先按 docs/ADR-113-emqx-e2e-runbook.md 起服务："
   echo "     A) pwsh src/plc-saas/start-dev-env.ps1        （wslc）"
   echo "     B) docker compose -f src/plc-saas/docker-compose.yml up -d"
+  echo "   提示：Windows 可能保留了 1883 所在端口段（WSAEACCES），起容器时把 MQTT"
+  echo "         宿主端口平移到 11883，然后以 EMQX_MQTT_PORT=11883 运行本脚本。"
   echo "== 结果: $FAIL 项失败（基础设施未就绪）=="
   exit 1
 fi
