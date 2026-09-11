@@ -32,8 +32,11 @@ $ErrorActionPreference = 'Stop'
 
 $PG_NAME    = 'plc-saas-postgres'
 $EMQX_NAME  = 'plc-saas-emqx'
-$PG_VOLUME  = 'plc-saas-pgdata'
+$PG_VOLUME  = if ($env:PG_VOLUME) { $env:PG_VOLUME } else { 'plc-saas-pgdata' }
 $PG_HOST_PORT = if ($env:PG_HOST_PORT) { $env:PG_HOST_PORT } else { '5432' }  # 宿主侧发布端口（容器内部恒为 5432）
+# EMQX MQTT 宿主端口：本机 Windows 保留段（1802-1901）会吞掉 1883（WSAEACCES），
+# 起容器时平移到 11883（容器内仍 1883）。换机器若 1883 可用可改回 1883。
+$EMQX_MQTT_HOST_PORT = if ($env:EMQX_MQTT_HOST_PORT) { $env:EMQX_MQTT_HOST_PORT } else { '1883' }
 $COMPOSE    = Join-Path $PSScriptRoot 'docker-compose.yml'
 
 # ---------------- 从 docker-compose.yml 解析基础设施真值（带兜底） ----------------
@@ -188,7 +191,7 @@ function Ensure-Emqx {
         -e "EMQX_DASHBOARD__DEFAULT_USERNAME=$($Infra.EmqxUser)" `
         -e "EMQX_DASHBOARD__DEFAULT_PASSWORD=$($Infra.EmqxPwd)" `
         -e "EMQX_NODE__NAME=emqx@127.0.0.1" `
-        -p 1883:1883 `
+        -p "${EMQX_MQTT_HOST_PORT}:1883" `
         -p 8083:8083 `
         -p 8084:8084 `
         -p 8883:8883 `
@@ -208,6 +211,7 @@ Write-Host ""
 Write-Host "下一步："
 Write-Host "  1) 启动后端：dotnet run --project src/plc-saas/plc-saas.csproj   (EnsureCreated + rls.sql 自动建表/RLS)"
 Write-Host "     连接串默认已对齐容器：Host=localhost;Port=$PG_HOST_PORT;Database=$($Infra.PgDb);Username=$($Infra.PgAppUser);Password=$($Infra.PgAppPwd)"
+Write-Host "     MQTT 桥：Mqtt__BrokerUrl=mqtt://localhost:$EMQX_MQTT_HOST_PORT   （路径②需 Mqtt__Bridge__Enabled=true）"
 Write-Host "     （宿主端口若非 5432，用 ConnectionStrings__Default 环境变量覆盖 Port）"
 Write-Host "  2) 健康检查：curl http://localhost:5000/api/v1/ops/health"
 Write-Host "  3) EMQX 控制台：http://localhost:18083  ($($Infra.EmqxUser) / $($Infra.EmqxPwd))"
