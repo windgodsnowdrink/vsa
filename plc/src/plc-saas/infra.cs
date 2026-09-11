@@ -255,6 +255,16 @@ public sealed class BaseDbContext : IdentityDbContext<
         b.Entity<Plan>().HasIndex(p => p.Name).IsUnique();
         b.Entity<ApplicationUser>().HasIndex(u => new { u.TenantId, u.NormalizedEmail }).IsUnique();
         b.Entity<ApplicationRole>().HasIndex(r => new { r.TenantId, r.NormalizedName }).IsUnique();
+
+        // ⚠️ 多租户关键修正：base.OnModelCreating(b)（ASP.NET Identity）会额外建两个**全局唯一**索引
+        //    RoleNameIndex(asp_net_roles.NormalizedName) 与 UserNameIndex(asp_net_users.NormalizedUserName)，
+        //    它们跨越所有租户，与「共享库 + TenantId 行级隔离」直接冲突：
+        //    第 2 个租户开通时创建同名角色（Admin/Operator...）会撞唯一约束 -> 40900「资源冲突：唯一约束被违反」，
+        //    实测表现为平台上只能存在 1 个租户。
+        //    处理：把这两个默认索引降级为**非唯一**，唯一性改由上面的复合索引保证。
+        b.Entity<ApplicationRole>().HasIndex(r => r.NormalizedName).IsUnique(false);
+        b.Entity<ApplicationUser>().HasIndex(u => u.NormalizedUserName).IsUnique(false);
+
         b.Entity<ApplicationUserRole>().HasIndex(r => r.TenantId);
         b.Entity<Subscription>().HasIndex(s => s.TenantId).IsUnique();
         b.Entity<Device>().HasIndex(d => new { d.TenantId, d.CreatedAt });

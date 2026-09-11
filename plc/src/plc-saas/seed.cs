@@ -55,8 +55,21 @@ public static class DbSeeder
                 NormalizedEmail = rootEmail.ToUpper(),
                 TenantId = Guid.Empty,
                 Name = "平台超管",
+                // 必须显式赋值：AddToRoleAsync → UpdateUserAsync → ValidateUserAsync 会读取 SecurityStamp，
+                // 为空则抛 "User security stamp cannot be null."（默认 CreateAsync(user, password)
+                // 在密码校验失败时会提前返回，此处不会走到赋 stamp 那一步）。
+                SecurityStamp = Guid.NewGuid().ToString(),
             };
-            await users.CreateAsync(rootUser, rootPwd);
+            // 密码哈希直接写入并调用无密码重载 CreateAsync(user)：绕开 Identity 默认密码策略
+            // （要求数字/大写/小写/非字母数字），使既定降级凭据 root/admin 可用。
+            // 注意：这里只放宽这一个平台超管种子账号，不动全站租户用户的密码强度要求。
+            rootUser.PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(rootUser, rootPwd);
+            var create = await users.CreateAsync(rootUser);
+            if (!create.Succeeded)
+            {
+                var errs = string.Join("; ", create.Errors.Select(e => $"{e.Code}:{e.Description}"));
+                throw new InvalidOperationException($"平台超管种子账号创建失败（{rootEmail}）：{errs}");
+            }
             await users.AddToRoleAsync(rootUser, SaasRoles.SuperAdmin);
         }
     }

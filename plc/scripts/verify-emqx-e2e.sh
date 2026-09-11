@@ -72,18 +72,32 @@ fi
 # ---------------- 1. SaaS 健康 ----------------
 echo
 echo "== 1) SaaS 健康 /ops/health =="
-HEALTH=$(curl -s -m 10 "$API/ops/health" 2>/dev/null)
-[ -n "$HEALTH" ] && chk "saas-health-responds" 0 || chk "saas-health-responds" 1
-echo "      health: ${HEALTH:0:160}"
+# 契约说明：/ops/health 显式 RequireAuthorization("SuperAdminOnly")（slices/ops.health.cs），
+# 匿名访问返回 401 + 空 body 属于**预期行为**，同时证明进程存活且鉴权未旁路。
+# 要取回 Healthy 载荷必须带超管 Bearer token（先 POST /api/v1/auth/login）。
+HCODE=$(curl -s -o /tmp/e2e_health.json -w "%{http_code}" -m 10 "$API/ops/health" 2>/dev/null)
+HEALTH=$(cat /tmp/e2e_health.json 2>/dev/null)
+case "$HCODE" in
+  200|401) chk "saas-health-responds($HCODE)" 0;;
+  *)       chk "saas-health-responds($HCODE)" 1;;
+esac
+echo "      health HTTP $HCODE: ${HEALTH:0:160}"
 
 # ---------------- 2. 准备租户 ----------------
 echo
 echo "== 2) 准备租户 =="
 if [ -z "$TENANT_ID" ]; then
+  # 契约对齐 tenant.register.cs -> TenantCreateRequest(CompanyName, Slug, AdminEmail, AdminPassword)
+  # 注意字段是 companyName（不是 name）；slug 需满足 ^[a-z0-9][a-z0-9-]{2,30}$（本处以 pid 结尾，合法）
+  # slug/email 必须每次运行唯一：同一持久 shell 里 $$ 恒定不变，
+  # 复用旧 pid 会撞上历史租户返回 409「子域已被占用」（tenant.register.cs 幂等以 slug 唯一为准）。
+  RUN_TAG="$$-$RANDOM"
   REG=$(curl -s -m 15 -X POST "$API/tenants" -H "Content-Type: application/json" \
-        -d '{"name":"e2e-emqx-tenant","slug":"e2e-emqx-'"$$"'","adminEmail":"e2e'"$$"'@example.com","adminPassword":"Pass@12345"}')
+        -d "{\"companyName\":\"e2e-emqx-tenant-$RUN_TAG\",\"slug\":\"e2e-emqx-$RUN_TAG\",\"adminEmail\":\"e2e$RUN_TAG@example.com\",\"adminPassword\":\"Pass@12345\"}")
   TENANT_ID=$(sed -n 's/.*"id"\s*:\s*"\([0-9a-fA-F-]\{36\}\)".*/\1/p' <<<"$REG" | head -1)
   [ -n "$TENANT_ID" ] && chk "tenant-created" 0 || chk "tenant-created" 1
+  # 失败时把服务端报文打出来，避免只剩一句 FAIL 无从定位
+  [ -n "$TENANT_ID" ] || echo "      tenant 创建响应: ${REG:0:300}"
 else
   chk "tenant-provided" 0
 fi
@@ -121,30 +135,41 @@ BAD=$(curl -s -o /dev/null -w "%{http_code}" -m 10 -X POST "$API/ingest/telemetr
 echo "      错误 Ingest-Key -> HTTP $BAD"
 [ "$BAD" = "401" ] && chk "bad-ingest-key-401" 0 || chk "bad-ingest-key-401" 1
 
-UNKNOWN_T="00000000-0000-0000-0000-000000000000"
+# 未知租户必须用**合法但不存在的随机 Guid**。Guid.Empty 走的是鉴权分支：
+# ingest.http.cs: IngestAuth.Authenticate 对 Guid.Empty 返回 403「缺少或非法的 X-Tenant-Id」，
+# 与「租户不存在 404」是两个不同的负向用例，不能混用。
+UNKNOWN_T=$(python -c "import uuid;print(uuid.uuid4())" 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null)
 UNK=$(curl -s -o /dev/null -w "%{http_code}" -m 10 -X POST "$API/ingest/telemetry" \
   -H "Content-Type: application/json" -H "X-Tenant-Id: $UNKNOWN_T" -H "X-Ingest-Key: $INGEST_KEY" \
   -d "{\"deviceId\":\"$DEVICE_ID\",\"metrics\":{\"temp\":1}}")
-echo "      未知租户       -> HTTP $UNK"
+echo "      未知租户(random) -> HTTP $UNK"
 [ "$UNK" = "404" ] && chk "unknown-tenant-404" 0 || chk "unknown-tenant-404" 1
+
+EMPTY=$(curl -s -o /dev/null -w "%{http_code}" -m 10 -X POST "$API/ingest/telemetry" \
+  -H "Content-Type: application/json" -H "X-Tenant-Id: 00000000-0000-0000-0000-000000000000" -H "X-Ingest-Key: $INGEST_KEY" \
+  -d "{\"deviceId\":\"$DEVICE_ID\",\"metrics\":{\"temp\":1}}")
+echo "      空租户Guid.Empty -> HTTP $EMPTY"
+[ "$EMPTY" = "403" ] && chk "empty-tenant-guid-403" 0 || chk "empty-tenant-guid-403" 1
 
 # ---------------- 5. 路径② MQTT 订阅桥 ----------------
 echo
 echo "== 5) 路径② MQTTnet 订阅桥（需 Mqtt:Bridge:Enabled=true 启动 SaaS）=="
-echo "      经 EMQX REST /api/v5/publish 发布（本机无 mosquitto_pub 时仍可验证）"
-PUB_BODY=$(cat <<JSON
-{"topic":"tenants/$TENANT_ID/devices/$DEVICE_ID/telemetry","qos":1,"retain":false,
- "payload":"{\\"ts\\":$TS,\\"metrics\\":{\\"temp\\":42.0},\\"device_id\\":\\"$DEVICE_ID\\"}"}
-JSON
-)
-PUB=$(curl -s -o /tmp/pub.json -w "%{http_code}" -m 15 -X POST "$EMQX_REST/api/v5/publish" \
-  -u "$EMQX_USER:$EMQX_PASS" -H "Content-Type: application/json" -d "$PUB_BODY")
-echo "      EMQX publish -> HTTP $PUB  body: $(head -c 120 /tmp/pub.json 2>/dev/null)"
-case "$PUB" in 200|204) chk "emqx-publish" 0;; *) chk "emqx-publish" 1;; esac
+# 为什么走 MQTT 直发而不是 EMQX REST /api/v5/publish：
+#   EMQX 5.x 的 REST 写接口需要 **API Key**，Dashboard 的 basic auth 对它们一律 401
+#   （可自证：/api/v5/nodes 带不带 auth 都 401，而 /api/v5/status 是公开端点返回 200）。
+#   直发 MQTT 既绕开该鉴权，也更贴近路径②真实链路（Edge → Broker → 订阅桥）。
+# 这里刻意用**另一个全新设备**：它从未走路径①，若最终落到 devices 表，即可确证是被桥消费的。
+PUB_SCRIPT="$(dirname "$0")/mqtt_publish.py"
+MQ_DEVICE_ID=$(python -c "import uuid;print(uuid.uuid4())" 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null)
+MQ_TOPIC="tenants/$TENANT_ID/devices/$MQ_DEVICE_ID/telemetry"
+MQ_PAYLOAD="{\"ts\":$TS,\"metrics\":{\"temp\":42.0,\"rpm\":1500},\"device_id\":\"$MQ_DEVICE_ID\"}"
+PUB_OUT=$(python "$PUB_SCRIPT" 127.0.0.1 "$EMQX_MQTT_PORT" "$MQ_TOPIC" "$MQ_PAYLOAD" 2>&1)
+echo "      mqtt publish -> $PUB_OUT"
+case "$PUB_OUT" in MQTT-PUBLISH-OK*) chk "mqtt-publish" 0;; *) chk "mqtt-publish" 1;; esac
 
-# 给桥接消费留出时间
-sleep 5
-echo "      （桥接消费断言见第 6 步 PG 校验；若桥未启用则该项应跳过）"
+# 给桥接消费留出时间（异步写入 devices / outbox）
+sleep 6
+echo "      桥接消费断言见第 6 步：devices 表中应出现全新的 $MQ_DEVICE_ID"
 
 # ---------------- 6. PG 持久化断言 ----------------
 echo
@@ -173,9 +198,15 @@ OB_CNT=$(run_psql "select count(*) from outbox_messages;")
 if [ -n "$OB_CNT" ] && [ "$OB_CNT" -ge 1 ] 2>/dev/null; then chk "pg-outbox-written" 0; else chk "pg-outbox-written" 1; fi
 echo "      outbox_messages(总): ${OB_CNT:-<查询失败>}"
 
-UM=$(run_psql "select coalesce(sum(telemetry_points),0) from usage_meters;")
-echo "      usage_meters.telemetry_points(总): ${UM:-<查询失败>}"
+# PG 列名是 PascalCase，未加引号会被 PostgreSQL 折叠成小写而报列不存在，必须加双引号。
+UM=$(run_psql "select coalesce(sum(\"TelemetryPoints\"),0) from usage_meters;")
+echo "      usage_meters.\"TelemetryPoints\"(总): ${UM:-<查询失败>}"
 [ -n "$UM" ] && chk "pg-metering-readable" 0 || chk "pg-metering-readable" 1
+
+# 路径②专属证据：该设备只经 MQTT 发布（从未走 HTTP 摄取），出现在 devices 表即证明订阅桥生效。
+MQ_CNT=$(run_psql "select count(*) from devices where \"Id\"='$MQ_DEVICE_ID';")
+if [ -n "$MQ_CNT" ] && [ "$MQ_CNT" -ge 1 ] 2>/dev/null; then chk "pg-mqtt-bridge-consumed" 0; else chk "pg-mqtt-bridge-consumed" 1; fi
+echo "      devices(仅经MQTT的设备): ${MQ_CNT:-<查询失败>}"
 
 # ---------------- 结果 ----------------
 echo
