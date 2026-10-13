@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SnetPluginProbe</AssemblyName>
+    <RootNamespace>SnetPluginProbe</RootNamespace>
+    <!-- 探测样本不进网关 plugins/ 扫描范围：输出到 samples 自有 bin -->
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 共享契约：复制进探针输出（与网关一致），并经 sharedTypes 与插件 ALC 共用同一份实例 -->
+    <ProjectReference Include="..\..\..\Plc.Plugins.Contracts\Plc.Plugins.Contracts.csproj" />
+
+    <!-- 与宿主一致的插件加载器 -->
+    <PackageReference Include="McMaster.NETCore.Plugins" Version="1.1.0" />
+
+    <!-- 共享类型 System.IO.Ports.SerialPort 需由宿主(探针) ALC 提供并共享给插件 ALC，
+         版本 10.0.0 解析到 10.0.0.1；运行期经 runtimeconfig.template.json 重定向 10.0.0.11->10.0.0.1 -->
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+
+    <!-- 仅用于探针侧 ILogger / IServiceProvider 最小实现 -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+
+  <!-- SnetProtocols 插件输出目录（已由 SnetProtocols.csproj 构建到网关 bin/.../plugins/）。
+       探针复制该目录全部内容到自身输出 plugins/，再用 PluginLoader 按目录加载，
+       完整复现宿主 GatewayHost.LoadPlugins 的执行链路。 -->
+  <PropertyGroup>
+    <SnetPluginOutDir>$(MSBuildThisFileDirectory)..\..\bin\$(Configuration)\$(TargetFramework)\plugins\</SnetPluginOutDir>
+  </PropertyGroup>
+
+  <Target Name="CopySnetPluginToProbe" AfterTargets="Build">
+    <MakeDir Directories="$(OutDir)plugins" />
+    <!-- 插件目录：PluginLoader 按此目录隔离加载 SnetProtocols.dll -->
+    <Exec Command="cp -rf &quot;$(SnetPluginOutDir).&quot; &quot;$(OutDir)plugins&quot;" />
+    <!-- 镜像网关 CopySnetRuntimeToHost：把 SnetProtocols 输出整体镜像到探针根目录，
+         供插件 ALC 解析 Snet.Core 等兄弟程序集时回退到宿主根（否则 FileNotFoundException）。
+         用 xcopy（Windows 原生，支持通配）避免 cmd 下 glob 不展开问题。 -->
+    <Exec Command="xcopy /Y /I /E &quot;$(SnetPluginOutDir)&quot; &quot;$(OutDir)&quot;" />
+    <Message Text="已复制 SnetProtocols 插件到 $(OutDir)plugins 并镜像 snet 运行期 DLL 到宿主根" Importance="high" />
+  </Target>
+
+</Project>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>SnetApiSample</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.0" />
+    <!-- System.IO.Ports：解析到 10.0.1（asm 10.0.0.1），配合 runtimeconfig.template.json 的强名绑定重定向 -->
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+  </ItemGroup>
+
+  <!-- 直接引用 snet 系列二进制（与 SnetProtocols 同源），用于测试 DLL 原生方法 -->
+  <ItemGroup>
+    <Reference Include="..\..\lib\snet\Snet.Core.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Model.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Driver.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Sim.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Log.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Utility.dll" />
+  </ItemGroup>
+
+</Project>

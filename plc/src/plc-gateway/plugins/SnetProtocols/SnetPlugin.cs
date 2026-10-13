@@ -9,8 +9,8 @@ namespace SnetProtocols;
 
 /// <summary>
 /// SNET 协议插件：把反编译恢复的 Snet.* 驱动（Modbus / Siemens / Mitsubishi / Fatek / Omron /
-/// Keyence / Fuji / AllenBradley / Delta / Panasonic / Sim …）统一适配为宿主 IDeviceProtocol，
-/// 由 DotNetCorePlugins 按目录隔离加载。
+/// Keyence / Fuji / AllenBradley / Delta / Panasonic / Beckhoff / Fanuc / Yaskawa / OrientalMotor
+/// … 共 32 个品牌）统一适配为宿主 IDeviceProtocol，由 DotNetCorePlugins 按目录隔离加载。
 /// 所有驱动都实现 IOn / IRead / IWrite（均派生自 DaqAbstract），故用一套反射式适配器覆盖；
 /// 适配器按品牌探测 Basics 的连接属性（IpAddress / Port / Station / Rack / Slot）与 ProtocolType，
 /// 覆盖不同 PLC 的连接模型（TCP / Rack-Slot / Station / 串口默认覆盖为 TCP）。
@@ -19,10 +19,11 @@ public sealed class SnetPlugin : IPlugin
 {
     public string Id => "snet.protocols";
     public string Name => "SNET PLC Protocols (series)";
-    public string Version => "1.1.0";
+    public string Version => "1.2.0";
 
     // 注册项：协议标识 + 展示名 + Operate 类型 + Basics 类型。
     // 适配器经反射探测 Basics 的连接属性与 ProtocolType，无需为每个品牌硬编码。
+    // 品牌/类型清单由 snet-discover 反射扫描 lib/snet 全量 DLL 确认（32 个设备协议）。
     private static readonly (string ProtocolId, string Display, Type Operate, Type Basics)[] Brands =
     {
         ("snet.modbus.tcp",       "Modbus TCP (SNET)",      typeof(Snet.Modbus.ModbusOperate),         typeof(Snet.Modbus.ModbusData.Basics)),
@@ -35,6 +36,29 @@ public sealed class SnetPlugin : IPlugin
         ("snet.allenbradley.tcp", "AllenBradley TCP (SNET)",typeof(Snet.AllenBradley.AllenBradleyOperate), typeof(Snet.AllenBradley.AllenBradleyData.Basics)),
         ("snet.delta.tcp",        "Delta TCP (SNET)",       typeof(Snet.Delta.DeltaOperate),           typeof(Snet.Delta.DeltaData.Basics)),
         ("snet.panasonic.tcp",    "Panasonic TCP (SNET)",   typeof(Snet.Panasonic.PanasonicOperate),   typeof(Snet.Panasonic.PanasonicData.Basics)),
+        // —— 新增 21 个设备协议（snet-discover 确认）——
+        ("snet.beckhoff.tcp",     "Beckhoff (SNET)",        typeof(Snet.Beckhoff.BeckhoffOperate),     typeof(Snet.Beckhoff.BeckhoffData.Basics)),
+        ("snet.cimon.tcp",        "Cimon (SNET)",           typeof(Snet.Cimon.CimonOperate),           typeof(Snet.Cimon.CimonData.Basics)),
+        ("snet.fanuc.tcp",        "Fanuc (SNET)",           typeof(Snet.Fanuc.FanucOperate),           typeof(Snet.Fanuc.FanucData.Basics)),
+        ("snet.freedom.tcp",      "Freedom (SNET)",         typeof(Snet.Freedom.FreedomOperate),       typeof(Snet.Freedom.FreedomData.Basics)),
+        ("snet.ge.tcp",           "GE (SNET)",              typeof(Snet.GE.GEOperate),                 typeof(Snet.GE.GEData.Basics)),
+        ("snet.inovance.tcp",     "Inovance (SNET)",        typeof(Snet.Inovance.InovanceOperate),     typeof(Snet.Inovance.InovanceData.Basics)),
+        ("snet.invt.tcp",         "Invt (SNET)",            typeof(Snet.Invt.InvtOperate),             typeof(Snet.Invt.InvtData.Basics)),
+        ("snet.kossi.tcp",        "Kossi (SNET)",           typeof(Snet.Kossi.KossiOperate),           typeof(Snet.Kossi.KossiData.Basics)),
+        ("snet.lsis.tcp",         "LSis (SNET)",            typeof(Snet.LSis.LSisOperate),             typeof(Snet.LSis.LSisData.Basics)),
+        ("snet.megmeet.tcp",      "MegMeet (SNET)",         typeof(Snet.MegMeet.MegMeetOperate),       typeof(Snet.MegMeet.MegMeetData.Basics)),
+        ("snet.orientalmotor.tcp","OrientalMotor (SNET)",   typeof(Snet.OrientalMotor.OrientalMotorOperate), typeof(Snet.OrientalMotor.OrientalMotorData.Basics)),
+        ("snet.rkc.tcp",          "RKC (SNET)",             typeof(Snet.RKC.RKCOperate),               typeof(Snet.RKC.RKCData.Basics)),
+        ("snet.toyota.tcp",       "Toyota (SNET)",          typeof(Snet.Toyota.ToyotaOperate),         typeof(Snet.Toyota.ToyotaData.Basics)),
+        ("snet.turck.tcp",        "Turck (SNET)",           typeof(Snet.Turck.TurckOperate),           typeof(Snet.Turck.TurckData.Basics)),
+        ("snet.vigor.tcp",        "Vigor (SNET)",           typeof(Snet.Vigor.VigorOperate),           typeof(Snet.Vigor.VigorData.Basics)),
+        ("snet.wecon.tcp",        "WeCon (SNET)",           typeof(Snet.WeCon.WeConOperate),           typeof(Snet.WeCon.WeConData.Basics)),
+        ("snet.xinje.tcp",        "XinJE (SNET)",           typeof(Snet.XinJE.XinJEOperate),           typeof(Snet.XinJE.XinJEData.Basics)),
+        ("snet.yamatake.tcp",     "Yamatake (SNET)",        typeof(Snet.Yamatake.YamatakeOperate),     typeof(Snet.Yamatake.YamatakeData.Basics)),
+        ("snet.yaskawa.tcp",      "Yaskawa (SNET)",         typeof(Snet.Yaskawa.YaskawaOperate),       typeof(Snet.Yaskawa.YaskawaData.Basics)),
+        ("snet.yokogawa.tcp",     "Yokogawa (SNET)",        typeof(Snet.Yokogawa.YokogawaOperate),     typeof(Snet.Yokogawa.YokogawaData.Basics)),
+        ("snet.yudian.tcp",       "YuDian (SNET)",          typeof(Snet.YuDian.YuDianOperate),         typeof(Snet.YuDian.YuDianData.Basics)),
+        // —— 内存模拟器（无网络连接，虚拟地址读写闭环）——
         ("snet.sim",              "Sim (SNET, in-memory)",  typeof(Snet.Sim.SimOperate),               typeof(Snet.Sim.SimData.Basics)),
     };
 

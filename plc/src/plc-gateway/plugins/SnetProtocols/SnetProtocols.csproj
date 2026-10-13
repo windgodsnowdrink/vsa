@@ -39,6 +39,28 @@
     <Reference Include="..\..\lib\snet\Snet.AllenBradley.dll" />
     <Reference Include="..\..\lib\snet\Snet.Delta.dll" />
     <Reference Include="..\..\lib\snet\Snet.Panasonic.dll" />
+    <!-- 以下 21 个设备协议 DLL 由 snet-discover 反射扫描确认存在（Snet.<Brand>.<Brand>Operate / <Brand>Data.Basics） -->
+    <Reference Include="..\..\lib\snet\Snet.Beckhoff.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Cimon.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Fanuc.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Freedom.dll" />
+    <Reference Include="..\..\lib\snet\Snet.GE.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Inovance.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Invt.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Kossi.dll" />
+    <Reference Include="..\..\lib\snet\Snet.LSis.dll" />
+    <Reference Include="..\..\lib\snet\Snet.MegMeet.dll" />
+    <Reference Include="..\..\lib\snet\Snet.OrientalMotor.dll" />
+    <Reference Include="..\..\lib\snet\Snet.RKC.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Toyota.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Turck.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Vigor.dll" />
+    <Reference Include="..\..\lib\snet\Snet.WeCon.dll" />
+    <Reference Include="..\..\lib\snet\Snet.XinJE.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Yamatake.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Yaskawa.dll" />
+    <Reference Include="..\..\lib\snet\Snet.Yokogawa.dll" />
+    <Reference Include="..\..\lib\snet\Snet.YuDian.dll" />
   </ItemGroup>
 
   <!-- SNET 运行期依赖：必须与 SNET 强签名版本一致，并落入 plugins/ 供插件 ALC 解析 -->

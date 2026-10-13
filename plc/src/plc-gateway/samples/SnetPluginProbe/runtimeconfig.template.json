@@ -1,0 +1,17 @@
+{
+  "assemblyBinding": {
+    "dependentAssembly": [
+      {
+        "assemblyIdentity": {
+          "name": "System.IO.Ports",
+          "publicKeyToken": "cc7b13ffcd2ddd51",
+          "culture": "neutral"
+        },
+        "bindingRedirect": {
+          "oldVersion": "0.0.0.0-10.0.0.11",
+          "newVersion": "10.0.0.1"
+        }
+      }
+    ]
+  }
+}
