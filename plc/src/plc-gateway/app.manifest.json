@@ -41,6 +41,14 @@
         "port": 0,
         "pollIntervalMs": 500,
         "enabled": true
+      },
+      {
+        "id": "dev-snet-sim-1",
+        "protocol": "snet.sim",
+        "host": "memory",
+        "port": 0,
+        "pollIntervalMs": 1000,
+        "enabled": true
       }
     ]
   }

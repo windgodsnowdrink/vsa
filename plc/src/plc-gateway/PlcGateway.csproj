@@ -37,11 +37,11 @@
 
   <!-- SNET 反编译二进制由插件程序集（SnetProtocols）隔离加载，宿主本身不引用 -->
 
-  <!-- 仅包含宿主自身源码（根目录 + Protocols 等子目录），排除 GatewayClient / plugins
-         子项目（它们由各自治工程独立构建，否则多入口点 CS0017）；
-         同时排除 obj/bin 以防生成文件被编入导致重复特性。 -->
+  <!-- 仅包含宿主自身源码（根目录 + Protocols 等子目录），排除 GatewayClient / plugins / samples
+       子项目（它们由各自治工程独立构建，否则多入口点 CS0017 且引不到 snet 类型 CS0246）；
+       同时排除 obj/bin 以防生成文件被编入导致重复特性。 -->
   <ItemGroup>
-    <Compile Include="**/*.cs" Exclude="GatewayClient/**;plugins/**;**/obj/**;**/bin/**" />
+    <Compile Include="**/*.cs" Exclude="GatewayClient/**;plugins/**;samples/**;**/obj/**;**/bin/**" />
     <Content Include="app.manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

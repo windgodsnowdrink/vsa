@@ -67,5 +67,24 @@ WRITE=$(curl -s -X POST "http://localhost:$PORT/api/gateway/write" -H "Content-T
 echo "$WRITE"
 echo "$WRITE" | grep -Eq '"written"\s*:\s*2' && chk "write" 0 || chk "write" 1
 
+echo "== SNET 插件链路：协议计数（期望 32 个 snet.*）=="
+SNET_COUNT=$(echo "$PROT" | grep -o '"snet\.[^"]*"' | sort -u | wc -l)
+echo "snet 协议数: $SNET_COUNT"
+[ "$SNET_COUNT" -ge 32 ] && chk "snet-protocols>=32" 0 || chk "snet-protocols>=32" 1
+
+echo "== SNET 插件链路：dev-snet-sim-1 出现在设备列表 =="
+echo "$DEV" | grep -q "dev-snet-sim-1" && chk "snet-device-listed" 0 || chk "snet-device-listed" 1
+
+echo "== POST /api/gateway/read (dev-snet-sim-1, start=0, count=2, type=3) — 经 snet.sim 驱动读回 =="
+SNET_READ=$(curl -s -X POST "http://localhost:$PORT/api/gateway/read" -H "Content-Type: application/json" -d '{"deviceId":"dev-snet-sim-1","start":0,"count":2,"type":3}')
+echo "$SNET_READ"
+echo "$SNET_READ" | grep -Eq '"deviceId"\s*:\s*"dev-snet-sim-1"' && chk "snet-read-deviceId" 0 || chk "snet-read-deviceId" 1
+echo "$SNET_READ" | grep -Eq '"bytes"\s*:\s*[1-9]' && chk "snet-read-bytes>0" 0 || chk "snet-read-bytes>0" 1
+
+echo "== POST /api/gateway/write (dev-snet-sim-1, start=0, type=3, values=[11,22]) =="
+SNET_WRITE=$(curl -s -X POST "http://localhost:$PORT/api/gateway/write" -H "Content-Type: application/json" -d '{"deviceId":"dev-snet-sim-1","start":0,"type":3,"values":[11,22]}')
+echo "$SNET_WRITE"
+echo "$SNET_WRITE" | grep -Eq '"written"\s*:\s*2' && chk "snet-write" 0 || chk "snet-write" 1
+
 echo "== 结果: $failures 项失败 =="
 exit $failures

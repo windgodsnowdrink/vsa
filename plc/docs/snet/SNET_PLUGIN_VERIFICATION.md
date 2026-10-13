@@ -116,3 +116,53 @@ cd src/plc-gateway/samples/SnetApiSample && dotnet build -c Debug && dotnet run 
 - `src/plc-gateway/samples/SnetApiSample/SnetApiSample.csproj`（`<Reference>` Snet.Core/Model/Driver/Sim/Log/Utility + Serilog/Newtonsoft/System.IO.Ports + `runtimeconfig.template.json` 绑定重定向）
 - `src/plc-gateway/samples/SnetApiSample/runtimeconfig.template.json`（同上 `System.IO.Ports` 重定向）
 
+---
+
+# 补充：真实网关宿主端到端验证（2026-10-13）
+
+> 探针（`SnetPluginProbe`）只证明「插件加载机制与宿主一致」；本节把验证推到**真实宿主**：
+> `PlcGateway`（`src/plc-gateway`）实际加载 `SnetProtocols` 插件，经 plc-host 的 `/api/gateway/*` 走完
+> HTTP → 宿主 → NamedPipe StreamJsonRpc → 网关 → 插件 → snet 驱动全链路。
+
+## 修复：PlcGateway.csproj 编译回归
+
+`PlcGateway.csproj` 的 `<Compile Include="**/*.cs" Exclude="GatewayClient/**;plugins/**;**/obj/**;**/bin/**" />`
+未排除新增的 `samples/**`，把两个自治 sample 项目（引用 snet 类型）编进宿主 → 11 个 CS0246。
+**修法**：Exclude 补 `samples/**`（与 `GatewayClient/**`、`plugins/**` 同等地位）。
+
+## 真实宿主注册验证（手动起网关实跑）
+
+- 启动日志：`SNET 协议已注册 32/32`、`插件已加载: SNET PLC Protocols (series) (snet.protocols)`。
+- `已注册协议` 共 **33** 个 = 32 snet + `builtin.sim`（宿主内置保底协议）。
+- `GatewayHost.LoadPlugins` 扫描 `plugins/` 全部 47 个 DLL（37 snet + Serilog×3 + Newtonsoft + System.IO.Ports + SnetProtocols + 契约），**0 个插件加载失败**——非插件 DLL 加载后无 `IPlugin` 类型，静默跳过。
+- `app.manifest.json` 新增设备 `dev-snet-sim-1`（protocol `snet.sim`，enabled，poll 1000ms），网关轮询日志 `dev-snet-sim-1 -> 2 bytes snet.sim` 每秒成功。
+
+## e2e 脚本扩展：`scripts/verify-gateway-webapi.sh`
+
+新增 5 项 snet 链路断言（原有 5 项 builtin.sim 不变）：
+
+| 断言 | 期望 | 实测 |
+|------|------|------|
+| `snet-protocols>=32` | `/api/gateway/protocols` 含 ≥32 个 `snet.*` | PASS（32） |
+| `snet-device-listed` | `/api/gateway/devices` 含 `dev-snet-sim-1` | PASS |
+| `snet-read-deviceId` | read 响应含 `"deviceId":"dev-snet-sim-1"` | PASS |
+| `snet-read-bytes>0` | read 响应 `bytes` ≥ 1 | PASS（2） |
+| `snet-write` | write 响应 `"written":2` | PASS |
+
+**实跑结果：10/10 PASS，退出码 0。** snet.sim read 实回：
+`{"deviceId":"dev-snet-sim-1","data":"/J0=","bytes":2}`（VirtualStatic 随机 Int16，base64 `/J0=`）。
+
+## 驱动层观察（记录在案，非适配器缺陷）
+
+1. **会话释放噪音**：`GatewayRpc` 每次读写按需新建会话（`await using var session = ...`），读后即 dispose → snet 基类 `WAOffAsync` 打 `WA尚未启动` ERR。Sim 无 WA 子系统，属 snet 内部日志噪音，不影响功能。
+2. **sim 跨调用无状态**：按需新建会话对真实 PLC 正确（每次连接独立）；对 sim 意味着 write 后再 read（两次 RPC）不会回读到写入值。sim 的写后读闭环只在**同一会话内**成立（`SnetApiSample` 已证明），e2e 因此不断言跨调用回读。
+
+## 复跑
+
+```bash
+cd src/plc-gateway && dotnet build -c Debug   # 宿主；plugins/ 由 SnetProtocols 构建填充
+cd src/plc-host && dotnet build -c Debug      # 宿主代理
+export no_proxy='*' NO_PROXY='*'
+bash scripts/verify-gateway-webapi.sh         # 期望 10 项全 PASS
+```
+
