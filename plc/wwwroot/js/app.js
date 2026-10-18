@@ -851,7 +851,7 @@
     const row = (k, v) => `<div class="stat-row"><span style="color:var(--text-3)">${k}</span><span>${v}</span></div>`;
     if (t === "信息") body.innerHTML = row("型号", d.model) + row("协议", d.proto) + row("状态", d.status) + row("位置", `${d.lat}, ${d.lon}`);
     else if (t === "心跳") body.innerHTML = row("最后心跳", d.last) + row("间隔", "5s") + row("延迟", "18ms") + row("探针", "HealthCheck OK");
-    else if (t === "操作") body.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary">复位</button><button class="btn btn-ghost">启动</button><button class="btn btn-ghost">停止</button></div><div style="font-size:12px;color:var(--text-3);margin-top:8px">经 CQRS 写命令 → IProtocolAdapter.WriteAsync</div>`;
+    else if (t === "操作") body.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary">复位</button><button class="btn btn-ghost">启动</button><button class="btn btn-ghost">停止</button></div><div style="font-size:12px;color:var(--text-3);margin-top:8px">经 CQRS 写命令 → IDeviceSession.WriteAsync</div>`;
     else if (t === "日志") body.innerHTML = ["12:01 采集正常", "11:58 通信恢复", "11:40 温度 71℃ 预警"].map(l => `<div style="padding:8px;border-radius:10px;background:var(--brand-50)">${l}</div>`).join("");
     else if (t === "指令") body.innerHTML = `<div style="display:flex;gap:8px"><input placeholder="地址 如 40001" class="select" style="flex:1"><input placeholder="值" class="select" style="width:80px"><button class="btn btn-primary">下发</button></div><div style="font-size:12px;color:var(--text-3);margin-top:8px">经 Channel → MQTT → 设备</div>`;
     else if (t === "计划") body.innerHTML = ["每日 02:00 批量轮询", "每周日 固件巡检"].map(l => `<div class="pill">${l}</div>`).join("");
