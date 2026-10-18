@@ -1,10 +1,12 @@
 # VSA 项目 Code Wiki
 
 > **项目名称**: VSA (Vertical Slice Architecture)  
-> **技术栈**: .NET 10, C# 14, ASP.NET Core, Blazor, MAUI, IoT  
-> **SDK 版本**: .NET 10.0.201  
+> **技术栈**: .NET 11, C# 14, ASP.NET Core, Blazor, MAUI, IoT  
+> **目标框架**: `net11.0`  
 > **语言版本**: C# preview (latest)  
+> **测试体系**: File-Based Apps 反射验证 (651 `*Test.cs`)  
 > **许可证**: 见 LICENSE 文件  
+> **最后更新**: 2026-10-18  
 
 ---
 
@@ -22,16 +24,19 @@
    - [4.6 ai/ - AI/ML 集成](#46-ai---aiml-集成)
    - [4.7 SimpleCsvImporter/ - CSV导入工具](#47-simplecsvimporter---csv导入工具)
    - [4.8 Models/ - 数据模型](#48-models---数据模型)
+   - [4.9 test/ - File-Based Apps 测试套件](#49-test---file-based-apps-测试套件)
 5. [依赖关系全景](#5-依赖关系全景)
 6. [关键类与接口说明](#6-关键类与接口说明)
 7. [配置与运行方式](#7-配置与运行方式)
 8. [技术领域分类索引](#8-技术领域分类索引)
+9. [测试体系](#9-测试体系)
+10. [版本更新记录](#10-版本更新记录)
 
 ---
 
 ## 1. 项目概述
 
-VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直切片架构 (Vertical Slice Architecture)** ，涵盖从基础框架到高级分布式系统的全栈技术演示。项目包含 **400+ 个独立集成示例文件**，每个文件演示一种或多种.NET技术/第三方库的集成方案。
+VSA 是一个基于 **.NET 11** (`net11.0`) 的综合性技术展示仓库，采用 **垂直切片架构 (Vertical Slice Architecture)** ，涵盖从基础框架到高级分布式系统的全栈技术演示。项目包含 **400+ 个独立集成示例文件**，每个文件演示一种或多种.NET技术/第三方库的集成方案；并配套 `test/` 目录下 **651 个 `*Test.cs` 反射验证文件** 覆盖核心集成示例的类型契约。
 
 ### 核心特性
 
@@ -75,8 +80,35 @@ VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直
 ├── code/                           # 高级集成示例 (49个文件)
 ├── csp/                            # CSP 并发模型 (Go 风格)
 ├── mvp/                            # MVP 最小可行产品示例
-├── plc/                            # 工业物联网 IoT/PLC
+├── plc/                            # 工业物联网 IoT/PLC (ADR-118 P3 插件化主机)
+│   └── src/
+│       ├── plc-host/               # 插件化 PLC 主机
+│       │   ├── plugins/            # 7 个设备协议插件
+│       │   │   ├── BacnetDevicePlugin/   # BACnet 协议
+│       │   │   ├── DemoDevicePlugin/     # 示例插件
+│       │   │   ├── FatekDevicePlugin/    # 永宏 Fatek
+│       │   │   ├── FujiDevicePlugin/     # 富士 Fuji
+│       │   │   ├── KeyenceDevicePlugin/  # 基恩士 Keyence
+│       │   │   ├── LoRaDevicePlugin/     # LoRa 无线
+│       │   │   └── MelsecDevicePlugin/   # 三菱 Melsec
+│       │   ├── Gateway/            # 网关模块
+│       │   ├── Modules/            # 业务模块
+│       │   └── Foundation/         # 基础设施
+│       ├── Plc.Plugins.Contracts/  # 插件契约 (IDeviceProtocol / IPlugin)
+│       ├── plc-gateway/            # PLC 网关
+│       ├── plc-saas/               # SaaS 多租户平台
+│       ├── PlcAiot.*               # 桌面/Web/移动端
+│       ├── dapr-spike/             # Dapr 集成 Spike
+│       ├── csgo-spike/             # CSGO 集成 Spike
+│       └── csharpflink-spike/      # CSharpFlink 流计算 Spike
+├── test/                           # File-Based Apps 测试套件
+│   ├── Directory.Build.props       # 测试项目 MSBuild 属性 (net11.0)
+│   ├── Directory.Packages.props    # 测试项目中央包版本 (537 包)
+│   ├── CODE_WIKI.md                # 测试套件 Wiki
+│   ├── *.cs                        # 被测源文件 (与根目录示例对应)
+│   └── *Test.cs                    # 651 个反射验证测试文件
 ├── *.cs                            # 根目录 400+ 集成示例文件
+├── common.props                    # 共享 MSBuild 属性
 ├── Directory.Build.props           # MSBuild 全局属性
 ├── Directory.Build.targets         # MSBuild 全局目标
 ├── Directory.Packages.props        # 中央包版本管理
@@ -762,7 +794,7 @@ VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直
 
 ### 4.4 plc/ - 工业物联网 (IoT/PLC)
 
-`plc/` 目录是一个完整的 **Blazor 工业物联网应用**，支持多种 PLC 协议和 IoT 基础设施：
+`plc/` 目录是一个完整的 **Blazor 工业物联网应用**，支持多种 PLC 协议和 IoT 基础设施。已落地 **ADR-118 P3 插件化主机架构**：`plc/src/plc-host/` 作为可扩展主机，通过 `Plc.Plugins.Contracts`（`IDeviceProtocol` / `IPlugin` 契约）动态加载设备协议插件，当前内置 **7 个插件**（BACnet、Demo、Fatek、Fuji、Keyence、LoRa、Melsec），并配套 Dapr / CSGO / CSharpFlink 三个 Spike 子项目探索云原生与流计算集成。
 
 #### 4.4.1 PLC 协议驱动
 
@@ -868,76 +900,192 @@ VSA 是一个基于 **.NET 10** 的综合性技术展示仓库，采用 **垂直
 
 ---
 
+### 4.9 test/ - File-Based Apps 测试套件
+
+`test/` 目录是 VSA 项目的 **File-Based Apps 测试套件**，采用与根目录一致的 `*.cs` 文件应用模式，通过反射验证保障核心集成示例的类型契约与 API 稳定性。
+
+#### 4.9.1 规模统计
+
+| 指标 | 数量 |
+|------|------|
+| 总 `.cs` 文件 | 1266 |
+| `*Test.cs` 反射验证文件 | 651 |
+| 被测源文件 | 615 |
+| 中央包版本条目 | 537 |
+
+#### 4.9.2 测试模式
+
+每个 `*Test.cs` 文件遵循统一的三步验证规范，**不执行运行时副作用**，仅校验类型是否存在、方法签名是否匹配：
+
+```csharp
+#load "Todo.cs"                          // 1. 导入被测源文件
+
+try
+{
+    var t0 = typeof(PathEntryPointExtensions);  // 2. 反射校验类型存在
+    Console.WriteLine($"[PASS] PathEntryPointExtensions 存在");
+    // 3. 输出验证结果
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[FAIL] 测试失败: {ex.Message}");
+}
+```
+
+**核心特征**：
+- **零运行时副作用**：不启动 Web 主机、不连接数据库、不发起网络请求
+- **类型契约校验**：通过 `typeof()` 验证公开 API 未被破坏
+- **`#load` 导入**：复用被测源文件，无需重复编译
+- **独立执行**：每个测试文件可单独 `dotnet run` 或通过脚本批量执行
+
+#### 4.9.3 核心配置文件
+
+| 文件 | 作用 |
+|------|------|
+| [Directory.Build.props](file:///workspace/test/Directory.Build.props) | 测试项目全局属性：`net11.0`、`Nullable=enable`、`ImplicitUsings=enable`、中央包管理启用、22 个 MSBuild 版本变量 |
+| [Directory.Packages.props](file:///workspace/test/Directory.Packages.props) | 测试项目中央包版本，537 个 `PackageVersion` 条目 |
+| [CODE_WIKI.md](file:///workspace/test/CODE_WIKI.md) | 测试套件独立 Wiki 文档 |
+
+#### 4.9.4 典型测试文件示例
+
+| 测试文件 | 被测源文件 | 验证目标 |
+|----------|-----------|----------|
+| [TodoTest.cs](file:///workspace/test/TodoTest.cs) | Todo.cs | `PathEntryPointExtensions` / `AppContextExtensions` 类型存在 |
+| [abac_attribute_based_accessTest.cs](file:///workspace/test/abac_attribute_based_accessTest.cs) | abac_attribute_based_access.cs | ABAC 访问控制类型契约 |
+| [CastleDynamicProxyTest.cs](file:///workspace/test/CastleDynamicProxyTest.cs) | (根目录) | Castle DynamicProxy 类型存在 |
+| [SourceGenerator_ddd_generatorTest.cs](file:///workspace/test/SourceGenerator_ddd_generatorTest.cs) | SourceGenerator_ddd_generator.cs | DDD 源代码生成器类型契约 |
+
+---
+
 ## 5. 依赖关系全景
 
-### 5.1 NuGet 包分类汇总
+### 5.1 双重集中式版本机制
 
-项目使用 **中央包版本管理** (`Directory.Packages.props`)，管理 **200+ 个 NuGet 包**。
+项目采用 **双重集中式版本管理**，所有包版本在两处统一维护，避免各项目文件散落版本号：
+
+| 层级 | 位置 | 作用 |
+|------|------|------|
+| MSBuild 变量 | [test/Directory.Build.props](file:///workspace/test/Directory.Build.props) | 定义 22 个 `*Version` 属性变量，供 `PackageReference` 引用 |
+| 中央包版本 | [test/Directory.Packages.props](file:///workspace/test/Directory.Packages.props) | 537 个 `PackageVersion` 条目，`ManagePackageVersionsCentrally=true` 强制集中管理 |
+
+> 同时启用 `CentralPackageTransitivePinningEnabled=true`，传递依赖版本也受中央管理约束。
+
+### 5.2 MSBuild 版本变量
+
+在 `test/Directory.Build.props` 中定义的 22 个版本变量：
+
+| 变量名 | 版本 | 用途 |
+|--------|------|------|
+| `MicrosoftExtensionsVersion` | 10.0.10 | Microsoft.Extensions.* 全家桶 |
+| `AspNetCoreVersion` | 10.0.10 | ASP.NET Core 框架包 |
+| `ComponentsVersion` | 10.0.10 | Blazor Components 包 |
+| `MassTransitVersion` | 8.5.10 | MassTransit 消息总线（固定） |
+| `WolverineFxVersion` | 5.22.0 | Wolverine 框架 |
+| `PollyVersion` | 8.7.0 | Polly 弹性策略 |
+| `DaprVersion` | 1.18.4 | Dapr 云原生运行时 |
+| `OpenIddictVersion` | 7.6.0 | OpenIddict 身份认证 |
+| `OpenTelemetryVersion` | 1.16.0 | OpenTelemetry 可观测性 |
+| `ApplicationInsightsVersion` | 3.0.0 | Azure Application Insights |
+| `CodeAnalysisVersion` | 5.3.0 | Roslyn 代码分析 |
+| `GrpcVersion` | 2.80.0 | gRPC 通信 |
+| `EasyCachingVersion` | 1.9.2 | EasyCaching 缓存抽象 |
+| `NSwagVersion` | 14.7.1 | NSwag API 文档 |
+| `SwashbuckleVersion` | 10.2.3 | Swashbuckle Swagger |
+| `QuartzVersion` | 3.18.2 | Quartz 任务调度 |
+| `NacosVersion` | 1.3.10 | Nacos 配置中心 |
+| `SkiaSharpVersion` | 3.119.2 | SkiaSharp 图形渲染 |
+| `CommunityToolkitVersion` | 8.4.2 | CommunityToolkit 工具集 |
+| `AspireVersion` | 13.2.0 | .NET Aspire |
+| `MicrosoftExtensionsAiVersion` | 10.4.1 | Microsoft.Extensions.AI |
+| `MicrosoftExtensionsAiEvaluationVersion` | 10.4.0 | AI 评估扩展 |
+
+### 5.3 固定包版本说明
+
+以下包因协议或兼容性原因强制钉死，不随批量升级浮动：
+
+| 包 | 固定版本 | 原因 |
+|----|---------|------|
+| MassTransit | 8.5.10 | 非 MIT 协议包，锁定版本避免许可证变更风险 |
+| MediatR | 12.5.0 | 非 MIT 协议包，锁定版本规避许可证变化 |
+| Microsoft.OpenApi | 2.11.0 | 3.x 系列存在 XML 文档兼容性问题，固定 2.11.0 |
+
+### 5.4 核心包版本矩阵
+
+以下版本与 `test/Directory.Packages.props` 中的 537 个 `PackageVersion` 条目保持一致。
 
 #### 核心框架
 
 | 包类别 | 主要包 | 版本 |
 |--------|-------|------|
-| .NET 扩展 | Microsoft.Extensions.* | 10.0.5 |
-| ASP.NET Core | Microsoft.AspNetCore.* | 8.0.23~10.0.5 |
-| EF Core | Microsoft.EntityFrameworkCore.* | 8.0.23 |
-| 代码分析 | Microsoft.CodeAnalysis.* | 4.14.0 |
-| 测试 | xunit, MSTest, coverlet | 最新稳定版 |
+| .NET 扩展 | Microsoft.Extensions.* | 10.0.10 |
+| ASP.NET Core | Microsoft.AspNetCore.* | 10.0.10 |
+| EF Core | Microsoft.EntityFrameworkCore.* | 10.0.10 |
+| 代码分析 | Microsoft.CodeAnalysis.* | 5.6.0 |
+| 测试 | xunit | 2.9.3 |
 
 #### 消息与通信
 
 | 包 | 版本 |
 |----|------|
-| MassTransit | 8.5.8 |
+| MassTransit | 8.5.10 |
 | WolverineFx | 5.22.0 |
-| RabbitMQ.Client | 7.2.0 |
-| MQTTnet | 5.0.1.1416 |
+| RabbitMQ.Client | 7.2.1 |
+| MQTTnet | 5.2.0.1603 |
 
 #### 数据与缓存
 
 | 包 | 版本 |
 |----|------|
-| Dapper | 2.1.66 |
-| StackExchange.Redis | 2.10.1 |
-| MongoDB.Driver | 3.6.0 |
+| Dapper | 2.1.79 |
+| StackExchange.Redis | 3.0.17 |
+| MongoDB.Driver | 3.10.0 |
 | EasyCaching | 1.9.2 |
-| MySql.Data | 9.6.0 |
+| MySql.Data | 9.7.0 |
 
 #### 可观测性
 
 | 包 | 版本 |
 |----|------|
-| OpenTelemetry | 1.15.0 |
-| Serilog | 4.3.0 |
+| OpenTelemetry | 1.16.0 |
+| Serilog | 4.3.1 |
+| Serilog.AspNetCore | 10.0.0 |
 | Application Insights | 3.0.0 |
 
 #### 安全
 
 | 包 | 版本 |
 |----|------|
-| OpenIddict | 7.4.0 |
-| BouncyCastle | 2.6.2 |
+| OpenIddict | 7.6.0 |
+| BouncyCastle.Cryptography | 2.6.2 |
 | Duende.IdentityModel | 7.1.0 |
 
 #### 序列化
 
 | 包 | 版本 |
 |----|------|
-| MessagePack | 3.1.4 |
-| Google.Protobuf | 3.33.4 |
+| MessagePack | 3.1.8 |
+| Google.Protobuf | 3.35.1 |
 | Newtonsoft.Json | 13.0.4 |
 
-#### 微服务
+#### 微服务与网络
 
 | 包 | 版本 |
 |----|------|
-| Dapr | 1.17.5 |
+| Dapr | 1.18.4 |
 | YARP | 2.3.0 |
-| Refit | 9.0.2 |
-| RestSharp | 113.1.0 |
-| gRPC | 2.76.0 |
+| Refit | 13.1.0 |
+| RestSharp | 114.0.0 |
+| gRPC | 2.80.0 |
+| Polly | 8.7.0 |
 
-### 5.2 本地工具
+#### 对象映射与工具
+
+| 包 | 版本 |
+|----|------|
+| AutoMapper | 16.2.0 |
+| Humanizer | 3.0.10 |
+
+### 5.5 本地工具
 
 | 工具 | 用途 |
 |------|------|
@@ -1040,7 +1188,7 @@ public class PluginLoadContext : AssemblyLoadContext
 
 | 组件 | 版本要求 |
 |------|---------|
-| .NET SDK | 10.0.201+ |
+| .NET SDK | 11.0+ (`net11.0`) |
 | 操作系统 | Windows / Linux / macOS |
 | IDE | Visual Studio 2022+ / JetBrains Rider / VS Code |
 | 数据库 | MySQL 8.0+ (可选) |
@@ -1049,13 +1197,13 @@ public class PluginLoadContext : AssemblyLoadContext
 ### 7.2 安装与构建
 
 ```bash
-# 1. 安装 .NET SDK (如未安装)
+# 1. 安装 .NET 11 SDK (如未安装)
 ./install.sh
 
-# 2. 还原依赖
+# 2. 还原依赖 (中央包版本管理 test/Directory.Packages.props)
 dotnet restore
 
-# 3. 构建项目
+# 3. 构建项目 (目标框架 net11.0)
 dotnet build
 
 # 4. 运行主应用
@@ -1069,6 +1217,9 @@ dotnet run --project plc/Feature.csproj
 
 # 7. 运行 CSP 并发示例
 dotnet run --project csp/Goroutine.csproj
+
+# 8. 运行 File-Based Apps 反射验证测试 (test/ 目录)
+dotnet run --project test/TodoTest.cs
 ```
 
 ### 7.3 配置文件说明
@@ -1188,7 +1339,88 @@ docker build -t vsa-app .
 
 ---
 
-> **文档版本**: 1.0  
-> **生成时间**: 2026-07-24  
+## 9. 测试体系
+
+### 9.1 双轨制测试策略
+
+VSA 项目采用 **双轨制测试策略**，兼顾集成示例的类型契约验证与运行时行为验证：
+
+| 轨道 | 位置 | 方式 | 目标 |
+|------|------|------|------|
+| File-Based Apps 反射验证 | `test/*Test.cs` | `#load` + `typeof()` | 验证公开类型与 API 契约不被破坏 |
+| 集成示例自测 | 根目录 `*.cs` | 各示例内嵌断言 | 验证核心逻辑运行时行为 |
+
+### 9.2 File-Based Apps 三步验证规范
+
+所有 `test/*Test.cs` 文件统一遵循以下三步模式，确保零运行时副作用：
+
+1. **`#load` 导入被测源文件** — 复用示例代码，无需重复维护
+2. **`typeof()` 反射校验类型存在** — 验证公开 API 契约
+3. **输出 `[PASS]` / `[FAIL]` 结果** — 人类可读的验证输出
+
+```csharp
+#load "被测源文件.cs"
+
+try
+{
+    _ = typeof(目标类型);              // 类型存在则通过
+    Console.WriteLine("[PASS] 验证通过");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[FAIL] {ex.Message}");
+}
+```
+
+### 9.3 测试分布与覆盖率
+
+| 维度 | 数据 |
+|------|------|
+| 反射验证文件 | 651 个 `*Test.cs` |
+| 被测源文件 | 615 个 |
+| 覆盖技术域 | Web、消息、数据、缓存、安全、AI、IoT 等 |
+| 执行方式 | 单文件 `dotnet run` 或批量脚本 |
+
+> 反射验证不替代单元测试，其定位是 **API 契约守护**：当集成示例的公开类型被重命名或删除时，对应的 `*Test.cs` 会立即失败，提示破坏性变更。
+
+---
+
+## 10. 版本更新记录
+
+### 2026-10-18 Wiki 刷新
+
+- **目标框架升级**：统一到 `net11.0`（`test/Directory.Build.props`）
+- **中央包版本迁移**：`test/Directory.Packages.props` 维护 537 个 `PackageVersion` 条目
+- **MSBuild 版本变量**：`test/Directory.Build.props` 定义 22 个 `*Version` 变量
+- **包版本批量更新**：
+  - EF Core → 10.0.10
+  - MassTransit → 8.5.10（固定）
+  - MediatR → 12.5.0（固定）
+  - Microsoft.OpenApi → 2.11.0（固定，3.x XML 兼容问题）
+  - Polly → 8.7.0
+  - Serilog.AspNetCore → 10.0.0
+  - AutoMapper → 16.2.0
+  - Humanizer → 3.0.10
+  - Dapper → 2.1.79
+  - StackExchange.Redis → 3.0.17
+  - MongoDB.Driver → 3.10.0
+  - Dapr → 1.18.4
+  - Refit → 13.1.0
+  - RestSharp → 114.0.0
+- **PLC 模块**：落地 ADR-118 P3 插件化主机（`plc-host` + 7 个设备协议插件）
+- **测试套件**：`test/` 目录 651 个 `*Test.cs` 反射验证文件
+- **文档结构**：新增 4.9 test/、第9章测试体系、第10章版本更新记录；第5章重写依赖全景
+
+### 历史里程碑
+
+| 日期 | 变更 |
+|------|------|
+| 2026-07-24 | 初始 Wiki 版本（.NET 10，200+ 包） |
+| 2026-10-18 | .NET 11 升级、中央包版本迁移、PLC 插件化主机、测试套件建立 |
+
+---
+
+> **文档版本**: 1.1  
+> **最后更新**: 2026-10-18  
 > **项目仓库**: VSA (Vertical Slice Architecture)  
-> **技术栈**: .NET 10 / C# 14 / ASP.NET Core
+> **技术栈**: .NET 11 / C# 14 / ASP.NET Core
