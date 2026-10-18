@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Plc.Plugins.Contracts;
 
 /// <summary>寄存器 / 线圈类型（对应 Modbus 功能码语义）。</summary>
@@ -82,7 +84,14 @@ public interface IDeviceProtocol
     IDeviceSession CreateSession(DeviceConnectionOptions options);
 }
 
-/// <summary>一次设备连接的生命周期会话：按寄存器类型读 / 写原始字节。</summary>
+/// <summary>
+/// 一次设备连接的生命周期会话：按寄存器类型读 / 写原始字节，并产出统一设备帧 <see cref="DeviceFrame"/>。
+/// <para>
+/// ADR-119 决策 ①：帧能力折叠进本契约，不再引入 <c>IProtocolAdapter</c> 平行抽象。
+/// 新增成员一律采用<strong>默认接口方法（C# 14 DIM）</strong>给出默认实现，
+/// 现有协议实现（7 个 ALC 设备插件 + plc-gateway 内置协议）零改动即可编译。
+/// </para>
+/// </summary>
 public interface IDeviceSession : IAsyncDisposable
 {
     /// <summary>读取原始字节（协议相关：如 Modbus 为寄存器值大端排列）。</summary>
@@ -90,6 +99,84 @@ public interface IDeviceSession : IAsyncDisposable
 
     /// <summary>写入值（values 含义与协议相关）。</summary>
     Task WriteAsync(WriteRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 协议标识（用于 <see cref="DeviceFrame.ProtocolId"/> 元数据）。
+    /// 默认 <see cref="string.Empty"/>；协议实现应覆写为 <see cref="IDeviceProtocol.ProtocolId"/>。
+    /// </summary>
+    string ProtocolId => string.Empty;
+
+    /// <summary>
+    /// 是否支持跨请求复用底层连接（长连接）。
+    /// 宿主数据面据此决定：true → 放入会话池复用；false → 每次请求后释放。
+    /// 默认 false（保守：不复用，语义与既有「每次请求新建连接」的实现一致）。
+    /// </summary>
+    bool SupportsConnectionReuse => false;
+
+    /// <summary>
+    /// 批量读：把多个 <see cref="ReadRequest"/> 聚合成一次设备交互（或最少的交互次数），
+    /// 返回与入参<strong>同序同长</strong>的帧集合。
+    /// <para>
+    /// 默认实现：串行转调 <see cref="ReadAsync"/> 并封装为帧。协议实现应覆写为真正的批量 / 合并读
+    /// （如 Modbus 把连续地址合并为单次 0x03 请求），这是数据面吞吐的主要来源。
+    /// </para>
+    /// <para>
+    /// 容错语义：<strong>单项失败不抛异常</strong>，落为 <see cref="DeviceFrame.Failure"/> 帧，
+    /// 保证数据面一次采集的部分结果不因单点故障丢失；<see cref="OperationCanceledException"/> 原样上抛。
+    /// </para>
+    /// </summary>
+    /// <param name="requests">读请求集合（顺序即返回顺序）。</param>
+    /// <param name="deviceId">设备逻辑标识，用于帧元数据；null 时为 <see cref="string.Empty"/>。</param>
+    /// <param name="cancellationToken">取消令牌。</param>
+    async Task<IReadOnlyList<DeviceFrame>> ReadBatchAsync(
+        IReadOnlyList<ReadRequest> requests,
+        string? deviceId = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(requests);
+        if (requests.Count == 0)
+        {
+            return Array.Empty<DeviceFrame>();
+        }
+
+        var protocol = ProtocolId;
+        var id = deviceId ?? string.Empty;
+        var frames = new DeviceFrame[requests.Count];
+
+        for (int i = 0; i < requests.Count; i++)
+        {
+            var request = requests[i];
+            var startedAt = Stopwatch.GetTimestamp();
+            try
+            {
+                var payload = await ReadAsync(request, cancellationToken).ConfigureAwait(false);
+                frames[i] = DeviceFrame.Read(
+                    protocol,
+                    id,
+                    request,
+                    payload,
+                    sequence: i,
+                    elapsed: Stopwatch.GetElapsedTime(startedAt));
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                frames[i] = DeviceFrame.Failure(
+                    protocol,
+                    id,
+                    ex.Message,
+                    request.Type,
+                    request.StartAddress,
+                    sequence: i,
+                    elapsed: Stopwatch.GetElapsedTime(startedAt));
+            }
+        }
+
+        return frames;
+    }
 }
 
 /// <summary>

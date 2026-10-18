@@ -1,7 +1,7 @@
 namespace PlcAiot.Abstractions.Devices;
 
 /// <summary>
-/// 设备协议统一契约（在 §6.2 IProtocolAdapter 流式帧出口之上，面向设备生命周期）。
+/// 设备协议统一契约（在 §6.2 统一设备帧 DeviceFrame 出口之上，面向设备生命周期）。
 /// Modbus/S7/OPC-UA/Melsec 等都是它的不同实现，经 §3 插件机制加载。
 /// </summary>
 public interface IDeviceProtocol : IAsyncDisposable

@@ -124,14 +124,47 @@ plc-host 当前数据面 = HTTP 请求 → 每次 `CreateSession` 新建 TCP 连
 
 ## 5. 里程碑
 
-| # | 内容 | 产出 | 依赖 |
-|---|---|---|---|
-| M1 | 契约层：`DeviceFrame` + `IDeviceSession` 扩展（批量读 DIM、连接复用标记）+ 命名清理 | `Plc.Plugins.Contracts`、`wwwroot/js/app.js` | — |
-| M2 | vs-threading 引入 plc-host（`AsyncSemaphore`/`AsyncLazy`/`JoinableTaskFactory`） | `plc-host.csproj` + 并发底座 | M1 |
-| M3 | Disruptor 4.0.0 钉齐 + 采集管道骨架（环形缓冲） | `plc-host.csproj` + 管道 | M2 |
-| M4 | plc-host 数据面：会话池 + 批量读 + Polly 弹性 | `DeviceProtocolsModule` 改造 | M2（可提前） |
-| M5 | Modbus TCP 参考实现覆写批量读 + IoTClient 等价性验证 | 插件内新文件 + 验证脚本/结论 | M1（可并行） |
-| M6 | 门禁：新契约/管道的构建 + 冒烟脚本纳入 `scripts/` | CI 可对 `net11.0` 构建 | M1~M5 |
+| # | 内容 | 产出 | 依赖 | 状态 |
+|---|---|---|---|---|
+| M1 | 契约层：`DeviceFrame` + `IDeviceSession` 扩展（批量读 DIM、连接复用标记）+ 命名清理 | `Plc.Plugins.Contracts`、`wwwroot/js/app.js` | — | ✅ 已完成 |
+| M2 | vs-threading 引入 plc-host（`AsyncSemaphore`/`AsyncLazy`/`JoinableTaskFactory`） | `plc-host.csproj` + 并发底座 | M1 | 待开工 |
+| M3 | Disruptor 4.0.0 钉齐 + 采集管道骨架（环形缓冲） | `plc-host.csproj` + 管道 | M2 | 待开工 |
+| M4 | plc-host 数据面：会话池 + 批量读 + Polly 弹性 | `DeviceProtocolsModule` 改造 | M2（可提前） | 待开工 |
+| M5 | Modbus TCP 参考实现覆写批量读 + IoTClient 等价性验证 | 插件内新文件 + 验证脚本/结论 | M1（可并行） | 待开工 |
+| M6 | 门禁：新契约/管道的构建 + 冒烟脚本纳入 `scripts/` | CI 可对 `net11.0` 构建 | M1~M5 | 待开工 |
+
+### 5.1 M1 落地说明（契约层）
+
+**新增 `src/Plc.Plugins.Contracts/DeviceFrame.cs`**
+
+- `FrameDirection`：`Inbound`（设备 → 宿主）/ `Outbound`（宿主 → 设备）。
+- `DeviceFrame`（`sealed record`，不可变）：`ProtocolId` / `DeviceId` / `Timestamp`(UTC `DateTimeOffset`) /
+  `Direction` / `Payload`(`ReadOnlyMemory<byte>`) / `Sequence` / `RegisterType` / `ElementType` /
+  `StartAddress` / `Count` / `AddressText` / `Elapsed` / `Error`；派生 `IsSuccess`、`Length`。
+- 三个工厂：`Read(...)`（入站）、`Write(...)`（出站，无返回载荷）、`Failure(...)`（失败帧）。
+- 值语义：`Payload` 按**字节内容**判等（`SequenceEqual`），哈希 `HashCode.AddBytes`，
+  避免 `ReadOnlyMemory<T>` 默认引用比较造成的"内容相同却不相等"陷阱。
+- 不依赖任何序列化框架：序列化是 MQTT / InfluxDB / Outbox 层的事。
+
+**扩展 `IDeviceSession`（全部为默认接口方法，现有实现零改动）**
+
+| 成员 | 默认实现 | 语义 |
+|---|---|---|
+| `string ProtocolId => ""` | 空串 | 帧元数据；协议实现应覆写为 `IDeviceProtocol.ProtocolId` |
+| `bool SupportsConnectionReuse => false` | false | 宿主数据面据此决定是否入会话池（保守默认：不复用） |
+| `Task<IReadOnlyList<DeviceFrame>> ReadBatchAsync(requests, deviceId, ct)` | 串行转调 `ReadAsync` | 与入参**同序同长**；单项失败**不抛**，落为 `Failure` 帧；`OperationCanceledException` 原样上抛 |
+
+> **DIM 使用约束**：默认接口成员**只在接口上可见**，实现类类型的变量看不到它们。
+> 宿主/管道代码必须按 `IDeviceSession` 编程（`IDeviceSession s = new ModbusTcpSession(...)`），
+> 不可用 `var` 推断为实现类——这是 DIM 的语言固有语义，不是本仓约定。
+
+**命名清理**：`IProtocolAdapter` 在 `src/` 下已清零（`wwwroot/js/app.js`、
+`PlcAiot.Abstractions/Devices/IDeviceProtocol.cs` 注释、`PlcAiot.Web/cockpit.html`）。
+`docs/*.svg` 中的节点文案留待下一轮文档修订统一替换。
+
+**验证**：`Plc.Plugins.Contracts` / `plc-host`（含 7 个插件）/ `plc-gateway` 全部 **0 错误**构建；
+契约行为探针 **26/26 PASS**（DIM 默认路径、覆写路径、部分失败落帧、取消上抛、
+`DeviceFrame` 内容判等与哈希、旧 `ReadAsync`/`WriteAsync` 未破坏）。
 
 ---
 

@@ -15,8 +15,22 @@
 | `IPlugin` | 插件生命周期：`Id / Name / Version / StartAsync(IPluginContext) / StopAsync(...)` |
 | `IDeviceProtocol` | 协议抽象：`ProtocolId`（如 `modbus.tcp`）、`DisplayName`、`Capabilities`、`CreateSession(DeviceConnectionOptions)` |
 | `IDeviceSession : IAsyncDisposable` | 一次连接的生命周期：`ReadAsync(ReadRequest)` / `WriteAsync(WriteRequest)` |
+| `DeviceFrame / FrameDirection` | 统一设备帧（ADR-119 决策 ③）：原始字节 + 显式元数据，不可变；`Inbound`/`Outbound` |
 | `IDeviceCatalog` | 宿主注册中心（宿主实现，单例注入 DI）：`Register / Get / All` |
 | `DeviceConnectionOptions / ReadRequest / WriteRequest / RegisterType / DeviceCapabilities` | 值类型；`RegisterType`：`Coil=1, DiscreteInput=2, HoldingRegister=3, InputRegister=4` |
+
+#### 1.1 `IDeviceSession` 可选成员（默认接口方法，ADR-119）
+
+以下成员均有默认实现，**现有插件零改动即可编译**；按需覆写可获得数据面优化：
+
+| 成员 | 默认值 | 覆写收益 |
+|------|--------|----------|
+| `string ProtocolId` | `""` | 帧元数据带上协议标识，便于链路追踪与门禁断言 |
+| `bool SupportsConnectionReuse` | `false` | 置 `true` 表示连接可跨请求复用 → 宿主将其放入会话池，省去每次建连开销 |
+| `Task<IReadOnlyList<DeviceFrame>> ReadBatchAsync(requests, deviceId, ct)` | 串行转调 `ReadAsync` | 合并读（如 Modbus 把连续地址合成一次 0x03）是吞吐主要来源；返回须与入参**同序同长**，单项失败落 `DeviceFrame.Failure(...)` 而非抛异常 |
+
+> ⚠️ **DIM 可见性**：默认接口成员只在**接口**上可见。`var s = new MySession(); s.ReadBatchAsync(...)`
+> 编译不过——必须按接口编程：`IDeviceSession s = new MySession();`。
 
 > ⚠️ **类型身份陷阱**：插件与宿主必须共享同一个 `Plc.Plugins.Contracts` 程序集实例。
 > `PluginLoadContext.Load` 对 `Plc.Plugins.Contracts` 返回 `null` → 回退到宿主默认 ALC 加载，
