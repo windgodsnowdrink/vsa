@@ -82,6 +82,9 @@
     <PackageReference Include="Foundatio" Version="13.0.2" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.18.5" />
     <PackageReference Include="Dapr.Client" Version="1.18.5" />
+    <!-- ADR-119 M2：并发底座。版本与 plc-gateway 钉齐，禁止浮动（.NET 11 Preview 下
+         「精确版本 vs 最低版本」冲突会升级为 NU1107 硬错误，有先例）。 -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="17.11.20" />
   </ItemGroup>
 
   <ItemGroup>
