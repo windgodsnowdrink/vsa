@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   反编译 snet：先 dnSpy 路线，失败每个 DLL 自动回退 ilspycmd
 .PREREQ

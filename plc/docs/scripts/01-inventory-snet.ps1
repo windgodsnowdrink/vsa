@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   盘点 E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet 下的所有 DLL（按 NuGet 包目录结构）。
   输出:

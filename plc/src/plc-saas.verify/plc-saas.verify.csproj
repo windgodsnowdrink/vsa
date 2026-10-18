@@ -15,14 +15,19 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <!--
+    EF Core 系版本必须与 Npgsql.EF 提供程序对齐（勿单独升级）：Npgsql.EF preview.6 对
+    EF Relational 是精确版本钉死，EF 三件套升 preview.7 会触发 NU1107 硬错误（2026-10-13 实测）。
+    与 plc-saas.csproj 保持同一版本。
+  -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="11.0.0-preview.7.26381.103" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="11.0.0-preview.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.7.26381.103" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.7.26381.103" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.6.26359.118" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0-preview.6.26359.118" />
     <PackageReference Include="Qdrant.Client" Version="1.19.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
     <PackageReference Include="Mediator.Abstractions" Version="3.0.2" />
@@ -50,7 +55,14 @@
     <Content Include="@(_SaasSrc)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\plc-saas\plc-saas.csproj" />
+    <!--
+      注意：不要再加回 ProjectReference 到 plc-saas。本工程已通过 PrepareStrippedSources
+      本地编译同一批切片源（= plc-saas 完整源码，ADR-101 的工程化 typecheck 语义不变）。
+      若同时引用 plc-saas.dll，同一批请求类型会以「源 + 元数据」双份进入本编译
+      （CS0436 ×1024），Mediator 源生成器进而为每个请求生成两份 Wrapper_For_*，
+      ContainerMetadata 重复定义 → CS0102 硬错误（2026-10-13 实测，SDK 11.0.100-preview.7）。
+    -->
+    <Compile Include="VerifyTests.cs" />
   </ItemGroup>
 
   <!-- File-based 源 → 剥离 #include/#r → 编译（ADR-101 的工程化 typecheck） -->

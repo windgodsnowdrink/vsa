@@ -1,4 +1,4 @@
-# strip-app.ps1 - 剥离 File-based 的 #include / #r 指令，使全部源（含 Program.cs）可作为普通 csproj 编译。
+﻿# strip-app.ps1 - 剥离 File-based 的 #include / #r 指令，使全部源（含 Program.cs）可作为普通 csproj 编译。
 # Args: $args[0] = source root, $args[1] = output root。不修改原始源。
 $ErrorActionPreference = 'Stop'
 $SrcRoot = [System.IO.Path]::GetFullPath($args[0])
