@@ -166,6 +166,60 @@ plc-host 当前数据面 = HTTP 请求 → 每次 `CreateSession` 新建 TCP 连
 契约行为探针 **26/26 PASS**（DIM 默认路径、覆写路径、部分失败落帧、取消上抛、
 `DeviceFrame` 内容判等与哈希、旧 `ReadAsync`/`WriteAsync` 未破坏）。
 
+### 5.2 M5 前置：自研 Modbus 的 P0 缺陷修复（已随 M1 后完成）
+
+M5 的可行性调研（IoTClient）用自写从站模拟器做等价性验证时，**顺带暴露了自研实现的一个 P0 缺陷**，
+其优先级高于引入任何第三方库，故提前修复（提交 `588efd7`）。
+
+**缺陷**：`ModbusTcpSession.EnsureConnectedAsync` 设的 `TcpClient.SendTimeout` / `ReceiveTimeout`
+**只对同步 `Send`/`Read` 生效**，对 `await stream.ReadAsync(...)` 完全无效。
+实测黑洞从站（accept 后永不回包）：读取 **>8000ms 不返回、永不解除阻塞**。
+一旦按本 ADR 打开 `SupportsConnectionReuse` 进会话池，挂起的会话会**永久占住连接**——
+直接击穿 M5 验收标准「长稳无连接泄漏」。
+
+**修复要点**（`src/plc-host/plugins/DemoDevicePlugin/ModbusTcpDevicePlugin.cs`）
+
+| 措施 | 说明 |
+|---|---|
+| 移除 `SendTimeout`/`ReceiveTimeout` | 保留注释说明为何不可用，避免后人再踩 |
+| `CreateTimeoutSource` | `CreateLinkedTokenSource(调用方令牌)` + `CancelAfter(TimeoutMs)`，覆盖「建连 + 收发」全过程；读/写两条路径均接入 |
+| 超时语义分层 | 自身超时 → `TimeoutException`；调用方取消 → 原样抛 `OperationCanceledException` |
+| `InvalidateAsync` | 超时 / 取消 / 断链 / 帧错位后**一律作废底层连接**并自动重建——复用场景下迟到的响应会被下一次请求读走，造成静默脏数据 |
+| 响应 TID / UnitId 校验 | MBAP 事务号与单元号必须回显请求值，否则抛 `ModbusFrameMismatchException`（继承 `InvalidOperationException` 以兼容既有捕获）并作废连接 |
+| 长度越界校验 | 响应声明的 byteCount 超出实际可用长度 → 帧级异常 |
+
+> **区分两类异常**：设备返回的 **Modbus 异常响应**（异常码 0x01/0x02/0x03…）仍走 `InvalidOperationException`
+> 且**不**作废连接（连接仍然可用）；**帧级不一致**（TID/UnitId 不匹配、长度非法）才作废连接。
+
+**验证**（`.workbuddy/tmp/p0-verify.cs`，直接引用真实插件工程，`MiniModbusServer` + 黑洞从站 + 错位从站）：**19/19 PASS**。
+黑洞从站 **806ms** 抛 `TimeoutException`（原 >8000ms 挂起）；两次超时各建一条新连接（证明作废重建生效）；
+TID/UnitId 错位被检出；异常响应后连接可继续复用；单会话 201 次读仍只新建 **1** 条 TCP 连接。
+
+### 5.3 M5 调研结论：IoTClient 作为可选后端（已定，待 M5 实施）
+
+| 项 | 结论 |
+|---|---|
+| 包 id | **`IoTClient`**（唯一正牌；`.Net`/`.Core` 不存在；`.AOT` 是 280 下载的第三方 fork，勿装） |
+| 版本 | **1.0.48 锁死**（该库曾断更 2 年、后又断更 16 个月，属单人「按需救火」维护，禁止浮动版本） |
+| 兼容性 | 仅 `lib/netstandard2.0`，实测引用 `net11.0` **0 警告 0 错误**，无 CVE；代价是传递拉入 `System.IO.Ports`（串口）及其 rc2 预发布 native 包 |
+| 真实类名 | `IoTClient.Clients.Modbus.ModbusTcpClient`（**bus 小写**；README 写的 `ModBusTcpClient` 编译不过） |
+| **唯一可用口径** | `GetReadCommand()` + `SendPackageSingle()` + `[9..]` 切片 → **10/10 对齐**；高层 `Read()` 默认仅 **2/10**（`EndianFormat.ABCD` 整体反转 payload），配 `DCBA + byteFormatting:true` 也只到 **5/10** |
+| 硬约束 | ① 必须显式 `Open()`（否则每次读新建一条 TCP 连接）② `DisposeAsync()` 内必须 `Close()`（无 `IDisposable`）③ `plcAddresses: false` ④ 异常自行判 `PDU[0] & 0x80`，不依赖 `Err`/`ErrCode`（异常码 `ErrCode` 恒为 0，只嵌在中文本地化字符串里） |
+
+**判定**：值得作为**可选后端**引入（多一个工业现场验证过的协议栈做交叉校验与兜底），
+但**绝不替换自研实现**——自研零依赖、无串口包袱、语义透明、异常可机读，反而更干净。
+建议落在新插件 `plugins/IoTClientBackendPlugin/`，**不进** `Plc.Plugins.Contracts`、不污染自研插件。
+
+**M5 门禁（任一不过即弃用，保留自研）**
+- **G1** 4 个功能码 × 长度/地址边界，两条路径逐字节全等（裸帧口径）
+- **G2** 10 万次读后 TCP 连接数增量 = 1，句柄/内存无增长
+- **G3** 黑洞从站下两条路径都必须在 `TimeoutMs` 内终止，不得挂起
+- **G4** Modbus 异常码在两条路径上双向可机读
+
+验证台架：自写 `MiniModbusServer`（确定性数据模型，两条路径**共用同一个从站**以排除值漂移与时序抖动），
+端口 **15020**（15021 黑洞、15030+ 用于后续验证；502 需管理员权限不用；
+避开 Windows 保留段 80/4394-4493/5357/8035-8134/8235-8334/8443/9103-9202/13508/50000-50059）。
+
 ---
 
 ## 6. 风险与缓解
