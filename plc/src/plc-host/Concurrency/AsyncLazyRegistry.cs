@@ -53,11 +53,33 @@ public sealed class AsyncLazyRegistry<TKey, TValue>
         return lazy.GetValueAsync(cancellationToken);
     }
 
-    /// <summary>已创建过则直接返回，不触发工厂。</summary>
-    public bool TryGetValue(TKey key, out TValue? value)
+    /// <summary>
+    /// 已求值则返回其值，不触发工厂；未登记 / 未求值 / 求值失败一律 false。
+    /// </summary>
+    public bool TryGetValue(TKey key, out TValue? value) => TryPeek(key, out value);
+
+    /// <summary>
+    /// 窥视已登记项的值：<strong>不会触发工厂</strong>，未求值返回 false。
+    /// 供调用方在不产生副作用的前提下检查条目（如空闲驱逐判定）。
+    /// </summary>
+    public bool TryPeek(TKey key, out TValue? value)
     {
         value = default;
-        return _items.TryGetValue(key, out _);
+        if (!_items.TryGetValue(key, out var lazy))
+        {
+            return false;
+        }
+
+        // AsyncLazy 未提供无副作用读取；这里只认已成功完成的 Task，
+        // 绝不为了窥视而触发工厂（那会让 GetOrAddAsync 的「只创建一次」语义失效）。
+        var task = lazy.GetValueAsync();
+        if (!task.IsCompletedSuccessfully)
+        {
+            return false;
+        }
+
+        value = task.Result;
+        return true;
     }
 
     /// <summary>

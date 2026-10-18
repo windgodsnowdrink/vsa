@@ -49,11 +49,9 @@ public sealed class VsThreadingCapability : ICapabilityModule, ICarterModule
             return new KeyedAsyncGate(limit is > 0 ? limit.Value : DefaultPerDeviceLimit);
         });
 
-        // 设备会话注册表：value 为 IDeviceSession（契约层类型），生命周期由注册表持有。
-        services.AddSingleton(sp => new AsyncLazyRegistry<string, Plc.Plugins.Contracts.IDeviceSession>(
-            _ => throw new InvalidOperationException(
-                "会话工厂未注入：请在设备协议模块中提供按设备标识创建 IDeviceSession 的工厂（ADR-119 M4）"),
-            sp.GetRequiredService<JoinableTaskFactory>()));
+        // 注：AsyncLazyRegistry<string, IDeviceSession> 曾在此以「未注入工厂」占位注册。
+        // M4 起真实会话池由 Devices/DeviceSessionPool.cs 内部自持注册表（工厂需依赖
+        // IDeviceCatalog，无法在此无上下文构造），该占位已移除，避免注入到必抛的服务。
     }
 
     public void AddRoutes(IEndpointRouteBuilder app)

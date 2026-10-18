@@ -128,7 +128,7 @@ plc-host 当前数据面 = HTTP 请求 → 每次 `CreateSession` 新建 TCP 连
 |---|---|---|---|---|
 | M1 | 契约层：`DeviceFrame` + `IDeviceSession` 扩展（批量读 DIM、连接复用标记）+ 命名清理 | `Plc.Plugins.Contracts`、`wwwroot/js/app.js` | — | ✅ 已完成 |
 | M2 | vs-threading 引入 plc-host（`AsyncSemaphore`/`AsyncLazy`/`JoinableTaskFactory`） | `plc-host.csproj` + 并发底座 | M1 | ✅ 已完成 |
-| M3 | Disruptor 4.0.0 钉齐 + 采集管道骨架（环形缓冲） | `plc-host.csproj` + 管道 | M2 | 待开工 |
+| M3 | Disruptor 4.0.0 钉齐 + 采集管道骨架（环形缓冲） | `plc-host.csproj` + 管道 | M2 | ✅ 已完成 |
 | M4 | plc-host 数据面：会话池 + 批量读 + Polly 弹性 | `DeviceProtocolsModule` 改造 | M2（可提前） | 待开工 |
 | M5 | Modbus TCP 参考实现覆写批量读 + IoTClient 等价性验证 | 插件内新文件 + 验证脚本/结论 | M1（可并行） | 待开工 |
 | M6 | 门禁：新契约/管道的构建 + 冒烟脚本纳入 `scripts/` | CI 可对 `net11.0` 构建 | M1~M5 | 待开工 |
@@ -251,6 +251,50 @@ TID/UnitId 错位被检出；异常响应后连接可继续复用；单会话 20
 > 遗留：`AsyncLazyRegistry<string, IDeviceSession>` 目前以「未注入工厂」占位，
 > 真实会话工厂由 **M4** 提供（见 M4 条目）。
 
+### 5.5 M3 落地说明：Disruptor 4.0.0 采集管道骨架
+
+`plc-host.csproj` 钉入 **Disruptor 4.0.0**（与 plc-gateway 一致；`plc-vsa-demo` 的 6.0.1 的
+`IEventHandler` / `Dsl` API 不兼容，不作为引入依据）。`dotnet restore` + `build` **无 NU1107**。
+
+**核心矛盾与解法**：决策 ③ 要求 `DeviceFrame` 不可变，而 Disruptor 低分配率的前提是槽位可原地改写。
+用一个可变持有者解耦——`FrameSlot` 预分配（发布路径不分配槽位），持有不可变 `DeviceFrame` 快照，
+载荷 `ReadOnlyMemory<byte>` **全程不拷贝字节**；末端 `SlotResetHandler` 清空引用，避免大环形缓冲区滞留历史帧。
+代价：每帧仍分配一个 `DeviceFrame` 记录（不可变性的必然成本），相对其承载的 `byte[]` 可忽略。
+
+| 产出 | 位置 | 说明 |
+|---|---|---|
+| `FrameSlot` | `Pipeline/FrameSlot.cs` | 可变槽位：`Frame` / `Sequence` / `EnqueuedAt` + 延迟计算 |
+| `IFrameHandler` | `Pipeline/IFrameHandler.cs` | 业务处理器抽象，只看到 `DeviceFrame`，不碰槽位机制 |
+| `SlotHandler` | 同上 | 适配 Disruptor `IEventHandler<T>`；**捕获处理器异常**，避免单个 sink 故障停掉整条管道 |
+| `SlotResetHandler` | 同上 | 末端清理槽位引用 |
+| `AcquisitionPipeline` | `Pipeline/AcquisitionPipeline.cs` | `AddStage`（阶段内并行、阶段间串联）、`TryPublish`（非阻塞，满则丢弃计数）/ `Publish`（阻塞式）、`Shutdown(timeout)` 排空 |
+| `MetricsFrameHandler` | `Pipeline/MetricsFrameHandler.cs` | 处理数 / 失败帧数 / 平均与峰值端到端延迟 |
+| `PipelineCapability` | `Modules/PipelineCapability.cs` | DI 装配 + `GET /sys/pipeline`、`POST /sys/pipeline/probe` |
+
+**配置**：`Pipeline:RingSize`（默认 1024；**必须是 2 的幂**，配置非法时向上取到最近的 2 的幂而非静默降级）、
+`Pipeline:DropOnFull`（默认 true）、`Pipeline:ShutdownTimeoutMs`（默认 5000）。
+
+**未沿用 plc-gateway 的写法**：`plc-gateway/Pipeline.cs` 里循环调用 `HandleEventsWith(new PipelineHandler(log))`
+N 次，会让**每个事件被 N 个等价处理器重复处理 N 次**（疑似既有缺陷，本轮未改，待双宿主收口时一并处理）。
+plc-host 改用「阶段内并行 + 阶段间串联」的显式模型。
+
+**⚠️ 重要限制：Disruptor 4.0.0 与 AOT / 裁剪不兼容。**
+其内部 `Disruptor.Internal.StructProxy` 依赖 `AssemblyBuilder.DefineDynamicAssembly` 动态生成代码
+（`ProcessingSequenceBarrierFactory` → `MultiProducerSequencer.NewBarrier` 的核心路径，非可选项）。
+实测在 `IsDynamicCodeSupported=false` 的环境下（如 .NET 文件型应用）启动时必抛
+`PlatformNotSupportedException`。**plc-host 若将来走 AOT 路径，必须换掉 Disruptor
+或改走 `System.Threading.Channels` 通道。**（已补入 §6 风险清单）
+
+**验证**：`.workbuddy/tmp/m3-probe/` 常规工程探针 **26/26 PASS**（连跑 3 次稳定）——
+1000 帧交付顺序**严格递增且无重复**、阶段串联与同阶段并行均收到全量、
+处理器抛异常**不中断管道**、背压下 `published + dropped == 请求数`（无静默丢失）、
+优雅关闭排空、重复 `DisposeAsync` 安全、计量可用。
+宿主实跑：5000 帧突发 `published=1024 / dropped=3976`（合计 = 请求数），
+事后 `processed=1024` 全部排空，平均延迟 **0.49ms**、峰值 **1.44ms**。
+
+> **探针形态变更**：M1/M2 用 `dotnet run --file` 文件型应用探针；M3 起涉及 Disruptor 的验证
+> 必须改用**常规工程**（见上述动态代码限制）。
+
 ---
 
 ## 6. 风险与缓解
@@ -263,3 +307,13 @@ TID/UnitId 错位被检出；异常响应后连接可继续复用；单会话 20
    缓解：plc-host 一律钉 **4.0.0**；`plc-vsa-demo` 维持独立，不作为引入依据。
 4. **SNET DLL 只参考**：`SnetProtocols` 以 `<Reference>` 引用二进制，反编译源码一律不进构建——新增协议插件沿用此约束。
 5. **双宿主未收口（已知债务）**：plc-host 与 plc-gateway 能力重叠，本轮不动，后续单独立项。
+6. **⚠️ Disruptor 4.0.0 与 AOT / 裁剪不兼容（M3 实测确认）**：其 `Internal.StructProxy`
+   依赖 `AssemblyBuilder` 动态代码生成，且位于 `MultiProducerSequencer.NewBarrier` 的**核心路径**
+   （非可选功能）。在 `IsDynamicCodeSupported=false` 的环境（含 .NET 文件型应用）启动即抛
+   `PlatformNotSupportedException`。
+   缓解：plc-host 当前为 JIT 部署，不受影响；**若将来启用 AOT / 裁剪，必须替换 Disruptor
+   或改走 `System.Threading.Channels` 通道**。另：本仓 DB 层已规划 SQLite + EFCore + Dapper 的
+   AOT 路径，若该路径要求宿主整体 AOT，需在此前完成替换决策。
+7. **plc-gateway 疑似重复处理（待核实）**：`plc-gateway/Pipeline.cs` 循环调用
+   `HandleEventsWith(new PipelineHandler(log))` N 次，等价于把同一批处理器并行挂 N 份，
+   每个事件会被重复处理 N 次。本轮未改（不在 ADR-119 范围），列入双宿主收口议题。

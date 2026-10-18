@@ -22,7 +22,8 @@ public sealed class ModbusTcpDevicePlugin : IPlugin, IDeviceProtocol
     public DeviceCapabilities Capabilities => new(
         SupportsRead: true,
         SupportsWrite: true,
-        SupportedTypes: new[] { RegisterType.HoldingRegister, RegisterType.InputRegister, RegisterType.Coil, RegisterType.DiscreteInput });
+        SupportedTypes: new[] { RegisterType.HoldingRegister, RegisterType.InputRegister, RegisterType.Coil, RegisterType.DiscreteInput },
+        SupportsConnectionReuse: true);
 
     public Task StartAsync(IPluginContext context, CancellationToken cancellationToken = default)
     {

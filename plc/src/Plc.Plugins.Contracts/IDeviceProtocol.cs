@@ -60,10 +60,26 @@ public sealed record WriteRequest(
     object[]? TypedValues = null);
 
 /// <summary>协议能力声明。</summary>
+/// <param name="SupportsRead">是否支持读。</param>
+/// <param name="SupportsWrite">是否支持写。</param>
+/// <param name="SupportedTypes">支持的寄存器 / 线圈类型。</param>
+/// <param name="SupportsConnectionReuse">
+/// 该协议的会话是否可<strong>跨请求复用</strong>（长连接）。
+/// <para>
+/// 宿主会话池据此在<strong>创建会话之前</strong>决策：true → 入池复用；
+/// false → 每次请求新建并随即释放。协议实现应令它与
+/// <see cref="IDeviceSession.SupportsConnectionReuse"/> 保持一致。
+/// </para>
+/// </param>
+/// <remarks>
+/// 参数带默认值：在记录尾部追加可选参数，源兼容既有插件的位置参数调用
+/// （7 个 ALC 插件零改动）。
+/// </remarks>
 public sealed record DeviceCapabilities(
     bool SupportsRead,
     bool SupportsWrite,
-    RegisterType[] SupportedTypes);
+    RegisterType[] SupportedTypes,
+    bool SupportsConnectionReuse = false);
 
 /// <summary>
 /// 设备协议抽象（Tier1 ALC 插件实现）。一个插件可实现一个或多个协议。
