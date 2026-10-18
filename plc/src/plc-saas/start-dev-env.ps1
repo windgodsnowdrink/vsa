@@ -121,11 +121,20 @@ function Read-Infra {
         elseif ($line -match '^\s*POSTGRES_DB:\s*(.+?)\s*$')       { $Infra.PgDb        = $Matches[1] }
         elseif ($line -match '^\s*EMQX_DASHBOARD__DEFAULT_USERNAME:\s*(.+?)\s*$') { $Infra.EmqxUser = $Matches[1] }
         elseif ($line -match '^\s*EMQX_DASHBOARD__DEFAULT_PASSWORD:\s*(.+?)\s*$') { $Infra.EmqxPwd  = $Matches[1] }
-        elseif ($line -match '^\s*-\s*"?(\d+):1883"?\s*$')  { $ComposePorts['Mqtt']      = $Matches[1] }
-        elseif ($line -match '^\s*-\s*"?(\d+):8083"?\s*$')  { $ComposePorts['Ws']        = $Matches[1] }
-        elseif ($line -match '^\s*-\s*"?(\d+):8084"?\s*$')  { $ComposePorts['Wss']       = $Matches[1] }
-        elseif ($line -match '^\s*-\s*"?(\d+):8883"?\s*$')  { $ComposePorts['Tls']       = $Matches[1] }
-        elseif ($line -match '^\s*-\s*"?(\d+):18083"?\s*$') { $ComposePorts['Dashboard'] = $Matches[1] }
+        # compose 短语法 `- "宿主:容器"`；必须容忍行尾注释（`- "1883:1883"   # MQTT`），
+        # 否则整行匹配失败，看起来就像"compose 没声明端口"（这正是最初踩到的坑）。
+        elseif ($line -match '^\s*-\s*"?(\d+):1883"?\s*(#.*)?$')  { $ComposePorts['Mqtt']      = $Matches[1] }
+        elseif ($line -match '^\s*-\s*"?(\d+):8083"?\s*(#.*)?$')  { $ComposePorts['Ws']        = $Matches[1] }
+        elseif ($line -match '^\s*-\s*"?(\d+):8084"?\s*(#.*)?$')  { $ComposePorts['Wss']       = $Matches[1] }
+        elseif ($line -match '^\s*-\s*"?(\d+):8883"?\s*(#.*)?$')  { $ComposePorts['Tls']       = $Matches[1] }
+        elseif ($line -match '^\s*-\s*"?(\d+):18083"?\s*(#.*)?$') { $ComposePorts['Dashboard'] = $Matches[1] }
+        # compose 长语法（`- target: <容器端口>` 后跟 `published: "<宿主端口>"`）
+        elseif ($line -match '^\s*-\s*target:\s*(\d+)\s*$') { $curTarget = $Matches[1] }
+        elseif ($line -match '^\s*published:\s*"?(\d+)"?\s*$' -and $curTarget) {
+            $key = $ContainerPortMap[$curTarget]
+            if ($key) { $ComposePorts[$key] = $Matches[1] }
+            $curTarget = $null
+        }
     }
     Write-Host "[cfg] 取自 docker-compose.yml —— PG $($Infra.PgVersion)（superuser $($Infra.PgSuperUser)） · EMQX $($Infra.EmqxVersion)（$($Infra.EmqxUser)）"
 }
@@ -148,6 +157,8 @@ function Resolve-EmqxHostPorts {
     }
     if ($ComposePorts.Count -eq 0) {
         Write-Host "[cfg] compose 未解析到 EMQX 宿主端口映射（需短语法 - `"宿主:容器`"），采用内置 5xxxx 映射；如需以 compose 为唯一真源，请按其短语法同步端口。"
+    } else {
+        Write-Host "[cfg] EMQX 宿主端口已与 compose 对齐：$((@('Mqtt','Ws','Wss','Tls','Dashboard') | ForEach-Object { "$_=$($HostFix[$_])" }) -join ' · ')"
     }
 }
 Resolve-EmqxHostPorts
@@ -345,8 +356,6 @@ function Invoke-E2EGate {
     $log    = Join-Path $logDir 'e2e-gate.log'
     Write-Host ""
     Write-Host "=== e2e 一键自检：scripts/verify-saas-console.sh ==="
-    # Git Bash 输出为 UTF-8；不设会在 Windows 控制台代码页下变乱码
-    try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
     # E2E_LOG 须为 POSIX 路径（Git Bash）；日志由 bash 侧 tee 落盘。
     # 不能用 PowerShell 捕获原生输出：控制台代码页转码会产生乱码并截断内容。
     $posixLog        = '/' + $log.Substring(0, 1).ToLower() + (($log.Substring(2)) -replace '\\', '/')

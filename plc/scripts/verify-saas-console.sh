@@ -28,13 +28,6 @@ if [ -n "${E2E_LOG:-}" ]; then
   exec > >(tee "$E2E_LOG") 2>&1
 fi
 
-# 日志：E2E_LOG 指向 POSIX 路径时，输出同步落盘（供 start-dev-env.ps1 一键自检留档）。
-# 必须由 bash 侧 tee 落盘 —— 交给 PowerShell 捕获原生输出会因控制台代码页转码产生乱码且截断内容。
-if [ -n "${E2E_LOG:-}" ]; then
-  mkdir -p "$(dirname "$E2E_LOG")"
-  exec > >(tee "$E2E_LOG") 2>&1
-fi
-
 # 绕过本机 HTTP 代理对 localhost 的拦截（否则返回 502 假象）
 export no_proxy='*' NO_PROXY='*'
 
