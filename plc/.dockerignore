@@ -10,6 +10,10 @@
 **/obj
 **/out
 
+# 工程元数据与无关子工程（不进入镜像构建上下文）
+**/.workbuddy
+test
+
 # 文档与示例（无需进入镜像）
 docs
 samples

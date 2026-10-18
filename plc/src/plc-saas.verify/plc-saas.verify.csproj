@@ -9,6 +9,9 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <NoWarn>CS1591;AD0001;CS0169</NoWarn>
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <!-- .NET 11 SDK 起 dotnet test 默认 VSTest 已移除；xunit.v3 基于 Microsoft.Testing.Platform，
+         须显式启用新测试体验（否则报 TestingPlatform MTP 错误）。 -->
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,10 +40,9 @@
     </PackageReference>
     <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
     <PackageReference Include="xunit.v3" Version="4.0.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <!-- 注意：xunit.v3 基于 Microsoft.Testing.Platform（MTP）。.NET 11 SDK 已移除 VSTest，
+         故不得再引用 xunit.runner.visualstudio（VSTest 适配器），否则 dotnet test 走已删除的
+         VSTest 目标而报错。Microsoft.NET.Test.Sdk 即 MTP 宿主，dotnet test 自动走 MTP。 -->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
   </ItemGroup>
 
