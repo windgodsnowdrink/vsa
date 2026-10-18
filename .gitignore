@@ -490,3 +490,7 @@ generated/
 bin/
 obj/
 /.trae-html-share-packages
+
+# 二进制依赖（DLL 统一由本地 lib 或 NuGet 提供，不进版本库）
+*.dll
+*.DLL
