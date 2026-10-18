@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC·AIOT 实时看板</title>
+    <style id="theme-vars">
+/*
+ * PLC·AIOT Design Tokens
+ * Reference: Apple Design Library (restrained, precise, editorial)
+ * Domain: Industrial IoT / PLC Edge Device SaaS
+ * Primary: Tech sky blue (#0ea5e9) with glassmorphism surfaces
+ * Theme modes: light / dark
+ */
+
+:root {
+  /* Primitive — brand sky */
+  --plca-brand-50: #f0f9ff;
+  --plca-brand-100: #e0f2fe;
+  --plca-brand-200: #bae6fd;
+  --plca-brand-300: #7dd3fc;
+  --plca-brand-400: #38bdf8;
+  --plca-brand-500: #0ea5e9;
+  --plca-brand-600: #0284c7;
+  --plca-brand-700: #0369a1;
+  --plca-brand-800: #075985;
+  --plca-brand-900: #0c4a6e;
+
+  /* Primitive — slate neutrals */
+  --plca-slate-50: #f8fafc;
+  --plca-slate-100: #f1f5f9;
+  --plca-slate-200: #e2e8f0;
+  --plca-slate-300: #cbd5e1;
+  --plca-slate-400: #94a3b8;
+  --plca-slate-500: #64748b;
+  --plca-slate-600: #475569;
+  --plca-slate-700: #334155;
+  --plca-slate-800: #1e293b;
+  --plca-slate-900: #0f172a;
+
+  /* Primitive — semantic scales */
+  --plca-background: var(--plca-slate-50);
+  --plca-foreground: var(--plca-slate-900);
+  --plca-card: rgba(255, 255, 255, 0.78);
+  --plca-card-foreground: var(--plca-slate-900);
+  --plca-popover: #ffffff;
+  --plca-popover-foreground: var(--plca-slate-900);
+
+  --plca-primary: var(--plca-brand-500);
+  --plca-primary-foreground: #ffffff;
+  --plca-secondary: var(--plca-slate-100);
+  --plca-secondary-foreground: var(--plca-slate-800);
+  --plca-muted: var(--plca-slate-100);
+  --plca-muted-foreground: var(--plca-slate-500);
+  --plca-accent: var(--plca-brand-100);
+  --plca-accent-foreground: var(--plca-brand-900);
+  --plca-destructive: #ef4444;
+  --plca-destructive-foreground: #ffffff;
+  --plca-success: #10b981;
+  --plca-success-foreground: #ffffff;
+  --plca-warning: #f59e0b;
+  --plca-warning-foreground: #ffffff;
+  --plca-border: var(--plca-slate-200);
+  --plca-input: var(--plca-slate-300);
+  --plca-ring: var(--plca-brand-500);
+
+  --plca-icon: var(--plca-slate-800);
+  --plca-icon-muted: var(--plca-slate-500);
+
+  /* Chart */
+  --plca-chart-1: var(--plca-brand-500);
+  --plca-chart-2: #10b981;
+  --plca-chart-3: #f59e0b;
+  --plca-chart-4: #8b5cf6;
+  --plca-chart-5: #ec4899;
+
+  /* Sidebar */
+  --plca-sidebar: rgba(255, 255, 255, 0.72);
+  --plca-sidebar-foreground: var(--plca-slate-800);
+  --plca-sidebar-primary: var(--plca-brand-500);
+  --plca-sidebar-primary-foreground: #ffffff;
+  --plca-sidebar-accent: var(--plca-slate-100);
+  --plca-sidebar-accent-foreground: var(--plca-slate-800);
+  --plca-sidebar-border: var(--plca-slate-200);
+  --plca-sidebar-ring: var(--plca-brand-500);
+
+  /* Typography */
+  --plca-font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --plca-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --plca-tracking-tight: -0.02em;
+  --plca-tracking-normal: 0em;
+
+  /* Radius */
+  --plca-radius-sm: 0.5rem;
+  --plca-radius-md: 0.75rem;
+  --plca-radius-lg: 1rem;
+  --plca-radius-xl: 1.25rem;
+
+  /* Shadows */
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(2, 8, 20, 0.04);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(2, 8, 20, 0.05), 0 1px 3px -1px rgba(2, 8, 20, 0.05);
+  --plca-shadow-md: 0 4px 8px -2px rgba(2, 8, 20, 0.06), 0 2px 4px -2px rgba(2, 8, 20, 0.04);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(2, 8, 20, 0.10), 0 4px 8px -4px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(2, 8, 20, 0.12), 0 8px 16px -8px rgba(2, 8, 20, 0.06);
+
+  /* Spacing base */
+  --plca-spacing: 0.25rem;
+}
+
+.dark {
+  --plca-background: #030711;
+  --plca-foreground: #f8fafc;
+  --plca-card: rgba(15, 23, 42, 0.72);
+  --plca-card-foreground: #f8fafc;
+  --plca-popover: #0f172a;
+  --plca-popover-foreground: #f8fafc;
+
+  --plca-primary: #38bdf8;
+  --plca-primary-foreground: #0f172a;
+  --plca-secondary: #1e293b;
+  --plca-secondary-foreground: #f8fafc;
+  --plca-muted: #1e293b;
+  --plca-muted-foreground: #94a3b8;
+  --plca-accent: #0c4a6e;
+  --plca-accent-foreground: #e0f2fe;
+  --plca-border: rgba(148, 163, 184, 0.2);
+  --plca-input: rgba(148, 163, 184, 0.25);
+  --plca-ring: #38bdf8;
+
+  --plca-sidebar: rgba(15, 23, 42, 0.72);
+  --plca-sidebar-foreground: #f8fafc;
+  --plca-sidebar-primary: #38bdf8;
+  --plca-sidebar-primary-foreground: #0f172a;
+  --plca-sidebar-accent: #1e293b;
+  --plca-sidebar-accent-foreground: #f8fafc;
+  --plca-sidebar-border: rgba(148, 163, 184, 0.16);
+
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --plca-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.32);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.36);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.40);
+}
+
+    </style>
+    <style id="component-vars">
+/* PLC·AIOT Component Layer — plain CSS, no @apply referencing local classes */
+
+/* Glass surfaces */
+.plca-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.dark .plca-glass {
+  background: rgba(15, 23, 42, 0.60);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.plca-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.dark .plca-glass-strong {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+/* Cards */
+.plca-card {
+  background: var(--plca-card);
+  color: var(--plca-card-foreground);
+  border: 1px solid var(--plca-border);
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-sm);
+  transition: box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1), transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.plca-card-hover:hover {
+  box-shadow: var(--plca-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.plca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-btn-primary {
+  background: var(--plca-primary);
+  color: var(--plca-primary-foreground);
+  box-shadow: 0 4px 14px -4px rgba(14, 165, 233, 0.35);
+}
+
+.plca-btn-primary:hover {
+  background: var(--plca-brand-600);
+  box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.42);
+}
+
+.plca-btn-secondary {
+  background: var(--plca-secondary);
+  color: var(--plca-secondary-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-secondary:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-ghost {
+  background: transparent;
+  color: var(--plca-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-ghost:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Forms */
+.plca-input {
+  width: 100%;
+  background: var(--plca-background);
+  color: var(--plca-foreground);
+  border: 1px solid var(--plca-input);
+  border-radius: var(--plca-radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plca-input::placeholder {
+  color: var(--plca-muted-foreground);
+}
+
+.plca-input:focus {
+  border-color: var(--plca-ring);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+}
+
+.plca-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--plca-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.plca-error {
+  font-size: 0.75rem;
+  color: var(--plca-destructive);
+  margin-top: 0.25rem;
+}
+
+/* Badges */
+.plca-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.dark .plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+.plca-badge-rose {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.dark .plca-badge-rose {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.plca-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.dark .plca-badge-amber {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.plca-badge-sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.dark .plca-badge-sky {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+}
+
+/* Navigation */
+.plca-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 4rem;
+}
+
+.plca-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--plca-radius-md);
+  transition: color 150ms ease, background-color 150ms ease;
+  text-decoration: none;
+}
+
+.plca-nav-link:hover {
+  color: var(--plca-foreground);
+  background: var(--plca-muted);
+}
+
+/* Sidebar */
+.plca-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-sidebar-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.plca-sidebar-item:hover {
+  background: var(--plca-sidebar-accent);
+}
+
+.plca-sidebar-item-active {
+  background: rgba(14, 165, 233, 0.10);
+  color: var(--plca-primary);
+  border-left: 3px solid var(--plca-primary);
+}
+
+/* KPI */
+.plca-kpi {
+  padding: 1rem;
+  border-radius: var(--plca-radius-lg);
+  min-width: 140px;
+}
+
+.plca-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--plca-tracking-tight);
+  white-space: nowrap;
+}
+
+.plca-kpi-label {
+  font-size: 0.8125rem;
+  color: var(--plca-muted-foreground);
+}
+
+/* Tables */
+.plca-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.plca-table th,
+.plca-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--plca-border);
+  white-space: nowrap;
+}
+
+.plca-table th {
+  font-weight: 600;
+  color: var(--plca-muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plca-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+/* Tabs */
+.plca-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+  width: fit-content;
+}
+
+.plca-tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-tab:hover {
+  color: var(--plca-foreground);
+}
+
+.plca-tab-active {
+  background: var(--plca-card);
+  color: var(--plca-foreground);
+  box-shadow: var(--plca-shadow-xs);
+}
+
+/* Timeline */
+.plca-timeline-item {
+  position: relative;
+  padding-left: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-left: 1px solid var(--plca-border);
+}
+
+.plca-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -0.25rem;
+  top: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plca-primary);
+}
+
+.plca-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+/* Avatar */
+.plca-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+  color: #fff;
+}
+
+/* Scrollbar */
+.plca-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.plca-scroll::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 3px;
+}
+
+/* Map placeholder */
+.plca-map {
+  background:
+    radial-gradient(circle at 25% 35%, rgba(14, 165, 233, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 70% 65%, rgba(16, 185, 129, 0.12) 0%, transparent 26%),
+    var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+}
+
+/* Toast / notification panel */
+.plca-notification-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: 22rem;
+  z-index: 40;
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-xl);
+}
+
+/* Section shells */
+.plca-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.plca-page-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.plca-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pricing card highlight */
+.plca-pricing-featured {
+  border: 2px solid var(--plca-primary);
+  box-shadow: var(--plca-shadow-lg);
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--plca-background);
+    --color-foreground: var(--plca-foreground);
+    --color-card: var(--plca-card);
+    --color-card-foreground: var(--plca-card-foreground);
+    --color-popover: var(--plca-popover);
+    --color-popover-foreground: var(--plca-popover-foreground);
+    --color-primary: var(--plca-primary);
+    --color-primary-foreground: var(--plca-primary-foreground);
+    --color-secondary: var(--plca-secondary);
+    --color-secondary-foreground: var(--plca-secondary-foreground);
+    --color-muted: var(--plca-muted);
+    --color-muted-foreground: var(--plca-muted-foreground);
+    --color-accent: var(--plca-accent);
+    --color-accent-foreground: var(--plca-accent-foreground);
+    --color-destructive: var(--plca-destructive);
+    --color-destructive-foreground: var(--plca-destructive-foreground);
+    --color-border: var(--plca-border);
+    --color-input: var(--plca-input);
+    --color-ring: var(--plca-ring);
+    --color-chart-1: var(--plca-chart-1);
+    --color-chart-2: var(--plca-chart-2);
+    --color-chart-3: var(--plca-chart-3);
+    --color-chart-4: var(--plca-chart-4);
+    --color-chart-5: var(--plca-chart-5);
+    --color-sidebar: var(--plca-sidebar);
+    --color-sidebar-foreground: var(--plca-sidebar-foreground);
+    --color-sidebar-primary: var(--plca-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--plca-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--plca-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--plca-sidebar-accent-foreground);
+    --radius-sm: var(--plca-radius-sm);
+    --radius-md: var(--plca-radius-md);
+    --radius-lg: var(--plca-radius-lg);
+    --radius-xl: var(--plca-radius-xl);
+  }
+  @layer base {
+    body { background: var(--plca-background); color: var(--plca-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--plca-background); }
+      .text-background { color: var(--plca-background); }
+      .border-background { border-color: var(--plca-background); }
+      .ring-background { --tw-ring-color: var(--plca-background); }
+      .bg-foreground { background-color: var(--plca-foreground); }
+      .text-foreground { color: var(--plca-foreground); }
+      .border-foreground { border-color: var(--plca-foreground); }
+      .ring-foreground { --tw-ring-color: var(--plca-foreground); }
+      .bg-card { background-color: var(--plca-card); }
+      .text-card { color: var(--plca-card); }
+      .border-card { border-color: var(--plca-card); }
+      .ring-card { --tw-ring-color: var(--plca-card); }
+      .bg-card-foreground { background-color: var(--plca-card-foreground); }
+      .text-card-foreground { color: var(--plca-card-foreground); }
+      .border-card-foreground { border-color: var(--plca-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--plca-card-foreground); }
+      .bg-popover { background-color: var(--plca-popover); }
+      .text-popover { color: var(--plca-popover); }
+      .border-popover { border-color: var(--plca-popover); }
+      .ring-popover { --tw-ring-color: var(--plca-popover); }
+      .bg-popover-foreground { background-color: var(--plca-popover-foreground); }
+      .text-popover-foreground { color: var(--plca-popover-foreground); }
+      .border-popover-foreground { border-color: var(--plca-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--plca-popover-foreground); }
+      .bg-primary { background-color: var(--plca-primary); }
+      .text-primary { color: var(--plca-primary); }
+      .border-primary { border-color: var(--plca-primary); }
+      .ring-primary { --tw-ring-color: var(--plca-primary); }
+      .bg-primary-foreground { background-color: var(--plca-primary-foreground); }
+      .text-primary-foreground { color: var(--plca-primary-foreground); }
+      .border-primary-foreground { border-color: var(--plca-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--plca-primary-foreground); }
+      .bg-secondary { background-color: var(--plca-secondary); }
+      .text-secondary { color: var(--plca-secondary); }
+      .border-secondary { border-color: var(--plca-secondary); }
+      .ring-secondary { --tw-ring-color: var(--plca-secondary); }
+      .bg-secondary-foreground { background-color: var(--plca-secondary-foreground); }
+      .text-secondary-foreground { color: var(--plca-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--plca-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--plca-secondary-foreground); }
+      .bg-muted { background-color: var(--plca-muted); }
+      .text-muted { color: var(--plca-muted); }
+      .border-muted { border-color: var(--plca-muted); }
+      .ring-muted { --tw-ring-color: var(--plca-muted); }
+      .bg-muted-foreground { background-color: var(--plca-muted-foreground); }
+      .text-muted-foreground { color: var(--plca-muted-foreground); }
+      .border-muted-foreground { border-color: var(--plca-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--plca-muted-foreground); }
+      .bg-accent { background-color: var(--plca-accent); }
+      .text-accent { color: var(--plca-accent); }
+      .border-accent { border-color: var(--plca-accent); }
+      .ring-accent { --tw-ring-color: var(--plca-accent); }
+      .bg-accent-foreground { background-color: var(--plca-accent-foreground); }
+      .text-accent-foreground { color: var(--plca-accent-foreground); }
+      .border-accent-foreground { border-color: var(--plca-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--plca-accent-foreground); }
+      .bg-destructive { background-color: var(--plca-destructive); }
+      .text-destructive { color: var(--plca-destructive); }
+      .border-destructive { border-color: var(--plca-destructive); }
+      .ring-destructive { --tw-ring-color: var(--plca-destructive); }
+      .bg-destructive-foreground { background-color: var(--plca-destructive-foreground); }
+      .text-destructive-foreground { color: var(--plca-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--plca-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--plca-destructive-foreground); }
+      .bg-border { background-color: var(--plca-border); }
+      .text-border { color: var(--plca-border); }
+      .border-border { border-color: var(--plca-border); }
+      .ring-border { --tw-ring-color: var(--plca-border); }
+      .bg-input { background-color: var(--plca-input); }
+      .text-input { color: var(--plca-input); }
+      .border-input { border-color: var(--plca-input); }
+      .ring-input { --tw-ring-color: var(--plca-input); }
+      .bg-ring { background-color: var(--plca-ring); }
+      .text-ring { color: var(--plca-ring); }
+      .border-ring { border-color: var(--plca-ring); }
+      .ring-ring { --tw-ring-color: var(--plca-ring); }
+      .bg-chart-1 { background-color: var(--plca-chart-1); }
+      .text-chart-1 { color: var(--plca-chart-1); }
+      .border-chart-1 { border-color: var(--plca-chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--plca-chart-1); }
+      .bg-chart-2 { background-color: var(--plca-chart-2); }
+      .text-chart-2 { color: var(--plca-chart-2); }
+      .border-chart-2 { border-color: var(--plca-chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--plca-chart-2); }
+      .bg-chart-3 { background-color: var(--plca-chart-3); }
+      .text-chart-3 { color: var(--plca-chart-3); }
+      .border-chart-3 { border-color: var(--plca-chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--plca-chart-3); }
+      .bg-chart-4 { background-color: var(--plca-chart-4); }
+      .text-chart-4 { color: var(--plca-chart-4); }
+      .border-chart-4 { border-color: var(--plca-chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--plca-chart-4); }
+      .bg-chart-5 { background-color: var(--plca-chart-5); }
+      .text-chart-5 { color: var(--plca-chart-5); }
+      .border-chart-5 { border-color: var(--plca-chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--plca-chart-5); }
+      .bg-sidebar { background-color: var(--plca-sidebar); }
+      .text-sidebar { color: var(--plca-sidebar); }
+      .border-sidebar { border-color: var(--plca-sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--plca-sidebar); }
+      .bg-sidebar-foreground { background-color: var(--plca-sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--plca-sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--plca-sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--plca-sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--plca-sidebar-primary); }
+      .text-sidebar-primary { color: var(--plca-sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--plca-sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--plca-sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--plca-sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--plca-sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--plca-sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--plca-sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--plca-sidebar-accent); }
+      .text-sidebar-accent { color: var(--plca-sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--plca-sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--plca-sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--plca-sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--plca-sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--plca-sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--plca-sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+      .plca-pulse {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: plca-pulse 2s infinite;
+      }
+      @keyframes plca-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      }
+      .plca-pulse-warning {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+        animation: plca-pulse-warning 2s infinite;
+      }
+      @keyframes plca-pulse-warning {
+        0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="plca-page-shell">
+    <!-- Sidebar -->
+    <aside class="hidden lg:flex w-64 flex-col plca-glass-strong border-r border-border">
+      <div class="h-16 flex items-center gap-2 px-6 border-b border-border">
+        <i data-lucide="cpu" class="h-6 w-6 text-primary"></i>
+        <span class="text-lg font-bold tracking-tight text-foreground">PLC·AIOT</span>
+      </div>
+                  <nav class="flex-1 space-y-1 overflow-y-auto p-3 plca-scroll">
+        <a href="cockpit.html" class="plca-sidebar-item"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>驾驶舱</span></a>
+        <a href="devices.html" class="plca-sidebar-item"><i data-lucide="hard-drive" class="h-4 w-4"></i><span>设备</span></a>
+        <a href="alerts.html" class="plca-sidebar-item"><i data-lucide="bell-ring" class="h-4 w-4"></i><span>告警</span></a>
+        <a href="statistics.html" class="plca-sidebar-item"><i data-lucide="bar-chart-3" class="h-4 w-4"></i><span>统计</span></a>
+        <a href="realtime.html" class="plca-sidebar-item plca-sidebar-item-active"><i data-lucide="activity" class="h-4 w-4"></i><span>实时看板</span></a>
+        <a href="map.html" class="plca-sidebar-item"><i data-lucide="map" class="h-4 w-4"></i><span>地图</span></a>
+        <a href="system.html" class="plca-sidebar-item"><i data-lucide="settings" class="h-4 w-4"></i><span>系统</span></a>
+        <a href="admin.html" class="plca-sidebar-item"><i data-lucide="shield" class="h-4 w-4"></i><span>后端管理</span></a>
+      </nav>
+      <div class="p-4 border-t border-border">
+        <div class="plca-card p-4">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="plca-avatar">工</div>
+            <div>
+              <div class="text-sm font-semibold text-foreground">工程师</div>
+              <div class="text-xs text-muted-foreground">admin@plca.com</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="plca-content bg-background">
+      <!-- Top bar -->
+      <header class="plca-topnav plca-glass-strong border-b border-border">
+        <div class="h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <button id="mobile-sidebar-btn" class="lg:hidden plca-btn plca-btn-ghost p-2" aria-label="打开侧边栏">
+              <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-foreground">实时看板</h1>
+          </div>
+          <div class="flex items-center gap-2 sm:gap-4">
+            <div id="mqtt-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 text-success text-xs font-semibold">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
+              </span>
+              <span class="hidden sm:inline">MQTT 在线</span>
+              <span class="sm:hidden">在线</span>
+            </div>
+            <div id="live-clock" class="hidden md:flex items-center gap-2 text-sm text-muted-foreground font-mono">
+              <i data-lucide="clock" class="h-4 w-4"></i>
+              <span>--:--:--</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-2">
+              <i data-lucide="refresh-cw" class="h-4 w-4 text-muted-foreground"></i>
+              <select id="refresh-rate" class="plca-input py-1.5 px-2 text-xs w-28" aria-label="刷新频率">
+                <option value="1000">1 秒</option>
+                <option value="2000" selected>2 秒</option>
+                <option value="5000">5 秒</option>
+                <option value="10000">10 秒</option>
+              </select>
+            </div>
+            <button id="theme-toggle" class="plca-btn plca-btn-ghost p-2" aria-label="切换主题">
+              <i data-lucide="sun" id="theme-icon-sun" class="h-5 w-5"></i>
+              <i data-lucide="moon" id="theme-icon-moon" class="h-5 w-5 hidden"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Mobile sidebar overlay -->
+      <div id="mobile-sidebar-overlay" class="fixed inset-0 z-40 bg-black/50 hidden lg:hidden" aria-hidden="true"></div>
+      <aside id="mobile-sidebar" class="fixed inset-y-0 left-0 z-50 w-64 plca-glass-strong border-r border-border transform -translate-x-full transition-transform lg:hidden flex flex-col">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-border">
+          <div class="flex items-center gap-2">
+            <i data-lucide="cpu" class="h-6 w-6 text-primary"></i>
+            <span class="text-lg font-bold tracking-tight text-foreground">PLC·AIOT</span>
+          </div>
+          <button id="mobile-sidebar-close" class="plca-btn plca-btn-ghost p-2" aria-label="关闭侧边栏">
+            <i data-lucide="x" class="h-5 w-5"></i>
+          </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+          <a href="cockpit.html" class="plca-sidebar-item">
+            <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
+            <span>驾驶舱</span>
+          </a>
+          <a href="devices.html" class="plca-sidebar-item">
+            <i data-lucide="hard-hat" class="h-5 w-5"></i>
+            <span>设备</span>
+          </a>
+          <a href="alerts.html" class="plca-sidebar-item">
+            <i data-lucide="bell" class="h-5 w-5"></i>
+            <span>告警</span>
+          </a>
+          <a href="statistics.html" class="plca-sidebar-item">
+            <i data-lucide="bar-chart-2" class="h-5 w-5"></i>
+            <span>统计</span>
+          </a>
+          <a href="realtime.html" class="plca-sidebar-item plca-sidebar-item-active">
+            <i data-lucide="activity" class="h-5 w-5"></i>
+            <span>实时看板</span>
+          </a>
+          <a href="map.html" class="plca-sidebar-item">
+            <i data-lucide="map" class="h-5 w-5"></i>
+            <span>地图</span>
+          </a>
+          <a href="system.html" class="plca-sidebar-item">
+            <i data-lucide="settings" class="h-5 w-5"></i>
+            <span>系统</span>
+          </a>
+          <a href="admin.html" class="plca-sidebar-item">
+            <i data-lucide="shield" class="h-5 w-5"></i>
+            <span>后端管理</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Page body -->
+      <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
+        <!-- Connection status card -->
+        <section class="plca-card p-4 sm:p-6 mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div class="flex items-center gap-3">
+              <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="radio" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-semibold text-foreground">MQTT 连接状态</h2>
+                <p class="text-xs text-muted-foreground">边缘网关实时数据流</p>
+              </div>
+            </div>
+            <button id="reconnect-btn" class="plca-btn plca-btn-secondary self-start sm:self-auto">
+              <i data-lucide="rotate-ccw" class="h-4 w-4"></i>
+              重新连接
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="plca-card p-3 bg-secondary/30">
+              <div class="text-xs text-muted-foreground mb-1">Broker 地址</div>
+              <div class="font-mono text-sm font-semibold text-foreground">mqtts://gateway.plca.io:8883</div>
+            </div>
+            <div class="plca-card p-3 bg-secondary/30">
+              <div class="text-xs text-muted-foreground mb-1">网络延迟</div>
+              <div id="mqtt-latency" class="font-mono text-sm font-semibold text-foreground">24 ms</div>
+            </div>
+            <div class="plca-card p-3 bg-secondary/30">
+              <div class="text-xs text-muted-foreground mb-1">最后消息</div>
+              <div id="mqtt-last-msg" class="font-mono text-sm font-semibold text-foreground">--</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Real-time metrics grid -->
+        <section id="metrics-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6" hx-trigger="every 2s" hx-on::trigger="refreshMetrics()">
+          <div class="plca-card plca-kpi">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-muted-foreground">实时设备数</span>
+              <i data-lucide="hard-hat" class="h-4 w-4 text-primary"></i>
+            </div>
+            <div id="metric-devices" class="plca-kpi-value text-primary">1,248</div>
+            <div class="text-xs text-success mt-1">+3 较上月</div>
+          </div>
+          <div class="plca-card plca-kpi">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-muted-foreground">每秒消息数</span>
+              <i data-lucide="zap" class="h-4 w-4 text-chart-2"></i>
+            </div>
+            <div id="metric-mps" class="plca-kpi-value text-chart-2">4,832</div>
+            <div class="text-xs text-muted-foreground mt-1">msg/s</div>
+          </div>
+          <div class="plca-card plca-kpi">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-muted-foreground">今日数据量</span>
+              <i data-lucide="database" class="h-4 w-4 text-chart-4"></i>
+            </div>
+            <div id="metric-data" class="plca-kpi-value text-chart-4">892.4</div>
+            <div class="text-xs text-muted-foreground mt-1">MB</div>
+          </div>
+          <div class="plca-card plca-kpi">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs text-muted-foreground">活跃告警数</span>
+              <i data-lucide="alert-triangle" class="h-4 w-4 text-destructive"></i>
+            </div>
+            <div id="metric-alerts" class="plca-kpi-value text-destructive">7</div>
+            <div class="text-xs text-destructive mt-1">需立即处理</div>
+          </div>
+        </section>
+
+        <!-- Chart and activity stream -->
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+          <!-- Chart -->
+          <div class="xl:col-span-2 plca-card p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 class="text-base font-semibold text-foreground">实时消息吞吐趋势</h2>
+                <p class="text-xs text-muted-foreground">最近 60 秒 · 每 2 秒更新</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-primary"></span>
+                <span class="text-xs text-muted-foreground">消息数 / 秒</span>
+              </div>
+            </div>
+            <div class="relative h-64 sm:h-80 w-full">
+              <canvas id="realtime-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Activity stream -->
+          <div class="plca-card p-4 sm:p-6 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-base font-semibold text-foreground">实时消息流</h2>
+                <p class="text-xs text-muted-foreground">最新 MQTT 消息</p>
+              </div>
+              <span class="plca-badge plca-badge-sky">LIVE</span>
+            </div>
+            <div id="activity-stream" class="flex-1 overflow-y-auto plca-scroll max-h-80 space-y-3 pr-1" hx-trigger="every 2s" hx-on::trigger="appendActivity()">
+              <div class="activity-item plca-card p-3 bg-secondary/20 border-l-4 border-primary">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-mono font-semibold text-foreground truncate">plca/line-a/plc01/temp</span>
+                  <span class="text-xs text-muted-foreground">08:14:32</span>
+                </div>
+                <div class="text-xs text-muted-foreground font-mono truncate">{"value": 42.6, "unit": "°C"}</div>
+              </div>
+              <div class="activity-item plca-card p-3 bg-secondary/20 border-l-4 border-chart-2">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-mono font-semibold text-foreground truncate">plca/line-b/plc05/vibration</span>
+                  <span class="text-xs text-muted-foreground">08:14:31</span>
+                </div>
+                <div class="text-xs text-muted-foreground font-mono truncate">{"x": 0.03, "y": 0.08, "z": 0.01}</div>
+              </div>
+              <div class="activity-item plca-card p-3 bg-secondary/20 border-l-4 border-chart-4">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-mono font-semibold text-foreground truncate">plca/line-a/plc02/status</span>
+                  <span class="text-xs text-muted-foreground">08:14:30</span>
+                </div>
+                <div class="text-xs text-muted-foreground font-mono truncate">{"run": true, "mode": "auto"}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Device status grid -->
+        <section>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-semibold text-foreground">关键设备状态</h2>
+            <div class="flex items-center gap-3 text-xs text-muted-foreground">
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-success"></span>在线</span>
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-warning"></span>告警</span>
+              <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-destructive"></span>离线</span>
+            </div>
+          </div>
+          <div id="device-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" hx-trigger="every 5s" hx-on::trigger="refreshDevices()">
+            <div class="plca-card p-4 device-card" data-status="online">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                    <i data-lucide="cog" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-01</div>
+                    <div class="text-xs text-muted-foreground">一号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse h-2.5 w-2.5 rounded-full bg-success"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">运行时间</span>
+                <span class="font-mono font-medium text-foreground">126h 34m</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="online">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                    <i data-lucide="cog" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-02</div>
+                    <div class="text-xs text-muted-foreground">二号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse h-2.5 w-2.5 rounded-full bg-success"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">运行时间</span>
+                <span class="font-mono font-medium text-foreground">98h 12m</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="warning">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
+                    <i data-lucide="alert-circle" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-03</div>
+                    <div class="text-xs text-muted-foreground">三号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse-warning h-2.5 w-2.5 rounded-full bg-warning"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">温度告警</span>
+                <span class="font-mono font-medium text-warning">68.2°C</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="offline">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center text-destructive">
+                    <i data-lucide="power-off" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-04</div>
+                    <div class="text-xs text-muted-foreground">四号产线</div>
+                  </div>
+                </div>
+                <span class="h-2.5 w-2.5 rounded-full bg-destructive"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">离线时长</span>
+                <span class="font-mono font-medium text-destructive">23m</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="online">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                    <i data-lucide="cog" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-05</div>
+                    <div class="text-xs text-muted-foreground">五号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse h-2.5 w-2.5 rounded-full bg-success"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">运行时间</span>
+                <span class="font-mono font-medium text-foreground">215h 08m</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="online">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                    <i data-lucide="cog" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-06</div>
+                    <div class="text-xs text-muted-foreground">六号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse h-2.5 w-2.5 rounded-full bg-success"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">运行时间</span>
+                <span class="font-mono font-medium text-foreground">76h 55m</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="warning">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
+                    <i data-lucide="alert-circle" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-07</div>
+                    <div class="text-xs text-muted-foreground">七号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse-warning h-2.5 w-2.5 rounded-full bg-warning"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">振动异常</span>
+                <span class="font-mono font-medium text-warning">4.2 mm/s</span>
+              </div>
+            </div>
+            <div class="plca-card p-4 device-card" data-status="online">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                    <i data-lucide="cog" class="h-5 w-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold text-foreground">PLC-08</div>
+                    <div class="text-xs text-muted-foreground">八号产线</div>
+                  </div>
+                </div>
+                <span class="plca-pulse h-2.5 w-2.5 rounded-full bg-success"></span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-muted-foreground">运行时间</span>
+                <span class="font-mono font-medium text-foreground">154h 20m</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const html = document.documentElement;
+      const toggle = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('theme-icon-sun');
+      const moonIcon = document.getElementById('theme-icon-moon');
+
+      function updateIcons() {
+        const isDark = html.classList.contains('dark');
+        if (sunIcon) sunIcon.classList.toggle('hidden', isDark);
+        if (moonIcon) moonIcon.classList.toggle('hidden', !isDark);
+      }
+
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          html.classList.toggle('dark');
+          updateIcons();
+          if (window.lucide) lucide.createIcons();
+        });
+      }
+
+      updateIcons();
+    })();
+
+    (function () {
+      const openBtn = document.getElementById('mobile-sidebar-btn');
+      const closeBtn = document.getElementById('mobile-sidebar-close');
+      const sidebar = document.getElementById('mobile-sidebar');
+      const overlay = document.getElementById('mobile-sidebar-overlay');
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+
+      if (openBtn) openBtn.addEventListener('click', openSidebar);
+      if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+    })();
+
+    (function () {
+      function pad(n) { return n < 10 ? '0' + n : n; }
+      const clock = document.getElementById('live-clock');
+      if (!clock) return;
+      const span = clock.querySelector('span');
+      setInterval(function () {
+        const now = new Date();
+        span.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+      }, 1000);
+    })();
+
+    (function () {
+      const lastMsgEl = document.getElementById('mqtt-last-msg');
+      const latencyEl = document.getElementById('mqtt-latency');
+      const reconnectBtn = document.getElementById('reconnect-btn');
+      const statusEl = document.getElementById('mqtt-status');
+
+      function updateLastMsg() {
+        const now = new Date();
+        lastMsgEl.textContent = now.toLocaleTimeString('zh-CN');
+      }
+      updateLastMsg();
+      setInterval(updateLastMsg, 2000);
+      setInterval(function () {
+        latencyEl.textContent = (18 + Math.floor(Math.random() * 20)) + ' ms';
+      }, 2000);
+
+      if (reconnectBtn) {
+        reconnectBtn.addEventListener('click', function () {
+          statusEl.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 text-warning text-xs font-semibold';
+          statusEl.innerHTML = '<span class="h-2.5 w-2.5 rounded-full bg-warning animate-pulse"></span><span class="hidden sm:inline">MQTT 重连中</span><span class="sm:hidden">重连</span>';
+          setTimeout(function () {
+            statusEl.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 text-success text-xs font-semibold';
+            statusEl.innerHTML = '<span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span></span><span class="hidden sm:inline">MQTT 在线</span><span class="sm:hidden">在线</span>';
+            if (window.lucide) lucide.createIcons();
+          }, 1500);
+        });
+      }
+    })();
+
+    function refreshMetrics() {
+      const devices = document.getElementById('metric-devices');
+      const mps = document.getElementById('metric-mps');
+      const data = document.getElementById('metric-data');
+      const alerts = document.getElementById('metric-alerts');
+      if (devices) devices.textContent = (1240 + Math.floor(Math.random() * 20)).toLocaleString('zh-CN');
+      if (mps) mps.textContent = (4700 + Math.floor(Math.random() * 800)).toLocaleString('zh-CN');
+      if (data) data.textContent = (880 + Math.random() * 30).toFixed(1);
+      if (alerts) alerts.textContent = Math.floor(Math.random() * 10);
+    }
+
+    function appendActivity() {
+      const stream = document.getElementById('activity-stream');
+      if (!stream) return;
+      const topics = [
+        'plca/line-a/plc01/temp',
+        'plca/line-b/plc05/vibration',
+        'plca/line-a/plc02/status',
+        'plca/line-c/plc08/pressure',
+        'plca/line-b/plc06/current',
+        'plca/line-a/plc03/humidity'
+      ];
+      const payloads = [
+        '{"value": ' + (40 + Math.random() * 5).toFixed(1) + ', "unit": "°C"}',
+        '{"x": ' + Math.random().toFixed(2) + ', "y": ' + Math.random().toFixed(2) + ', "z": ' + Math.random().toFixed(2) + '}',
+        '{"run": true, "mode": "auto"}',
+        '{"value": ' + (0.8 + Math.random() * 0.4).toFixed(2) + ', "unit": "MPa"}',
+        '{"amp": ' + (8 + Math.random() * 4).toFixed(1) + ', "unit": "A"}',
+        '{"value": ' + (45 + Math.random() * 10).toFixed(1) + ', "unit": "%"}'
+      ];
+      const colors = ['border-primary', 'border-chart-2', 'border-chart-4', 'border-chart-3', 'border-chart-5', 'border-primary'];
+      const idx = Math.floor(Math.random() * topics.length);
+      const now = new Date();
+      const time = now.toLocaleTimeString('zh-CN');
+      const item = document.createElement('div');
+      item.className = 'activity-item plca-card p-3 bg-secondary/20 border-l-4 ' + colors[idx];
+      item.innerHTML = '<div class="flex items-center justify-between mb-1"><span class="text-xs font-mono font-semibold text-foreground truncate">' + topics[idx] + '</span><span class="text-xs text-muted-foreground">' + time + '</span></div><div class="text-xs text-muted-foreground font-mono truncate">' + payloads[idx] + '</div>';
+      stream.appendChild(item);
+      while (stream.children.length > 20) {
+        stream.removeChild(stream.firstChild);
+      }
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function refreshDevices() {
+      const cards = document.querySelectorAll('.device-card');
+      cards.forEach(function (card) {
+        const status = card.getAttribute('data-status');
+        const indicator = card.querySelector('.plca-pulse, .plca-pulse-warning, .h-2\.5.w-2\.5.rounded-full');
+        if (status === 'online' && indicator && Math.random() > 0.92) {
+          indicator.classList.remove('bg-success');
+          indicator.classList.add('bg-warning');
+          indicator.classList.remove('plca-pulse');
+          indicator.classList.add('plca-pulse-warning');
+          card.setAttribute('data-status', 'warning');
+        } else if (status === 'warning' && indicator && Math.random() > 0.85) {
+          indicator.classList.remove('bg-warning');
+          indicator.classList.add('bg-success');
+          indicator.classList.remove('plca-pulse-warning');
+          indicator.classList.add('plca-pulse');
+          card.setAttribute('data-status', 'online');
+        }
+      });
+    }
+
+    (function () {
+      const ctx = document.getElementById('realtime-chart');
+      if (!ctx) return;
+
+      const labels = [];
+      const dataPoints = [];
+      const now = new Date();
+      for (let i = 30; i > 0; i--) {
+        const t = new Date(now.getTime() - i * 2000);
+        labels.push(t.toLocaleTimeString('zh-CN'));
+        dataPoints.push(4500 + Math.floor(Math.random() * 1000));
+      }
+
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '消息数 / 秒',
+            data: dataPoints,
+            borderColor: 'var(--plca-primary)',
+            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+            borderWidth: 2,
+            tension: 0.35,
+            fill: true,
+            pointRadius: 0,
+            pointHoverRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 0 },
+          interaction: { intersect: false, mode: 'index' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'var(--plca-popover)',
+              titleColor: 'var(--plca-foreground)',
+              bodyColor: 'var(--plca-foreground)',
+              borderColor: 'var(--plca-border)',
+              borderWidth: 1,
+              padding: 10
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: 'var(--plca-muted-foreground)', maxTicksLimit: 8, font: { size: 10 } }
+            },
+            y: {
+              grid: { color: 'var(--plca-border)' },
+              ticks: { color: 'var(--plca-muted-foreground)', font: { size: 10 } },
+              beginAtZero: false
+            }
+          }
+        }
+      });
+
+      setInterval(function () {
+        const now = new Date();
+        chart.data.labels.push(now.toLocaleTimeString('zh-CN'));
+        chart.data.datasets[0].data.push(4500 + Math.floor(Math.random() * 1000));
+        if (chart.data.labels.length > 30) {
+          chart.data.labels.shift();
+          chart.data.datasets[0].data.shift();
+        }
+        chart.update('none');
+      }, 2000);
+    })();
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.lucide) lucide.createIcons();
+      refreshMetrics();
+      const stream = document.getElementById('activity-stream');
+      if (stream) stream.scrollTop = stream.scrollHeight;
+    });
+  </script>
+</body>
+</html>

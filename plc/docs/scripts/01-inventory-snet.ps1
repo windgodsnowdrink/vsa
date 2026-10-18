@@ -1,4 +1,4 @@
-﻿<#
+﻿﻿<#
 .SYNOPSIS
   盘点 E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet 下的所有 DLL（按 NuGet 包目录结构）。
   输出:
@@ -29,7 +29,7 @@ $dlls = Get-ChildItem -LiteralPath $SnetRoot -Recurse -File -Filter *.dll |
 
 Write-Host "[SNET-INV] 扫描到 DLL: $($dlls.Count) 个" -ForegroundColor Cyan
 
-# TFM 优先级（越大越优先）
+# TFM 优先级（越大越优先），用户 net10.0 是最新
 $tfmRank = @{
   "net11.0"       = 110
   "net10.0"       = 100
@@ -46,7 +46,7 @@ $tfmRank = @{
 
 function Get-TfmRank([string]$t) {
   if ($tfmRank.ContainsKey($t)) { return $tfmRank[$t] }
-  if ($t -match '^net(\d+)\.(\d+)(-.*)?$') { return [int]$matches[1]*10 + [int]$matches[2] }
+  if ($t -match '^net(\d+)\.(\d+)(-.*)?$') { return [int]$matches[1]*10 + [int]$matches[2] }  # e.g. net11.0-windows
   return 0
 }
 
@@ -54,7 +54,7 @@ function Get-TfmRank([string]$t) {
 $pkgGroups = @{}
 foreach ($d in $dlls) {
   $rel = $d.FullName.Substring($SnetRoot.Length).TrimStart('\','/')
-  $parts = $rel -split '[\\/]'
+  $parts = $rel -split '[\\/]'                   # e.g. snet.core, lib, net10.0, Snet.Core.dll
   $pkg = if ($parts.Count -ge 1) { $parts[0] } else { "_root_" }
   $tfm = if ($parts.Count -ge 3 -and $parts[1] -ieq 'lib') { $parts[2] } else { "unknown" }
   if (-not $pkgGroups.ContainsKey($pkg)) { $pkgGroups[$pkg] = @() }
@@ -68,18 +68,19 @@ foreach ($d in $dlls) {
   }
 }
 
-# 每个包挑优先级最高的 TFM 的 DLL
+# 每个包挑优先级最高的 TFM 的 DLL 作为"主反编译目标"
 $best = @()
 foreach ($k in $pkgGroups.Keys) {
   $grp = $pkgGroups[$k] | Sort-Object TfmRank -Descending
   $best += $grp | Where-Object { $_.TfmRank -eq $grp[0].TfmRank }
 }
 
-# --- 2) 读程序集元数据 ---
+# --- 2) 读程序集元数据（引用、版本、公钥token） ---
 $refRows = @()
 $asmRows = foreach ($b in $best) {
   try {
-    $an  = [System.Reflection.AssemblyName]::GetAssemblyName($b.Path)
+    $an = [System.Reflection.AssemblyName]::GetAssemblyName($b.Path)
+    # Reflect 引用列表（不加载到执行上下文）
     $ads = [System.Reflection.Assembly]::ReflectionOnlyLoadFrom($b.Path)
     $refs = $ads.GetReferencedAssemblies()
     foreach ($r in $refs) {

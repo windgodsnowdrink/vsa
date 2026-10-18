@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetsEnabled>true</StaticWebAssetsEnabled>
+    <LangVersion>preview</LangVersion>
+    <RootNamespace>PlcVsa.Frontend</RootNamespace>
+    <NoWarn>CS1591;CS1998;CS0168;CA1822</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlcVsa.Contracts\PlcVsa.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="11.0.0-preview.6.26359.118" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.6.26359.118" />
+  </ItemGroup>
+
+</Project>

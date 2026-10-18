@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC·AIOT 工业物联网平台</title>
+    <style id="theme-vars">
+/*
+ * PLC·AIOT Design Tokens
+ * Reference: Apple Design Library (restrained, precise, editorial)
+ * Domain: Industrial IoT / PLC Edge Device SaaS
+ * Primary: Tech sky blue (#0ea5e9) with glassmorphism surfaces
+ * Theme modes: light / dark
+ */
+
+:root {
+  /* Primitive — brand sky */
+  --plca-brand-50: #f0f9ff;
+  --plca-brand-100: #e0f2fe;
+  --plca-brand-200: #bae6fd;
+  --plca-brand-300: #7dd3fc;
+  --plca-brand-400: #38bdf8;
+  --plca-brand-500: #0ea5e9;
+  --plca-brand-600: #0284c7;
+  --plca-brand-700: #0369a1;
+  --plca-brand-800: #075985;
+  --plca-brand-900: #0c4a6e;
+
+  /* Primitive — slate neutrals */
+  --plca-slate-50: #f8fafc;
+  --plca-slate-100: #f1f5f9;
+  --plca-slate-200: #e2e8f0;
+  --plca-slate-300: #cbd5e1;
+  --plca-slate-400: #94a3b8;
+  --plca-slate-500: #64748b;
+  --plca-slate-600: #475569;
+  --plca-slate-700: #334155;
+  --plca-slate-800: #1e293b;
+  --plca-slate-900: #0f172a;
+
+  /* Primitive — semantic scales */
+  --plca-background: var(--plca-slate-50);
+  --plca-foreground: var(--plca-slate-900);
+  --plca-card: rgba(255, 255, 255, 0.78);
+  --plca-card-foreground: var(--plca-slate-900);
+  --plca-popover: #ffffff;
+  --plca-popover-foreground: var(--plca-slate-900);
+
+  --plca-primary: var(--plca-brand-500);
+  --plca-primary-foreground: #ffffff;
+  --plca-secondary: var(--plca-slate-100);
+  --plca-secondary-foreground: var(--plca-slate-800);
+  --plca-muted: var(--plca-slate-100);
+  --plca-muted-foreground: var(--plca-slate-500);
+  --plca-accent: var(--plca-brand-100);
+  --plca-accent-foreground: var(--plca-brand-900);
+  --plca-destructive: #ef4444;
+  --plca-destructive-foreground: #ffffff;
+  --plca-success: #10b981;
+  --plca-success-foreground: #ffffff;
+  --plca-warning: #f59e0b;
+  --plca-warning-foreground: #ffffff;
+  --plca-border: var(--plca-slate-200);
+  --plca-input: var(--plca-slate-300);
+  --plca-ring: var(--plca-brand-500);
+
+  --plca-icon: var(--plca-slate-800);
+  --plca-icon-muted: var(--plca-slate-500);
+
+  /* Chart */
+  --plca-chart-1: var(--plca-brand-500);
+  --plca-chart-2: #10b981;
+  --plca-chart-3: #f59e0b;
+  --plca-chart-4: #8b5cf6;
+  --plca-chart-5: #ec4899;
+
+  /* Sidebar */
+  --plca-sidebar: rgba(255, 255, 255, 0.72);
+  --plca-sidebar-foreground: var(--plca-slate-800);
+  --plca-sidebar-primary: var(--plca-brand-500);
+  --plca-sidebar-primary-foreground: #ffffff;
+  --plca-sidebar-accent: var(--plca-slate-100);
+  --plca-sidebar-accent-foreground: var(--plca-slate-800);
+  --plca-sidebar-border: var(--plca-slate-200);
+  --plca-sidebar-ring: var(--plca-brand-500);
+
+  /* Typography */
+  --plca-font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --plca-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --plca-tracking-tight: -0.02em;
+  --plca-tracking-normal: 0em;
+
+  /* Radius */
+  --plca-radius-sm: 0.5rem;
+  --plca-radius-md: 0.75rem;
+  --plca-radius-lg: 1rem;
+  --plca-radius-xl: 1.25rem;
+
+  /* Shadows */
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(2, 8, 20, 0.04);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(2, 8, 20, 0.05), 0 1px 3px -1px rgba(2, 8, 20, 0.05);
+  --plca-shadow-md: 0 4px 8px -2px rgba(2, 8, 20, 0.06), 0 2px 4px -2px rgba(2, 8, 20, 0.04);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(2, 8, 20, 0.10), 0 4px 8px -4px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(2, 8, 20, 0.12), 0 8px 16px -8px rgba(2, 8, 20, 0.06);
+
+  /* Spacing base */
+  --plca-spacing: 0.25rem;
+}
+
+.dark {
+  --plca-background: #030711;
+  --plca-foreground: #f8fafc;
+  --plca-card: rgba(15, 23, 42, 0.72);
+  --plca-card-foreground: #f8fafc;
+  --plca-popover: #0f172a;
+  --plca-popover-foreground: #f8fafc;
+
+  --plca-primary: #38bdf8;
+  --plca-primary-foreground: #0f172a;
+  --plca-secondary: #1e293b;
+  --plca-secondary-foreground: #f8fafc;
+  --plca-muted: #1e293b;
+  --plca-muted-foreground: #94a3b8;
+  --plca-accent: #0c4a6e;
+  --plca-accent-foreground: #e0f2fe;
+  --plca-border: rgba(148, 163, 184, 0.2);
+  --plca-input: rgba(148, 163, 184, 0.25);
+  --plca-ring: #38bdf8;
+
+  --plca-sidebar: rgba(15, 23, 42, 0.72);
+  --plca-sidebar-foreground: #f8fafc;
+  --plca-sidebar-primary: #38bdf8;
+  --plca-sidebar-primary-foreground: #0f172a;
+  --plca-sidebar-accent: #1e293b;
+  --plca-sidebar-accent-foreground: #f8fafc;
+  --plca-sidebar-border: rgba(148, 163, 184, 0.16);
+
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --plca-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.32);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.36);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.40);
+}
+
+    </style>
+    <style id="component-vars">
+/* PLC·AIOT Component Layer — plain CSS, no @apply referencing local classes */
+
+/* Glass surfaces */
+.plca-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.dark .plca-glass {
+  background: rgba(15, 23, 42, 0.60);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.plca-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.dark .plca-glass-strong {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+/* Cards */
+.plca-card {
+  background: var(--plca-card);
+  color: var(--plca-card-foreground);
+  border: 1px solid var(--plca-border);
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-sm);
+  transition: box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1), transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.plca-card-hover:hover {
+  box-shadow: var(--plca-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.plca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-btn-primary {
+  background: var(--plca-primary);
+  color: var(--plca-primary-foreground);
+  box-shadow: 0 4px 14px -4px rgba(14, 165, 233, 0.35);
+}
+
+.plca-btn-primary:hover {
+  background: var(--plca-brand-600);
+  box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.42);
+}
+
+.plca-btn-secondary {
+  background: var(--plca-secondary);
+  color: var(--plca-secondary-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-secondary:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-ghost {
+  background: transparent;
+  color: var(--plca-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-ghost:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Forms */
+.plca-input {
+  width: 100%;
+  background: var(--plca-background);
+  color: var(--plca-foreground);
+  border: 1px solid var(--plca-input);
+  border-radius: var(--plca-radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plca-input::placeholder {
+  color: var(--plca-muted-foreground);
+}
+
+.plca-input:focus {
+  border-color: var(--plca-ring);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+}
+
+.plca-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--plca-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.plca-error {
+  font-size: 0.75rem;
+  color: var(--plca-destructive);
+  margin-top: 0.25rem;
+}
+
+/* Badges */
+.plca-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.dark .plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+.plca-badge-rose {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.dark .plca-badge-rose {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.plca-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.dark .plca-badge-amber {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.plca-badge-sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.dark .plca-badge-sky {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+}
+
+/* Navigation */
+.plca-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 4rem;
+}
+
+.plca-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--plca-radius-md);
+  transition: color 150ms ease, background-color 150ms ease;
+  text-decoration: none;
+}
+
+.plca-nav-link:hover {
+  color: var(--plca-foreground);
+  background: var(--plca-muted);
+}
+
+/* Sidebar */
+.plca-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-sidebar-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.plca-sidebar-item:hover {
+  background: var(--plca-sidebar-accent);
+}
+
+.plca-sidebar-item-active {
+  background: rgba(14, 165, 233, 0.10);
+  color: var(--plca-primary);
+  border-left: 3px solid var(--plca-primary);
+}
+
+/* KPI */
+.plca-kpi {
+  padding: 1rem;
+  border-radius: var(--plca-radius-lg);
+  min-width: 140px;
+}
+
+.plca-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--plca-tracking-tight);
+  white-space: nowrap;
+}
+
+.plca-kpi-label {
+  font-size: 0.8125rem;
+  color: var(--plca-muted-foreground);
+}
+
+/* Tables */
+.plca-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.plca-table th,
+.plca-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--plca-border);
+  white-space: nowrap;
+}
+
+.plca-table th {
+  font-weight: 600;
+  color: var(--plca-muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plca-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+/* Tabs */
+.plca-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+  width: fit-content;
+}
+
+.plca-tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-tab:hover {
+  color: var(--plca-foreground);
+}
+
+.plca-tab-active {
+  background: var(--plca-card);
+  color: var(--plca-foreground);
+  box-shadow: var(--plca-shadow-xs);
+}
+
+/* Timeline */
+.plca-timeline-item {
+  position: relative;
+  padding-left: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-left: 1px solid var(--plca-border);
+}
+
+.plca-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -0.25rem;
+  top: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plca-primary);
+}
+
+.plca-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+/* Avatar */
+.plca-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+  color: #fff;
+}
+
+/* Scrollbar */
+.plca-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.plca-scroll::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 3px;
+}
+
+/* Map placeholder */
+.plca-map {
+  background:
+    radial-gradient(circle at 25% 35%, rgba(14, 165, 233, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 70% 65%, rgba(16, 185, 129, 0.12) 0%, transparent 26%),
+    var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+}
+
+/* Toast / notification panel */
+.plca-notification-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: 22rem;
+  z-index: 40;
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-xl);
+}
+
+/* Section shells */
+.plca-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.plca-page-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.plca-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pricing card highlight */
+.plca-pricing-featured {
+  border: 2px solid var(--plca-primary);
+  box-shadow: var(--plca-shadow-lg);
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--plca-background);
+    --color-foreground: var(--plca-foreground);
+    --color-card: var(--plca-card);
+    --color-card-foreground: var(--plca-card-foreground);
+    --color-popover: var(--plca-popover);
+    --color-popover-foreground: var(--plca-popover-foreground);
+    --color-primary: var(--plca-primary);
+    --color-primary-foreground: var(--plca-primary-foreground);
+    --color-secondary: var(--plca-secondary);
+    --color-secondary-foreground: var(--plca-secondary-foreground);
+    --color-muted: var(--plca-muted);
+    --color-muted-foreground: var(--plca-muted-foreground);
+    --color-accent: var(--plca-accent);
+    --color-accent-foreground: var(--plca-accent-foreground);
+    --color-destructive: var(--plca-destructive);
+    --color-destructive-foreground: var(--plca-destructive-foreground);
+    --color-border: var(--plca-border);
+    --color-input: var(--plca-input);
+    --color-ring: var(--plca-ring);
+    --color-chart-1: var(--plca-chart-1);
+    --color-chart-2: var(--plca-chart-2);
+    --color-chart-3: var(--plca-chart-3);
+    --color-chart-4: var(--plca-chart-4);
+    --color-chart-5: var(--plca-chart-5);
+    --color-sidebar: var(--plca-sidebar);
+    --color-sidebar-foreground: var(--plca-sidebar-foreground);
+    --color-sidebar-primary: var(--plca-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--plca-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--plca-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--plca-sidebar-accent-foreground);
+    --radius-sm: var(--plca-radius-sm);
+    --radius-md: var(--plca-radius-md);
+    --radius-lg: var(--plca-radius-lg);
+    --radius-xl: var(--plca-radius-xl);
+  }
+  @layer base {
+    body { background: var(--plca-background); color: var(--plca-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--plca-background); }
+      .text-background { color: var(--plca-background); }
+      .border-background { border-color: var(--plca-background); }
+      .ring-background { --tw-ring-color: var(--plca-background); }
+      .bg-foreground { background-color: var(--plca-foreground); }
+      .text-foreground { color: var(--plca-foreground); }
+      .border-foreground { border-color: var(--plca-foreground); }
+      .ring-foreground { --tw-ring-color: var(--plca-foreground); }
+      .bg-card { background-color: var(--plca-card); }
+      .text-card { color: var(--plca-card); }
+      .border-card { border-color: var(--plca-card); }
+      .ring-card { --tw-ring-color: var(--plca-card); }
+      .bg-card-foreground { background-color: var(--plca-card-foreground); }
+      .text-card-foreground { color: var(--plca-card-foreground); }
+      .border-card-foreground { border-color: var(--plca-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--plca-card-foreground); }
+      .bg-popover { background-color: var(--plca-popover); }
+      .text-popover { color: var(--plca-popover); }
+      .border-popover { border-color: var(--plca-popover); }
+      .ring-popover { --tw-ring-color: var(--plca-popover); }
+      .bg-popover-foreground { background-color: var(--plca-popover-foreground); }
+      .text-popover-foreground { color: var(--plca-popover-foreground); }
+      .border-popover-foreground { border-color: var(--plca-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--plca-popover-foreground); }
+      .bg-primary { background-color: var(--plca-primary); }
+      .text-primary { color: var(--plca-primary); }
+      .border-primary { border-color: var(--plca-primary); }
+      .ring-primary { --tw-ring-color: var(--plca-primary); }
+      .bg-primary-foreground { background-color: var(--plca-primary-foreground); }
+      .text-primary-foreground { color: var(--plca-primary-foreground); }
+      .border-primary-foreground { border-color: var(--plca-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--plca-primary-foreground); }
+      .bg-secondary { background-color: var(--plca-secondary); }
+      .text-secondary { color: var(--plca-secondary); }
+      .border-secondary { border-color: var(--plca-secondary); }
+      .ring-secondary { --tw-ring-color: var(--plca-secondary); }
+      .bg-secondary-foreground { background-color: var(--plca-secondary-foreground); }
+      .text-secondary-foreground { color: var(--plca-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--plca-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--plca-secondary-foreground); }
+      .bg-muted { background-color: var(--plca-muted); }
+      .text-muted { color: var(--plca-muted); }
+      .border-muted { border-color: var(--plca-muted); }
+      .ring-muted { --tw-ring-color: var(--plca-muted); }
+      .bg-muted-foreground { background-color: var(--plca-muted-foreground); }
+      .text-muted-foreground { color: var(--plca-muted-foreground); }
+      .border-muted-foreground { border-color: var(--plca-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--plca-muted-foreground); }
+      .bg-accent { background-color: var(--plca-accent); }
+      .text-accent { color: var(--plca-accent); }
+      .border-accent { border-color: var(--plca-accent); }
+      .ring-accent { --tw-ring-color: var(--plca-accent); }
+      .bg-accent-foreground { background-color: var(--plca-accent-foreground); }
+      .text-accent-foreground { color: var(--plca-accent-foreground); }
+      .border-accent-foreground { border-color: var(--plca-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--plca-accent-foreground); }
+      .bg-destructive { background-color: var(--plca-destructive); }
+      .text-destructive { color: var(--plca-destructive); }
+      .border-destructive { border-color: var(--plca-destructive); }
+      .ring-destructive { --tw-ring-color: var(--plca-destructive); }
+      .bg-destructive-foreground { background-color: var(--plca-destructive-foreground); }
+      .text-destructive-foreground { color: var(--plca-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--plca-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--plca-destructive-foreground); }
+      .bg-border { background-color: var(--plca-border); }
+      .text-border { color: var(--plca-border); }
+      .border-border { border-color: var(--plca-border); }
+      .ring-border { --tw-ring-color: var(--plca-border); }
+      .bg-input { background-color: var(--plca-input); }
+      .text-input { color: var(--plca-input); }
+      .border-input { border-color: var(--plca-input); }
+      .ring-input { --tw-ring-color: var(--plca-input); }
+      .bg-ring { background-color: var(--plca-ring); }
+      .text-ring { color: var(--plca-ring); }
+      .border-ring { border-color: var(--plca-ring); }
+      .ring-ring { --tw-ring-color: var(--plca-ring); }
+      .bg-chart-1 { background-color: var(--plca-chart-1); }
+      .text-chart-1 { color: var(--plca-chart-1); }
+      .border-chart-1 { border-color: var(--plca-chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--plca-chart-1); }
+      .bg-chart-2 { background-color: var(--plca-chart-2); }
+      .text-chart-2 { color: var(--plca-chart-2); }
+      .border-chart-2 { border-color: var(--plca-chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--plca-chart-2); }
+      .bg-chart-3 { background-color: var(--plca-chart-3); }
+      .text-chart-3 { color: var(--plca-chart-3); }
+      .border-chart-3 { border-color: var(--plca-chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--plca-chart-3); }
+      .bg-chart-4 { background-color: var(--plca-chart-4); }
+      .text-chart-4 { color: var(--plca-chart-4); }
+      .border-chart-4 { border-color: var(--plca-chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--plca-chart-4); }
+      .bg-chart-5 { background-color: var(--plca-chart-5); }
+      .text-chart-5 { color: var(--plca-chart-5); }
+      .border-chart-5 { border-color: var(--plca-chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--plca-chart-5); }
+      .bg-sidebar { background-color: var(--plca-sidebar); }
+      .text-sidebar { color: var(--plca-sidebar); }
+      .border-sidebar { border-color: var(--plca-sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--plca-sidebar); }
+      .bg-sidebar-foreground { background-color: var(--plca-sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--plca-sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--plca-sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--plca-sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--plca-sidebar-primary); }
+      .text-sidebar-primary { color: var(--plca-sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--plca-sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--plca-sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--plca-sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--plca-sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--plca-sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--plca-sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--plca-sidebar-accent); }
+      .text-sidebar-accent { color: var(--plca-sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--plca-sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--plca-sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--plca-sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--plca-sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--plca-sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--plca-sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <!-- Navbar -->
+      <header class="plca-topnav plca-glass-strong border-b border-border">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-full">
+          <div class="flex h-full items-center justify-between">
+            <a href="#" class="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
+              <i data-lucide="cpu" class="h-6 w-6 text-primary"></i>
+              <span>PLC·AIOT</span>
+            </a>
+            <nav class="hidden md:flex items-center gap-1">
+              <a href="#features" class="plca-nav-link">功能</a>
+              <a href="#cases" class="plca-nav-link">客户案例</a>
+              <a href="#pricing" class="plca-nav-link">定价</a>
+              <a href="#docs" class="plca-nav-link">文档</a>
+            </nav>
+            <div class="hidden md:flex items-center gap-3">
+              <button id="theme-toggle" class="plca-btn plca-btn-ghost p-2" aria-label="切换主题">
+                <i data-lucide="sun" id="theme-icon-sun" class="h-5 w-5"></i>
+                <i data-lucide="moon" id="theme-icon-moon" class="h-5 w-5 hidden"></i>
+              </button>
+              <button class="plca-btn plca-btn-primary" hx-get="/signup" hx-target="body" hx-push-url="true">免费试用</button>
+            </div>
+            <div class="flex md:hidden items-center gap-2">
+              <button id="theme-toggle-mobile" class="plca-btn plca-btn-ghost p-2" aria-label="切换主题">
+                <i data-lucide="sun" id="theme-icon-sun-mobile" class="h-5 w-5"></i>
+                <i data-lucide="moon" id="theme-icon-moon-mobile" class="h-5 w-5 hidden"></i>
+              </button>
+              <button id="mobile-menu-btn" class="plca-btn plca-btn-ghost p-2" aria-label="打开菜单">
+                <i data-lucide="menu" id="mobile-menu-icon-open" class="h-5 w-5"></i>
+                <i data-lucide="x" id="mobile-menu-icon-close" class="h-5 w-5 hidden"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden plca-glass-strong border-b border-border">
+          <div class="mx-auto max-w-7xl px-4 py-3 space-y-1">
+            <a href="#features" class="plca-nav-link">功能</a>
+            <a href="#cases" class="plca-nav-link">客户案例</a>
+            <a href="#pricing" class="plca-nav-link">定价</a>
+            <a href="#docs" class="plca-nav-link">文档</a>
+            <button class="plca-btn plca-btn-primary w-full mt-3" hx-get="/signup" hx-target="body" hx-push-url="true">免费试用</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="relative overflow-hidden pt-16 pb-24 lg:pt-24 lg:pb-32">
+        <div class="absolute inset-0 -z-10">
+          <div class="absolute top-0 left-1/4 h-72 w-72 rounded-full bg-primary/20 blur-3xl"></div>
+          <div class="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-chart-2/20 blur-3xl"></div>
+        </div>
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <div class="inline-flex items-center gap-2 plca-glass plca-badge-sky px-4 py-1.5 rounded-full mb-8">
+            <i data-lucide="sparkles" class="h-4 w-4"></i>
+            <span class="text-sm font-medium">工业智联新范式 · 边缘到云端一体化</span>
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6">
+            让每一台 PLC<br class="hidden sm:block" />都拥有一个智能大脑
+          </h1>
+          <p class="mx-auto max-w-2xl text-lg sm:text-xl text-muted-foreground mb-10">
+            PLC·AIOT 是面向智能制造的工业物联网 SaaS 平台。连接设备、采集数据、实时监控、预测性维护，助力企业实现数字化转型。
+          </p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button class="plca-btn plca-btn-primary plca-btn-pill px-8 py-3 text-base" hx-get="/signup" hx-target="body" hx-push-url="true">
+              免费开始使用
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </button>
+            <button class="plca-btn plca-btn-secondary plca-btn-pill px-8 py-3 text-base" hx-get="/demo" hx-target="body" hx-push-url="true">
+              预约产品演示
+            </button>
+          </div>
+          <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <div class="plca-card plca-kpi text-center">
+              <div class="plca-kpi-value text-primary">10万+</div>
+              <div class="plca-kpi-label">接入设备</div>
+            </div>
+            <div class="plca-card plca-kpi text-center">
+              <div class="plca-kpi-value text-primary">99.99%</div>
+              <div class="plca-kpi-label">平台可用性</div>
+            </div>
+            <div class="plca-card plca-kpi text-center">
+              <div class="plca-kpi-value text-primary">&lt;50ms</div>
+              <div class="plca-kpi-label">边缘响应</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features" class="plca-section bg-secondary/50">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-4">全栈能力，开箱即用</h2>
+            <p class="text-lg text-muted-foreground max-w-2xl mx-auto">从边缘网关到云端分析，从实时监控到智能告警，一站式满足工业 IoT 场景需求。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="activity" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">实时数据采集</h3>
+              <p class="text-muted-foreground">支持 Modbus、OPC UA、MQTT 等主流协议，毫秒级采集 PLC、传感器数据，全面掌握产线运行状态。</p>
+            </div>
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="bar-chart-3" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">可视化监控大屏</h3>
+              <p class="text-muted-foreground">拖拽式组态、多维度图表、3D 产线孪生，让数据一目了然，辅助管理者快速决策。</p>
+            </div>
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="shield-check" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">预测性维护</h3>
+              <p class="text-muted-foreground">基于 AI 算法分析设备振动、温度、电流等特征，提前识别故障风险，降低非计划停机损失。</p>
+            </div>
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="cloud" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">云边协同</h3>
+              <p class="text-muted-foreground">边缘网关本地预处理 + 云端集中训练，兼顾低延迟与强算力，适配离散制造与流程工业。</p>
+            </div>
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="zap" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">规则引擎与告警</h3>
+              <p class="text-muted-foreground">可视化规则编排，支持多级告警、钉钉/企微/短信通知，确保异常第一时间触达责任人。</p>
+            </div>
+            <div class="plca-card plca-card-hover p-6">
+              <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <i data-lucide="lock" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">企业级安全</h3>
+              <p class="text-muted-foreground">端到端 TLS 加密、RBAC 权限体系、操作审计日志，满足等保与工控安全合规要求。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section id="cases" class="plca-section">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-4">客户信赖的选择</h2>
+            <p class="text-lg text-muted-foreground">已有超过 500 家制造企业通过 PLC·AIOT 实现降本增效。</p>
+          </div>
+          <div class="relative">
+            <div id="testimonial-carousel" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="plca-card p-6 testimonial-slide">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="plca-avatar">王</div>
+                  <div>
+                    <div class="font-semibold text-foreground">王建国</div>
+                    <div class="text-sm text-muted-foreground">某汽车零部件厂 · 生产总监</div>
+                  </div>
+                </div>
+                <p class="text-muted-foreground">"上线三个月，设备综合效率 OEE 提升 12%，异常停机减少 40%，真正实现了数据驱动的生产管理。"</p>
+              </div>
+              <div class="plca-card p-6 testimonial-slide">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="plca-avatar">李</div>
+                  <div>
+                    <div class="font-semibold text-foreground">李雪梅</div>
+                    <div class="text-sm text-muted-foreground">某新能源电池企业 · CIO</div>
+                  </div>
+                </div>
+                <p class="text-muted-foreground">"PLC·AIOT 的云边协同架构帮我们解决了产线数据上云的带宽与延迟难题，实施成本降低一半。"</p>
+              </div>
+              <div class="plca-card p-6 testimonial-slide">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="plca-avatar">张</div>
+                  <div>
+                    <div class="font-semibold text-foreground">张伟</div>
+                    <div class="text-sm text-muted-foreground">某智能装备制造商 · 运营副总</div>
+                  </div>
+                </div>
+                <p class="text-muted-foreground">"预测性维护功能让我们从被动维修转向主动保养，年度维保费用下降 25%。"</p>
+              </div>
+            </div>
+            <div class="flex md:hidden justify-center gap-2 mt-6">
+              <button class="plca-btn plca-btn-ghost p-2" onclick="prevTestimonial()" aria-label="上一条">
+                <i data-lucide="chevron-left" class="h-5 w-5"></i>
+              </button>
+              <button class="plca-btn plca-btn-ghost p-2" onclick="nextTestimonial()" aria-label="下一条">
+                <i data-lucide="chevron-right" class="h-5 w-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section id="pricing" class="plca-section bg-secondary/50">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-4">灵活定价，按需选择</h2>
+            <p class="text-lg text-muted-foreground">从初创团队到大型集团，总有适合您的方案。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div class="plca-card p-6 flex flex-col">
+              <h3 class="text-lg font-semibold text-foreground">Basic</h3>
+              <div class="mt-2 text-3xl font-bold text-foreground">¥0<span class="text-base font-normal text-muted-foreground">/月</span></div>
+              <p class="mt-2 text-sm text-muted-foreground">适合个人开发者与小团队试用。</p>
+              <ul class="mt-6 space-y-3 flex-1">
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>最多 10 台设备</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>7 天数据存储</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>基础监控看板</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>社区支持</li>
+              </ul>
+              <button class="plca-btn plca-btn-secondary w-full mt-6" hx-get="/signup?plan=basic" hx-target="body" hx-push-url="true">免费开始</button>
+            </div>
+            <div class="plca-card plca-pricing-featured p-6 flex flex-col relative">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span class="plca-badge plca-badge-sky">最受欢迎</span>
+              </div>
+              <h3 class="text-lg font-semibold text-foreground">Pro</h3>
+              <div class="mt-2 text-3xl font-bold text-foreground">¥999<span class="text-base font-normal text-muted-foreground">/月</span></div>
+              <p class="mt-2 text-sm text-muted-foreground">适合成长型制造企业。</p>
+              <ul class="mt-6 space-y-3 flex-1">
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>最多 500 台设备</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>1 年数据存储</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>自定义告警规则</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>API 访问</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>优先技术支持</li>
+              </ul>
+              <button class="plca-btn plca-btn-primary w-full mt-6" hx-get="/signup?plan=pro" hx-target="body" hx-push-url="true">立即升级</button>
+            </div>
+            <div class="plca-card p-6 flex flex-col">
+              <h3 class="text-lg font-semibold text-foreground">Enterprise</h3>
+              <div class="mt-2 text-3xl font-bold text-foreground">联系销售</div>
+              <p class="mt-2 text-sm text-muted-foreground">适合大型集团与私有化部署。</p>
+              <ul class="mt-6 space-y-3 flex-1">
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>无限设备接入</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>长期数据归档</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>私有化 / 混合云部署</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>专属客户成功经理</li>
+                <li class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="check" class="h-4 w-4 text-[var(--plca-success)]"></i>SLA 保障</li>
+              </ul>
+              <button class="plca-btn plca-btn-secondary w-full mt-6" hx-get="/contact" hx-target="body" hx-push-url="true">联系销售</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Banner -->
+      <section class="py-16">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div class="plca-card plca-pricing-featured p-8 sm:p-12 text-center relative overflow-hidden">
+            <div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 to-chart-2/10"></div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-foreground mb-4">准备好开启工业智能化之旅？</h2>
+            <p class="text-muted-foreground mb-8 max-w-xl mx-auto">立即注册，免费体验 PLC·AIOT 全功能 14 天，无需绑定信用卡。</p>
+            <button class="plca-btn plca-btn-primary plca-btn-pill px-8 py-3 text-base" hx-get="/signup" hx-target="body" hx-push-url="true">
+              免费试用 14 天
+              <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="border-t border-border bg-background pt-16 pb-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            <div class="col-span-2 md:col-span-1">
+              <a href="#" class="flex items-center gap-2 text-xl font-bold text-foreground mb-4">
+                <i data-lucide="cpu" class="h-6 w-6 text-primary"></i>
+                <span>PLC·AIOT</span>
+              </a>
+              <p class="text-sm text-muted-foreground">工业物联网 SaaS 平台，让设备更智能，让生产更高效。</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-foreground mb-4">产品</h4>
+              <ul class="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#features" class="hover:text-foreground transition-colors">功能特性</a></li>
+                <li><a href="#pricing" class="hover:text-foreground transition-colors">定价方案</a></li>
+                <li><a href="#cases" class="hover:text-foreground transition-colors">客户案例</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">更新日志</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold text-foreground mb-4">资源</h4>
+              <ul class="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" class="hover:text-foreground transition-colors">开发文档</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">API 参考</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">社区论坛</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">帮助中心</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold text-foreground mb-4">公司</h4>
+              <ul class="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" class="hover:text-foreground transition-colors">关于我们</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">加入我们</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">联系方式</a></li>
+                <li><a href="#" class="hover:text-foreground transition-colors">隐私政策</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
+            <p class="text-sm text-muted-foreground">© 2026 PLC·AIOT. 保留所有权利。</p>
+            <div class="flex items-center gap-4">
+              <a href="#" class="text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub"><i data-lucide="github" class="h-5 w-5"></i></a>
+              <a href="#" class="text-muted-foreground hover:text-foreground transition-colors" aria-label="Twitter"><i data-lucide="twitter" class="h-5 w-5"></i></a>
+              <a href="#" class="text-muted-foreground hover:text-foreground transition-colors" aria-label="LinkedIn"><i data-lucide="linkedin" class="h-5 w-5"></i></a>
+              <a href="#" class="text-muted-foreground hover:text-foreground transition-colors" aria-label="邮箱"><i data-lucide="mail" class="h-5 w-5"></i></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <script>
+        (function () {
+          const html = document.documentElement;
+          const toggles = ['theme-toggle', 'theme-toggle-mobile'];
+          const sunIcons = ['theme-icon-sun', 'theme-icon-sun-mobile'];
+          const moonIcons = ['theme-icon-moon', 'theme-icon-moon-mobile'];
+
+          function updateIcons() {
+            const isDark = html.classList.contains('dark');
+            sunIcons.forEach(function (id) {
+              const el = document.getElementById(id);
+              if (el) el.classList.toggle('hidden', isDark);
+            });
+            moonIcons.forEach(function (id) {
+              const el = document.getElementById(id);
+              if (el) el.classList.toggle('hidden', !isDark);
+            });
+          }
+
+          toggles.forEach(function (id) {
+            const btn = document.getElementById(id);
+            if (btn) {
+              btn.addEventListener('click', function () {
+                html.classList.toggle('dark');
+                updateIcons();
+                if (window.lucide) lucide.createIcons();
+              });
+            }
+          });
+
+          updateIcons();
+        })();
+
+        (function () {
+          const btn = document.getElementById('mobile-menu-btn');
+          const menu = document.getElementById('mobile-menu');
+          const openIcon = document.getElementById('mobile-menu-icon-open');
+          const closeIcon = document.getElementById('mobile-menu-icon-close');
+          if (!btn || !menu) return;
+
+          btn.addEventListener('click', function () {
+            const isHidden = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !isHidden);
+            if (openIcon) openIcon.classList.toggle('hidden', isHidden);
+            if (closeIcon) closeIcon.classList.toggle('hidden', !isHidden);
+            if (window.lucide) lucide.createIcons();
+          });
+        })();
+
+        let currentTestimonial = 0;
+        const slides = document.querySelectorAll('.testimonial-slide');
+        function showTestimonial(index) {
+          slides.forEach(function (slide, i) {
+            if (window.innerWidth < 768) {
+              slide.style.display = i === index ? 'block' : 'none';
+            } else {
+              slide.style.display = '';
+            }
+          });
+        }
+        function nextTestimonial() {
+          currentTestimonial = (currentTestimonial + 1) % slides.length;
+          showTestimonial(currentTestimonial);
+        }
+        function prevTestimonial() {
+          currentTestimonial = (currentTestimonial - 1 + slides.length) % slides.length;
+          showTestimonial(currentTestimonial);
+        }
+        window.addEventListener('resize', function () { showTestimonial(currentTestimonial); });
+        showTestimonial(currentTestimonial);
+      </script>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

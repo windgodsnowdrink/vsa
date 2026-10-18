@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLC·AIOT 驾驶舱</title>
+    <style id="theme-vars">
+/*
+ * PLC·AIOT Design Tokens
+ * Reference: Apple Design Library (restrained, precise, editorial)
+ * Domain: Industrial IoT / PLC Edge Device SaaS
+ * Primary: Tech sky blue (#0ea5e9) with glassmorphism surfaces
+ * Theme modes: light / dark
+ */
+
+:root {
+  /* Primitive — brand sky */
+  --plca-brand-50: #f0f9ff;
+  --plca-brand-100: #e0f2fe;
+  --plca-brand-200: #bae6fd;
+  --plca-brand-300: #7dd3fc;
+  --plca-brand-400: #38bdf8;
+  --plca-brand-500: #0ea5e9;
+  --plca-brand-600: #0284c7;
+  --plca-brand-700: #0369a1;
+  --plca-brand-800: #075985;
+  --plca-brand-900: #0c4a6e;
+
+  /* Primitive — slate neutrals */
+  --plca-slate-50: #f8fafc;
+  --plca-slate-100: #f1f5f9;
+  --plca-slate-200: #e2e8f0;
+  --plca-slate-300: #cbd5e1;
+  --plca-slate-400: #94a3b8;
+  --plca-slate-500: #64748b;
+  --plca-slate-600: #475569;
+  --plca-slate-700: #334155;
+  --plca-slate-800: #1e293b;
+  --plca-slate-900: #0f172a;
+
+  /* Primitive — semantic scales */
+  --plca-background: var(--plca-slate-50);
+  --plca-foreground: var(--plca-slate-900);
+  --plca-card: rgba(255, 255, 255, 0.78);
+  --plca-card-foreground: var(--plca-slate-900);
+  --plca-popover: #ffffff;
+  --plca-popover-foreground: var(--plca-slate-900);
+
+  --plca-primary: var(--plca-brand-500);
+  --plca-primary-foreground: #ffffff;
+  --plca-secondary: var(--plca-slate-100);
+  --plca-secondary-foreground: var(--plca-slate-800);
+  --plca-muted: var(--plca-slate-100);
+  --plca-muted-foreground: var(--plca-slate-500);
+  --plca-accent: var(--plca-brand-100);
+  --plca-accent-foreground: var(--plca-brand-900);
+  --plca-destructive: #ef4444;
+  --plca-destructive-foreground: #ffffff;
+  --plca-success: #10b981;
+  --plca-success-foreground: #ffffff;
+  --plca-warning: #f59e0b;
+  --plca-warning-foreground: #ffffff;
+  --plca-border: var(--plca-slate-200);
+  --plca-input: var(--plca-slate-300);
+  --plca-ring: var(--plca-brand-500);
+
+  --plca-icon: var(--plca-slate-800);
+  --plca-icon-muted: var(--plca-slate-500);
+
+  /* Chart */
+  --plca-chart-1: var(--plca-brand-500);
+  --plca-chart-2: #10b981;
+  --plca-chart-3: #f59e0b;
+  --plca-chart-4: #8b5cf6;
+  --plca-chart-5: #ec4899;
+
+  /* Sidebar */
+  --plca-sidebar: rgba(255, 255, 255, 0.72);
+  --plca-sidebar-foreground: var(--plca-slate-800);
+  --plca-sidebar-primary: var(--plca-brand-500);
+  --plca-sidebar-primary-foreground: #ffffff;
+  --plca-sidebar-accent: var(--plca-slate-100);
+  --plca-sidebar-accent-foreground: var(--plca-slate-800);
+  --plca-sidebar-border: var(--plca-slate-200);
+  --plca-sidebar-ring: var(--plca-brand-500);
+
+  /* Typography */
+  --plca-font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --plca-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --plca-tracking-tight: -0.02em;
+  --plca-tracking-normal: 0em;
+
+  /* Radius */
+  --plca-radius-sm: 0.5rem;
+  --plca-radius-md: 0.75rem;
+  --plca-radius-lg: 1rem;
+  --plca-radius-xl: 1.25rem;
+
+  /* Shadows */
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(2, 8, 20, 0.04);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(2, 8, 20, 0.05), 0 1px 3px -1px rgba(2, 8, 20, 0.05);
+  --plca-shadow-md: 0 4px 8px -2px rgba(2, 8, 20, 0.06), 0 2px 4px -2px rgba(2, 8, 20, 0.04);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(2, 8, 20, 0.10), 0 4px 8px -4px rgba(2, 8, 20, 0.04);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(2, 8, 20, 0.12), 0 8px 16px -8px rgba(2, 8, 20, 0.06);
+
+  /* Spacing base */
+  --plca-spacing: 0.25rem;
+}
+
+.dark {
+  --plca-background: #030711;
+  --plca-foreground: #f8fafc;
+  --plca-card: rgba(15, 23, 42, 0.72);
+  --plca-card-foreground: #f8fafc;
+  --plca-popover: #0f172a;
+  --plca-popover-foreground: #f8fafc;
+
+  --plca-primary: #38bdf8;
+  --plca-primary-foreground: #0f172a;
+  --plca-secondary: #1e293b;
+  --plca-secondary-foreground: #f8fafc;
+  --plca-muted: #1e293b;
+  --plca-muted-foreground: #94a3b8;
+  --plca-accent: #0c4a6e;
+  --plca-accent-foreground: #e0f2fe;
+  --plca-border: rgba(148, 163, 184, 0.2);
+  --plca-input: rgba(148, 163, 184, 0.25);
+  --plca-ring: #38bdf8;
+
+  --plca-sidebar: rgba(15, 23, 42, 0.72);
+  --plca-sidebar-foreground: #f8fafc;
+  --plca-sidebar-primary: #38bdf8;
+  --plca-sidebar-primary-foreground: #0f172a;
+  --plca-sidebar-accent: #1e293b;
+  --plca-sidebar-accent-foreground: #f8fafc;
+  --plca-sidebar-border: rgba(148, 163, 184, 0.16);
+
+  --plca-shadow-2xs: 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --plca-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --plca-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.36), 0 1px 3px -1px rgba(0, 0, 0, 0.36);
+  --plca-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.44), 0 2px 4px -2px rgba(0, 0, 0, 0.32);
+  --plca-shadow-lg: 0 8px 24px -8px rgba(0, 0, 0, 0.50), 0 4px 8px -4px rgba(0, 0, 0, 0.36);
+  --plca-shadow-xl: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 8px 16px -8px rgba(0, 0, 0, 0.40);
+}
+
+    </style>
+    <style id="component-vars">
+/* PLC·AIOT Component Layer — plain CSS, no @apply referencing local classes */
+
+/* Glass surfaces */
+.plca-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.dark .plca-glass {
+  background: rgba(15, 23, 42, 0.60);
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.plca-glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.dark .plca-glass-strong {
+  background: rgba(15, 23, 42, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+/* Cards */
+.plca-card {
+  background: var(--plca-card);
+  color: var(--plca-card-foreground);
+  border: 1px solid var(--plca-border);
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-sm);
+  transition: box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1), transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.plca-card-hover:hover {
+  box-shadow: var(--plca-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.plca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-btn-primary {
+  background: var(--plca-primary);
+  color: var(--plca-primary-foreground);
+  box-shadow: 0 4px 14px -4px rgba(14, 165, 233, 0.35);
+}
+
+.plca-btn-primary:hover {
+  background: var(--plca-brand-600);
+  box-shadow: 0 6px 18px -4px rgba(14, 165, 233, 0.42);
+}
+
+.plca-btn-secondary {
+  background: var(--plca-secondary);
+  color: var(--plca-secondary-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-secondary:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-ghost {
+  background: transparent;
+  color: var(--plca-foreground);
+  border-color: var(--plca-border);
+}
+
+.plca-btn-ghost:hover {
+  background: var(--plca-muted);
+}
+
+.plca-btn-pill {
+  border-radius: 9999px;
+}
+
+/* Forms */
+.plca-input {
+  width: 100%;
+  background: var(--plca-background);
+  color: var(--plca-foreground);
+  border: 1px solid var(--plca-input);
+  border-radius: var(--plca-radius-md);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plca-input::placeholder {
+  color: var(--plca-muted-foreground);
+}
+
+.plca-input:focus {
+  border-color: var(--plca-ring);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+}
+
+.plca-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--plca-foreground);
+  margin-bottom: 0.375rem;
+}
+
+.plca-error {
+  font-size: 0.75rem;
+  color: var(--plca-destructive);
+  margin-top: 0.25rem;
+}
+
+/* Badges */
+.plca-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.dark .plca-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+.plca-badge-rose {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.dark .plca-badge-rose {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+}
+
+.plca-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.dark .plca-badge-amber {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.plca-badge-sky {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+}
+
+.dark .plca-badge-sky {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+}
+
+/* Navigation */
+.plca-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 4rem;
+}
+
+.plca-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--plca-radius-md);
+  transition: color 150ms ease, background-color 150ms ease;
+  text-decoration: none;
+}
+
+.plca-nav-link:hover {
+  color: var(--plca-foreground);
+  background: var(--plca-muted);
+}
+
+/* Sidebar */
+.plca-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-sidebar-foreground);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.plca-sidebar-item:hover {
+  background: var(--plca-sidebar-accent);
+}
+
+.plca-sidebar-item-active {
+  background: rgba(14, 165, 233, 0.10);
+  color: var(--plca-primary);
+  border-left: 3px solid var(--plca-primary);
+}
+
+/* KPI */
+.plca-kpi {
+  padding: 1rem;
+  border-radius: var(--plca-radius-lg);
+  min-width: 140px;
+}
+
+.plca-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--plca-tracking-tight);
+  white-space: nowrap;
+}
+
+.plca-kpi-label {
+  font-size: 0.8125rem;
+  color: var(--plca-muted-foreground);
+}
+
+/* Tables */
+.plca-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.plca-table th,
+.plca-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--plca-border);
+  white-space: nowrap;
+}
+
+.plca-table th {
+  font-weight: 600;
+  color: var(--plca-muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plca-table tbody tr:hover {
+  background: rgba(14, 165, 233, 0.04);
+}
+
+/* Tabs */
+.plca-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+  width: fit-content;
+}
+
+.plca-tab {
+  padding: 0.5rem 1rem;
+  border-radius: var(--plca-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--plca-muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.plca-tab:hover {
+  color: var(--plca-foreground);
+}
+
+.plca-tab-active {
+  background: var(--plca-card);
+  color: var(--plca-foreground);
+  box-shadow: var(--plca-shadow-xs);
+}
+
+/* Timeline */
+.plca-timeline-item {
+  position: relative;
+  padding-left: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-left: 1px solid var(--plca-border);
+}
+
+.plca-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -0.25rem;
+  top: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plca-primary);
+}
+
+.plca-timeline-item:last-child {
+  border-left-color: transparent;
+}
+
+/* Avatar */
+.plca-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--plca-brand-400), var(--plca-brand-600));
+  color: #fff;
+}
+
+/* Scrollbar */
+.plca-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.plca-scroll::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.35);
+  border-radius: 3px;
+}
+
+/* Map placeholder */
+.plca-map {
+  background:
+    radial-gradient(circle at 25% 35%, rgba(14, 165, 233, 0.14) 0%, transparent 28%),
+    radial-gradient(circle at 70% 65%, rgba(16, 185, 129, 0.12) 0%, transparent 26%),
+    var(--plca-muted);
+  border-radius: var(--plca-radius-lg);
+}
+
+/* Toast / notification panel */
+.plca-notification-panel {
+  position: fixed;
+  top: 4.5rem;
+  right: 1rem;
+  width: 22rem;
+  z-index: 40;
+  border-radius: var(--plca-radius-lg);
+  box-shadow: var(--plca-shadow-xl);
+}
+
+/* Section shells */
+.plca-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.plca-page-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.plca-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pricing card highlight */
+.plca-pricing-featured {
+  border: 2px solid var(--plca-primary);
+  box-shadow: var(--plca-shadow-lg);
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--plca-background);
+    --color-foreground: var(--plca-foreground);
+    --color-card: var(--plca-card);
+    --color-card-foreground: var(--plca-card-foreground);
+    --color-popover: var(--plca-popover);
+    --color-popover-foreground: var(--plca-popover-foreground);
+    --color-primary: var(--plca-primary);
+    --color-primary-foreground: var(--plca-primary-foreground);
+    --color-secondary: var(--plca-secondary);
+    --color-secondary-foreground: var(--plca-secondary-foreground);
+    --color-muted: var(--plca-muted);
+    --color-muted-foreground: var(--plca-muted-foreground);
+    --color-accent: var(--plca-accent);
+    --color-accent-foreground: var(--plca-accent-foreground);
+    --color-destructive: var(--plca-destructive);
+    --color-destructive-foreground: var(--plca-destructive-foreground);
+    --color-border: var(--plca-border);
+    --color-input: var(--plca-input);
+    --color-ring: var(--plca-ring);
+    --color-chart-1: var(--plca-chart-1);
+    --color-chart-2: var(--plca-chart-2);
+    --color-chart-3: var(--plca-chart-3);
+    --color-chart-4: var(--plca-chart-4);
+    --color-chart-5: var(--plca-chart-5);
+    --color-sidebar: var(--plca-sidebar);
+    --color-sidebar-foreground: var(--plca-sidebar-foreground);
+    --color-sidebar-primary: var(--plca-sidebar-primary);
+    --color-sidebar-primary-foreground: var(--plca-sidebar-primary-foreground);
+    --color-sidebar-accent: var(--plca-sidebar-accent);
+    --color-sidebar-accent-foreground: var(--plca-sidebar-accent-foreground);
+    --radius-sm: var(--plca-radius-sm);
+    --radius-md: var(--plca-radius-md);
+    --radius-lg: var(--plca-radius-lg);
+    --radius-xl: var(--plca-radius-xl);
+  }
+  @layer base {
+    body { background: var(--plca-background); color: var(--plca-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--plca-background); }
+      .text-background { color: var(--plca-background); }
+      .border-background { border-color: var(--plca-background); }
+      .ring-background { --tw-ring-color: var(--plca-background); }
+      .bg-foreground { background-color: var(--plca-foreground); }
+      .text-foreground { color: var(--plca-foreground); }
+      .border-foreground { border-color: var(--plca-foreground); }
+      .ring-foreground { --tw-ring-color: var(--plca-foreground); }
+      .bg-card { background-color: var(--plca-card); }
+      .text-card { color: var(--plca-card); }
+      .border-card { border-color: var(--plca-card); }
+      .ring-card { --tw-ring-color: var(--plca-card); }
+      .bg-card-foreground { background-color: var(--plca-card-foreground); }
+      .text-card-foreground { color: var(--plca-card-foreground); }
+      .border-card-foreground { border-color: var(--plca-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--plca-card-foreground); }
+      .bg-popover { background-color: var(--plca-popover); }
+      .text-popover { color: var(--plca-popover); }
+      .border-popover { border-color: var(--plca-popover); }
+      .ring-popover { --tw-ring-color: var(--plca-popover); }
+      .bg-popover-foreground { background-color: var(--plca-popover-foreground); }
+      .text-popover-foreground { color: var(--plca-popover-foreground); }
+      .border-popover-foreground { border-color: var(--plca-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--plca-popover-foreground); }
+      .bg-primary { background-color: var(--plca-primary); }
+      .text-primary { color: var(--plca-primary); }
+      .border-primary { border-color: var(--plca-primary); }
+      .ring-primary { --tw-ring-color: var(--plca-primary); }
+      .bg-primary-foreground { background-color: var(--plca-primary-foreground); }
+      .text-primary-foreground { color: var(--plca-primary-foreground); }
+      .border-primary-foreground { border-color: var(--plca-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--plca-primary-foreground); }
+      .bg-secondary { background-color: var(--plca-secondary); }
+      .text-secondary { color: var(--plca-secondary); }
+      .border-secondary { border-color: var(--plca-secondary); }
+      .ring-secondary { --tw-ring-color: var(--plca-secondary); }
+      .bg-secondary-foreground { background-color: var(--plca-secondary-foreground); }
+      .text-secondary-foreground { color: var(--plca-secondary-foreground); }
+      .border-secondary-foreground { border-color: var(--plca-secondary-foreground); }
+      .ring-secondary-foreground { --tw-ring-color: var(--plca-secondary-foreground); }
+      .bg-muted { background-color: var(--plca-muted); }
+      .text-muted { color: var(--plca-muted); }
+      .border-muted { border-color: var(--plca-muted); }
+      .ring-muted { --tw-ring-color: var(--plca-muted); }
+      .bg-muted-foreground { background-color: var(--plca-muted-foreground); }
+      .text-muted-foreground { color: var(--plca-muted-foreground); }
+      .border-muted-foreground { border-color: var(--plca-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--plca-muted-foreground); }
+      .bg-accent { background-color: var(--plca-accent); }
+      .text-accent { color: var(--plca-accent); }
+      .border-accent { border-color: var(--plca-accent); }
+      .ring-accent { --tw-ring-color: var(--plca-accent); }
+      .bg-accent-foreground { background-color: var(--plca-accent-foreground); }
+      .text-accent-foreground { color: var(--plca-accent-foreground); }
+      .border-accent-foreground { border-color: var(--plca-accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--plca-accent-foreground); }
+      .bg-destructive { background-color: var(--plca-destructive); }
+      .text-destructive { color: var(--plca-destructive); }
+      .border-destructive { border-color: var(--plca-destructive); }
+      .ring-destructive { --tw-ring-color: var(--plca-destructive); }
+      .bg-destructive-foreground { background-color: var(--plca-destructive-foreground); }
+      .text-destructive-foreground { color: var(--plca-destructive-foreground); }
+      .border-destructive-foreground { border-color: var(--plca-destructive-foreground); }
+      .ring-destructive-foreground { --tw-ring-color: var(--plca-destructive-foreground); }
+      .bg-border { background-color: var(--plca-border); }
+      .text-border { color: var(--plca-border); }
+      .border-border { border-color: var(--plca-border); }
+      .ring-border { --tw-ring-color: var(--plca-border); }
+      .bg-input { background-color: var(--plca-input); }
+      .text-input { color: var(--plca-input); }
+      .border-input { border-color: var(--plca-input); }
+      .ring-input { --tw-ring-color: var(--plca-input); }
+      .bg-ring { background-color: var(--plca-ring); }
+      .text-ring { color: var(--plca-ring); }
+      .border-ring { border-color: var(--plca-ring); }
+      .ring-ring { --tw-ring-color: var(--plca-ring); }
+      .bg-chart-1 { background-color: var(--plca-chart-1); }
+      .text-chart-1 { color: var(--plca-chart-1); }
+      .border-chart-1 { border-color: var(--plca-chart-1); }
+      .ring-chart-1 { --tw-ring-color: var(--plca-chart-1); }
+      .bg-chart-2 { background-color: var(--plca-chart-2); }
+      .text-chart-2 { color: var(--plca-chart-2); }
+      .border-chart-2 { border-color: var(--plca-chart-2); }
+      .ring-chart-2 { --tw-ring-color: var(--plca-chart-2); }
+      .bg-chart-3 { background-color: var(--plca-chart-3); }
+      .text-chart-3 { color: var(--plca-chart-3); }
+      .border-chart-3 { border-color: var(--plca-chart-3); }
+      .ring-chart-3 { --tw-ring-color: var(--plca-chart-3); }
+      .bg-chart-4 { background-color: var(--plca-chart-4); }
+      .text-chart-4 { color: var(--plca-chart-4); }
+      .border-chart-4 { border-color: var(--plca-chart-4); }
+      .ring-chart-4 { --tw-ring-color: var(--plca-chart-4); }
+      .bg-chart-5 { background-color: var(--plca-chart-5); }
+      .text-chart-5 { color: var(--plca-chart-5); }
+      .border-chart-5 { border-color: var(--plca-chart-5); }
+      .ring-chart-5 { --tw-ring-color: var(--plca-chart-5); }
+      .bg-sidebar { background-color: var(--plca-sidebar); }
+      .text-sidebar { color: var(--plca-sidebar); }
+      .border-sidebar { border-color: var(--plca-sidebar); }
+      .ring-sidebar { --tw-ring-color: var(--plca-sidebar); }
+      .bg-sidebar-foreground { background-color: var(--plca-sidebar-foreground); }
+      .text-sidebar-foreground { color: var(--plca-sidebar-foreground); }
+      .border-sidebar-foreground { border-color: var(--plca-sidebar-foreground); }
+      .ring-sidebar-foreground { --tw-ring-color: var(--plca-sidebar-foreground); }
+      .bg-sidebar-primary { background-color: var(--plca-sidebar-primary); }
+      .text-sidebar-primary { color: var(--plca-sidebar-primary); }
+      .border-sidebar-primary { border-color: var(--plca-sidebar-primary); }
+      .ring-sidebar-primary { --tw-ring-color: var(--plca-sidebar-primary); }
+      .bg-sidebar-primary-foreground { background-color: var(--plca-sidebar-primary-foreground); }
+      .text-sidebar-primary-foreground { color: var(--plca-sidebar-primary-foreground); }
+      .border-sidebar-primary-foreground { border-color: var(--plca-sidebar-primary-foreground); }
+      .ring-sidebar-primary-foreground { --tw-ring-color: var(--plca-sidebar-primary-foreground); }
+      .bg-sidebar-accent { background-color: var(--plca-sidebar-accent); }
+      .text-sidebar-accent { color: var(--plca-sidebar-accent); }
+      .border-sidebar-accent { border-color: var(--plca-sidebar-accent); }
+      .ring-sidebar-accent { --tw-ring-color: var(--plca-sidebar-accent); }
+      .bg-sidebar-accent-foreground { background-color: var(--plca-sidebar-accent-foreground); }
+      .text-sidebar-accent-foreground { color: var(--plca-sidebar-accent-foreground); }
+      .border-sidebar-accent-foreground { border-color: var(--plca-sidebar-accent-foreground); }
+      .ring-sidebar-accent-foreground { --tw-ring-color: var(--plca-sidebar-accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="plca-page-shell">
+    <!-- 侧边栏 -->
+    <aside id="sidebar"
+           class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full md:translate-x-0 transition-transform duration-200
+                  bg-sidebar border-r border-sidebar-border backdrop-blur-md flex flex-col">
+      <div class="h-16 flex items-center px-4 border-b border-sidebar-border">
+        <a href="cockpit.html" class="flex items-center gap-2 text-sidebar-foreground font-bold text-lg">
+          <i data-lucide="cpu" class="w-6 h-6 text-primary"></i>
+          <span>PLC·AIOT</span>
+        </a>
+        <button id="closeSidebar" class="md:hidden ml-auto p-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+                  <nav class="flex-1 space-y-1 overflow-y-auto p-3 plca-scroll">
+        <a href="cockpit.html" class="plca-sidebar-item plca-sidebar-item-active"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>驾驶舱</span></a>
+        <a href="devices.html" class="plca-sidebar-item"><i data-lucide="hard-drive" class="h-4 w-4"></i><span>设备</span></a>
+        <a href="alerts.html" class="plca-sidebar-item"><i data-lucide="bell-ring" class="h-4 w-4"></i><span>告警</span></a>
+        <a href="statistics.html" class="plca-sidebar-item"><i data-lucide="bar-chart-3" class="h-4 w-4"></i><span>统计</span></a>
+        <a href="realtime.html" class="plca-sidebar-item"><i data-lucide="activity" class="h-4 w-4"></i><span>实时看板</span></a>
+        <a href="map.html" class="plca-sidebar-item"><i data-lucide="map" class="h-4 w-4"></i><span>地图</span></a>
+        <a href="system.html" class="plca-sidebar-item"><i data-lucide="settings" class="h-4 w-4"></i><span>系统</span></a>
+        <a href="admin.html" class="plca-sidebar-item"><i data-lucide="shield" class="h-4 w-4"></i><span>后端管理</span></a>
+      </nav>
+    </aside>
+
+    <!-- 移动端遮罩 -->
+    <div id="sidebarOverlay" class="fixed inset-0 z-30 bg-black/40 hidden md:hidden" aria-hidden="true"></div>
+
+    <!-- 主内容区 -->
+    <div class="plca-content md:ml-64">
+      <!-- 顶部栏 -->
+      <header class="plca-topnav plca-glass border-b border-border px-4 flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <button id="openSidebar" class="md:hidden p-2 rounded-md hover:bg-muted text-foreground">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <h1 class="text-lg font-semibold tracking-tight truncate">驾驶舱</h1>
+          <span id="clock" class="hidden sm:inline-block text-sm text-muted-foreground font-mono ml-2"></span>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="relative hidden sm:block">
+            <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"></i>
+            <input type="text" placeholder="搜索设备、告警…" class="plca-input pl-9 w-48 lg:w-64 text-sm">
+          </div>
+          <button id="themeToggle" class="plca-btn plca-btn-ghost w-9 h-9 p-0 rounded-full" aria-label="切换主题">
+            <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+          </button>
+          <button id="notifToggle" class="plca-btn plca-btn-ghost w-9 h-9 p-0 rounded-full relative" aria-label="通知">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notifDot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive"></span>
+          </button>
+          <div class="plca-avatar" title="管理员">管</div>
+        </div>
+      </header>
+
+      <!-- 页面内容 -->
+      <main class="flex-1 p-4 lg:p-6 space-y-6">
+        <!-- KPI 卡片 -->
+        <section id="kpiRow"
+                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                 hx-get="/api/cockpit/kpis"
+                 hx-trigger="every 30s"
+                 hx-swap="none">
+          <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
+            <div>
+              <p class="plca-kpi-label">设备总数</p>
+              <p class="plca-kpi-value">1,248</p>
+              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                <span>3.2%</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-primary/10 text-primary">
+              <i data-lucide="hard-drive" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
+            <div>
+              <p class="plca-kpi-label">在线率</p>
+              <p class="plca-kpi-value">96.8%</p>
+              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                <span>0.8%</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <i data-lucide="wifi" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
+            <div>
+              <p class="plca-kpi-label">今日告警</p>
+              <p class="plca-kpi-value">18</p>
+              <div class="flex items-center gap-1 mt-2 text-rose-600 dark:text-rose-400 text-sm font-medium">
+                <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                <span>12.5%</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <i data-lucide="bell-ring" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="plca-card plca-kpi plca-card-hover flex items-start justify-between">
+            <div>
+              <p class="plca-kpi-label">采集数据量</p>
+              <p class="plca-kpi-value">4.2M</p>
+              <div class="flex items-center gap-1 mt-2 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                <span>8.4%</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <i data-lucide="database" class="w-6 h-6"></i>
+            </div>
+          </div>
+        </section>
+
+        <!-- 主图表 -->
+        <section class="plca-card p-4 lg:p-5"
+                 hx-get="/api/cockpit/trend"
+                 hx-trigger="every 60s"
+                 hx-swap="none">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-foreground">设备在线与告警趋势</h2>
+            <span class="text-xs text-muted-foreground">最近 24 小时</span>
+          </div>
+          <div class="relative h-72 lg:h-80 w-full">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </section>
+
+        <!-- 第二行图表 -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="plca-card p-4 lg:p-5">
+            <h2 class="font-semibold text-foreground mb-4">设备状态分布</h2>
+            <div class="relative h-56 w-full flex items-center justify-center">
+              <canvas id="statusChart"></canvas>
+            </div>
+          </div>
+          <div class="plca-card p-4 lg:p-5 lg:col-span-2">
+            <h2 class="font-semibold text-foreground mb-4">CPU / 内存使用率</h2>
+            <div class="relative h-56 w-full">
+              <canvas id="resourceChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- 最近事件 -->
+        <section class="plca-card p-4 lg:p-5 overflow-hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-foreground">最近事件</h2>
+            <button class="plca-btn plca-btn-secondary text-xs"
+                    hx-get="/api/cockpit/events"
+                    hx-target="#eventsTableBody"
+                    hx-swap="none">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              刷新
+            </button>
+          </div>
+          <div class="overflow-x-auto -mx-4 lg:-mx-5 px-4 lg:px-5">
+            <table class="plca-table min-w-full" id="eventsTable">
+              <thead>
+                <tr>
+                  <th class="cursor-pointer select-none" onclick="sortTable(0)">时间</th>
+                  <th class="cursor-pointer select-none" onclick="sortTable(1)">设备</th>
+                  <th class="cursor-pointer select-none" onclick="sortTable(2)">事件类型</th>
+                  <th class="cursor-pointer select-none" onclick="sortTable(3)">级别</th>
+                  <th class="cursor-pointer select-none" onclick="sortTable(4)">状态</th>
+                </tr>
+              </thead>
+              <tbody id="eventsTableBody">
+                <tr>
+                  <td class="font-mono text-muted-foreground">2026-08-15 09:42:18</td>
+                  <td>PLC-Edge-001</td>
+                  <td>心跳超时</td>
+                  <td><span class="plca-badge plca-badge-rose">严重</span></td>
+                  <td><span class="plca-badge plca-badge-amber">处理中</span></td>
+                </tr>
+                <tr>
+                  <td class="font-mono text-muted-foreground">2026-08-15 09:38:05</td>
+                  <td>PLC-Edge-017</td>
+                  <td>温度越限</td>
+                  <td><span class="plca-badge plca-badge-amber">警告</span></td>
+                  <td><span class="plca-badge plca-badge-emerald">已恢复</span></td>
+                </tr>
+                <tr>
+                  <td class="font-mono text-muted-foreground">2026-08-15 09:25:33</td>
+                  <td>PLC-Edge-009</td>
+                  <td>固件升级</td>
+                  <td><span class="plca-badge plca-badge-sky">信息</span></td>
+                  <td><span class="plca-badge plca-badge-emerald">完成</span></td>
+                </tr>
+                <tr>
+                  <td class="font-mono text-muted-foreground">2026-08-15 09:12:50</td>
+                  <td>PLC-Edge-003</td>
+                  <td>网络抖动</td>
+                  <td><span class="plca-badge plca-badge-amber">警告</span></td>
+                  <td><span class="plca-badge plca-badge-emerald">已恢复</span></td>
+                </tr>
+                <tr>
+                  <td class="font-mono text-muted-foreground">2026-08-15 08:56:21</td>
+                  <td>PLC-Edge-102</td>
+                  <td>数据采集异常</td>
+                  <td><span class="plca-badge plca-badge-rose">严重</span></td>
+                  <td><span class="plca-badge plca-badge-amber">处理中</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- 通知中心 -->
+  <div id="notificationPanel" class="plca-notification-panel plca-glass-strong hidden p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-foreground">通知中心</h3>
+      <button id="markAllRead" class="text-xs text-primary hover:underline">全部已读</button>
+    </div>
+    <div id="notificationList" class="space-y-3 max-h-80 overflow-y-auto plca-scroll pr-1">
+      <div class="flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+        <div class="mt-0.5 w-2 h-2 rounded-full bg-destructive shrink-0"></div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-foreground truncate">PLC-Edge-001 心跳超时</p>
+          <p class="text-xs text-muted-foreground">09:42 · 严重告警</p>
+        </div>
+      </div>
+      <div class="flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+        <div class="mt-0.5 w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-foreground truncate">PLC-Edge-017 温度越限已恢复</p>
+          <p class="text-xs text-muted-foreground">09:38 · 警告</p>
+        </div>
+      </div>
+      <div class="flex gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+        <div class="mt-0.5 w-2 h-2 rounded-full bg-primary shrink-0"></div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-foreground truncate">系统维护通知</p>
+          <p class="text-xs text-muted-foreground">今日 02:00 · 信息</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 初始化图标
+      lucide.createIcons();
+
+      // 主题切换
+      const html = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      function applyTheme(isDark) {
+        if (isDark) {
+          html.classList.add('dark');
+          html.classList.remove('light');
+        } else {
+          html.classList.add('light');
+          html.classList.remove('dark');
+        }
+        updateCharts();
+      }
+      themeToggle.addEventListener('click', () => {
+        applyTheme(!html.classList.contains('dark'));
+      });
+
+      // 时钟
+      const clock = document.getElementById('clock');
+      function updateClock() {
+        const now = new Date();
+        clock.textContent = now.toLocaleString('zh-CN', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      // 移动端侧边栏
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      const openSidebar = document.getElementById('openSidebar');
+      const closeSidebar = document.getElementById('closeSidebar');
+      function setSidebar(open) {
+        if (open) {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('hidden');
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+        }
+      }
+      openSidebar.addEventListener('click', () => setSidebar(true));
+      closeSidebar.addEventListener('click', () => setSidebar(false));
+      overlay.addEventListener('click', () => setSidebar(false));
+
+      // 通知面板
+      const notifToggle = document.getElementById('notifToggle');
+      const notificationPanel = document.getElementById('notificationPanel');
+      const notifDot = document.getElementById('notifDot');
+      const markAllRead = document.getElementById('markAllRead');
+      notifToggle.addEventListener('click', () => {
+        notificationPanel.classList.toggle('hidden');
+      });
+      markAllRead.addEventListener('click', () => {
+        notifDot.classList.add('hidden');
+        notificationPanel.querySelectorAll('.bg-destructive, .bg-amber-500, .bg-primary').forEach(el => {
+          el.classList.add('bg-muted-foreground');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!notificationPanel.contains(e.target) && e.target !== notifToggle && !notifToggle.contains(e.target)) {
+          notificationPanel.classList.add('hidden');
+        }
+      });
+
+      // 取 CSS 变量颜色
+      function cssVar(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      }
+
+      // 图表初始化
+      let trendChart, statusChart, resourceChart;
+      function initCharts() {
+        const c1 = cssVar('--plca-chart-1');
+        const c2 = cssVar('--plca-chart-2');
+        const c3 = cssVar('--plca-chart-3');
+        const c4 = cssVar('--plca-chart-4');
+        const muted = cssVar('--plca-muted-foreground');
+        const border = cssVar('--plca-border');
+        const gridColor = border;
+
+        const labels = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'];
+
+        // 组合图：在线设备趋势（线）+ 告警数（柱）
+        trendChart = new Chart(document.getElementById('trendChart'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                type: 'line',
+                label: '在线设备数',
+                data: [1180, 1195, 1202, 1198, 1210, 1225, 1208, 1218, 1230, 1222, 1215, 1208],
+                borderColor: c1,
+                backgroundColor: c1,
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                yAxisID: 'y'
+              },
+              {
+                type: 'bar',
+                label: '告警数',
+                data: [2, 1, 0, 3, 5, 4, 2, 1, 6, 3, 2, 1],
+                backgroundColor: c3 + '99',
+                borderColor: c3,
+                borderWidth: 1,
+                borderRadius: 4,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { labels: { color: muted } }
+            },
+            scales: {
+              x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: muted } },
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                grid: { color: gridColor, drawBorder: false },
+                ticks: { color: muted }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: { drawOnChartArea: false },
+                ticks: { color: muted }
+              }
+            }
+          }
+        });
+
+        // 设备状态分布（环形图）
+        statusChart = new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: {
+            labels: ['在线', '离线', '维护中'],
+            datasets: [{
+              data: [1208, 28, 12],
+              backgroundColor: [c2, c3, c4],
+              borderColor: cssVar('--plca-card'),
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+              legend: { position: 'bottom', labels: { color: muted } }
+            }
+          }
+        });
+
+        // CPU / 内存使用率（折线图）
+        resourceChart = new Chart(document.getElementById('resourceChart'), {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'CPU 使用率 (%)',
+                data: [32, 35, 31, 38, 42, 45, 41, 39, 46, 43, 40, 37],
+                borderColor: c1,
+                backgroundColor: c1 + '22',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2
+              },
+              {
+                label: '内存使用率 (%)',
+                data: [58, 59, 57, 60, 62, 64, 63, 61, 65, 62, 60, 59],
+                borderColor: c4,
+                backgroundColor: c4 + '22',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { labels: { color: muted } }
+            },
+            scales: {
+              x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: muted } },
+              y: {
+                min: 0,
+                max: 100,
+                grid: { color: gridColor, drawBorder: false },
+                ticks: { color: muted }
+              }
+            }
+          }
+        });
+      }
+
+      function updateCharts() {
+        if (!trendChart) return;
+        const muted = cssVar('--plca-muted-foreground');
+        const border = cssVar('--plca-border');
+        [trendChart, statusChart, resourceChart].forEach(chart => {
+          if (!chart) return;
+          if (chart.options.plugins.legend) chart.options.plugins.legend.labels.color = muted;
+          Object.values(chart.options.scales || {}).forEach(scale => {
+            if (scale.grid) scale.grid.color = border;
+            if (scale.ticks) scale.ticks.color = muted;
+          });
+          chart.update();
+        });
+      }
+
+      initCharts();
+
+      // 表格排序
+      window.sortTable = function (colIndex) {
+        const table = document.getElementById('eventsTable');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const asc = !table.dataset.sortAsc || table.dataset.sortAsc === 'false';
+        table.dataset.sortAsc = asc;
+        rows.sort((a, b) => {
+          const aText = a.cells[colIndex].innerText.trim();
+          const bText = b.cells[colIndex].innerText.trim();
+          return asc ? aText.localeCompare(bText, 'zh-CN') : bText.localeCompare(aText, 'zh-CN');
+        });
+        rows.forEach(row => tbody.appendChild(row));
+      };
+    })();
+  </script>
+</body>
+</html>

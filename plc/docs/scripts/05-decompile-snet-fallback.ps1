@@ -1,9 +1,23 @@
-﻿<#
+﻿﻿<#
 .SYNOPSIS
-  反编译 snet：先 dnSpy 路线，失败每个 DLL 自动回退 ilspycmd
+  反编译 snet 目录下所有 DLL：
+    第一路线  → E:\Net Tool\dnSpy\  (dnSpy.Console / ICSharpCode.Decompiler)
+    对 dnSpy 失败的每个 DLL  → 第二路线自动回退 ilspycmd (ICSharpCode.ILSpyCmd dotnet tool)
+  两路产物分桶存放，最后汇总为统一目录 snet-decompiled\src\（去重 + 优先级 dnSpy>ilspycmd）。
 .PREREQ
-  - .NET SDK 可用 (dotnet)
-  - dnSpy 目录: E:\Net Tool\dnSpy
+  - PowerShell 5.1+ / 7+
+  - .NET SDK (8.0/9.0/10.0/11.0 任一可用 dotnet 命令，ilspycmd 路线用)
+  - dnSpy 目录: E:\Net Tool\dnSpy\  (优先)
+  - snet DLL 根: E:\WorkSpace\windgodsnowdrink\vsa\plc\docs\snet\
+.NOTES
+  产物目录结构：
+    snet-decompiled/
+      inventory/            → 01 脚本产物（DLL 清单 / 引用表）
+      src/                  → 统一汇总（每包一个目录，优先 dnSpy 结果）
+      _per_tool/
+        dnspy/<pkg>/        → dnSpy 路线原始输出
+        ilspy/<pkg>/        → ilspycmd 路线原始输出（仅 dnSpy 失败时才出现）
+      decompile-report.csv  → 每个 DLL 走了哪条路线 / 成功 / 失败原因 / 解出 .cs 数量
 #>
 
 param(
@@ -15,6 +29,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 
+# =============== 0) 目录 + log ===============
 New-Item -ItemType Directory -Force -Path $OutDir                         | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $OutDir "inventory") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $OutDir "src")       | Out-Null
@@ -27,7 +42,7 @@ Clear-Content -LiteralPath $LogFile   -ErrorAction SilentlyContinue
 Clear-Content -LiteralPath $ReportCsv -ErrorAction SilentlyContinue
 
 function Write-Log([string]$m, [string]$Level="INFO") {
-  $line = (Get-Date -Format "yyyy-MM-dd HH:mm:ss") + "  [$Level]  $m"
+  $line = (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') + "  [$Level]  $m"
   Add-Content -LiteralPath $LogFile -Value $line -Encoding UTF8
   switch ($Level) {
     "OK"   { Write-Host $line -ForegroundColor Green }
@@ -37,56 +52,77 @@ function Write-Log([string]$m, [string]$Level="INFO") {
   }
 }
 
-# ---------- 1) 盘点 ----------
+# =============== 1) 盘点 DLL (复用 01) ===============
 Write-Log "Step 1: 盘点 snet DLL 清单 ..."
 $scriptsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $invScript  = Join-Path $scriptsDir "01-inventory-snet.ps1"
 $invCsv     = Join-Path $OutDir "inventory\snet-dll-inventory.csv"
-if (-not (Test-Path -LiteralPath $invScript)) { throw "[FATAL] 缺少 01-inventory-snet.ps1" }
+if (-not (Test-Path -LiteralPath $invScript)) {
+  throw "[FATAL] 找不到 01-inventory-snet.ps1：$invScript"
+}
 & $invScript -SnetRoot $SnetRoot -OutDir (Join-Path $OutDir "inventory")
 $inv = @()
 if (Test-Path -LiteralPath $invCsv) { $inv = Import-Csv -LiteralPath $invCsv }
-if (-not $inv -or $inv.Count -eq 0) { throw "[FATAL] inventory 为空" }
-Write-Log "Step 1 完成：$($inv.Count) DLLs"
+if (-not $inv -or $inv.Count -eq 0) {
+  throw "[FATAL] 盘点产物为空，无法继续：$invCsv"
+}
+Write-Log "Step 1 完成：$($inv.Count) 个 DLL (来自 $($inv | Group-Object Package | Measure-Object).Count 个包)"
 
-# ---------- 2) 工具链探测 ----------
+# =============== 2) 准备工具链 ===============
 Write-Log "Step 2: 准备工具链 ..."
+
+# --- 2a) dnSpy 能力探测 ---
 $Mode_dnSpy   = $null
 $dnConsoleExe = Join-Path $DnSpyDir "dnSpy.Console.exe"
 $dnConsoleDll = Join-Path $DnSpyDir "dnSpy.Console.dll"
 $decDll       = Join-Path $DnSpyDir "ICSharpCode.Decompiler.dll"
-if      (Test-Path -LiteralPath $dnConsoleExe) { $Mode_dnSpy = "Exe" }
-elseif  (Test-Path -LiteralPath $dnConsoleDll) { $Mode_dnSpy = "Dll" }
-elseif  (Test-Path -LiteralPath $decDll)       { $Mode_dnSpy = "API" }
+if (Test-Path -LiteralPath $dnConsoleExe) { $Mode_dnSpy = "Exe" }
+elseif (Test-Path -LiteralPath $dnConsoleDll) { $Mode_dnSpy = "Dll" }
+elseif (Test-Path -LiteralPath $decDll)       { $Mode_dnSpy = "API" }
 else {
-  Write-Log "dnSpy 目录无效 -> 全部走 ilspycmd" "WARN"
+  Write-Log "dnSpy 目录内无可执行/可引用反编译核心，将跳过 dnSpy 路线并全部走 ilspycmd" "WARN"
   $Mode_dnSpy = $null
 }
 
+# --- 2b) ilspycmd 能力准备（一定装，即使仅作 fallback） ---
 $ilspyOk = $false
 try {
   $null = Get-Command dotnet -ErrorAction Stop
-  Push-Location $scriptsDir
   if (-not (Test-Path (Join-Path $scriptsDir ".config\dotnet-tools.json"))) {
+    Push-Location $scriptsDir
     dotnet new tool-manifest | Out-Null
+    Pop-Location
   }
-  dotnet tool install ICSharpCode.ILSpyCmd --version $ILSpyCmdVer 2>&1 | Out-Null
-  if ($LASTEXITCODE -ne 0) {
+  Push-Location $scriptsDir
+  $installStderr = (dotnet tool install ICSharpCode.ILSpyCmd --version $ILSpyCmdVer 2>&1)
+  # 如果已装但版本不对 -> 先 uninstall 再 install
+  if ($LASTEXITCODE -ne 0 -and ($installStderr -join "`n") -match "already installed|ToolManifest|is already installed") {
     dotnet tool uninstall ICSharpCode.ILSpyCmd 2>&1 | Out-Null
     dotnet tool install   ICSharpCode.ILSpyCmd --version $ILSpyCmdVer 2>&1 | Out-Null
   }
+  Pop-Location
+  # 验证
+  Push-Location $scriptsDir
   $vTest = (dotnet tool run ilspycmd -- --version 2>&1) -join " "
   Pop-Location
-  if ($LASTEXITCODE -eq 0 -or $vTest -match "^\d+\.\d+") { $ilspyOk = $true; Write-Log "ilspycmd 可用: $vTest" }
-  else { Write-Log "ilspycmd 验证失败: $vTest" "WARN" }
+  if ($LASTEXITCODE -eq 0 -or $vTest -match "^\d+\.\d+") {
+    $ilspyOk = $true
+    Write-Log "ilspycmd 可用: $vTest"
+  } else {
+    Write-Log "ilspycmd 安装/验证失败（exit=$LASTEXITCODE），ilspy 回退路线不可用：$vTest" "WARN"
+  }
 } catch {
-  Write-Log "dotnet/ilspycmd 不可用：$($_.Exception.Message)" "WARN"
-  Pop-Location
+  Write-Log "dotnet 不可用或 ilspycmd 安装异常：$($_.Exception.Message)，ilspy 路线不可用" "WARN"
 }
 
-if (-not $Mode_dnSpy -and -not $ilspyOk) { throw "[FATAL] 两条路线都不可用" }
+if (-not $Mode_dnSpy -and -not $ilspyOk) {
+  throw "[FATAL] 两条路线都不可用：dnSpy 目录无效 + ilspycmd 装不上。请手动检查。"
+}
 
-# ---------- 3) 反编译函数 ----------
+# =============== 3) 逐 DLL 反编译 ===============
+Write-Log "Step 3: 逐 DLL 反编译 (先 dnSpy，失败再 ilspycmd) ..."
+$reports = New-Object System.Collections.Generic.List[object]
+
 function Invoke-DnSpy($pkg, $dllPath, $outPkg) {
   if (-not $Mode_dnSpy) { return @{Ok=$false; Reason="dnSpy-not-available"} }
   $errLog = Join-Path $outPkg "_dnspy-err.log"
@@ -106,6 +142,7 @@ function Invoke-DnSpy($pkg, $dllPath, $outPkg) {
         if ($p.ExitCode -ne 0) { return @{Ok=$false; Reason="exit=$($p.ExitCode)"; Log=$errLog} }
       }
       "API" {
+        # 用内联 C# 脚本 + 反编译 DLL 反射实现
         $driver = Join-Path $outPkg "_driver.cs"
         $code = @"
 using System;
@@ -116,9 +153,12 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.TypeSystem;
+
 class Driver {
   static int Main(string[] args) {
-    var dll  = args[0]; var oDir = args[1]; var root = args[2];
+    var dll  = args[0];
+    var oDir = args[1];
+    var root = args[2];
     Directory.CreateDirectory(oDir);
     var resolver = new UniversalAssemblyResolver(dll, false, null);
     foreach (var d in Directory.GetDirectories(root, "lib", SearchOption.AllDirectories))
@@ -136,10 +176,12 @@ class Driver {
       var dir = Path.Combine(oDir, ns.Replace('.', Path.DirectorySeparatorChar));
       Directory.CreateDirectory(dir);
       var name = t.Name;
+      // 处理泛型 / 嵌套类里非法文件名
       name = name.Replace('`','_').Replace('<','_').Replace('>','_').Replace('\\','_').Replace('/','_').Replace('|','_').Replace(':','_').Replace('?','_').Replace('*','_').Replace('"','_');
       try {
         var src = dec.DecompileTypeAsString(t.MetadataToken);
-        File.WriteAllText(Path.Combine(dir, name + ".cs"), src); count++;
+        File.WriteAllText(Path.Combine(dir, name + ".cs"), src);
+        count++;
       } catch (Exception ex) {
         File.WriteAllText(Path.Combine(dir, name + ".error.txt"), ex.ToString());
       }
@@ -201,9 +243,6 @@ function Invoke-ILSpyCmd($pkg, $dllPath, $outPkg) {
   }
 }
 
-# ---------- 4) 逐 DLL 执行 ----------
-Write-Log "Step 3: 逐 DLL 反编译 ..."
-$reports = New-Object System.Collections.Generic.List[object]
 $idx = 0; $total = $inv.Count; $dnSpyWin = 0; $ilspyWin = 0; $allFail = 0
 
 foreach ($row in $inv) {
@@ -219,7 +258,9 @@ foreach ($row in $inv) {
 
   if (-not (Test-Path -LiteralPath $dllPath)) {
     $reason = "dll-missing"; $status = "SKIP"
-  } else {
+  }
+  else {
+    # --- Route 1: dnSpy ---
     $outDn = Join-Path $OutDir "_per_tool\dnspy\$pkg"
     New-Item -ItemType Directory -Force -Path $outDn | Out-Null
     if ($Mode_dnSpy) {
@@ -231,8 +272,11 @@ foreach ($row in $inv) {
         $reason = "dnSpy:" + $r.Reason
         Write-Log "[$idx/$total] dnSpy FAIL $pkg -> $($r.Reason)  → fallback ilspycmd" "WARN"
       }
-    } else { $reason = "dnSpy:skipped-unavailable" }
+    } else {
+      $reason = "dnSpy:skipped-unavailable"
+    }
 
+    # --- Route 2: ilspycmd fallback (if dnSpy failed/unavailable) ---
     if (-not $chosen) {
       $outIL = Join-Path $OutDir "_per_tool\ilspy\$pkg"
       New-Item -ItemType Directory -Force -Path $outIL | Out-Null
@@ -249,10 +293,12 @@ foreach ($row in $inv) {
     }
   }
 
+  # --- copy winner to unified src ---
   $unified = Join-Path $OutDir "src\$pkg"
   if ($chosen) {
     if (Test-Path -LiteralPath $unified) { Remove-Item -LiteralPath $unified -Recurse -Force }
     Copy-Item -LiteralPath $chosen -Destination $unified -Recurse
+    # 清理过程日志/驱动文件（保留原始工具日志在 _per_tool 里）
     Get-ChildItem -LiteralPath $unified -Recurse -File -Include "_*.log","_*.csx","_*.cs","_*.csproj","_*.error.txt" |
       Remove-Item -Force -ErrorAction SilentlyContinue
   }
@@ -270,14 +316,16 @@ foreach ($row in $inv) {
   })
 }
 
-# ---------- 5) 汇总 ----------
+# =============== 4) 汇总 ===============
 $reports | Export-Csv -NoTypeInformation -Encoding UTF8 -LiteralPath $ReportCsv
+
 $summary = @"
 ==================== snet 反编译汇总 ====================
 Total DLLs           : $total
   dnSpy 路线成功      : $dnSpyWin
   ilspycmd 回退成功   : $ilspyWin
   双路线全部失败      : $allFail
+  SKIP(缺 DLL)        : $($reports.Where({$_.Status -eq 'SKIP'}).Count)
 ---------------------------------------------------------
 统一源码目录         : $(Join-Path $OutDir "src")
 逐工具原始产物       : $(Join-Path $OutDir "_per_tool")
@@ -289,14 +337,8 @@ Add-Content -LiteralPath $LogFile -Value $summary -Encoding UTF8
 Write-Host ""
 Write-Host $summary -ForegroundColor Cyan
 
-Write-Host ""
-Write-Host "=========== 关键文件清单，请把以下内容贴回给我 ===========" -ForegroundColor Cyan
-Write-Host "--- decompile-report.csv ---"
-Import-Csv $ReportCsv | Format-Table Idx,Package,Tfm,Status,Tool,CsFiles -AutoSize | Out-String | Write-Host
-Write-Host "--- FAIL / 异常条目 ---"
-Import-Csv $ReportCsv | Where-Object { $_.Status -ne "OK" } | Format-List Idx,Package,Tfm,Tool,FailReason | Out-String | Write-Host
-Write-Host "--- inventory.txt 前 40 行 ---"
-Get-Content (Join-Path $OutDir "inventory\snet-dll-inventory.txt") -TotalCount 40 | Write-Host
-
-if ($allFail -gt 0) { exit 2 }
+if ($allFail -gt 0) {
+  Write-Warning "有 $allFail 个 DLL 双路线都失败，请打开 $ReportCsv 查看 FailReason，并把失败的那几行贴回来处理。"
+  exit 2
+}
 exit 0

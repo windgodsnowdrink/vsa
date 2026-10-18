@@ -6,7 +6,7 @@
 
 namespace PlcAiot.Saas.Domain;
 
-// —— 枚举（存储为文本，匹配 PG CHECK 约束；中文/小写与 Schema 一致）——
+// —— 枚举（存储为文本，匹配 SQL Server CHECK 约束；中文/小写与 Schema 一致）——
 public enum TenantStatus { Active, Suspended }
 public enum SubscriptionStatus { Active, Suspended }
 public enum DeviceStatus { online, offline, fault }
@@ -75,7 +75,7 @@ public sealed class Device : ITenantEntity
     public Guid TenantId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DeviceStatus Status { get; set; } = DeviceStatus.offline;
-    public string? Profile { get; set; }                     // jsonb（点表）
+    public string? Profile { get; set; }                     // nvarchar(max) JSON（点表）
     public DateTime? LastHeartbeat { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
@@ -101,7 +101,7 @@ public sealed class OutboxMessage : ITenantEntity
     public Guid Id { get; set; }
     public Guid TenantId { get; set; }
     public string Type { get; set; } = string.Empty;
-    public string Payload { get; set; } = "{}";              // jsonb
+    public string Payload { get; set; } = "{}";              // nvarchar(max) JSON
     public DateTime? SentAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
@@ -125,6 +125,6 @@ public sealed class AuditLog
     public string Actor { get; set; } = string.Empty;
     public string Action { get; set; } = string.Empty;
     public DateTime At { get; set; } = DateTime.UtcNow;
-    public string? Detail { get; set; }                      // jsonb
+    public string? Detail { get; set; }                      // nvarchar(max) JSON
 }
 #endif

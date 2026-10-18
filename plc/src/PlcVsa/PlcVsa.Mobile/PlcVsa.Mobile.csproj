@@ -1,0 +1,55 @@
+<!--
+  PlcVsa.Mobile.csproj — MAUI Blazor Hybrid 移动端壳工程。
+  引用 PlcVsa.Frontend 共享 Razor 组件，用显式 Import 在 Sdk.targets 之后
+  覆盖 _CheckForMissingWorkload，抑制无 MAUI 工作负载环境的 NETSDK1147。
+-->
+<Project>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Razor" />
+
+  <PropertyGroup>
+    <!--
+      安装了 MAUI 工作负载时，传 /p:BuildWithMauiWorkloads=true 启用多目标；
+      默认走 net11.0 单 TFM + OutputType=Library，避免无工作负载的 NETSDK1139/CS5001。
+    -->
+    <TargetFrameworks Condition="'$(BuildWithMauiWorkloads)' == 'true'">net11.0-ios;net11.0-maccatalyst;net11.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildWithMauiWorkloads)' != 'true'">net11.0</TargetFramework>
+    <OutputType Condition="'$(BuildWithMauiWorkloads)' == 'true'">Exe</OutputType>
+    <OutputType Condition="'$(BuildWithMauiWorkloads)' != 'true'">Library</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <RootNamespace>PlcVsa.Mobile</RootNamespace>
+
+    <MauiVersion Condition="'$(MauiVersion)' == ''">9.0.40</MauiVersion>
+
+    <ApplicationTitle>PlcVsa.Mobile</ApplicationTitle>
+    <ApplicationId>com.companyname.plcvsa.mobile</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 仅引用前端 Razor 组件库，不再依赖任何 PlcAiot.* 共享项目。 -->
+    <ProjectReference Include="..\PlcVsa.Frontend\PlcVsa.Frontend.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Razor" />
+
+  <!-- 后声明同名空 target，Condition=false 直接跳过——抑制 NETSDK1147。 -->
+  <Target Name="_CheckForMissingWorkload" Condition="false" />
+
+</Project>

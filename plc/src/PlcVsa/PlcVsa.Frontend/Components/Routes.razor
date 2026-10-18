@@ -1,0 +1,13 @@
+@* PlcVsa.Frontend：统一路由。AdditionalAssemblies 本项目即可（Home 组件在此工程）。 *@
+<Router AppAssembly="typeof(PlcVsa.Frontend._Imports).Assembly"
+        AdditionalAssemblies="new[] { typeof(PlcVsa.Frontend.Components.Pages.Home).Assembly }">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(PlcVsa.Frontend.Components.Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(PlcVsa.Frontend.Components.Layout.MainLayout)">
+            <p role="alert">抱歉，未找到该页面。请返回 <a href="/">首页</a>。</p>
+        </LayoutView>
+    </NotFound>
+</Router>

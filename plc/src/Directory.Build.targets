@@ -1,0 +1,42 @@
+<!--
+  Directory.Build.targets（/plc/src 级别）—— 对该目录树内所有 csproj 在 Microsoft.Common.targets 之后导入。
+  目标：
+    1) 对任何启用 <UseMaui>true</UseMaui> 且未安装 MAUI 工作负载的项目（如 PlcVsa.Mobile、PlcAiot.Mobile），
+       覆盖 SDK 的 _CheckForMissingWorkload 空 target，抑制 NETSDK1147（CI / 沙箱无工作负载场景仍能做 typecheck）。
+    2) 对 net11 preview / LangVersion preview 场景：允许 NU1510 / NU1701 作为 warning（不中断 restore）。
+    3) 默认 InvariantGlobalization = true，避免非 Windows 容器 / 沙箱缺 ICU 导致的全球化异常（需要国际化的项目自行覆盖）。
+-->
+<Project>
+
+  <PropertyGroup>
+    <NoWarn Condition="'$(NoWarn)' != ''">$(NoWarn);</NoWarn>
+    <NoWarn>$(NoWarn)NU1510;NU1701;NU1903</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseMaui)' == 'true' and '$(BuildWithMauiWorkloads)' != 'true'">
+    <!--
+      缺 MAUI 工作负载时：若项目未显式指定 OutputType/TargetFramework，则兜底为 Library + net11.0，
+      从而避免 CS5001（无 Main）/ NETSDK1139（未知平台标识，如 net11.0-ios）。
+      已在具体 csproj 中显式设置的不冲突（显式优先于此处兜底）。
+    -->
+    <OutputType Condition="'$(OutputType)' == ''">Library</OutputType>
+    <TargetFramework Condition="'$(TargetFramework)' == '' and '$(TargetFrameworks)' == ''">net11.0</TargetFramework>
+  </PropertyGroup>
+
+  <!--
+    覆盖 SDK _CheckForMissingWorkload：后声明同名 target 并 Condition=false 即直接跳过。
+    必须在 Sdk.targets（默认排在 Directory.Build.targets 之前）之后生效，故放于此处。
+    仅对 UseMaui=true 的项目触发覆盖（其它项目不应受影响）。
+  -->
+  <Target Name="_CheckForMissingWorkload"
+          Condition="'$(UseMaui)' == 'true' and '$(BuildWithMauiWorkloads)' != 'true'" />
+
+  <!-- 微单体 4 个子项目统一 InvariantGlobalization（可在各自 csproj 中重写）。 -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'PlcVsa.Contracts'
+                         or '$(MSBuildProjectName)' == 'PlcVsa.Frontend'
+                         or '$(MSBuildProjectName)' == 'PlcVsa.Server'
+                         or '$(MSBuildProjectName)' == 'PlcVsa.Mobile'">
+    <InvariantGlobalization Condition="'$(InvariantGlobalization)' == ''">true</InvariantGlobalization>
+  </PropertyGroup>
+
+</Project>
