@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
 
   emqx:
-    image: emqx/emqx:5.8.5
+    image: emqx/emqx:6.1.4
     container_name: plc-saas-emqx
     environment:
       EMQX_DASHBOARD__DEFAULT_USERNAME: admin
@@ -43,11 +43,11 @@ services:
       # 允许 EMQX 规则引擎 Webhook 用自签/HTTP 访问本机 SaaS（dev）
       EMQX_RULE_ENGINE__HTTP__CONNECT_TIMEOUT: 5s
     ports:
-      - "1883:1883"   # MQTT
-      - "8083:8083"   # MQTT over WebSocket
-      - "8084:8084"   # MQTT over WSS
-      - "8883:8883"   # MQTT/SSL
-      - "18083:18083" # Dashboard + REST API
+      - "51883:1883"  # MQTT（宿主端口避开 Windows 保留段 1802-1901）
+      - "58083:8083"  # MQTT over WebSocket（避开保留段 8035-8134）
+      - "58084:8084"  # MQTT over WSS（避开保留段 8035-8134）
+      - "8883:8883"   # MQTT/SSL（8883 不在保留段，保持）
+      - "18083:18083" # Dashboard + REST API（不在保留段，保持）
     healthcheck:
       test: ["CMD", "emqx", "ctl", "status"]
       interval: 10s
