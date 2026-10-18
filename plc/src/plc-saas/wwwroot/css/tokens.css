@@ -1,0 +1,70 @@
+/*
+ * design-tokens.css — PLC·AIOT SaaS 设计 Token（SSOT: design-tokens.json / DESIGN.md §10）
+ * 单品牌约束：唯一主色科技天蓝；禁第二主色；禁紫→粉渐变；禁硬编码色（例外 #fff/#000/#000 为数据范围条）。
+ * 暗色优先（#020617）。
+ */
+:root {
+  /* 主色（科技天蓝，唯一主色） */
+  --brand-400: #60a5fa;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;   /* 主按钮底色，白字 AA 4.6:1 */
+  --brand-700: #1d4ed8;
+  --brand-800: #1e40af;
+
+  /* 背景 / 表面 */
+  --bg: #020617;
+  --surface: rgba(15, 23, 42, 0.55);     /* 玻璃卡片底 */
+  --surface-solid: #0f172a;               /* 抽屉/对话框实底 */
+  --border: rgba(148, 163, 184, 0.14);
+  --text: #e2e8f0;
+  --text-2: #94a3b8;                      /* 标签/次级文字 */
+  --text-3: #64748b;                      /* 仅装饰/图表轴/禁用 */
+
+  /* 语义色（状态「色 + 字」双信号） */
+  --ok: #10b981;                          /* 在线/成功/正常 */
+  --warn: #f59e0b;                        /* 预警/待处理/≥80% 配额 */
+  --bad: #f43f5e;                         /* 告警/错误/≥95% 配额 */
+  --info: #64748b;                        /* 中性状态 */
+
+  /* SaaS 专属 */
+  --tenant-dot: var(--brand-500);         /* 租户身份用文字 + 组织标，禁第二主色 */
+  --border-strong: color-mix(in srgb, var(--text-2) 30%, var(--border));
+  --surface-sunken: color-mix(in srgb, var(--bg) 55%, #000 10%);
+  --quota-track: color-mix(in srgb, var(--text-3) 22%, transparent);
+  --tier-badge-fg: var(--brand-700);
+  --state-active: var(--ok);
+  --state-suspended: var(--text-3);
+  --state-trial: var(--warn);
+
+  /* 字体 */
+  --font: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --text-nano: 11px;
+  --text-caption: 12px;
+  --text-body: 14px;
+  --text-section: 15px;
+  --text-page-title: 24px;
+  --text-kpi: 28px;
+
+  /* 图标 */
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-stroke: 2px;
+
+  /* 圆角 */
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+
+  /* 间距 */
+  --gap: 16px;
+  --space-section: 18px;
+
+  /* 阴影 / 动效 / 玻璃 */
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 6px 18px -10px rgba(0, 0, 0, 0.6);
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --glass: blur(14px) saturate(140%);
+}

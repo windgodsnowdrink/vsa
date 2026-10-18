@@ -27,7 +27,8 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, TokenResponse>
     private readonly BaseDbContext _db;
     private readonly UserManager<ApplicationUser> _users;
     private readonly IConfiguration _jwt;
-    public LoginHandler(BaseDbContext db, UserManager<ApplicationUser> users, IConfiguration jwt) => (_db, _users, _jwt) = (db, users, jwt);
+    private readonly ICurrentTenant _current;
+    public LoginHandler(BaseDbContext db, UserManager<ApplicationUser> users, IConfiguration jwt, ICurrentTenant current) => (_db, _users, _jwt, _current) = (db, users, jwt, current);
 
     public async ValueTask<TokenResponse> Handle(LoginCommand cmd, CancellationToken ct)
     {
@@ -76,6 +77,12 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, TokenResponse>
             TokenHash = TokenHasher.Hash(refresh),
             ExpiresAt = DateTime.UtcNow.AddDays(7),
         });
+        // 匿名登录请求无 JWT，中间件不会设置租户上下文（current=Guid.Empty 且非 root）；
+        // 须以「被登录租户」身份建立上下文，否则 TenantStampInterceptor 会因
+        // entity.TenantId≠当前上下文而抛 CrossTenantWriteException（40300 跨租户写入被拒绝）。
+        // 此举与 CreateTenantHandler 的受信任开通写入一致（ADR-103 兜底放行）。
+        _current.TenantId = tid == SaasTenant.Root ? Guid.Empty : Guid.Parse(tid);
+        _current.IsRoot = tid == SaasTenant.Root;
         _db.SaveChanges();
         return new TokenResponse(access, refresh, 900, "Bearer", tid);
     }
@@ -87,7 +94,8 @@ public sealed class RefreshHandler : IRequestHandler<RefreshCommand, TokenRespon
     private readonly BaseDbContext _db;
     private readonly UserManager<ApplicationUser> _users;
     private readonly IConfiguration _jwt;
-    public RefreshHandler(BaseDbContext db, UserManager<ApplicationUser> users, IConfiguration jwt) => (_db, _users, _jwt) = (db, users, jwt);
+    private readonly ICurrentTenant _current;
+    public RefreshHandler(BaseDbContext db, UserManager<ApplicationUser> users, IConfiguration jwt, ICurrentTenant current) => (_db, _users, _jwt, _current) = (db, users, jwt, current);
 
     public async ValueTask<TokenResponse> Handle(RefreshCommand cmd, CancellationToken ct)
     {
@@ -103,6 +111,10 @@ public sealed class RefreshHandler : IRequestHandler<RefreshCommand, TokenRespon
         var roles = await _users.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? SaasRoles.Operator;
         var tid = user.TenantId == Guid.Empty ? SaasTenant.Root : user.TenantId.ToString();
+
+        // 刷新请求匿名，须先以被刷新用户所属租户建立上下文，否则轮换写入触发跨租户拒绝（与登录一致）。
+        _current.TenantId = user.TenantId == Guid.Empty ? Guid.Empty : user.TenantId;
+        _current.IsRoot = user.TenantId == Guid.Empty;
 
         // 轮换刷新令牌
         rt.RevokedAt = DateTime.UtcNow;

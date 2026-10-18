@@ -45,6 +45,8 @@ builder.Services.AddHostedService<MeteringAgent>();
 var app = builder.Build();
 
 app.UseRouting();
+app.UseDefaultFiles();
+app.UseStaticFiles();   // 托管 wwwroot 下的 SaaS 控制台 SPA（Phase 3）
 app.UseCors("saas-dev");
 app.UseAuthentication();
 app.UseTenantContext();
@@ -74,6 +76,9 @@ app.MapHub<FaultsHub>("/hubs/faults");
 // MCP Server（ADR-112，外部 AI Agent 安全问诊）；仅 Mcp:Enabled 时暴露 /mcp（Streamable HTTP + SSE）
 if (builder.Configuration.GetValue("Mcp:Enabled", false))
     app.MapMcp("/mcp"); // Hub 鍚? faults锛涘崗鍟? /hubs/faults/negotiate
+
+// SPA 回退：未命中的非 API/Hub 路由（含 hash 深链刷新）一律返回 index.html（须置于 API/Hub 映射之后）
+app.MapFallbackToFile("index.html");
 
 // 鍚姩锛氬箓绛夊缓琛? + RLS 鑷姩搴旂敤锛堝厛浜庣瀛愶紝纭繚琛ㄤ笌琛岀骇瀹夊叏灏辩华锛?
 using (var scope = app.Services.CreateScope())

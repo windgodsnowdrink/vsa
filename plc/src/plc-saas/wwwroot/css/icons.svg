@@ -1,0 +1,103 @@
+<!--
+  PLC·AIOT SaaS 图标雪碧图（Lucide 风格，ISC，24x24，2px 描边，currentColor）
+  说明：MVP 阶段为保证离线可用、零网络依赖，此处为按 Lucide 视觉范式手绘的等价几何图标；
+        后续可整体替换为官方 Lucide 雪碧图（symbol id 保持 i-<name> 不变即可）。
+  引用方式：<svg class="icon" viewBox="0 0 24 24"><use href="/css/icons.svg#i-gauge"/></svg>
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3c3 1 5 4 5 7 0 2-1 4-1 4l-4 3-4-3s-1-2-1-4c0-3 2-6 5-7z"/>
+    <circle cx="12" cy="9" r="1.6"/>
+    <path d="M9 17l-2.2 3M15 17l2.2 3"/>
+  </symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/>
+  </symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>
+  </symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 13a9 9 0 0 1 18 0"/>
+    <path d="M12 13l5-3"/>
+    <path d="M7 13h2M15 13h2"/>
+  </symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l9 5-9 5-9-5 9-5z"/>
+    <path d="M3 13l9 5 9-5"/>
+  </symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="9" cy="8" r="3.4"/>
+    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+    <circle cx="17" cy="9" r="2.4"/>
+    <path d="M15.4 14.4c3 .3 5.6 2.7 5.6 5.6"/>
+  </symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/>
+    <path d="M9 8h6M9 12h6"/>
+  </symbol>
+  <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="3" width="14" height="18" rx="1"/>
+    <path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/>
+  </symbol>
+  <symbol id="i-tags" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 11V5a2 2 0 0 1 2-2h6l9 9-8 8-9-9z"/>
+    <circle cx="7.5" cy="7.5" r="1.5"/>
+  </symbol>
+  <symbol id="i-key-round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="8" cy="14" r="4"/>
+    <path d="M11 11l9-9M17 5l2 2M14 8l2 2"/>
+  </symbol>
+  <symbol id="i-scroll-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="3" width="14" height="18" rx="2"/>
+    <path d="M9 8h6M9 12h6M9 16h4"/>
+  </symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12h4l3 8 4-16 3 8h4"/>
+  </symbol>
+  <symbol id="i-log-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/>
+    <path d="M10 12H3M7 8l-4 4 4 4"/>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 5v14M5 12h14"/>
+  </symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="7" y="5" width="3.5" height="14" rx="1"/>
+    <rect x="13.5" y="5" width="3.5" height="14" rx="1"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 5l12 7-12 7V5z"/>
+  </symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 11a8 8 0 1 0-2 5.3"/>
+    <path d="M20 5v6h-6"/>
+  </symbol>
+  <symbol id="i-circle-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M8 12l3 3 5-6"/>
+  </symbol>
+  <symbol id="i-triangle-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l10 18H2L12 3z"/>
+    <path d="M12 10v5M12 17.5v.5"/>
+  </symbol>
+  <symbol id="i-circle-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M9 9l6 6M15 9l-6 6"/>
+  </symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 9l6 6 6-6"/>
+  </symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7z"/>
+    <path d="M10 20a2 2 0 0 0 4 0"/>
+  </symbol>
+  <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 7l9-4 9 4-9 4-9-4z"/>
+    <path d="M3 7v10l9 4 9-4V7M12 11v10"/>
+  </symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 4v16h16"/>
+    <path d="M8 16l3-4 3 3 4-6"/>
+  </symbol>
+</svg>

@@ -23,8 +23,9 @@ public sealed class GetPricingHandler : IRequestHandler<GetPricingQuery, Pricing
     {
         var plans = await _db.Plans.IgnoreQueryFilters()
             .Select(p => new PlanResponse(p.Id, p.Name, p.DeviceQuota, p.TelemetryQuota)).ToListAsync(ct);
-        var policies = await _db.QuotaPolicies
-            .Select(q => new QuotaPolicyDto(q.Metric.ToString(), q.ThresholdPct, q.Action.ToString())).ToListAsync(ct);
+        // 先物化再在内存中投影：EF Core 无法把 enum.ToString() 翻译进 SQL 构造器（报 QuotaMetric→String 无强制转换）。
+        var policies = (await _db.QuotaPolicies.ToListAsync(ct))
+            .Select(q => new QuotaPolicyDto(q.Metric.ToString(), q.ThresholdPct, q.Action.ToString())).ToList();
         return new PricingResponse(plans, policies);
     }
 }

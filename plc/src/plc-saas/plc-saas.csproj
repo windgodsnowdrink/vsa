@@ -59,6 +59,8 @@
     <Content Include="sql/rls.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="docker-compose.yml" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="initdb/01-roles.sql" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Phase 3 SaaS 控制台 SPA：原样复制到输出目录，由 UseStaticFiles/MapFallbackToFile 托管 -->
+    <Content Include="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- File-based 源 → 剥离 #include/#r → 编译（Program.cs 作入口） -->
