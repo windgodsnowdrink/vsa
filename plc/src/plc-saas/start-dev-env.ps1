@@ -104,6 +104,10 @@ $Infra = @{
 # compose 中声明的 EMQX 宿主端口（短语法 `- "宿主:容器"`）。解析不到即留空。
 $ComposePorts = @{}
 
+# 容器端口 → $HostFix 键
+$ContainerPortMap = @{ '1883' = 'Mqtt'; '8083' = 'Ws'; '8084' = 'Wss'; '8883' = 'Tls'; '18083' = 'Dashboard' }
+$curTarget = $null
+
 function Read-Infra {
     if (-not (Test-Path $COMPOSE)) {
         Write-Warning "未找到 $COMPOSE，使用内置兜底值（Pg$($Infra.PgVersion) / EMQX $($Infra.EmqxVersion)）。"
@@ -131,9 +135,8 @@ Read-Infra
 # compose 当前若仍声明 1883/8083/8084/8883，会因 Windows 保留段不可绑定而自动回退到
 # 5xxxx 并告警；把 compose 同步为 5xxxx 后本步即为幂等透传。
 function Resolve-EmqxHostPorts {
-    $resolved = 0
     foreach ($k in @('Mqtt', 'Ws', 'Wss', 'Tls', 'Dashboard')) {
-        if ($EnvPinned[$k]) { $resolved++; continue }   # 环境变量显式指定 → 无条件遵从，不自愈
+        if ($EnvPinned[$k]) { continue }          # 环境变量显式指定 → 无条件遵从，不自愈
         $candidate = $ComposePorts[$k]
         if (-not $candidate -or $candidate -eq $HostFix[$k]) { continue }
         if (Assert-PortBindable $candidate) {
@@ -142,6 +145,9 @@ function Resolve-EmqxHostPorts {
         } else {
             Write-Warning "[cfg] compose 声明的 EMQX ${k} 宿主端口 $candidate 不可绑定（Windows 保留段/被占用），回退到 $($HostFix[$k])。建议把 docker-compose.yml 同步为 5xxxx。"
         }
+    }
+    if ($ComposePorts.Count -eq 0) {
+        Write-Host "[cfg] compose 未解析到 EMQX 宿主端口映射（需短语法 - `"宿主:容器`"），采用内置 5xxxx 映射；如需以 compose 为唯一真源，请按其短语法同步端口。"
     }
 }
 Resolve-EmqxHostPorts
