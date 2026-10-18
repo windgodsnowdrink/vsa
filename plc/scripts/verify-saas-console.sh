@@ -17,6 +17,23 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 SAAS_DIR="$REPO/src/plc-saas"
 BIN_DIR="$SAAS_DIR/bin/Debug/net11.0"
 CANDIDATE_PORTS="${CANDIDATE_PORTS:-5000 5199 5299 5399 5499 5599 5699 5799 5899 5999}"
+# 宿主侧端口可注入（由 start-dev-env.ps1 一键自检透传；PG 宿主端口可能非 5432）
+PG_PORT="${PG_PORT:-5432}"
+EMQX_DASHBOARD_PORT="${EMQX_DASHBOARD_PORT:-18083}"
+
+# E2E_LOG：由调用方（如 start-dev-env.ps1）指定的 POSIX 路径，用于把输出同步落盘。
+# 交给 bash 侧 tee 而非由 PowerShell 捕获原生输出 —— 后者会因控制台代码页产生乱码并丢内容。
+if [ -n "${E2E_LOG:-}" ]; then
+  mkdir -p "$(dirname "$E2E_LOG")"
+  exec > >(tee "$E2E_LOG") 2>&1
+fi
+
+# 日志：E2E_LOG 指向 POSIX 路径时，输出同步落盘（供 start-dev-env.ps1 一键自检留档）。
+# 必须由 bash 侧 tee 落盘 —— 交给 PowerShell 捕获原生输出会因控制台代码页转码产生乱码且截断内容。
+if [ -n "${E2E_LOG:-}" ]; then
+  mkdir -p "$(dirname "$E2E_LOG")"
+  exec > >(tee "$E2E_LOG") 2>&1
+fi
 
 # 绕过本机 HTTP 代理对 localhost 的拦截（否则返回 502 假象）
 export no_proxy='*' NO_PROXY='*'
@@ -47,20 +64,23 @@ field() { # 提取 "field":"value"
   printf '%s' "$1" | grep -o "\"$2\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | head -1 | sed "s/.*:[[:space:]]*\"//; s/\"$//"
 }
 
-echo "== 校验依赖：PostgreSQL 监听 localhost:5432 =="
-if ! (exec 3<>/dev/tcp/127.0.0.1/5432) 2>/dev/null; then
-  echo "!! PostgreSQL 不可达（localhost:5432）。请先启动 wslc 容器：wslc start plc-saas-postgres"
+echo "== 校验依赖：PostgreSQL 监听 localhost:$PG_PORT =="
+if ! (exec 3<>/dev/tcp/127.0.0.1/$PG_PORT) 2>/dev/null; then
+  echo "!! PostgreSQL 不可达（localhost:$PG_PORT）。请先启动 wslc 容器：wslc start plc-saas-postgres"
+  echo "   （宿主端口非 $PG_PORT 时用 PG_PORT=<端口> 覆盖）"
   exit 3
 fi
 exec 3>&- 2>/dev/null || true
-echo "   PostgreSQL 可达。"
+echo "   PostgreSQL 可达（localhost:$PG_PORT）。"
+# 后端连接串需跟随宿主端口；仅当非默认 5432 时注入（默认走 appsettings 原值）
+[ "$PG_PORT" != "5432" ] && export ConnectionStrings__Default="Host=localhost;Port=$PG_PORT;Database=plc_aiot_saas;Username=plcsaas;Password=plcsaas"
 
 echo "== 校验 EMQX（桥接默认关闭，非启动依赖；缺失仅告警）=="
-if (exec 3<>/dev/tcp/127.0.0.1/18083) 2>/dev/null; then
+if (exec 3<>/dev/tcp/127.0.0.1/$EMQX_DASHBOARD_PORT) 2>/dev/null; then
   exec 3>&- 2>/dev/null || true
-  echo "   EMQX dashboard 18083 可达。"
+  echo "   EMQX dashboard $EMQX_DASHBOARD_PORT 可达。"
 else
-  echo "   [warn] EMQX 18083 不可达：若启用 Mqtt:Bridge:Enabled，请先 wslc start plc-saas-emqx"
+  echo "   [warn] EMQX $EMQX_DASHBOARD_PORT 不可达：若启用 Mqtt:Bridge:Enabled，请先 wslc start plc-saas-emqx"
 fi
 
 echo "== 构建 plc-saas (dotnet build) =="
