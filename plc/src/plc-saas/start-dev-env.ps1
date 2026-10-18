@@ -90,7 +90,7 @@ $COMPOSE    = Join-Path $PSScriptRoot 'docker-compose.yml'
 # ---------------- 从 docker-compose.yml 解析基础设施真值（带兜底） ----------------
 # 解析失败（文件缺失 / 格式变更）时退化为下列硬编码值，保证脚本始终可用。
 $Infra = @{
-    PgVersion      = '16'
+    PgVersion      = '18-alpine3.23'   # 与 docker-compose.yml 保持一致（旧值 '16' 已陈旧）
     EmqxVersion    = '5.8.5'
     PgSuperUser    = 'postgresql'
     PgSuperPwd     = 'postgresql'
