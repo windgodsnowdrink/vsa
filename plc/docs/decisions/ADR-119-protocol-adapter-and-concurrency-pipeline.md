@@ -127,7 +127,7 @@ plc-host 当前数据面 = HTTP 请求 → 每次 `CreateSession` 新建 TCP 连
 | # | 内容 | 产出 | 依赖 | 状态 |
 |---|---|---|---|---|
 | M1 | 契约层：`DeviceFrame` + `IDeviceSession` 扩展（批量读 DIM、连接复用标记）+ 命名清理 | `Plc.Plugins.Contracts`、`wwwroot/js/app.js` | — | ✅ 已完成 |
-| M2 | vs-threading 引入 plc-host（`AsyncSemaphore`/`AsyncLazy`/`JoinableTaskFactory`） | `plc-host.csproj` + 并发底座 | M1 | 待开工 |
+| M2 | vs-threading 引入 plc-host（`AsyncSemaphore`/`AsyncLazy`/`JoinableTaskFactory`） | `plc-host.csproj` + 并发底座 | M1 | ✅ 已完成 |
 | M3 | Disruptor 4.0.0 钉齐 + 采集管道骨架（环形缓冲） | `plc-host.csproj` + 管道 | M2 | 待开工 |
 | M4 | plc-host 数据面：会话池 + 批量读 + Polly 弹性 | `DeviceProtocolsModule` 改造 | M2（可提前） | 待开工 |
 | M5 | Modbus TCP 参考实现覆写批量读 + IoTClient 等价性验证 | 插件内新文件 + 验证脚本/结论 | M1（可并行） | 待开工 |
@@ -219,6 +219,37 @@ TID/UnitId 错位被检出；异常响应后连接可继续复用；单会话 20
 验证台架：自写 `MiniModbusServer`（确定性数据模型，两条路径**共用同一个从站**以排除值漂移与时序抖动），
 端口 **15020**（15021 黑洞、15030+ 用于后续验证；502 需管理员权限不用；
 避开 Windows 保留段 80/4394-4493/5357/8035-8134/8235-8334/8443/9103-9202/13508/50000-50059）。
+
+### 5.4 M2 落地说明：vs-threading 并发底座
+
+`plc-host.csproj` 引入 **`Microsoft.VisualStudio.Threading` 17.11.20**（与 plc-gateway 钉齐、禁止浮动）。
+`dotnet restore` + `build` **无 NU1107**（曾担心的「精确版本 vs 最低版本」冲突未触发）。
+
+| 产出 | 位置 | 说明 |
+|---|---|---|
+| `KeyedAsyncGate` | `Concurrency/KeyedAsyncGate.cs` | 按设备 key 限流的异步闸门（`AsyncSemaphore`）。按 key 独立计数，不同设备互不阻塞；全局并发留给 M3 管道 |
+| `AsyncLazyRegistry<TKey,TValue>` | `Concurrency/AsyncLazyRegistry.cs` | 按键惰性异步单例（`AsyncLazy<T>`）；并发命中同一 key 时工厂只执行一次；移除时按 `IAsyncDisposable`/`IDisposable` 释放 |
+| `VsThreadingCapability` | `Modules/VsThreadingCapability.cs` | 装配 `JoinableTaskContext` / `JoinableTaskFactory` / `JoinableTaskCollection` / 闸门 / 会话注册表；`Order=2`（早于设备模块 5） |
+
+**端点**：`GET /sys/concurrency`（状态快照）、`POST /sys/concurrency/probe?key=&parallel=&holdMs=`
+（并发探针，返回 `observedPeak` 与 `throttled`，供 M6 门禁）。
+单设备上限由 `Concurrency:PerDeviceLimit` 配置，默认 **4**。
+
+**为什么必须本侧限流**：现场设备（串口网关 / Modbus 从站 / S7）超并发时的表现是
+「不回包 → 超时」而不是报错——正是 §5.2 那个 P0 缺陷的症状。等设备拒绝是等不来的。
+
+**两处实现陷阱（已写入代码注释）**
+1. `AsyncSemaphore` 采用 **Releaser 模式**：没有 `Release()`，`EnterAsync()` 返回可释放句柄。
+2. **信号量常驻不摘除**：并发摘除会让后来的调用者新建一个信号量，从而突破上限（实测会踩到）。
+   计数项改用 `ConcurrentDictionary.TryRemove(KeyValuePair)` 在归零时**原子**摘除，避免与并发 `Acquire` 竞争。
+3. VS.Threading 自带一个与 `System.IAsyncDisposable` **同名**的旧接口，直接用简单名触发 **CS0104**，必须 `global::` 全名限定。
+
+**验证**：并发底座探针 **24/24 PASS**（单 key 峰值恰为上限、多 key 峰值 8 证明互不阻塞、
+600 次争抢峰值恒 ≤3 且归零无泄漏、64 并发只触发 1 次工厂、移除/清空均正确释放、参数校验）。
+宿主实跑冒烟：`/sys/concurrency` 正常返回；12 并发探针实测峰值 **4**（= 上限）`throttled=true`，事后无残留。
+
+> 遗留：`AsyncLazyRegistry<string, IDeviceSession>` 目前以「未注入工厂」占位，
+> 真实会话工厂由 **M4** 提供（见 M4 条目）。
 
 ---
 
