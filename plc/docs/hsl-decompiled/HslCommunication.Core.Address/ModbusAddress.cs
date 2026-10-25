@@ -1,0 +1,178 @@
+// -----------------------------------------------------------------------------
+// 反编译产物 | 来源程序集: HslCommunication.dll (v13.0.2.0)
+// SHA-256: F5B02381F1C74B0578BDD5E883C3C0CB548B223015CDD81EE3D7922A26FA9F30
+// 反编译工具: ilspycmd 11.0.0.9375 (ICSharpCode.Decompiler)
+// 生成日期  : 2026-10-18
+// 注释来源  : 官方 XML 文档 HslCommunication.xml（机械回填，未改写措辞）
+// 说明      : 仅供阅读 / 排障 / 协议核对参考；版权归 HslCommunication 原作者所有。
+// -----------------------------------------------------------------------------
+using System;
+using System.Text;
+
+namespace HslCommunication.Core.Address;
+
+/// <summary>
+/// Modbus协议地址格式，可以携带站号，功能码，地址信息
+/// Modbus protocol address format, can carry station number, function code, address information
+/// </summary>
+public class ModbusAddress : DeviceAddressDataBase
+{
+	/// <summary>
+	/// 获取或设置当前地址的站号信息
+	/// Get or set the station number information of the current address
+	/// </summary>
+	public int Station { get; set; }
+
+	/// <summary>
+	/// 获取或设置当前地址携带的功能码
+	/// Get or set the function code carried by the current address
+	/// </summary>
+	public int Function { get; set; }
+
+	/// <summary>
+	/// 获取或设置当前地址在写入的情况下使用的功能码，用来扩展一些非常特殊的自定义服务器
+	/// </summary>
+	public int WriteFunction { get; set; }
+
+	/// <summary>
+	/// 实例化一个默认的对象
+	/// Instantiate a default object
+	/// </summary>
+	public ModbusAddress()
+	{
+		Station = -1;
+		Function = -1;
+		WriteFunction = -1;
+		base.AddressStart = 0;
+	}
+
+	/// <summary>
+	/// 实例化一个对象，使用指定的地址初始化
+	/// Instantiate an object, initialize with the specified address
+	/// </summary>
+	/// <param name="address">传入的地址信息，支持富地址，例如s=2;x=3;100</param>
+	public ModbusAddress(string address)
+	{
+		Station = -1;
+		Function = -1;
+		WriteFunction = -1;
+		base.AddressStart = 0;
+		Parse(address, 1);
+	}
+
+	/// <summary>
+	/// 实例化一个对象，使用指定的地址及功能码初始化
+	/// Instantiate an object and initialize it with the specified address and function code
+	/// </summary>
+	/// <param name="address">传入的地址信息，支持富地址，例如s=2;x=3;100</param>
+	/// <param name="function">默认的功能码信息</param>
+	public ModbusAddress(string address, byte function)
+	{
+		Station = -1;
+		WriteFunction = -1;
+		Function = function;
+		base.AddressStart = 0;
+		Parse(address, 1);
+	}
+
+	/// <summary>
+	/// 实例化一个对象，使用指定的地址，站号，功能码来初始化
+	/// Instantiate an object, use the specified address, station number, function code to initialize
+	/// </summary>
+	/// <param name="address">传入的地址信息，支持富地址，例如s=2;x=3;100</param>
+	/// <param name="station">站号信息</param>
+	/// <param name="function">默认的功能码信息</param>
+	public ModbusAddress(string address, byte station, byte function)
+	{
+		WriteFunction = -1;
+		Function = function;
+		Station = station;
+		base.AddressStart = 0;
+		Parse(address, 1);
+	}
+
+	private int ParseAddressHelper(string address)
+	{
+		if (address.EndsWith("H", StringComparison.OrdinalIgnoreCase))
+		{
+			return Convert.ToInt32(address.Substring(0, address.Length - 1), 16);
+		}
+		return (int)uint.Parse(address);
+	}
+
+	public override void Parse(string address, ushort length)
+	{
+		base.Length = length;
+		if (address.IndexOf(';') < 0)
+		{
+			base.AddressStart = ParseAddressHelper(address);
+			return;
+		}
+		string[] array = address.Split(new char[1] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (array[i].StartsWith("s=", StringComparison.OrdinalIgnoreCase))
+			{
+				Station = byte.Parse(array[i].Substring(2));
+			}
+			else if (array[i].StartsWith("x=", StringComparison.OrdinalIgnoreCase))
+			{
+				Function = byte.Parse(array[i].Substring(2));
+			}
+			else if (array[i].StartsWith("w=", StringComparison.OrdinalIgnoreCase))
+			{
+				WriteFunction = byte.Parse(array[i].Substring(2));
+			}
+			else
+			{
+				base.AddressStart = ParseAddressHelper(array[i]);
+			}
+		}
+	}
+
+	/// <summary>
+	/// 地址偏移指定的位置，返回一个新的地址对象
+	/// The address is offset by the specified position and a new address object is returned
+	/// </summary>
+	/// <param name="value">数据值信息</param>
+	/// <returns>新增后的地址信息</returns>
+	public ModbusAddress AddressAdd(int value)
+	{
+		return new ModbusAddress
+		{
+			Station = Station,
+			Function = Function,
+			WriteFunction = WriteFunction,
+			AddressStart = base.AddressStart + value
+		};
+	}
+
+	/// <summary>
+	/// 地址偏移1，返回一个新的地址对象
+	/// The address is offset by 1 and a new address object is returned
+	/// </summary>
+	/// <returns>新增后的地址信息</returns>
+	public ModbusAddress AddressAdd()
+	{
+		return AddressAdd(1);
+	}
+
+	public override string ToString()
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		if (Station >= 0)
+		{
+			stringBuilder.Append("s=" + Station + ";");
+		}
+		if (Function == 2 || Function == 4 || Function > 6)
+		{
+			stringBuilder.Append("x=" + Function + ";");
+		}
+		if (WriteFunction > 0)
+		{
+			stringBuilder.Append("w=" + WriteFunction + ";");
+		}
+		stringBuilder.Append(base.AddressStart.ToString());
+		return stringBuilder.ToString();
+	}
+}
